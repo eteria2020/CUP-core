@@ -1,0 +1,14 @@
+{
+    "name": "mvlabs/sharengo-coremodule",
+    "description": "Core ZF2 module for Sharengo apps",
+    "require": {
+        "php": ">=5.4.0",
+        "zendframework/zendframework": "2.3.*",
+        "doctrine/doctrine-orm-module": "0.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "SharengoCore": "src/"
+        }
+    }
+}
