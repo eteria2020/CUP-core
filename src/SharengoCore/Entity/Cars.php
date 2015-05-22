@@ -1,0 +1,935 @@
+<?php
+
+namespace SharengoCore\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Cars
+ *
+ * @ORM\Table(name="cars")
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CarsRepository")
+ */
+class Cars
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="plate", type="text", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="SEQUENCE")
+     * @ORM\SequenceGenerator(sequenceName="cars_plate_seq", allocationSize=1, initialValue=1)
+     */
+    private $plate;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="manufactures", type="text", nullable=false)
+     */
+    private $manufactures;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="model", type="text", nullable=false)
+     */
+    private $model;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="status", type="string", nullable=false)
+     */
+    private $status;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="number", type="integer", nullable=false)
+     */
+    private $number;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="active", type="boolean", nullable=true)
+     */
+    private $active = true;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="int_cleanliness", type="string", nullable=false)
+     */
+    private $intCleanliness;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ext_cleanliness", type="string", nullable=false)
+     */
+    private $extCleanliness;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="notes", type="text", nullable=true)
+     */
+    private $notes;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="longitude", type="decimal", precision=10, scale=0, nullable=false)
+     */
+    private $longitude;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="latitude", type="decimal", precision=10, scale=0, nullable=false)
+     */
+    private $latitude;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="damages", type="text", nullable=true)
+     */
+    private $damages;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="battery", type="integer", nullable=false)
+     */
+    private $battery;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="frame", type="text", nullable=true)
+     */
+    private $frame;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="location", type="string", nullable=false)
+     */
+    private $location;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="firmware_version", type="text", nullable=false)
+     */
+    private $firmwareVersion;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="software_version", type="text", nullable=false)
+     */
+    private $softwareVersion;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="mac", type="text", nullable=false)
+     */
+    private $mac;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="imei", type="text", nullable=false)
+     */
+    private $imei;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="last_contact", type="datetimetz", nullable=true)
+     */
+    private $lastContact;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="last_location_time", type="datetimetz", nullable=true)
+     */
+    private $lastLocationTime;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="busy", type="boolean", nullable=true)
+     */
+    private $busy = false;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="hidden", type="boolean", nullable=true)
+     */
+    private $hidden = false;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="rpm", type="integer", nullable=false)
+     */
+    private $rpm;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="speed", type="integer", nullable=false)
+     */
+    private $speed;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="obc_in_use", type="integer", nullable=false)
+     */
+    private $obcInUse;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="obc_wl_size", type="integer", nullable=false)
+     */
+    private $obcWlSize;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="km", type="integer", nullable=false)
+     */
+    private $km;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="running", type="boolean", nullable=true)
+     */
+    private $running = false;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="parking", type="boolean", nullable=true)
+     */
+    private $parking = false;
+
+
+
+    /**
+     * Get plate
+     *
+     * @return string
+     */
+    public function getPlate()
+    {
+        return $this->plate;
+    }
+
+    /**
+     * Set manufactures
+     *
+     * @param string $manufactures
+     *
+     * @return Cars
+     */
+    public function setManufactures($manufactures)
+    {
+        $this->manufactures = $manufactures;
+
+        return $this;
+    }
+
+    /**
+     * Get manufactures
+     *
+     * @return string
+     */
+    public function getManufactures()
+    {
+        return $this->manufactures;
+    }
+
+    /**
+     * Set model
+     *
+     * @param string $model
+     *
+     * @return Cars
+     */
+    public function setModel($model)
+    {
+        $this->model = $model;
+
+        return $this;
+    }
+
+    /**
+     * Get model
+     *
+     * @return string
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
+     * Set status
+     *
+     * @param string $status
+     *
+     * @return Cars
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set number
+     *
+     * @param integer $number
+     *
+     * @return Cars
+     */
+    public function setNumber($number)
+    {
+        $this->number = $number;
+
+        return $this;
+    }
+
+    /**
+     * Get number
+     *
+     * @return integer
+     */
+    public function getNumber()
+    {
+        return $this->number;
+    }
+
+    /**
+     * Set active
+     *
+     * @param boolean $active
+     *
+     * @return Cars
+     */
+    public function setActive($active)
+    {
+        $this->active = $active;
+
+        return $this;
+    }
+
+    /**
+     * Get active
+     *
+     * @return boolean
+     */
+    public function getActive()
+    {
+        return $this->active;
+    }
+
+    /**
+     * Set intCleanliness
+     *
+     * @param string $intCleanliness
+     *
+     * @return Cars
+     */
+    public function setIntCleanliness($intCleanliness)
+    {
+        $this->intCleanliness = $intCleanliness;
+
+        return $this;
+    }
+
+    /**
+     * Get intCleanliness
+     *
+     * @return string
+     */
+    public function getIntCleanliness()
+    {
+        return $this->intCleanliness;
+    }
+
+    /**
+     * Set extCleanliness
+     *
+     * @param string $extCleanliness
+     *
+     * @return Cars
+     */
+    public function setExtCleanliness($extCleanliness)
+    {
+        $this->extCleanliness = $extCleanliness;
+
+        return $this;
+    }
+
+    /**
+     * Get extCleanliness
+     *
+     * @return string
+     */
+    public function getExtCleanliness()
+    {
+        return $this->extCleanliness;
+    }
+
+    /**
+     * Set notes
+     *
+     * @param string $notes
+     *
+     * @return Cars
+     */
+    public function setNotes($notes)
+    {
+        $this->notes = $notes;
+
+        return $this;
+    }
+
+    /**
+     * Get notes
+     *
+     * @return string
+     */
+    public function getNotes()
+    {
+        return $this->notes;
+    }
+
+    /**
+     * Set longitude
+     *
+     * @param string $longitude
+     *
+     * @return Cars
+     */
+    public function setLongitude($longitude)
+    {
+        $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    /**
+     * Get longitude
+     *
+     * @return string
+     */
+    public function getLongitude()
+    {
+        return $this->longitude;
+    }
+
+    /**
+     * Set latitude
+     *
+     * @param string $latitude
+     *
+     * @return Cars
+     */
+    public function setLatitude($latitude)
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    /**
+     * Get latitude
+     *
+     * @return string
+     */
+    public function getLatitude()
+    {
+        return $this->latitude;
+    }
+
+    /**
+     * Set damages
+     *
+     * @param string $damages
+     *
+     * @return Cars
+     */
+    public function setDamages($damages)
+    {
+        $this->damages = $damages;
+
+        return $this;
+    }
+
+    /**
+     * Get damages
+     *
+     * @return string
+     */
+    public function getDamages()
+    {
+        return $this->damages;
+    }
+
+    /**
+     * Set battery
+     *
+     * @param integer $battery
+     *
+     * @return Cars
+     */
+    public function setBattery($battery)
+    {
+        $this->battery = $battery;
+
+        return $this;
+    }
+
+    /**
+     * Get battery
+     *
+     * @return integer
+     */
+    public function getBattery()
+    {
+        return $this->battery;
+    }
+
+    /**
+     * Set frame
+     *
+     * @param string $frame
+     *
+     * @return Cars
+     */
+    public function setFrame($frame)
+    {
+        $this->frame = $frame;
+
+        return $this;
+    }
+
+    /**
+     * Get frame
+     *
+     * @return string
+     */
+    public function getFrame()
+    {
+        return $this->frame;
+    }
+
+    /**
+     * Set location
+     *
+     * @param string $location
+     *
+     * @return Cars
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
+
+        return $this;
+    }
+
+    /**
+     * Get location
+     *
+     * @return string
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * Set firmwareVersion
+     *
+     * @param string $firmwareVersion
+     *
+     * @return Cars
+     */
+    public function setFirmwareVersion($firmwareVersion)
+    {
+        $this->firmwareVersion = $firmwareVersion;
+
+        return $this;
+    }
+
+    /**
+     * Get firmwareVersion
+     *
+     * @return string
+     */
+    public function getFirmwareVersion()
+    {
+        return $this->firmwareVersion;
+    }
+
+    /**
+     * Set softwareVersion
+     *
+     * @param string $softwareVersion
+     *
+     * @return Cars
+     */
+    public function setSoftwareVersion($softwareVersion)
+    {
+        $this->softwareVersion = $softwareVersion;
+
+        return $this;
+    }
+
+    /**
+     * Get softwareVersion
+     *
+     * @return string
+     */
+    public function getSoftwareVersion()
+    {
+        return $this->softwareVersion;
+    }
+
+    /**
+     * Set mac
+     *
+     * @param string $mac
+     *
+     * @return Cars
+     */
+    public function setMac($mac)
+    {
+        $this->mac = $mac;
+
+        return $this;
+    }
+
+    /**
+     * Get mac
+     *
+     * @return string
+     */
+    public function getMac()
+    {
+        return $this->mac;
+    }
+
+    /**
+     * Set imei
+     *
+     * @param string $imei
+     *
+     * @return Cars
+     */
+    public function setImei($imei)
+    {
+        $this->imei = $imei;
+
+        return $this;
+    }
+
+    /**
+     * Get imei
+     *
+     * @return string
+     */
+    public function getImei()
+    {
+        return $this->imei;
+    }
+
+    /**
+     * Set lastContact
+     *
+     * @param \DateTime $lastContact
+     *
+     * @return Cars
+     */
+    public function setLastContact($lastContact)
+    {
+        $this->lastContact = $lastContact;
+
+        return $this;
+    }
+
+    /**
+     * Get lastContact
+     *
+     * @return \DateTime
+     */
+    public function getLastContact()
+    {
+        return $this->lastContact;
+    }
+
+    /**
+     * Set lastLocationTime
+     *
+     * @param \DateTime $lastLocationTime
+     *
+     * @return Cars
+     */
+    public function setLastLocationTime($lastLocationTime)
+    {
+        $this->lastLocationTime = $lastLocationTime;
+
+        return $this;
+    }
+
+    /**
+     * Get lastLocationTime
+     *
+     * @return \DateTime
+     */
+    public function getLastLocationTime()
+    {
+        return $this->lastLocationTime;
+    }
+
+    /**
+     * Set busy
+     *
+     * @param boolean $busy
+     *
+     * @return Cars
+     */
+    public function setBusy($busy)
+    {
+        $this->busy = $busy;
+
+        return $this;
+    }
+
+    /**
+     * Get busy
+     *
+     * @return boolean
+     */
+    public function getBusy()
+    {
+        return $this->busy;
+    }
+
+    /**
+     * Set hidden
+     *
+     * @param boolean $hidden
+     *
+     * @return Cars
+     */
+    public function setHidden($hidden)
+    {
+        $this->hidden = $hidden;
+
+        return $this;
+    }
+
+    /**
+     * Get hidden
+     *
+     * @return boolean
+     */
+    public function getHidden()
+    {
+        return $this->hidden;
+    }
+
+    /**
+     * Set rpm
+     *
+     * @param integer $rpm
+     *
+     * @return Cars
+     */
+    public function setRpm($rpm)
+    {
+        $this->rpm = $rpm;
+
+        return $this;
+    }
+
+    /**
+     * Get rpm
+     *
+     * @return integer
+     */
+    public function getRpm()
+    {
+        return $this->rpm;
+    }
+
+    /**
+     * Set speed
+     *
+     * @param integer $speed
+     *
+     * @return Cars
+     */
+    public function setSpeed($speed)
+    {
+        $this->speed = $speed;
+
+        return $this;
+    }
+
+    /**
+     * Get speed
+     *
+     * @return integer
+     */
+    public function getSpeed()
+    {
+        return $this->speed;
+    }
+
+    /**
+     * Set obcInUse
+     *
+     * @param integer $obcInUse
+     *
+     * @return Cars
+     */
+    public function setObcInUse($obcInUse)
+    {
+        $this->obcInUse = $obcInUse;
+
+        return $this;
+    }
+
+    /**
+     * Get obcInUse
+     *
+     * @return integer
+     */
+    public function getObcInUse()
+    {
+        return $this->obcInUse;
+    }
+
+    /**
+     * Set obcWlSize
+     *
+     * @param integer $obcWlSize
+     *
+     * @return Cars
+     */
+    public function setObcWlSize($obcWlSize)
+    {
+        $this->obcWlSize = $obcWlSize;
+
+        return $this;
+    }
+
+    /**
+     * Get obcWlSize
+     *
+     * @return integer
+     */
+    public function getObcWlSize()
+    {
+        return $this->obcWlSize;
+    }
+
+    /**
+     * Set km
+     *
+     * @param integer $km
+     *
+     * @return Cars
+     */
+    public function setKm($km)
+    {
+        $this->km = $km;
+
+        return $this;
+    }
+
+    /**
+     * Get km
+     *
+     * @return integer
+     */
+    public function getKm()
+    {
+        return $this->km;
+    }
+
+    /**
+     * Set running
+     *
+     * @param boolean $running
+     *
+     * @return Cars
+     */
+    public function setRunning($running)
+    {
+        $this->running = $running;
+
+        return $this;
+    }
+
+    /**
+     * Get running
+     *
+     * @return boolean
+     */
+    public function getRunning()
+    {
+        return $this->running;
+    }
+
+    /**
+     * Set parking
+     *
+     * @param boolean $parking
+     *
+     * @return Cars
+     */
+    public function setParking($parking)
+    {
+        $this->parking = $parking;
+
+        return $this;
+    }
+
+    /**
+     * Get parking
+     *
+     * @return boolean
+     */
+    public function getParking()
+    {
+        return $this->parking;
+    }
+}
