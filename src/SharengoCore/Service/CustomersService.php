@@ -38,9 +38,7 @@ class CustomersService
 
     public function findByEmail($email)
     {
-        return $this->clientRepository->findBy([
-            'email' => $email
-        ]);
+        return $this->clientRepository->findByCI('email', $email);
     }
 
     public function findById($id)
@@ -52,9 +50,7 @@ class CustomersService
 
     public function findByTaxCode($taxCode)
     {
-        return $this->clientRepository->findBy([
-            'taxCode' => $taxCode
-        ]);
+        return $this->clientRepository->findBy('taxCode', $taxCode);
     }
 
     public function findByDriversLicense($driversLicense)
