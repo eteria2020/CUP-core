@@ -50,7 +50,7 @@ class CustomersService
 
     public function findByTaxCode($taxCode)
     {
-        return $this->clientRepository->findBy('taxCode', $taxCode);
+        return $this->clientRepository->findByCI('taxCode', $taxCode);
     }
 
     public function findByDriversLicense($driversLicense)
@@ -58,8 +58,8 @@ class CustomersService
         return $this->clientRepository->findByCI('driverLicense', $driversLicense);
     }
 
-    public function confirmFirstPaymentCompleted(Customers $customer) {
-
+    public function confirmFirstPaymentCompleted(Customers $customer)
+    {
         $customer->setFirstPaymentCompleted(true);
 
         $this->entityManager->persist($customer);
