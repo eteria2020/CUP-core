@@ -50,7 +50,7 @@ class CustomersService
 
     public function findByTaxCode($taxCode)
     {
-        return $this->clientRepository->findBy('taxCode', $taxCode);
+        return $this->clientRepository->findBy(['taxCode' => $taxCode]);
     }
 
     public function findByDriversLicense($driversLicense)
