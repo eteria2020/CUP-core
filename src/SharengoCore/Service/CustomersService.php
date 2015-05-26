@@ -7,6 +7,9 @@ use SharengoCore\Entity\Customers;
 
 class CustomersService
 {
+    private $validatorEmail;
+
+    private $validatorTaxCode;
 
     private $entityManager;
 
@@ -30,10 +33,14 @@ class CustomersService
         return $this->clientRepository->findAll();
     }
 
+    public function getTotalCustomers()
+    {
+        return $this->clientRepository->getTotalCustomers();
+    }
+
     public function getUserByEmailPassword($s_username, $s_password)
     {
         return $this->clientRepository->getUserByEmailPassword($s_username, $s_password);
-
     }
 
     public function findByEmail($email)
@@ -50,7 +57,9 @@ class CustomersService
 
     public function findByTaxCode($taxCode)
     {
-        return $this->clientRepository->findBy('taxCode', $taxCode);
+        return $this->clientRepository->findBy([
+            'taxCode' => $taxCode
+        ]);
     }
 
     public function findByDriversLicense($driversLicense)
@@ -58,7 +67,8 @@ class CustomersService
         return $this->clientRepository->findByCI('driverLicense', $driversLicense);
     }
 
-    public function confirmFirstPaymentCompleted(Customers $customer) {
+    public function confirmFirstPaymentCompleted(Customers $customer)
+    {
 
         $customer->setFirstPaymentCompleted(true);
 
@@ -67,13 +77,82 @@ class CustomersService
 
     }
 
-    public function setCustomerDiscountRate(Customers $customer, $discount) {
+    public function setCustomerDiscountRate(Customers $customer, $discount)
+    {
 
         $customer->setDiscountRate($discount);
 
         $this->entityManager->persist($customer);
         $this->entityManager->flush($customer);
-        
+
     }
 
+    public function getDataDataTable(array $as_filters = [])
+    {
+
+        $ai_customers = $this->clientRepository->getDataTableCustomers(array(
+                'limit'      => $as_filters['iDisplayLength'],
+                'offset'     => $as_filters['iDisplayStart'],
+                'column'     => $as_filters['column'],
+                'columnSort' => $as_filters['iSortCol_0'],
+                'order'      => $as_filters['sSortDir_0'],
+                'search'     => $as_filters['searchValue'],
+                'withLimit'  => $as_filters['withLimit']
+            )
+        );
+
+        $as_data = array();
+
+        /** @var Customers $I_customer */
+        foreach ($ai_customers as $I_customer) {
+
+            $as_data[] = array(
+                'id'                  => $I_customer->getId(),
+                'name'                => $I_customer->getName(),
+                'surname'             => $I_customer->getSurname(),
+                'mobile'              => $I_customer->getMobile(),
+                'cardCode'            => $I_customer->getCardCode(),
+                'driverLicense'       => $I_customer->getDriverLicense(),
+                'driverLicenseExpire' => is_object($I_customer->getDriverLicenseExpire()) ? $I_customer->getDriverLicenseExpire()->format('d-m-Y') : '',
+                'email'               => $I_customer->getEmail(),
+                'taxCode'             => $I_customer->getTaxCode(),
+                'registration'        => $I_customer->getRegistrationCompleted() ? 'Completata' : 'Non Completata',
+                'button'              => $I_customer->getId()
+            );
+        }
+
+        return $as_data;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValidatorEmail()
+    {
+        return $this->validatorEmail;
+    }
+
+    /**
+     * @param mixed $validatorEmail
+     */
+    public function setValidatorEmail($validatorEmail)
+    {
+        $this->validatorEmail = $validatorEmail;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValidatorTaxCode()
+    {
+        return $this->validatorTaxCode;
+    }
+
+    /**
+     * @param mixed $validatorTaxCode
+     */
+    public function setValidatorTaxCode($validatorTaxCode)
+    {
+        $this->validatorTaxCode = $validatorTaxCode;
+    }
 }

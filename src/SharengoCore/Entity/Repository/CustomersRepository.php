@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity\Repository;
 
+use SharengoCore\Entity\Customers;
+
 /**
  * CustomersRepository
  *
@@ -17,5 +19,49 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('value', $value);
 
         return $query->getResult();
+    }
+
+    public function getTotalCustomers()
+    {
+        $em = $this->getEntityManager();
+        $query = $em->createQuery('SELECT COUNT(c.id) FROM \SharengoCore\Entity\Customers c');
+        return $query->getSingleScalarResult();
+    }
+
+    public function getDataTableCustomers(array $as_filters = []) {
+
+        $I_query = $this->prepareQueryBuilder();
+
+        if ($as_filters['column'] != 'select' &&
+            !empty($as_filters['search']) &&
+            !empty($as_filters['column'])
+        ) {
+
+            if ($as_filters['column'] == 'id') {
+                $I_query->where('c.id = :id')->setParameter('id', (int)$as_filters['search']);
+            } else {
+                $value = strtolower("%" . $as_filters['search'] . "%");
+                $I_query->where("LOWER(c." . $as_filters['column'] . ") LIKE :value")->setParameter('value', $value);
+            }
+        }
+
+        $column = Customers::getColumnFromDatatable($as_filters['columnSort']);
+        $I_query->orderBy('c.' . $column . '', $as_filters['order']);
+
+        if ($as_filters['withLimit']) {
+            $I_query->setFirstResult($as_filters['offset']);
+            $I_query->setMaxResults($as_filters['limit']);
+        }
+
+        $query = $I_query->getQuery();
+        return $query->getResult();
+    }
+
+    private function prepareQueryBuilder()
+    {
+        $I_query = $this->createQueryBuilder('c');
+        $I_query->select('c');
+
+        return $I_query;
     }
 }

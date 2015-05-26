@@ -1214,4 +1214,32 @@ class Customers
     {
         return $this->discountRate;
     }
+
+    /**
+     * @return array
+     */
+    static function getMappingColumnDatatable()
+    {
+        return array(
+            0 => 'id',
+            1 => 'name',
+            2 => 'surname',
+            3 => 'mobile',
+            4 => 'cardCode',
+            5 => 'driverLicense',
+            6 => 'driverLicenseExpire',
+            7 => 'email',
+            8 => 'taxCode',
+        );
+    }
+
+    /**
+     * @param $i_id
+     * @return mixed
+     */
+    static function getColumnFromDatatable($i_id)
+    {
+        $as_mapping = self::getMappingColumnDatatable();
+        return $as_mapping[$i_id];
+    }
 }
