@@ -284,6 +284,13 @@ class Customers
     /**
      * @var integer
      *
+     * @ORM\Column(name="reprofiling_option", type="integer", options={"default"=0})
+     */
+    private $reprofilingOption = 0;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="discount_rate", type="integer", nullable=true)
      */
     private $discountRate;
@@ -1213,5 +1220,29 @@ class Customers
     public function getDiscountRate()
     {
         return $this->discountRate;
+    }
+
+    /**
+     * Set reprofilingOption
+     *
+     * @param integer $reprofilingOption
+     *
+     * @return Customers
+     */
+    public function setReprofilingOption($reprofilingOption)
+    {
+        $this->reprofilingOption = $reprofilingOption;
+
+        return $this;
+    }
+
+    /**
+     * Get reprofilingOption
+     *
+     * @return integer
+     */
+    public function getReprofilingOption()
+    {
+        return $this->reprofilingOption;
     }
 }

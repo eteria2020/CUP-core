@@ -73,7 +73,16 @@ class CustomersService
 
         $this->entityManager->persist($customer);
         $this->entityManager->flush($customer);
-        
     }
 
+    public function setCustomerReprofilingOption(Customers $customer, $option)
+    {
+        $customer->setReprofilingOption($option);
+
+        $customer = $this->entityManager->merge($customer);
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush($customer);
+
+        return $customer;
+    }
 }
