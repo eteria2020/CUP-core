@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Customers;
 
+use Zend\Authentication\AuthenticationService as UserService;
 
 class CustomersService
 {
@@ -13,13 +14,20 @@ class CustomersService
     private $clientRepository;
 
     /**
+     * @var UserService
+     */
+    private $userService;
+
+    /**
      * @param $entityManager
      */
-    public function __construct($entityManager)
+    public function __construct($entityManager, UserService $userService)
     {
         $this->entityManager = $entityManager;
 
         $this->clientRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Customers');
+
+        $this->userService = $userService;
     }
 
     /**
@@ -58,6 +66,8 @@ class CustomersService
         return $this->clientRepository->findByCI('driverLicense', $driversLicense);
     }
 
+    // the following methods have all the same structure, it stinks... need to refactor
+
     public function confirmFirstPaymentCompleted(Customers $customer)
     {
         $customer->setFirstPaymentCompleted(true);
@@ -65,6 +75,8 @@ class CustomersService
         $this->entityManager->persist($customer);
         $this->entityManager->flush($customer);
 
+        // updates the identity in session
+        $this->userService->getStorage()->write($customer);
     }
 
     public function setCustomerDiscountRate(Customers $customer, $discount) {
@@ -73,6 +85,9 @@ class CustomersService
 
         $this->entityManager->persist($customer);
         $this->entityManager->flush($customer);
+
+        // updates the identity in session
+        $this->userService->getStorage()->write($customer);
     }
 
     public function setCustomerReprofilingOption(Customers $customer, $option)
@@ -82,6 +97,22 @@ class CustomersService
         $customer = $this->entityManager->merge($customer);
         $this->entityManager->persist($customer);
         $this->entityManager->flush($customer);
+
+        // updates the identity in session
+        $this->userService->getStorage()->write($customer);
+
+        return $customer;
+    }
+
+    public function increaseCustomerProfilingCounter(Customers $customer)
+    {
+        $customer->setProfilingCounter($customer->getProfilingCounter() + 1);
+
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush($customer);
+
+        // updates the identity in session
+        $this->userService->getStorage()->write($customer);
 
         return $customer;
     }
