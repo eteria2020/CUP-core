@@ -295,6 +295,13 @@ class Customers
      */
     private $discountRate;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="profiling_counter", type="integer", options={"default"=0})
+     */
+    private $profilingCounter = 0;
+
     public function toArray()
     {
         return get_object_vars($this);
@@ -1244,5 +1251,29 @@ class Customers
     public function getReprofilingOption()
     {
         return $this->reprofilingOption;
+    }
+
+    /**
+     * Set profilingCounter
+     *
+     * @param integer $profilingCounter
+     *
+     * @return Customers
+     */
+    public function setProfilingCounter($profilingCounter)
+    {
+        $this->profilingCounter = $profilingCounter;
+
+        return $this;
+    }
+
+    /**
+     * Get profilingCounter
+     *
+     * @return integer
+     */
+    public function getProfilingCounter()
+    {
+        return $this->profilingCounter;
     }
 }
