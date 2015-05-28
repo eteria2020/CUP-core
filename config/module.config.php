@@ -8,7 +8,8 @@ return [
             'SharengoCore\Service\CustomersService' => 'SharengoCore\Service\CustomersServiceFactory',
             'SharengoCore\Service\CountriesService' => 'SharengoCore\Service\CountriesServiceFactory',
             'SharengoCore\Service\ProvincesService' => 'SharengoCore\Service\ProvincesServiceFactory',
-            'SharengoCore\Service\UsersService'     => 'SharengoCore\Service\UsersServiceFactory'
+            'SharengoCore\Service\UsersService'     => 'SharengoCore\Service\UsersServiceFactory',
+            'SharengoCore\Service\AuthorityService' => 'SharengoCore\Service\AuthorityServiceFactory',
         ]
     ],
     'doctrine'        => [

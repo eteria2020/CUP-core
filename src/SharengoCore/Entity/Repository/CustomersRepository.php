@@ -21,6 +21,21 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    public function getUserByEmailPassword($s_username, $s_password)
+    {
+        $s_query =  'SELECT c ' .
+            'FROM \SharengoCore\Entity\Customers c ' .
+            'WHERE c.email = :user ' .
+            'AND c.password = :password ' .
+            'AND c.registrationCompleted = true';
+
+        $I_query = $this->getEntityManager()->createQuery($s_query);
+        $I_query->setParameter('user', $s_username);
+        $I_query->setParameter('password', $s_password);
+
+        return $I_query->getOneOrNullResult();
+    }
+
     public function getTotalCustomers()
     {
         $em = $this->getEntityManager();
