@@ -3,6 +3,7 @@
 namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Customers;
+use SharengoCore\Service\DatatableService;
 
 use Zend\Authentication\AuthenticationService as UserService;
 
@@ -22,15 +23,22 @@ class CustomersService
     private $userService;
 
     /**
+     * @var DatatableService
+     */
+    private $datatableService;
+
+    /**
      * @param $entityManager
      */
-    public function __construct($entityManager, UserService $userService)
+    public function __construct($entityManager, UserService $userService, DatatableService $datatableService)
     {
         $this->entityManager = $entityManager;
 
         $this->clientRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Customers');
 
         $this->userService = $userService;
+
+        $this->datatableService = $datatableService;
     }
 
     /**
@@ -127,38 +135,23 @@ class CustomersService
     public function getDataDataTable(array $as_filters = [])
     {
 
-        $ai_customers = $this->clientRepository->getDataTableCustomers(array(
-                'limit'      => $as_filters['iDisplayLength'],
-                'offset'     => $as_filters['iDisplayStart'],
-                'column'     => $as_filters['column'],
-                'columnSort' => $as_filters['iSortCol_0'],
-                'order'      => $as_filters['sSortDir_0'],
-                'search'     => $as_filters['searchValue'],
-                'withLimit'  => $as_filters['withLimit']
-            )
-        );
+        $customers = $this->datatableService->getData('Customers', $as_filters);
 
-        $as_data = array();
-
-        /** @var Customers $I_customer */
-        foreach ($ai_customers as $I_customer) {
-
-            $as_data[] = array(
-                'id'                  => $I_customer->getId(),
-                'name'                => $I_customer->getName(),
-                'surname'             => $I_customer->getSurname(),
-                'mobile'              => $I_customer->getMobile(),
-                'cardCode'            => $I_customer->getCardCode(),
-                'driverLicense'       => $I_customer->getDriverLicense(),
-                'driverLicenseExpire' => is_object($I_customer->getDriverLicenseExpire()) ? $I_customer->getDriverLicenseExpire()->format('d-m-Y') : '',
-                'email'               => $I_customer->getEmail(),
-                'taxCode'             => $I_customer->getTaxCode(),
-                'registration'        => $I_customer->getRegistrationCompleted() ? 'Completata' : 'Non Completata',
-                'button'              => $I_customer->getId()
-            );
-        }
-
-        return $as_data;
+        return array_map(function (Customers $customer) {
+            return [
+                'id'                  => $customer->getId(),
+                'name'                => $customer->getName(),
+                'surname'             => $customer->getSurname(),
+                'mobile'              => $customer->getMobile(),
+                'cardCode'            => $customer->getCardCode(),
+                'driverLicense'       => $customer->getDriverLicense(),
+                'driverLicenseExpire' => is_object($customer->getDriverLicenseExpire()) ? $customer->getDriverLicenseExpire()->format('d-m-Y') : '',
+                'email'               => $customer->getEmail(),
+                'taxCode'             => $customer->getTaxCode(),
+                'registration'        => $customer->getRegistrationCompleted() ? 'Completata' : 'Non Completata',
+                'button'              => $customer->getId()
+            ];
+        }, $customers);
     }
 
     /**
