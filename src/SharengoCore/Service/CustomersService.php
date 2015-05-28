@@ -3,11 +3,15 @@
 namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Customers;
+use SharengoCore\Service\DatatableService;
 
 use Zend\Authentication\AuthenticationService as UserService;
 
 class CustomersService
 {
+    private $validatorEmail;
+
+    private $validatorTaxCode;
 
     private $entityManager;
 
@@ -19,15 +23,22 @@ class CustomersService
     private $userService;
 
     /**
+     * @var DatatableService
+     */
+    private $datatableService;
+
+    /**
      * @param $entityManager
      */
-    public function __construct($entityManager, UserService $userService)
+    public function __construct($entityManager, UserService $userService, DatatableService $datatableService)
     {
         $this->entityManager = $entityManager;
 
         $this->clientRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Customers');
 
         $this->userService = $userService;
+
+        $this->datatableService = $datatableService;
     }
 
     /**
@@ -38,10 +49,14 @@ class CustomersService
         return $this->clientRepository->findAll();
     }
 
+    public function getTotalCustomers()
+    {
+        return $this->clientRepository->getTotalCustomers();
+    }
+
     public function getUserByEmailPassword($s_username, $s_password)
     {
         return $this->clientRepository->getUserByEmailPassword($s_username, $s_password);
-
     }
 
     public function findByEmail($email)
@@ -115,5 +130,59 @@ class CustomersService
         $this->userService->getStorage()->write($customer);
 
         return $customer;
+    }
+
+    public function getDataDataTable(array $as_filters = [])
+    {
+
+        $customers = $this->datatableService->getData('Customers', $as_filters);
+
+        return array_map(function (Customers $customer) {
+            return [
+                'id'                  => $customer->getId(),
+                'name'                => $customer->getName(),
+                'surname'             => $customer->getSurname(),
+                'mobile'              => $customer->getMobile(),
+                'cardCode'            => $customer->getCardCode(),
+                'driverLicense'       => $customer->getDriverLicense(),
+                'driverLicenseExpire' => is_object($customer->getDriverLicenseExpire()) ? $customer->getDriverLicenseExpire()->format('d-m-Y') : '',
+                'email'               => $customer->getEmail(),
+                'taxCode'             => $customer->getTaxCode(),
+                'registration'        => $customer->getRegistrationCompleted() ? 'Completata' : 'Non Completata',
+                'button'              => $customer->getId()
+            ];
+        }, $customers);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValidatorEmail()
+    {
+        return $this->validatorEmail;
+    }
+
+    /**
+     * @param mixed $validatorEmail
+     */
+    public function setValidatorEmail($validatorEmail)
+    {
+        $this->validatorEmail = $validatorEmail;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValidatorTaxCode()
+    {
+        return $this->validatorTaxCode;
+    }
+
+    /**
+     * @param mixed $validatorTaxCode
+     */
+    public function setValidatorTaxCode($validatorTaxCode)
+    {
+        $this->validatorTaxCode = $validatorTaxCode;
     }
 }

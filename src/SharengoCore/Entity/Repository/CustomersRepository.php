@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity\Repository;
 
+use SharengoCore\Entity\Customers;
+
 /**
  * CustomersRepository
  *
@@ -22,15 +24,22 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
     public function getUserByEmailPassword($s_username, $s_password)
     {
         $s_query =  'SELECT c ' .
-                    'FROM \SharengoCore\Entity\Customers c ' .
-                    'WHERE c.email = :user ' .
-                    'AND c.password = :password ' .
-                    'AND c.registrationCompleted = true';
+            'FROM \SharengoCore\Entity\Customers c ' .
+            'WHERE c.email = :user ' .
+            'AND c.password = :password ' .
+            'AND c.registrationCompleted = true';
 
         $I_query = $this->getEntityManager()->createQuery($s_query);
         $I_query->setParameter('user', $s_username);
         $I_query->setParameter('password', $s_password);
 
         return $I_query->getOneOrNullResult();
+    }
+
+    public function getTotalCustomers()
+    {
+        $em = $this->getEntityManager();
+        $query = $em->createQuery('SELECT COUNT(c.id) FROM \SharengoCore\Entity\Customers c');
+        return $query->getSingleScalarResult();
     }
 }
