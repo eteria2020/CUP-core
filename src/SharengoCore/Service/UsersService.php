@@ -5,7 +5,7 @@ namespace SharengoCore\Service;
 use ZfcUserDoctrineORM\Entity\User;
 
 
-class UsersService
+class UsersService implements ServiceInterface
 {
     private $entityManager;
 
