@@ -2,27 +2,21 @@
 
 namespace SharengoCore\Service;
 
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\Entity;
 use SharengoCore\Entity\Repository\TripsRepository;
 
 class TripsService
 {
-    /**
-     * @var Entity
-     */
-    private $entityManager;
-
     /** @var TripsRepository */
     private $tripRepository;
 
     /**
-     * @param $entityManager
+     * @param EntityRepository $tripRepository
      */
-    public function __construct($entityManager)
+    public function __construct($tripRepository)
     {
-        $this->entityManager = $entityManager;
-
-        $this->tripRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Trips');
+        $this->tripRepository = $tripRepository;
     }
 
     /**
