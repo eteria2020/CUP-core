@@ -10,6 +10,7 @@ return [
             'SharengoCore\Service\ProvincesService' => 'SharengoCore\Service\ProvincesServiceFactory',
             'SharengoCore\Service\UsersService'     => 'SharengoCore\Service\UsersServiceFactory',
             'SharengoCore\Service\AuthorityService' => 'SharengoCore\Service\AuthorityServiceFactory',
+            'SharengoCore\Service\TripsService'     => 'SharengoCore\Service\TripsServiceFactory',
             'SharengoCore\Service\DatatableService' => 'SharengoCore\Service\DatatableServiceFactory',
         ]
     ],

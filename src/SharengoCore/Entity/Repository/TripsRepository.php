@@ -10,4 +10,12 @@ namespace SharengoCore\Entity\Repository;
  */
 class TripsRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findTripsByCustomer($customerId)
+    {
+        $em = $this->getEntityManager();
+        $query = $em->createQuery("SELECT t FROM \SharengoCore\Entity\Trips t WHERE t.customerId = :id");
+        $query->setParameter('id', $customerId);
+
+        return $query->getResult();
+    }
 }
