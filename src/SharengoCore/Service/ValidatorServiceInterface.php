@@ -2,7 +2,7 @@
 
 namespace SharengoCore\Service;
 
-interface ServiceInterface
+interface ValidatorServiceInterface
 {
     public function findByEmail($email);
 }

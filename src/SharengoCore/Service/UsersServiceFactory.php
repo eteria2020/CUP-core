@@ -11,7 +11,8 @@ class UsersServiceFactory implements FactoryInterface
     {
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
+        $I_options = $serviceLocator->get('zfcuser_module_options');
 
-        return new UsersService($entityManager);
+        return new UsersService($entityManager, $I_options);
     }
 }

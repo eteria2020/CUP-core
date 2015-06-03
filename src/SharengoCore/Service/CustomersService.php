@@ -7,7 +7,7 @@ use SharengoCore\Service\DatatableService;
 
 use Zend\Authentication\AuthenticationService as UserService;
 
-class CustomersService implements ServiceInterface
+class CustomersService implements ValidatorServiceInterface
 {
     private $validatorEmail;
 
