@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Trips
  *
- * @ORM\Table(name="trips")
+ * @ORM\Table(name="trips", indexes={@ORM\Index(name="IDX_AA7370DAAE35528C", columns={"car_plate"}), @ORM\Index(name="IDX_AA7370DA9395C3F3", columns={"customer_id"})})
  * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\TripsRepository")
  */
 class Trips
@@ -21,20 +21,6 @@ class Trips
      * @ORM\SequenceGenerator(sequenceName="trips_id_seq", allocationSize=1, initialValue=1)
      */
     private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="car_plate", type="text", nullable=false)
-     */
-    private $carPlate;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="customer_id", type="integer", nullable=false)
-     */
-    private $customerId;
 
     /**
      * @var \DateTime
@@ -177,6 +163,28 @@ class Trips
     private $vatCent;
 
     /**
+     * @var \Cars
+     *
+     * @ORM\ManyToOne(targetEntity="Cars")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="car_plate", referencedColumnName="plate")
+     * })
+     */
+    private $carPlate;
+
+    /**
+     * @var \Customers
+     *
+     * @ORM\ManyToOne(targetEntity="Customers")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
+     * })
+     */
+    private $customer;
+
+
+
+    /**
      * Get id
      *
      * @return integer
@@ -184,54 +192,6 @@ class Trips
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set carPlate
-     *
-     * @param string $carPlate
-     *
-     * @return Trips
-     */
-    public function setCarPlate($carPlate)
-    {
-        $this->carPlate = $carPlate;
-
-        return $this;
-    }
-
-    /**
-     * Get carPlate
-     *
-     * @return string
-     */
-    public function getCarPlate()
-    {
-        return $this->carPlate;
-    }
-
-    /**
-     * Set customerId
-     *
-     * @param integer $customerId
-     *
-     * @return Trips
-     */
-    public function setCustomerId($customerId)
-    {
-        $this->customerId = $customerId;
-
-        return $this;
-    }
-
-    /**
-     * Get customerId
-     *
-     * @return integer
-     */
-    public function getCustomerId()
-    {
-        return $this->customerId;
     }
 
     /**
@@ -667,6 +627,20 @@ class Trips
     }
 
     /**
+     * Set priceCent
+     *
+     * @param integer $priceCent
+     *
+     * @return Trips
+     */
+    public function setPriceCent($priceCent)
+    {
+        $this->priceCent = $priceCent;
+
+        return $this;
+    }
+
+    /**
      * Get priceCent
      *
      * @return integer
@@ -677,15 +651,15 @@ class Trips
     }
 
     /**
-     * Set priceCent
+     * Set vatCent
      *
-     * @param integer $priceCent
+     * @param integer $vatCent
      *
      * @return Trips
      */
-    public function setPriceCent($priceCent)
+    public function setVatCent($vatCent)
     {
-        $this->priceCent = $priceCent;
+        $this->vatCent = $vatCent;
 
         return $this;
     }
@@ -701,16 +675,50 @@ class Trips
     }
 
     /**
-     * Set vatCent
+     * Set carPlate
      *
-     * @param integer $vatCent
+     * @param \SharengoCore\Entity\Cars $carPlate
      *
      * @return Trips
      */
-    public function setVatCent($vatCent)
+    public function setCarPlate(\SharengoCore\Entity\Cars $carPlate = null)
     {
-        $this->vatCent = $vatCent;
+        $this->carPlate = $carPlate;
 
         return $this;
+    }
+
+    /**
+     * Get carPlate
+     *
+     * @return \SharengoCore\Entity\Cars
+     */
+    public function getCarPlate()
+    {
+        return $this->carPlate;
+    }
+
+    /**
+     * Set customer
+     *
+     * @param \SharengoCore\Entity\Customers $customer
+     *
+     * @return Trips
+     */
+    public function setCustomer(\SharengoCore\Entity\Customers $customer = null)
+    {
+        $this->customer = $customer;
+
+        return $this;
+    }
+
+    /**
+     * Get customer
+     *
+     * @return \SharengoCore\Entity\Customers
+     */
+    public function getCustomer()
+    {
+        return $this->customer;
     }
 }
