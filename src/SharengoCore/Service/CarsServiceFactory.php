@@ -14,6 +14,6 @@ class CarsServiceFactory implements FactoryInterface
         $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
         $carsRepository = $entityManager->getRepository('\SharengoCore\Entity\Cars');
 
-        return new CarsService($carsRepository, $datatableService);
+        return new CarsService($entityManager, $carsRepository, $datatableService);
     }
 }
