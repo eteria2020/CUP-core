@@ -68,23 +68,9 @@ class CarsService
     public function saveData(Cars $cars, $defaultData = true)
     {
         if($defaultData) {
-            $cars->setStatus('operative');
             $cars->setIntCleanliness('clean');
             $cars->setExtCleanliness('clean');
-            $cars->setNumber(0);
-            $cars->setKm(0);
-            $cars->setLatitude(0);
-            $cars->setLongitude(0);
-            $cars->setBattery(0);
-            $cars->setLocation('POINT(0 0)');
-            $cars->setMac('');
-            $cars->setImei('');
-            $cars->setRpm(0);
-            $cars->setSpeed(0);
-            $cars->setFirmwareVersion('');
-            $cars->setSoftwareVersion('');
-            $cars->setObcInUse(0);
-            $cars->setObcWlSize(0);
+            $cars->setStatus('operative');
         }
 
         $this->entityManager->persist($cars);

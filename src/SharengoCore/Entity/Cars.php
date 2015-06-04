@@ -24,30 +24,23 @@ class Cars
     /**
      * @var string
      *
-     * @ORM\Column(name="manufactures", type="text", nullable=false)
+     * @ORM\Column(name="manufactures", type="text", nullable=true)
      */
     private $manufactures;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="model", type="text", nullable=false)
+     * @ORM\Column(name="model", type="text", nullable=true)
      */
     private $model;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="status", type="string", nullable=false)
+     * @ORM\Column(name="label", type="text", nullable=false)
      */
-    private $status;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="number", type="integer", nullable=false)
-     */
-    private $number;
+    private $label = '0';
 
     /**
      * @var boolean
@@ -61,14 +54,14 @@ class Cars
      *
      * @ORM\Column(name="int_cleanliness", type="string", nullable=false)
      */
-    private $intCleanliness;
+    private $intCleanliness = 'clean';
 
     /**
      * @var string
      *
      * @ORM\Column(name="ext_cleanliness", type="string", nullable=false)
      */
-    private $extCleanliness;
+    private $extCleanliness = 'clean';
 
     /**
      * @var string
@@ -80,14 +73,14 @@ class Cars
     /**
      * @var string
      *
-     * @ORM\Column(name="longitude", type="decimal", precision=10, scale=0, nullable=false)
+     * @ORM\Column(name="longitude", type="decimal", precision=10, scale=0, nullable=true)
      */
     private $longitude;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="latitude", type="decimal", precision=10, scale=0, nullable=false)
+     * @ORM\Column(name="latitude", type="decimal", precision=10, scale=0, nullable=true)
      */
     private $latitude;
 
@@ -103,7 +96,7 @@ class Cars
      *
      * @ORM\Column(name="battery", type="integer", nullable=false)
      */
-    private $battery;
+    private $battery = '0';
 
     /**
      * @var string
@@ -115,35 +108,35 @@ class Cars
     /**
      * @var string
      *
-     * @ORM\Column(name="location", type="string", nullable=false)
+     * @ORM\Column(name="location", type="string", nullable=true)
      */
     private $location;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="firmware_version", type="text", nullable=false)
+     * @ORM\Column(name="firmware_version", type="text", nullable=true)
      */
     private $firmwareVersion;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="software_version", type="text", nullable=false)
+     * @ORM\Column(name="software_version", type="text", nullable=true)
      */
     private $softwareVersion;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="mac", type="text", nullable=false)
+     * @ORM\Column(name="mac", type="text", nullable=true)
      */
     private $mac;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="imei", type="text", nullable=false)
+     * @ORM\Column(name="imei", type="text", nullable=true)
      */
     private $imei;
 
@@ -180,35 +173,35 @@ class Cars
      *
      * @ORM\Column(name="rpm", type="integer", nullable=false)
      */
-    private $rpm;
+    private $rpm = '0';
 
     /**
      * @var integer
      *
      * @ORM\Column(name="speed", type="integer", nullable=false)
      */
-    private $speed;
+    private $speed = '0';
 
     /**
      * @var integer
      *
      * @ORM\Column(name="obc_in_use", type="integer", nullable=false)
      */
-    private $obcInUse;
+    private $obcInUse = '0';
 
     /**
      * @var integer
      *
      * @ORM\Column(name="obc_wl_size", type="integer", nullable=false)
      */
-    private $obcWlSize;
+    private $obcWlSize = '0';
 
     /**
      * @var integer
      *
      * @ORM\Column(name="km", type="integer", nullable=false)
      */
-    private $km;
+    private $km = '0';
 
     /**
      * @var boolean
@@ -223,6 +216,15 @@ class Cars
      * @ORM\Column(name="parking", type="boolean", nullable=true)
      */
     private $parking = false;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="status", type="string", nullable=true)
+     */
+    private $status = 'maintenance';
+
+
 
     /**
      * Get plate
@@ -293,51 +295,27 @@ class Cars
     }
 
     /**
-     * Set status
+     * Set label
      *
-     * @param string $status
+     * @param string $label
      *
      * @return Cars
      */
-    public function setStatus($status)
+    public function setLabel($label)
     {
-        $this->status = $status;
+        $this->label = $label;
 
         return $this;
     }
 
     /**
-     * Get status
+     * Get label
      *
      * @return string
      */
-    public function getStatus()
+    public function getLabel()
     {
-        return $this->status;
-    }
-
-    /**
-     * Set number
-     *
-     * @param integer $number
-     *
-     * @return Cars
-     */
-    public function setNumber($number)
-    {
-        $this->number = $number;
-
-        return $this;
-    }
-
-    /**
-     * Get number
-     *
-     * @return integer
-     */
-    public function getNumber()
-    {
-        return $this->number;
+        return $this->label;
     }
 
     /**
@@ -938,5 +916,29 @@ class Cars
     public function getParking()
     {
         return $this->parking;
+    }
+
+    /**
+     * Set status
+     *
+     * @param string $status
+     *
+     * @return Cars
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
     }
 }

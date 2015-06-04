@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Customers
  *
- * @ORM\Table(name="customers")
+ * @ORM\Table(name="customers", uniqueConstraints={@ORM\UniqueConstraint(name="email_uk", columns={"email"}), @ORM\UniqueConstraint(name="tax_code_uk", columns={"tax_code"})})
  * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CustomersRepository")
  */
 class Customers
@@ -184,39 +184,11 @@ class Customers
     private $driverLicenseCategories;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="driver_license_authority", type="string", nullable=true)
-     */
-    private $driverLicenseAuthority;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="driver_license_country", type="string", length=2, nullable=true)
-     */
-    private $driverLicenseCountry;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="driver_license_release_date", type="date", nullable=true)
-     */
-    private $driverLicenseReleaseDate;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(name="driver_license_expire", type="date", nullable=true)
      */
     private $driverLicenseExpire;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="driver_license_name", type="string", nullable=true)
-     */
-    private $driverLicenseName;
 
     /**
      * @var string
@@ -242,7 +214,7 @@ class Customers
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="inserted_ts", type="datetimetz", nullable=true)
+     * @ORM\Column(name="inserted_ts", type="datetime", nullable=true)
      */
     private $insertedTs;
 
@@ -261,9 +233,37 @@ class Customers
     private $updateTs;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="driver_license_authority", type="string", length=255, nullable=true)
+     */
+    private $driverLicenseAuthority;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="driver_license_country", type="string", length=2, nullable=true)
+     */
+    private $driverLicenseCountry;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="driver_license_release_date", type="date", nullable=true)
+     */
+    private $driverLicenseReleaseDate;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="driver_license_name", type="string", length=255, nullable=true)
+     */
+    private $driverLicenseName;
+
+    /**
      * @var boolean
      *
-     * @ORM\Column(name="registration_completed", type="boolean", options={"default"=false})
+     * @ORM\Column(name="registration_completed", type="boolean", nullable=false)
      */
     private $registrationCompleted = false;
 
@@ -277,16 +277,9 @@ class Customers
     /**
      * @var boolean
      *
-     * @ORM\Column(name="first_payment_completed", type="boolean", options={"default"=false})
+     * @ORM\Column(name="first_payment_completed", type="boolean", nullable=false)
      */
     private $firstPaymentCompleted = false;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="reprofiling_option", type="integer", options={"default"=0})
-     */
-    private $reprofilingOption = 0;
 
     /**
      * @var integer
@@ -298,14 +291,28 @@ class Customers
     /**
      * @var integer
      *
-     * @ORM\Column(name="profiling_counter", type="integer", options={"default"=0})
+     * @ORM\Column(name="reprofiling_option", type="integer", nullable=false)
      */
-    private $profilingCounter = 0;
+    private $reprofilingOption = '0';
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="profiling_counter", type="integer", nullable=false)
+     */
+    private $profilingCounter = '0';
+
+
+    public function __construct()
+    {
+        $this->insertedTs = date('Y-m-d h:i:s');
+    }
 
     public function toArray()
     {
         return get_object_vars($this);
     }
+
 
     /**
      * Get id
@@ -1208,13 +1215,13 @@ class Customers
     /**
      * Set discountRate
      *
-     * @param float $discountRate
+     * @param integer $discountRate
      *
      * @return Customers
      */
     public function setDiscountRate($discountRate)
     {
-        $this->discountRate = (int) $discountRate;
+        $this->discountRate = $discountRate;
 
         return $this;
     }
@@ -1222,7 +1229,7 @@ class Customers
     /**
      * Get discountRate
      *
-     * @return boolean
+     * @return integer
      */
     public function getDiscountRate()
     {
