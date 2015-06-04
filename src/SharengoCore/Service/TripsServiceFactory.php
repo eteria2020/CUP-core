@@ -12,7 +12,8 @@ class TripsServiceFactory implements FactoryInterface
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $tripRepository = $entityManager->getRepository('\SharengoCore\Entity\Trips');
+        $I_datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
 
-        return new TripsService($tripRepository);
+        return new TripsService($tripRepository, $I_datatableService);
     }
 }

@@ -170,7 +170,7 @@ class Trips
      *   @ORM\JoinColumn(name="car_plate", referencedColumnName="plate")
      * })
      */
-    private $carPlate;
+    private $car;
 
     /**
      * @var \Customers
@@ -675,27 +675,27 @@ class Trips
     }
 
     /**
-     * Set carPlate
+     * Set car
      *
-     * @param \SharengoCore\Entity\Cars $carPlate
+     * @param \SharengoCore\Entity\Cars $car
      *
      * @return Trips
      */
-    public function setCarPlate(\SharengoCore\Entity\Cars $carPlate = null)
+    public function setCar(\SharengoCore\Entity\Cars $car = null)
     {
-        $this->carPlate = $carPlate;
+        $this->car = $car;
 
         return $this;
     }
 
     /**
-     * Get carPlate
+     * Get getCar
      *
      * @return \SharengoCore\Entity\Cars
      */
-    public function getCarPlate()
+    public function getCar()
     {
-        return $this->carPlate;
+        return $this->car;
     }
 
     /**
