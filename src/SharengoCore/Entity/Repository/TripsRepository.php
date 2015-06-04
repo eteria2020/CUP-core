@@ -18,4 +18,11 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+
+    public function getTotalTrips()
+    {
+        $em = $this->getEntityManager();
+        $query = $em->createQuery('SELECT COUNT(t.id) FROM \SharengoCore\Entity\Trips t');
+        return $query->getSingleScalarResult();
+    }
 }
