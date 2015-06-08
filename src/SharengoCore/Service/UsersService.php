@@ -23,6 +23,12 @@ class UsersService implements ValidatorServiceInterface
      */
     protected $options;
 
+    /** @var bool */
+    private $editMode = false;
+
+    /** @var */
+    private $validatorEmail;
+
     /**
      * @param EntityManager               $entityManager
      * @param UserServiceOptionsInterface $options
@@ -42,21 +48,35 @@ class UsersService implements ValidatorServiceInterface
         return $this->userRepository->findAll();
     }
 
+    public function findUserById($userId)
+    {
+        return $this->userRepository->find($userId);
+    }
+
     public function findByEmail($email)
     {
-        return $this->userRepository->findBy(array('email' => $email));
+        return $this->userRepository->findBy(['email' => $email]);
     }
 
     /**
-     * @param User $user
+     * @param Webuser $user
      *
-     * @return User
+     * @return Webuser
      */
-    public function saveData(Webuser $user)
+    public function saveData(Webuser $user, $pwd = null)
     {
-        $bcrypt = new Bcrypt();
-        $bcrypt->setCost($this->options->getPasswordCost());
-        $user->setPassword($bcrypt->create($user->getPassword()));
+        $password = $user->getPassword();
+
+        if(empty($password)) {
+
+            $user->setPassword($pwd);
+
+        } else {
+
+            $bcrypt = new Bcrypt();
+            $bcrypt->setCost($this->options->getPasswordCost());
+            $user->setPassword($bcrypt->create($user->getPassword()));
+        }
 
         // only role admin is allowed
         $user->setRole('admin');
@@ -65,5 +85,37 @@ class UsersService implements ValidatorServiceInterface
         $this->entityManager->flush();
 
         return $user;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getEditMode()
+    {
+        return $this->editMode;
+    }
+
+    /**
+     * @param boolean $editMode
+     */
+    public function setEditMode($editMode)
+    {
+        $this->editMode = $editMode;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValidatorEmail()
+    {
+        return $this->validatorEmail;
+    }
+
+    /**
+     * @param mixed $validatorEmail
+     */
+    public function setValidatorEmail($validatorEmail)
+    {
+        $this->validatorEmail = $validatorEmail;
     }
 }
