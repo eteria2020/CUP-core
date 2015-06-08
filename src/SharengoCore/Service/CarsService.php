@@ -25,8 +25,11 @@ class CarsService
      * @param CarsRepository   $carsRepository
      * @param DatatableService $datatableService
      */
-    public function __construct(EntityManager $entityManager, CarsRepository $carsRepository, DatatableService $datatableService)
-    {
+    public function __construct(
+        EntityManager $entityManager,
+        CarsRepository $carsRepository,
+        DatatableService $datatableService
+    ) {
         $this->entityManager = $entityManager;
         $this->carsRepository = $carsRepository;
         $this->datatableService = $datatableService;
@@ -45,7 +48,8 @@ class CarsService
         return $this->carsRepository->getTotalCars();
     }
 
-    public function getCarByPlate($plate) {
+    public function getCarByPlate($plate)
+    {
 
         return $this->carsRepository->find($plate);
     }
@@ -55,19 +59,29 @@ class CarsService
         $cars = $this->datatableService->getData('Cars', $as_filters);
 
         return array_map(function (Cars $cars) {
+
+            $clean = sprintf('Interna: %s Esterna: %s', $cars->getIntCleanliness(), $cars->getExtCleanliness());
+
             return [
                 'plate'        => $cars->getPlate(),
                 'manufactures' => $cars->getManufactures(),
                 'model'        => $cars->getModel(),
+                'clean'        => $clean,
+                'position'     => sprintf('Lon: %s Lat: %s', $cars->getLongitude(), $cars->getLatitude()),
+                'lastContact'  => is_object($cars->getLastContact()) ? $cars->getLastContact()->format('d-m-Y H:i:s') : '',
+                'rpm'          => $cars->getRpm(),
+                'speed'        => $cars->getSpeed(),
+                'km'           => $cars->getKm(),
+                'running'      => $cars->getRunning() ? 'Si' : 'No',
+                'parking'      => $cars->getParking() ? 'Si' : 'No',
                 'button'       => $cars->getPlate(),
-
             ];
         }, $cars);
     }
 
     public function saveData(Cars $cars, $defaultData = true)
     {
-        if($defaultData) {
+        if ($defaultData) {
             $cars->setIntCleanliness('clean');
             $cars->setExtCleanliness('clean');
             $cars->setStatus('operative');
@@ -75,6 +89,7 @@ class CarsService
 
         $this->entityManager->persist($cars);
         $this->entityManager->flush();
+
         return $cars;
     }
 
