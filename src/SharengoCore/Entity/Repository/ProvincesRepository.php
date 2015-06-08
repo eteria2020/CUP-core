@@ -13,7 +13,7 @@ class ProvincesRepository extends EntityRepository
     {
         $countries = $this->createQueryBuilder('p')
             ->select('p.code, p.name')
-            ->orderBy('p.code')
+            ->orderBy('p.name')
             ->getQuery();
 
         return $countries->getResult();
