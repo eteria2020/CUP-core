@@ -197,4 +197,17 @@ class CustomersService implements ValidatorServiceInterface
     {
         $this->validatorTaxCode = $validatorTaxCode;
     }
+
+    /**
+     * Persists customer
+     *
+     * @return Customers
+     */
+    public function saveData(Customers $customer)
+    {
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
+
+        return $customer;
+    }
 }

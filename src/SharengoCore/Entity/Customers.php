@@ -302,6 +302,13 @@ class Customers
      */
     private $profilingCounter = '0';
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="enabled", type="boolean", nullable=false)
+     */
+    private $enabled = false;
+
 
     public function __construct()
     {
@@ -1282,5 +1289,29 @@ class Customers
     public function getProfilingCounter()
     {
         return $this->profilingCounter;
+    }
+
+    /**
+     * Set enabled
+     *
+     * @param boolean $enabled
+     *
+     * @return Customers
+     */
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    /**
+     * Get enabled
+     *
+     * @return boolean
+     */
+    public function getEnabled()
+    {
+        return $this->enabled;
     }
 }

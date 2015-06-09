@@ -19,7 +19,7 @@ class CountriesService
         $ret = [];
 
         foreach ($countries as $c) {
-            $ret[$c['code']] = $c['name'];
+            $ret[$c['code']] = html_entity_decode($c['name']);
         }
 
         return $ret;
