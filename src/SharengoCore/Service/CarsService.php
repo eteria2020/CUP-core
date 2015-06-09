@@ -76,6 +76,10 @@ class CarsService
                 'running'      => $cars->getRunning() ? 'Si' : 'No',
                 'parking'      => $cars->getParking() ? 'Si' : 'No',
                 'hidden'       => $cars->getHidden() ? 'Si' : 'No',
+                'active'       => $cars->getActive() ? 'Si' : 'No',
+                'status'       => $cars->getStatus(),
+                'busy'         => $cars->getBusy() ? 'Si' : 'No',
+                'notes'        => $cars->getNotes(),
                 'button'       => $cars->getPlate(),
             ];
         }, $cars);
