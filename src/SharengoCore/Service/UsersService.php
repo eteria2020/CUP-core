@@ -23,12 +23,6 @@ class UsersService implements ValidatorServiceInterface
      */
     protected $options;
 
-    /** @var bool */
-    private $editMode = false;
-
-    /** @var */
-    private $validatorEmail;
-
     /**
      * @param EntityManager               $entityManager
      * @param UserServiceOptionsInterface $options
@@ -85,37 +79,5 @@ class UsersService implements ValidatorServiceInterface
         $this->entityManager->flush();
 
         return $user;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function getEditMode()
-    {
-        return $this->editMode;
-    }
-
-    /**
-     * @param boolean $editMode
-     */
-    public function setEditMode($editMode)
-    {
-        $this->editMode = $editMode;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getValidatorEmail()
-    {
-        return $this->validatorEmail;
-    }
-
-    /**
-     * @param mixed $validatorEmail
-     */
-    public function setValidatorEmail($validatorEmail)
-    {
-        $this->validatorEmail = $validatorEmail;
     }
 }
