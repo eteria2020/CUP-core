@@ -64,6 +64,7 @@ class CarsService
 
             return [
                 'plate'        => $cars->getPlate(),
+                'label'        => $cars->getLabel(),
                 'manufactures' => $cars->getManufactures(),
                 'model'        => $cars->getModel(),
                 'clean'        => $clean,
@@ -74,6 +75,7 @@ class CarsService
                 'km'           => $cars->getKm(),
                 'running'      => $cars->getRunning() ? 'Si' : 'No',
                 'parking'      => $cars->getParking() ? 'Si' : 'No',
+                'hidden'       => $cars->getHidden() ? 'Si' : 'No',
                 'button'       => $cars->getPlate(),
             ];
         }, $cars);
