@@ -36,7 +36,7 @@ class TripsService
 
     public function getDataDataTable(array $as_filters = [])
     {
-        $trips = $this->I_datatableService->getData('Trips', $as_filters);
+        $trips = $this->I_datatableService->getData('Trips', $as_filters, ['car', 'customer']);
 
         return array_map(function (Trips $trip) {
 
