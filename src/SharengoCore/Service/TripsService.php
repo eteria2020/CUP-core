@@ -40,12 +40,19 @@ class TripsService
 
         return array_map(function (Trips $trip) {
 
-            $user = sprintf('<a href="%s">%s %s %s</a>', '/customers/edit/' . $trip->getCustomer()->getId(),
-                $trip->getCustomer()->getName(), $trip->getCustomer()->getSurname(),
-                $trip->getCustomer()->getMobile());
+            $user = sprintf(
+                '<a href="%s">%s %s %s</a>',
+                '/customers/edit/' . $trip->getCustomer()->getId(),
+                $trip->getCustomer()->getName(),
+                $trip->getCustomer()->getSurname(),
+                $trip->getCustomer()->getMobile()
+            );
 
-            $plate = sprintf('<a href="%s">%s</a>', '/cars/edit/' . $trip->getCar()->getPlate(),
-                $trip->getCar()->getPlate());
+            $plate = sprintf(
+                '<a href="%s">%s</a>',
+                '/cars/edit/' . $trip->getCar()->getPlate(),
+                $trip->getCar()->getPlate()
+            );
 
             return [
                 'id'               => $trip->getId(),
@@ -57,7 +64,7 @@ class TripsService
                 'addressBeginning' => $trip->getAddressBeginning(),
                 'addressEnd'       => $trip->getAddressEnd(),
                 'timeBeginning'    => $trip->getTimestampBeginning()->format('d.m.Y H:i:s'),
-                'timeEnd'          => $trip->getTimestampEnd()->format('d.m.Y H:i:s'),
+                'timeEnd'          => (null != $trip->getTimestampEnd() ? $trip->getTimestampEnd()->format('d.m.Y H:i:s') : ''),
                 'payable'          => $trip->getPayable() ? 'Si' : 'No',
                 'parkSeconds'      => $trip->getParkSeconds() . ' sec'
             ];

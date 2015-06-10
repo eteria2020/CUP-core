@@ -193,7 +193,7 @@ class Customers
     /**
      * @var string
      *
-     * @ORM\Column(name="pin", type="string", length=4, nullable=true)
+     * @ORM\Column(name="pin", type="text", nullable=false)
      */
     private $pin;
 
@@ -301,6 +301,13 @@ class Customers
      * @ORM\Column(name="profiling_counter", type="integer", nullable=false)
      */
     private $profilingCounter = '0';
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="enabled", type="boolean", nullable=false)
+     */
+    private $enabled = false;
 
 
     public function __construct()
@@ -915,13 +922,14 @@ class Customers
     }
 
     /**
-     * Get pin
+     * Get primary pin
      *
      * @return string
      */
-    public function getPin()
+    public function getPrimaryPin()
     {
-        return $this->pin;
+        $pins = json_decode($this->pin, true);
+        return $pins['primary'];
     }
 
     /**
@@ -1282,5 +1290,29 @@ class Customers
     public function getProfilingCounter()
     {
         return $this->profilingCounter;
+    }
+
+    /**
+     * Set enabled
+     *
+     * @param boolean $enabled
+     *
+     * @return Customers
+     */
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    /**
+     * Get enabled
+     *
+     * @return boolean
+     */
+    public function getEnabled()
+    {
+        return $this->enabled;
     }
 }

@@ -10,4 +10,10 @@ namespace SharengoCore\Entity\Repository;
  */
 class CarsRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getTotalCars()
+    {
+        $em = $this->getEntityManager();
+        $query = $em->createQuery('SELECT COUNT(c.plate) FROM \SharengoCore\Entity\Cars c');
+        return $query->getSingleScalarResult();
+    }
 }

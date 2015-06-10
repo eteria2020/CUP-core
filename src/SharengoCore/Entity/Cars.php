@@ -17,8 +17,7 @@ class Cars
      *
      * @ORM\Column(name="plate", type="text", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="SEQUENCE")
-     * @ORM\SequenceGenerator(sequenceName="cars_plate_seq", allocationSize=1, initialValue=1)
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     private $plate;
 
@@ -235,6 +234,16 @@ class Cars
     public function getPlate()
     {
         return $this->plate;
+    }
+
+    /**
+     * Set plate
+     *
+     * @param string $plate
+     */
+    public function setPlate($plate)
+    {
+        $this->plate = $plate;
     }
 
     /**

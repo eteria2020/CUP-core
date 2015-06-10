@@ -7,7 +7,7 @@ use SharengoCore\Service\DatatableService;
 
 use Zend\Authentication\AuthenticationService as UserService;
 
-class CustomersService
+class CustomersService implements ValidatorServiceInterface
 {
     private $validatorEmail;
 
@@ -154,6 +154,18 @@ class CustomersService
         }, $customers);
     }
 
+    public function saveDriverLicense(Customers $customer)
+    {
+        $customer->setDriverLicenseCategories('{' .implode(',', $customer->getDriverLicenseCategories()). '}');
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
+
+        // updates the identity in session
+        $this->userService->getStorage()->write($customer);
+
+        return $customer;
+    }
+
     /**
      * @return mixed
      */
@@ -184,5 +196,18 @@ class CustomersService
     public function setValidatorTaxCode($validatorTaxCode)
     {
         $this->validatorTaxCode = $validatorTaxCode;
+    }
+
+    /**
+     * Persists customer
+     *
+     * @return Customers
+     */
+    public function saveData(Customers $customer)
+    {
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
+
+        return $customer;
     }
 }
