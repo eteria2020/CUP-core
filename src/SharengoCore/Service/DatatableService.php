@@ -4,12 +4,16 @@ namespace SharengoCore\Service;
 
 use Doctrine\ORM\EntityManager;
 
-class DatatableService
+class DatatableService implements DatatableServiceInterface
 {
     /**
      * @var EntityManager
      */
     private $entityManager;
+
+    private $select = '';
+
+    private $join = '';
 
     public function __construct(EntityManager $entityManager)
     {
@@ -17,30 +21,15 @@ class DatatableService
     }
 
     /**
-     * @var string name of the entity
-     * @var array options for the query
-     * @return array of entities
+     * @inheritdoc
      */
-    public function getData($entity, array $options, array $joinTable = [])
+    public function getData($entity, array $options/*, array $joinTable = []*/)
     {
-        $select = '';
-        $join = '';
-        $comma = ',';
         $where = false;
         $as_parameters = array();
 
-        if (in_array('car', $joinTable)) {
-            $select .= $comma.'c';
-            $join .= 'LEFT JOIN e.car c ';
-        }
-
-        if (in_array('customer', $joinTable)) {
-            $select .= $comma.'cu ';
-            $join .= 'LEFT JOIN e.customer cu ';
-        }
-
-        $dql = 'SELECT e' . $select . ' FROM \SharengoCore\Entity\\' . $entity . ' e ';
-        $dql .= $join;
+        $dql = 'SELECT e' . $this->select . ' FROM \SharengoCore\Entity\\' . $entity . ' e '
+            . $this->join;
 
         $query = $this->entityManager->createQuery();
 
@@ -95,5 +84,37 @@ class DatatableService
 
         $query->setDql($dql);
         return $query->getResult();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSelect()
+    {
+        return $this->select;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSelect($select)
+    {
+        $this->select = $select;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getJoin()
+    {
+        return $this->join;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setJoin($join)
+    {
+        $this->join = $join;
     }
 }

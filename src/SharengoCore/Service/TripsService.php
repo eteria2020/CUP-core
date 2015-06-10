@@ -13,14 +13,14 @@ class TripsService
     private $tripRepository;
 
     /**
-     * @var DatatableService
+     * @var DatatableServiceInterface
      */
     private $I_datatableService;
 
     /**
      * @param EntityRepository $tripRepository
      */
-    public function __construct($tripRepository, DatatableService $I_datatableService)
+    public function __construct($tripRepository, DatatableServiceInterface $I_datatableService)
     {
         $this->tripRepository = $tripRepository;
         $this->I_datatableService = $I_datatableService;
@@ -36,7 +36,7 @@ class TripsService
 
     public function getDataDataTable(array $as_filters = [])
     {
-        $trips = $this->I_datatableService->getData('Trips', $as_filters, ['car', 'customer']);
+        $trips = $this->I_datatableService->getData('Trips', $as_filters);
 
         return array_map(function (Trips $trip) {
 
