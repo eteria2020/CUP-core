@@ -922,13 +922,14 @@ class Customers
     }
 
     /**
-     * Get pin
+     * Get primary pin
      *
      * @return string
      */
-    public function getPin()
+    public function getPrimaryPin()
     {
-        return $this->pin;
+        $pins = json_decode($this->pin, true);
+        return $pins['primary'];
     }
 
     /**
