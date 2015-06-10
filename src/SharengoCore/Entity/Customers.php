@@ -193,7 +193,7 @@ class Customers
     /**
      * @var string
      *
-     * @ORM\Column(name="pin", type="string", length=4, nullable=true)
+     * @ORM\Column(name="pin", type="text", nullable=false)
      */
     private $pin;
 
