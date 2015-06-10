@@ -7,10 +7,10 @@ use SharengoCore\Service\DatatableServiceInterface;
 class DatatableCarJoinService implements DatatableServiceInterface
 {
     private $select;
-
+    private $datatable;
     private $join;
 
-    public function __construct($datatable)
+    public function __construct(DatatableServiceInterface $datatable)
     {
         $this->datatable = $datatable;
         $this->setSelect($this->datatable->getSelect().', c');
