@@ -20,7 +20,7 @@ class TripsService
     /**
      * @param EntityRepository $tripRepository
      */
-    public function __construct($tripRepository, DatatableServiceInterface $I_datatableService)
+    public function __construct($tripRepository, DatatableService $I_datatableService)
     {
         $this->tripRepository = $tripRepository;
         $this->I_datatableService = $I_datatableService;

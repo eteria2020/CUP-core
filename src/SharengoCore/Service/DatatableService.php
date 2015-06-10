@@ -2,22 +2,28 @@
 
 namespace SharengoCore\Service;
 
+use SharengoCore\Service\DatatableQueryBuilders\DatatableQueryBuilderInterface;
+
 use Doctrine\ORM\EntityManager;
 
-class DatatableService implements DatatableServiceInterface
+class DatatableService
 {
     /**
      * @var EntityManager
      */
     private $entityManager;
 
-    private $select = '';
+    /**
+     * @var DatatableQueryBuilderInterface
+     */
+    private $queryBuilder;
 
-    private $join = '';
-
-    public function __construct(EntityManager $entityManager)
-    {
+    public function __construct(
+        EntityManager $entityManager,
+        DatatableQueryBuilderInterface $queryBuilder
+    ) {
         $this->entityManager = $entityManager;
+        $this->queryBuilder = $queryBuilder;
     }
 
     /**
@@ -25,11 +31,13 @@ class DatatableService implements DatatableServiceInterface
      */
     public function getData($entity, array $options/*, array $joinTable = []*/)
     {
+        $select = $this->queryBuilder->select();
+        $join = $this->queryBuilder->join();
         $where = false;
         $as_parameters = array();
 
-        $dql = 'SELECT e' . $this->select . ' FROM \SharengoCore\Entity\\' . $entity . ' e '
-            . $this->join;
+        $dql = 'SELECT e' . $select . ' FROM \SharengoCore\Entity\\' . $entity . ' e '
+            . $join;
 
         $query = $this->entityManager->createQuery();
 
@@ -66,7 +74,7 @@ class DatatableService implements DatatableServiceInterface
             $as_parameters['to'] = $options['to'] . ' 23:59:00';
         }
 
-        if(count($as_parameters) > 0) {
+        if (count($as_parameters) > 0) {
             $query->setParameters($as_parameters);
         }
 
@@ -87,34 +95,18 @@ class DatatableService implements DatatableServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * @ret DatatableQueryBuilderInterface
      */
-    public function getSelect()
+    public function getQueryBuilder()
     {
-        return $this->select;
+        return $this->queryBuilder;
     }
 
     /**
-     * @inheritdoc
+     * @param DatatableQueryBuilderInterface
      */
-    public function setSelect($select)
+    public function setQueryBuilder(DatatableQueryBuilderInterface $queryBuilder)
     {
-        $this->select = $select;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getJoin()
-    {
-        return $this->join;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setJoin($join)
-    {
-        $this->join = $join;
+        $this->queryBuilder = $queryBuilder;
     }
 }

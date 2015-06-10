@@ -5,6 +5,8 @@ namespace SharengoCore\Service;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
+use SharengoCore\Service\DatatableQueryBuilders;
+
 class TripsServiceFactory implements FactoryInterface
 {
     public function createService(ServiceLocatorInterface $serviceLocator)
@@ -13,9 +15,13 @@ class TripsServiceFactory implements FactoryInterface
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $tripRepository = $entityManager->getRepository('\SharengoCore\Entity\Trips');
         $I_datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
-        $I_datatableService = new DatatableDecorators\DatatableCarJoinService(
-            new DatatableDecorators\DatatableCustomerJoinService(
-                $I_datatableService
+
+        // decorate the query builder with the needed decorators
+        $I_datatableService->setQueryBuilder(
+            new DatatableQueryBuilders\Cars(
+                new DatatableQueryBuilders\Customers(
+                    $I_datatableService->getQueryBuilder()
+                )
             )
         );
 
