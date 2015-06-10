@@ -57,7 +57,7 @@ class TripsService
                 'addressBeginning' => $trip->getAddressBeginning(),
                 'addressEnd'       => $trip->getAddressEnd(),
                 'timeBeginning'    => $trip->getTimestampBeginning()->format('d.m.Y H:i:s'),
-                'timeEnd'          => $trip->getTimestampEnd()->format('d.m.Y H:i:s'),
+                'timeEnd'          => (null != $trip->getTimestampEnd() ? $trip->getTimestampEnd()->format('d.m.Y H:i:s') : ''),
                 'payable'          => $trip->getPayable() ? 'Si' : 'No',
                 'parkSeconds'      => $trip->getParkSeconds() . ' sec'
             ];
