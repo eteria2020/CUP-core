@@ -312,14 +312,14 @@ class Customers
     /**
      * @var boolean
      *
-     * @ORM\Column(name="gold_list", type="boolean", nullable=true)
+     * @ORM\Column(name="gold_list", type="boolean", nullable=false)
      */
     private $goldList = false;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="maintainer", type="boolean", nullable=true)
+     * @ORM\Column(name="maintainer", type="boolean", nullable=false)
      */
     private $maintainer = false;
 
@@ -333,7 +333,7 @@ class Customers
         return get_object_vars($this);
     }
 
-    
+
     /**
      * Get id
      *
