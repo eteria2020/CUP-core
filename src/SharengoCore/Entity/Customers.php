@@ -309,6 +309,19 @@ class Customers
      */
     private $enabled = false;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="gold_list", type="boolean", nullable=true)
+     */
+    private $goldList = false;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="maintainer", type="boolean", nullable=true)
+     */
+    private $maintainer = false;
 
     public function __construct()
     {
@@ -320,7 +333,7 @@ class Customers
         return get_object_vars($this);
     }
 
-
+    
     /**
      * Get id
      *
@@ -1314,5 +1327,53 @@ class Customers
     public function getEnabled()
     {
         return $this->enabled;
+    }
+
+    /**
+     * Set goldList
+     *
+     * @param boolean $goldList
+     *
+     * @return Customers
+     */
+    public function setGoldList($goldList)
+    {
+        $this->goldList = $goldList;
+
+        return $this;
+    }
+
+    /**
+     * Get goldList
+     *
+     * @return boolean
+     */
+    public function getGoldList()
+    {
+        return $this->goldList;
+    }
+
+    /**
+     * Set maintainer
+     *
+     * @param boolean $maintainer
+     *
+     * @return Customers
+     */
+    public function setMaintainer($maintainer)
+    {
+        $this->maintainer = $maintainer;
+
+        return $this;
+    }
+
+    /**
+     * Get maintainer
+     *
+     * @return boolean
+     */
+    public function getMaintainer()
+    {
+        return $this->maintainer;
     }
 }
