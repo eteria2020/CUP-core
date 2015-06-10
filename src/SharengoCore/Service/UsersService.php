@@ -42,21 +42,35 @@ class UsersService implements ValidatorServiceInterface
         return $this->userRepository->findAll();
     }
 
+    public function findUserById($userId)
+    {
+        return $this->userRepository->find($userId);
+    }
+
     public function findByEmail($email)
     {
-        return $this->userRepository->findBy(array('email' => $email));
+        return $this->userRepository->findBy(['email' => $email]);
     }
 
     /**
-     * @param User $user
+     * @param Webuser $user
      *
-     * @return User
+     * @return Webuser
      */
-    public function saveData(Webuser $user)
+    public function saveData(Webuser $user, $pwd = null)
     {
-        $bcrypt = new Bcrypt();
-        $bcrypt->setCost($this->options->getPasswordCost());
-        $user->setPassword($bcrypt->create($user->getPassword()));
+        $password = $user->getPassword();
+
+        if(empty($password)) {
+
+            $user->setPassword($pwd);
+
+        } else {
+
+            $bcrypt = new Bcrypt();
+            $bcrypt->setCost($this->options->getPasswordCost());
+            $user->setPassword($bcrypt->create($user->getPassword()));
+        }
 
         // only role admin is allowed
         $user->setRole('admin');
