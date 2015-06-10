@@ -5,14 +5,15 @@ namespace SharengoCore;
 return [
     'service_manager' => [
         'factories' => [
-            'SharengoCore\Service\CustomersService' => 'SharengoCore\Service\CustomersServiceFactory',
-            'SharengoCore\Service\CountriesService' => 'SharengoCore\Service\CountriesServiceFactory',
-            'SharengoCore\Service\ProvincesService' => 'SharengoCore\Service\ProvincesServiceFactory',
-            'SharengoCore\Service\UsersService'     => 'SharengoCore\Service\UsersServiceFactory',
-            'SharengoCore\Service\AuthorityService' => 'SharengoCore\Service\AuthorityServiceFactory',
-            'SharengoCore\Service\TripsService'     => 'SharengoCore\Service\TripsServiceFactory',
-            'SharengoCore\Service\DatatableService' => 'SharengoCore\Service\DatatableServiceFactory',
-            'SharengoCore\Service\CarsService'      => 'SharengoCore\Service\CarsServiceFactory',
+            'SharengoCore\Service\CustomersService'    => 'SharengoCore\Service\CustomersServiceFactory',
+            'SharengoCore\Service\CountriesService'    => 'SharengoCore\Service\CountriesServiceFactory',
+            'SharengoCore\Service\ProvincesService'    => 'SharengoCore\Service\ProvincesServiceFactory',
+            'SharengoCore\Service\UsersService'        => 'SharengoCore\Service\UsersServiceFactory',
+            'SharengoCore\Service\AuthorityService'    => 'SharengoCore\Service\AuthorityServiceFactory',
+            'SharengoCore\Service\TripsService'        => 'SharengoCore\Service\TripsServiceFactory',
+            'SharengoCore\Service\DatatableService'    => 'SharengoCore\Service\DatatableServiceFactory',
+            'SharengoCore\Service\CarsService'         => 'SharengoCore\Service\CarsServiceFactory',
+            'SharengoCore\Service\ReservationsService' => 'SharengoCore\Service\ReservationsServiceFactory',
         ]
     ],
     'doctrine'        => [

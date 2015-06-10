@@ -1,0 +1,46 @@
+<?php
+
+namespace SharengoCore\Service;
+
+use Doctrine\ORM\EntityManager;
+use SharengoCore\Entity\Repository\ReservationsRepository;
+use SharengoCore\Entity\Reservations;
+
+
+class ReservationsService
+{
+    /** @var  ReservationsRepository */
+    private $reservationsRepository;
+
+    /** @var DatatableService */
+    private $datatableService;
+
+    /**
+     * @param ReservationsRepository $reservationsRepository
+     */
+    public function __construct(ReservationsRepository $reservationsRepository, DatatableService $datatableService)
+    {
+        $this->reservationsRepository = $reservationsRepository;
+        $this->datatableService = $datatableService;
+    }
+
+    public function getTotalReservations()
+    {
+        return $this->reservationsRepository->getTotalReservations();
+    }
+
+    public function getDataDataTable(array $as_filters = [])
+    {
+        $reservations = $this->datatableService->getData('Reservations', $as_filters);
+
+        return array_map(function (Reservations $reservation) {
+
+            return [
+                'carPlate' => $reservation->getCarPlate()->getPlate(),
+                'customer' => $reservation->getCustomer()->getName() . ' ' . $reservation->getCustomer()->getSurname(),
+                'card'     => $reservation->getCards(),
+                'active'   => $reservation->getActive(),
+            ];
+        }, $reservations);
+    }
+}
