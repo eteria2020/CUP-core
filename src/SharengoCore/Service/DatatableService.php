@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Service;
 
+use SharengoCore\Service\DatatableQueryBuilders\DatatableQueryBuilderInterface;
+
 use Doctrine\ORM\EntityManager;
 
 class DatatableService
@@ -11,41 +13,76 @@ class DatatableService
      */
     private $entityManager;
 
-    public function __construct(EntityManager $entityManager)
-    {
+    /**
+     * @var DatatableQueryBuilderInterface
+     */
+    private $queryBuilder;
+
+    public function __construct(
+        EntityManager $entityManager,
+        DatatableQueryBuilderInterface $queryBuilder
+    ) {
         $this->entityManager = $entityManager;
+        $this->queryBuilder = $queryBuilder;
     }
 
     /**
-     * @var string name of the entity
-     * @var array options for the query
-     * @return array of entities
+     * @inheritdoc
      */
-    public function getData($entity, array $options)
+    public function getData($entity, array $options/*, array $joinTable = []*/)
     {
-        $dql = 'SELECT e FROM \SharengoCore\Entity\\'.$entity.' e ';
+        $select = $this->queryBuilder->select();
+        $join = $this->queryBuilder->join();
+        $where = false;
+        $as_parameters = array();
+
+        $dql = 'SELECT e' . $select . ' FROM \SharengoCore\Entity\\' . $entity . ' e '
+            . $join;
+
         $query = $this->entityManager->createQuery();
 
         if ($options['column'] != 'select' &&
             !empty($options['searchValue']) &&
             !empty($options['column'])
         ) {
+
             // if there is a selected filter, we apply it to the query
-            if ($options['column'] == 'id') {
-                $dql .= 'WHERE e.id = :id ';
-                $query->setParameter('id', (int) $options['searchValue']);
+            $checkIdColumn = strpos($options['column'], 'id');
+
+            if ($options['column'] == 'id' || $checkIdColumn) {
+                $dql .= 'WHERE e.' . $options['column'] . ' = :id ';
+                $as_parameters['id'] = (int)$options['searchValue'];
+                $where = true;
+
             } else {
                 $value = strtolower("%" . $options['searchValue'] . "%");
-                $dql .= 'WHERE LOWER(e.'.$options['column'].') LIKE :value ';
-                $query->setParameter('value', $value);
+                $dql .= 'WHERE LOWER(e.' . $options['column'] . ') LIKE :value ';
+                $as_parameters['value'] = $value;
+                $where = true;
             }
+        }
+
+        if (!empty($options['from']) &&
+            !empty($options['to']) &&
+            !empty($options['columnFromDate']) &&
+            !empty($options['columnFromEnd'])) {
+            $withAndWhere = $where ? 'AND ' : 'WHERE ';
+            $dql .= $withAndWhere . $options['columnFromDate'] . ' >= :from ';
+            $dql .= 'AND ' . $options['columnFromEnd'] . ' <= :to ';
+
+            $as_parameters['from'] = $options['from'] . ' 00:00:00';
+            $as_parameters['to'] = $options['to'] . ' 23:59:00';
+        }
+
+        if (count($as_parameters) > 0) {
+            $query->setParameters($as_parameters);
         }
 
         // apply the requested ordering
         $orderFieldId = $options['iSortCol_0'];
-        $orderField = $options['mDataProp_'.$orderFieldId];
+        $orderField = $options['mDataProp_' . $orderFieldId];
 
-        $dql .= 'ORDER BY e.'.$orderField.' '.$options['sSortDir_0'].' ';
+        $dql .= 'ORDER BY e.' . $orderField . ' ' . $options['sSortDir_0'] . ' ';
 
         // limit and offset for pagination
         if ($options['withLimit']) {
@@ -54,7 +91,22 @@ class DatatableService
         }
 
         $query->setDql($dql);
-
         return $query->getResult();
+    }
+
+    /**
+     * @ret DatatableQueryBuilderInterface
+     */
+    public function getQueryBuilder()
+    {
+        return $this->queryBuilder;
+    }
+
+    /**
+     * @param DatatableQueryBuilderInterface
+     */
+    public function setQueryBuilder(DatatableQueryBuilderInterface $queryBuilder)
+    {
+        $this->queryBuilder = $queryBuilder;
     }
 }

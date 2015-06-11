@@ -193,7 +193,7 @@ class Customers
     /**
      * @var string
      *
-     * @ORM\Column(name="pin", type="string", length=4, nullable=true)
+     * @ORM\Column(name="pin", type="text", nullable=false)
      */
     private $pin;
 
@@ -309,6 +309,19 @@ class Customers
      */
     private $enabled = false;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="gold_list", type="boolean", nullable=false)
+     */
+    private $goldList = false;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="maintainer", type="boolean", nullable=false)
+     */
+    private $maintainer = false;
 
     public function __construct()
     {
@@ -922,13 +935,14 @@ class Customers
     }
 
     /**
-     * Get pin
+     * Get primary pin
      *
      * @return string
      */
-    public function getPin()
+    public function getPrimaryPin()
     {
-        return $this->pin;
+        $pins = json_decode($this->pin, true);
+        return $pins['primary'];
     }
 
     /**
@@ -1313,5 +1327,53 @@ class Customers
     public function getEnabled()
     {
         return $this->enabled;
+    }
+
+    /**
+     * Set goldList
+     *
+     * @param boolean $goldList
+     *
+     * @return Customers
+     */
+    public function setGoldList($goldList)
+    {
+        $this->goldList = $goldList;
+
+        return $this;
+    }
+
+    /**
+     * Get goldList
+     *
+     * @return boolean
+     */
+    public function getGoldList()
+    {
+        return $this->goldList;
+    }
+
+    /**
+     * Set maintainer
+     *
+     * @param boolean $maintainer
+     *
+     * @return Customers
+     */
+    public function setMaintainer($maintainer)
+    {
+        $this->maintainer = $maintainer;
+
+        return $this;
+    }
+
+    /**
+     * Get maintainer
+     *
+     * @return boolean
+     */
+    public function getMaintainer()
+    {
+        return $this->maintainer;
     }
 }

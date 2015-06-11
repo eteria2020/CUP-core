@@ -87,6 +87,8 @@ class CarsService
 
     public function saveData(Cars $cars, $defaultData = true)
     {
+        $cars->setPlate(strtoupper($cars->getPlate()));
+
         if ($defaultData) {
             $cars->setIntCleanliness('clean');
             $cars->setExtCleanliness('clean');

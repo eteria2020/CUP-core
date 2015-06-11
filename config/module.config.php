@@ -4,6 +4,9 @@ namespace SharengoCore;
 
 return [
     'service_manager' => [
+        'invokables' => [
+            'SharengoCore\Service\DatatableQueryBuilder' => 'SharengoCore\Service\DatatableQueryBuilders\Basic'
+        ],
         'factories' => [
             'SharengoCore\Service\CustomersService'    => 'SharengoCore\Service\CustomersServiceFactory',
             'SharengoCore\Service\CountriesService'    => 'SharengoCore\Service\CountriesServiceFactory',
