@@ -50,13 +50,13 @@ class DatatableService
             $checkIdColumn = strpos($options['column'], 'id');
 
             if ($options['column'] == 'id' || $checkIdColumn) {
-                $dql .= 'WHERE e.' . $options['column'] . ' = :id ';
+                $dql .= 'WHERE ' . $options['column'] . ' = :id ';
                 $as_parameters['id'] = (int)$options['searchValue'];
                 $where = true;
 
             } else {
                 $value = strtolower("%" . $options['searchValue'] . "%");
-                $dql .= 'WHERE LOWER(e.' . $options['column'] . ') LIKE :value ';
+                $dql .= 'WHERE LOWER(' . $options['column'] . ') LIKE :value ';
                 $as_parameters['value'] = $value;
                 $where = true;
             }
@@ -66,6 +66,7 @@ class DatatableService
             !empty($options['to']) &&
             !empty($options['columnFromDate']) &&
             !empty($options['columnFromEnd'])) {
+
             $withAndWhere = $where ? 'AND ' : 'WHERE ';
             $dql .= $withAndWhere . $options['columnFromDate'] . ' >= :from ';
             $dql .= 'AND ' . $options['columnFromEnd'] . ' <= :to ';
