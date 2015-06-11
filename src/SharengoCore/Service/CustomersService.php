@@ -96,7 +96,7 @@ class CustomersService implements ValidatorServiceInterface
 
     public function setCustomerDiscountRate(Customers $customer, $discount) {
 
-        $customer->setDiscountRate($discount);
+        $customer->setDiscountRate(round($discount));
 
         $this->entityManager->persist($customer);
         $this->entityManager->flush($customer);
