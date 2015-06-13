@@ -50,22 +50,33 @@ class DatatableService
             $checkIdColumn = strpos($options['column'], 'id');
 
             if ($options['column'] == 'id' || $checkIdColumn) {
-                $dql .= 'WHERE e.' . $options['column'] . ' = :id ';
+                $dql .= 'WHERE ' . $options['column'] . ' = :id ';
                 $as_parameters['id'] = (int)$options['searchValue'];
                 $where = true;
 
             } else {
                 $value = strtolower("%" . $options['searchValue'] . "%");
-                $dql .= 'WHERE LOWER(e.' . $options['column'] . ') LIKE :value ';
+                $dql .= 'WHERE LOWER(' . $options['column'] . ') LIKE :value ';
                 $as_parameters['value'] = $value;
                 $where = true;
             }
+        }
+
+        //query with null
+        if ($options['column'] != 'select' &&
+            isset($options['columnNull']) &&
+            !empty($options['columnNull'])
+        ) {
+            $withAndWhere = $where ? 'AND ' : 'WHERE ';
+            $dql .= $withAndWhere . $options['columnNull'] . " IS NULL ";
+            $where = true;
         }
 
         if (!empty($options['from']) &&
             !empty($options['to']) &&
             !empty($options['columnFromDate']) &&
             !empty($options['columnFromEnd'])) {
+
             $withAndWhere = $where ? 'AND ' : 'WHERE ';
             $dql .= $withAndWhere . $options['columnFromDate'] . ' >= :from ';
             $dql .= 'AND ' . $options['columnFromEnd'] . ' <= :to ';
