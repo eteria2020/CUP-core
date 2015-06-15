@@ -94,7 +94,8 @@ class CustomersService implements ValidatorServiceInterface
         $this->userService->getStorage()->write($customer);
     }
 
-    public function setCustomerDiscountRate(Customers $customer, $discount) {
+    public function setCustomerDiscountRate(Customers $customer, $discount)
+    {
 
         $customer->setDiscountRate(round($discount));
 
@@ -139,24 +140,24 @@ class CustomersService implements ValidatorServiceInterface
 
         return array_map(function (Customers $customer) {
             return [
-                'id'                  => $customer->getId(),
-                'name'                => $customer->getName(),
-                'surname'             => $customer->getSurname(),
-                'mobile'              => $customer->getMobile(),
-                'cardCode'            => $customer->getCardCode(),
-                'driverLicense'       => $customer->getDriverLicense(),
-                'driverLicenseExpire' => is_object($customer->getDriverLicenseExpire()) ? $customer->getDriverLicenseExpire()->format('d-m-Y') : '',
-                'email'               => $customer->getEmail(),
-                'taxCode'             => $customer->getTaxCode(),
-                'registration'        => $customer->getRegistrationCompleted() ? 'Completata' : 'Non Completata',
-                'button'              => $customer->getId()
+                'e-id'                  => $customer->getId(),
+                'e-name'                => $customer->getName(),
+                'e-surname'             => $customer->getSurname(),
+                'e-mobile'              => $customer->getMobile(),
+                'e-cardCode'            => $customer->getCardCode(),
+                'e-driverLicense'       => $customer->getDriverLicense(),
+                'e-driverLicenseExpire' => is_object($customer->getDriverLicenseExpire()) ? $customer->getDriverLicenseExpire()->format('d-m-Y') : '',
+                'e-email'               => $customer->getEmail(),
+                'e-taxCode'             => $customer->getTaxCode(),
+                'e-registration'        => $customer->getRegistrationCompleted() ? 'Completata' : 'Non Completata',
+                'button'                => $customer->getId()
             ];
         }, $customers);
     }
 
     public function saveDriverLicense(Customers $customer)
     {
-        $customer->setDriverLicenseCategories('{' .implode(',', $customer->getDriverLicenseCategories()). '}');
+        $customer->setDriverLicenseCategories('{' . implode(',', $customer->getDriverLicenseCategories()) . '}');
         $this->entityManager->persist($customer);
         $this->entityManager->flush();
 
