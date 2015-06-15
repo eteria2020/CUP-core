@@ -9,6 +9,8 @@ use SharengoCore\Entity\Trips;
 
 class TripsService
 {
+    const DURATA_NON_DISPONIBILE = 'n.d.';
+
     /** @var TripsRepository */
     private $tripRepository;
 
@@ -40,14 +42,6 @@ class TripsService
 
         return array_map(function (Trips $trip) {
 
-            $user = sprintf(
-                '<a href="%s">%s %s %s</a>',
-                '/customers/edit/' . $trip->getCustomer()->getId(),
-                $trip->getCustomer()->getName(),
-                $trip->getCustomer()->getSurname(),
-                $trip->getCustomer()->getMobile()
-            );
-
             $plate = sprintf(
                 '<a href="%s">%s</a>',
                 '/cars/edit/' . $trip->getCar()->getPlate(),
@@ -55,18 +49,23 @@ class TripsService
             );
 
             return [
-                'id'               => $trip->getId(),
-                'user'             => $user,
-                'plate'            => $plate,
-                'card'             => $trip->getCustomer()->getCardCode(),
-                'km'               => ($trip->getKmEnd() - $trip->getKmBeginning()),
-                'price'            => ($trip->getPriceCent() + $trip->getVatCent()),
-                'addressBeginning' => $trip->getAddressBeginning(),
-                'addressEnd'       => $trip->getAddressEnd(),
-                'timeBeginning'    => $trip->getTimestampBeginning()->format('d.m.Y H:i:s'),
-                'timeEnd'          => (null != $trip->getTimestampEnd() ? $trip->getTimestampEnd()->format('d.m.Y H:i:s') : ''),
-                'payable'          => $trip->getPayable() ? 'Si' : 'No',
-                'parkSeconds'      => $trip->getParkSeconds() . ' sec'
+                'e-id'                 => $trip->getId(),
+                'cu-surname'           => $trip->getCustomer()->getSurname(),
+                'cu-name'              => $trip->getCustomer()->getName(),
+                'cu-mobile'            => $trip->getCustomer()->getMobile(),
+                'cu-cardCode'          => $trip->getCustomer()->getCardCode(),
+                'c-plate'              => $plate,
+                'c-label'              => $trip->getCar()->getLabel(),
+                'e-kmBeginning'        => $trip->getKmBeginning(),
+                'e-kmEnd'              => $trip->getKmEnd(),
+                'e-timestampBeginning' => $trip->getTimestampBeginning()->format('H:i:s'),
+                'e-timestampEnd'       => (null != $trip->getTimestampEnd() ? $trip->getTimestampEnd()->format('H:i:s') : ''),
+                'duration'             => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd()),
+                'e-parkSeconds'        => $trip->getParkSeconds() . ' sec',
+                'price'                => ($trip->getPriceCent() + $trip->getVatCent()),
+                'StatoQuadro'          => '',
+                'c-parking'            => $trip->getCar()->getParking() ? 'Si' : 'No',
+                'e-payable'            => $trip->getPayable() ? 'Si' : 'No',
             ];
         }, $trips);
     }
@@ -74,5 +73,24 @@ class TripsService
     public function getTotalTrips()
     {
         return $this->tripRepository->getTotalTrips();
+    }
+
+    public function getDuration($s_from, $s_to)
+    {
+        if ('' != $s_from && '' != $s_to) {
+
+            $date = $s_from->diff($s_to);
+
+            $days = (int)$date->format('%d');
+
+            if ($days > 0) {
+                return sprintf('%sg %s:%s:%s', $days, $date->format('%H'), $date->format('%I'), $date->format('%S'));
+            } else {
+                return sprintf('0g %s:%s:%s', $date->format('%H'), $date->format('%I'), $date->format('%S'));
+            }
+
+        }
+
+        return self::DURATA_NON_DISPONIBILE;
     }
 }

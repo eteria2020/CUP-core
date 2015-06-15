@@ -91,9 +91,9 @@ class DatatableService
 
         // apply the requested ordering
         $orderFieldId = $options['iSortCol_0'];
-        $orderField = $options['mDataProp_' . $orderFieldId];
+        $orderField = str_replace('-', '.', $options['mDataProp_' . $orderFieldId]);
 
-        $dql .= 'ORDER BY e.' . $orderField . ' ' . $options['sSortDir_0'] . ' ';
+        $dql .= 'ORDER BY ' . $orderField . ' ' . $options['sSortDir_0'] . ' ';
 
         // limit and offset for pagination
         if ($options['withLimit']) {
