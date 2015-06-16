@@ -34,7 +34,7 @@ class DatatableService
         $select = $this->queryBuilder->select();
         $join = $this->queryBuilder->join();
         $where = false;
-        $as_parameters = array();
+        $as_parameters = [];
 
         $dql = 'SELECT e' . $select . ' FROM \SharengoCore\Entity\\' . $entity . ' e '
             . $join;
@@ -72,10 +72,25 @@ class DatatableService
             $where = true;
         }
 
+        //query without LIKE operator
+        if ($options['column'] != 'select' &&
+            isset($options['columnWithoutLike']) &&
+            !empty($options['columnWithoutLike']) &&
+            !empty($options['columnValueWithoutLike'])
+        ) {
+
+            $withAndWhere = $where ? 'AND ' : 'WHERE ';
+            $ValueWithoutLike = is_bool($options['columnValueWithoutLike']) ? $options['columnValueWithoutLike'] : sprintf("'%s'",
+                $options['columnValueWithoutLike']);
+            $dql .= $withAndWhere . $options['columnWithoutLike'] . " =  " . $ValueWithoutLike . " ";
+            $where = true;
+        }
+
         if (!empty($options['from']) &&
             !empty($options['to']) &&
             !empty($options['columnFromDate']) &&
-            !empty($options['columnFromEnd'])) {
+            !empty($options['columnFromEnd'])
+        ) {
 
             $withAndWhere = $where ? 'AND ' : 'WHERE ';
             $dql .= $withAndWhere . $options['columnFromDate'] . ' >= :from ';
@@ -102,6 +117,7 @@ class DatatableService
         }
 
         $query->setDql($dql);
+
         return $query->getResult();
     }
 

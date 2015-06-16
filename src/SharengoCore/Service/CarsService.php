@@ -62,25 +62,20 @@ class CarsService
 
             $clean = sprintf('Interna: %s Esterna: %s', $cars->getIntCleanliness(), $cars->getExtCleanliness());
 
+            $positionLink = sprintf('<a href="http://maps.google.com/?q=%s,%s" target="_blank">Mappa</a>',
+                $cars->getLatitude(), $cars->getLongitude());
+
             return [
-                'plate'        => $cars->getPlate(),
-                'label'        => $cars->getLabel(),
-                'manufactures' => $cars->getManufactures(),
-                'model'        => $cars->getModel(),
-                'clean'        => $clean,
-                'position'     => sprintf('Lon: %s Lat: %s', $cars->getLongitude(), $cars->getLatitude()),
-                'lastContact'  => is_object($cars->getLastContact()) ? $cars->getLastContact()->format('d-m-Y H:i:s') : '',
-                'rpm'          => $cars->getRpm(),
-                'speed'        => $cars->getSpeed(),
-                'km'           => $cars->getKm(),
-                'running'      => $cars->getRunning() ? 'Si' : 'No',
-                'parking'      => $cars->getParking() ? 'Si' : 'No',
-                'hidden'       => $cars->getHidden() ? 'Si' : 'No',
-                'active'       => $cars->getActive() ? 'Si' : 'No',
-                'status'       => $cars->getStatus(),
-                'busy'         => $cars->getBusy() ? 'Si' : 'No',
-                'notes'        => $cars->getNotes(),
-                'button'       => $cars->getPlate(),
+                'e-plate'       => $cars->getPlate(),
+                'e-label'       => $cars->getLabel(),
+                'e-battery'     => $cars->getBattery(),
+                'e-lastContact' => is_object($cars->getLastContact()) ? $cars->getLastContact()->format('d-m-Y H:i:s') : '',
+                'e-km'          => $cars->getKm(),
+                'clean'         => $clean,
+                'position'      => sprintf('Lat: %s Lon: %s ', $cars->getLatitude(), $cars->getLongitude()),
+                'e-status'      => $cars->getStatus(),
+                'positionLink'  => $positionLink,
+                'button'        => $cars->getPlate(),
             ];
         }, $cars);
     }
