@@ -22,7 +22,8 @@ class TripsServiceFactory implements FactoryInterface
                 new DatatableQueryBuilders\Cards(
                     new DatatableQueryBuilders\Customers(
                         $I_datatableService->getQueryBuilder()
-                    )
+                    ),
+                    'cu'
                 )
             )
         );
