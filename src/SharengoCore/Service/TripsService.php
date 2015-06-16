@@ -53,7 +53,7 @@ class TripsService
                 'cu-surname'           => $trip->getCustomer()->getSurname(),
                 'cu-name'              => $trip->getCustomer()->getName(),
                 'cu-mobile'            => $trip->getCustomer()->getMobile(),
-                'cu-cardCode'          => $trip->getCustomer()->getCardCode(),
+                'cc-code'              => is_object($trip->getCustomer()->getCard()) ? $trip->getCustomer()->getCard()->getCode() : '',
                 'c-plate'              => $plate,
                 'c-label'              => $trip->getCar()->getLabel(),
                 'e-kmBeginning'        => $trip->getKmBeginning(),

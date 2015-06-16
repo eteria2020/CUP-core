@@ -144,7 +144,7 @@ class CustomersService implements ValidatorServiceInterface
                 'e-name'                => $customer->getName(),
                 'e-surname'             => $customer->getSurname(),
                 'e-mobile'              => $customer->getMobile(),
-                'e-cardCode'            => $customer->getCardCode(),
+                'e-cardCode'            => is_object($customer->getCard()) ? $customer->getCard()->getCode() : '',
                 'e-driverLicense'       => $customer->getDriverLicense(),
                 'e-driverLicenseExpire' => is_object($customer->getDriverLicenseExpire()) ? $customer->getDriverLicenseExpire()->format('d-m-Y') : '',
                 'e-email'               => $customer->getEmail(),

@@ -205,13 +205,6 @@ class Customers
     private $notes;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="card_code", type="text", nullable=true)
-     */
-    private $cardCode;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(name="inserted_ts", type="datetime", nullable=true)
@@ -322,6 +315,16 @@ class Customers
      * @ORM\Column(name="maintainer", type="boolean", nullable=false)
      */
     private $maintainer = false;
+
+    /**
+     * @var \Cards
+     *
+     * @ORM\OneToOne(targetEntity="Cards")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="card_code", referencedColumnName="rfid")
+     * })
+     */
+    private $card;
 
     public function __construct()
     {
@@ -970,30 +973,6 @@ class Customers
     }
 
     /**
-     * Set cardCode
-     *
-     * @param string $cardCode
-     *
-     * @return Customers
-     */
-    public function setCardCode($cardCode)
-    {
-        $this->cardCode = $cardCode;
-
-        return $this;
-    }
-
-    /**
-     * Get cardCode
-     *
-     * @return string
-     */
-    public function getCardCode()
-    {
-        return $this->cardCode;
-    }
-
-    /**
      * Set insertedTs
      *
      * @param \DateTime $insertedTs
@@ -1375,5 +1354,39 @@ class Customers
     public function getMaintainer()
     {
         return $this->maintainer;
+    }
+
+    /**
+     * Get pin
+     *
+     * @return string
+     */
+    public function getPin()
+    {
+        return $this->pin;
+    }
+
+    /**
+     * Set card
+     *
+     * @param \SharengoCore\Entity\Cards $card
+     *
+     * @return Customers
+     */
+    public function setCard(\SharengoCore\Entity\Cards $card = null)
+    {
+        $this->card = $card;
+
+        return $this;
+    }
+
+    /**
+     * Get card
+     *
+     * @return \SharengoCore\Entity\Cards
+     */
+    public function getCard()
+    {
+        return $this->card;
     }
 }
