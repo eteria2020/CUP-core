@@ -21,16 +21,16 @@ class TripsService
     private $I_datatableService;
 
     /** @var */
-    private $I_viewHelperManager;
+    private $I_urlHelper;
 
     /**
      * @param EntityRepository $tripRepository
      */
-    public function __construct($tripRepository, DatatableService $I_datatableService, $I_viewHelperManager)
+    public function __construct($tripRepository, DatatableService $I_datatableService, $I_urlHelper)
     {
         $this->tripRepository = $tripRepository;
         $this->I_datatableService = $I_datatableService;
-        $this->I_viewHelperManager = $I_viewHelperManager;
+        $this->I_urlHelper = $I_urlHelper;
     }
 
     /**
@@ -47,9 +47,8 @@ class TripsService
 
         return array_map(function (Trips $trip) {
 
-            $url = $this->getUrlHelper();
-
-            $plate = sprintf('<a href="%s">%s</a>', $url('cars/edit', ['plate' => $trip->getCar()->getPlate()]),
+            $urlHelper = $this->I_urlHelper;
+            $plate = sprintf('<a href="%s">%s</a>', $urlHelper('cars/edit', ['plate' => $trip->getCar()->getPlate()]),
                 $trip->getCar()->getPlate());
 
             return [
