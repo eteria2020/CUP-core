@@ -6,10 +6,11 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\Entity;
 use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Trips;
+use Zend\View\Helper\Url;
 
 class TripsService
 {
-    const DURATA_NON_DISPONIBILE = 'n.d.';
+    const DURATION_NOT_AVAILABLE = 'n.d.';
 
     /** @var TripsRepository */
     private $tripRepository;
@@ -19,13 +20,17 @@ class TripsService
      */
     private $I_datatableService;
 
+    /** @var */
+    private $I_viewHelperManager;
+
     /**
      * @param EntityRepository $tripRepository
      */
-    public function __construct($tripRepository, DatatableService $I_datatableService)
+    public function __construct($tripRepository, DatatableService $I_datatableService, $I_viewHelperManager)
     {
         $this->tripRepository = $tripRepository;
         $this->I_datatableService = $I_datatableService;
+        $this->I_viewHelperManager = $I_viewHelperManager;
     }
 
     /**
@@ -42,11 +47,10 @@ class TripsService
 
         return array_map(function (Trips $trip) {
 
-            $plate = sprintf(
-                '<a href="%s">%s</a>',
-                '/cars/edit/' . $trip->getCar()->getPlate(),
-                $trip->getCar()->getPlate()
-            );
+            $url = $this->getUrlHelper();
+
+            $plate = sprintf('<a href="%s">%s</a>', $url('cars/edit', ['plate' => $trip->getCar()->getPlate()]),
+                $trip->getCar()->getPlate());
 
             return [
                 'e-id'                 => $trip->getId(),
@@ -91,6 +95,11 @@ class TripsService
 
         }
 
-        return self::DURATA_NON_DISPONIBILE;
+        return self::DURATION_NOT_AVAILABLE;
+    }
+
+    public function getUrlHelper()
+    {
+        return $this->I_viewHelperManager->get('url');
     }
 }

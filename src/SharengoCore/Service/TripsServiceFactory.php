@@ -15,6 +15,7 @@ class TripsServiceFactory implements FactoryInterface
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $tripRepository = $entityManager->getRepository('\SharengoCore\Entity\Trips');
         $I_datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
+        $I_viewHelperManager = $serviceLocator->get('viewhelpermanager');
 
         // decorate the query builder with the needed decorators
         $I_datatableService->setQueryBuilder(
@@ -28,6 +29,6 @@ class TripsServiceFactory implements FactoryInterface
             )
         );
 
-        return new TripsService($tripRepository, $I_datatableService);
+        return new TripsService($tripRepository, $I_datatableService, $I_viewHelperManager);
     }
 }

@@ -17,8 +17,7 @@ class Cards
      *
      * @ORM\Column(name="rfid", type="text", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="SEQUENCE")
-     * @ORM\SequenceGenerator(sequenceName="cards_rfid_seq", allocationSize=1, initialValue=1)
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     private $rfid;
 
