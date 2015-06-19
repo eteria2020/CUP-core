@@ -94,7 +94,8 @@ class CustomersService implements ValidatorServiceInterface
         $this->userService->getStorage()->write($customer);
     }
 
-    public function setCustomerDiscountRate(Customers $customer, $discount) {
+    public function setCustomerDiscountRate(Customers $customer, $discount)
+    {
 
         $customer->setDiscountRate(round($discount));
 
@@ -134,29 +135,32 @@ class CustomersService implements ValidatorServiceInterface
 
     public function getDataDataTable(array $as_filters = [])
     {
-
         $customers = $this->datatableService->getData('Customers', $as_filters);
 
         return array_map(function (Customers $customer) {
             return [
-                'id'                  => $customer->getId(),
-                'name'                => $customer->getName(),
-                'surname'             => $customer->getSurname(),
-                'mobile'              => $customer->getMobile(),
-                'cardCode'            => $customer->getCardCode(),
-                'driverLicense'       => $customer->getDriverLicense(),
-                'driverLicenseExpire' => is_object($customer->getDriverLicenseExpire()) ? $customer->getDriverLicenseExpire()->format('d-m-Y') : '',
-                'email'               => $customer->getEmail(),
-                'taxCode'             => $customer->getTaxCode(),
-                'registration'        => $customer->getRegistrationCompleted() ? 'Completata' : 'Non Completata',
-                'button'              => $customer->getId()
+                'e'      => [
+                    'id'                  => $customer->getId(),
+                    'name'                => $customer->getName(),
+                    'surname'             => $customer->getSurname(),
+                    'mobile'              => $customer->getMobile(),
+                    'driverLicense'       => $customer->getDriverLicense(),
+                    'driverLicenseExpire' => is_object($customer->getDriverLicenseExpire()) ? $customer->getDriverLicenseExpire()->format('d-m-Y') : '',
+                    'email'               => $customer->getEmail(),
+                    'taxCode'             => $customer->getTaxCode(),
+                    'registration'        => $customer->getRegistrationCompleted() ? 'Completata' : 'Non Completata',
+                ],
+                'cc'     => [
+                    'code' => is_object($customer->getCard()) ? $customer->getCard()->getCode() : '',
+                ],
+                'button' => $customer->getId()
             ];
         }, $customers);
     }
 
     public function saveDriverLicense(Customers $customer)
     {
-        $customer->setDriverLicenseCategories('{' .implode(',', $customer->getDriverLicenseCategories()). '}');
+        $customer->setDriverLicenseCategories('{' . implode(',', $customer->getDriverLicenseCategories()) . '}');
         $this->entityManager->persist($customer);
         $this->entityManager->flush();
 
