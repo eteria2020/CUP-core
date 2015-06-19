@@ -106,7 +106,7 @@ class DatatableService
 
         // apply the requested ordering
         $orderFieldId = $options['iSortCol_0'];
-        $orderField = str_replace('-', '.', $options['mDataProp_' . $orderFieldId]);
+        $orderField = $options['mDataProp_' . $orderFieldId];
 
         $dql .= 'ORDER BY ' . $orderField . ' ' . $options['sSortDir_0'] . ' ';
 

@@ -66,16 +66,19 @@ class CarsService
                 $cars->getLatitude(), $cars->getLongitude());
 
             return [
-                'e-plate'       => $cars->getPlate(),
-                'e-label'       => $cars->getLabel(),
-                'e-battery'     => $cars->getBattery(),
-                'e-lastContact' => is_object($cars->getLastContact()) ? $cars->getLastContact()->format('d-m-Y H:i:s') : '',
-                'e-km'          => $cars->getKm(),
-                'clean'         => $clean,
-                'position'      => sprintf('Lat: %s Lon: %s ', $cars->getLatitude(), $cars->getLongitude()),
-                'e-status'      => $cars->getStatus(),
-                'positionLink'  => $positionLink,
-                'button'        => $cars->getPlate(),
+                'e'            => [
+                    'plate'       => $cars->getPlate(),
+                    'label'       => $cars->getLabel(),
+                    'battery'     => $cars->getBattery(),
+                    'lastContact' => is_object($cars->getLastContact()) ? $cars->getLastContact()->format('d-m-Y H:i:s') : '',
+                    'km'          => $cars->getKm(),
+                    'status'      => $cars->getStatus(),
+
+                ],
+                'clean'        => $clean,
+                'position'     => sprintf('Lat: %s Lon: %s ', $cars->getLatitude(), $cars->getLongitude()),
+                'positionLink' => $positionLink,
+                'button'       => $cars->getPlate(),
             ];
         }, $cars);
     }

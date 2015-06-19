@@ -135,22 +135,25 @@ class CustomersService implements ValidatorServiceInterface
 
     public function getDataDataTable(array $as_filters = [])
     {
-
         $customers = $this->datatableService->getData('Customers', $as_filters);
 
         return array_map(function (Customers $customer) {
             return [
-                'e-id'                  => $customer->getId(),
-                'e-name'                => $customer->getName(),
-                'e-surname'             => $customer->getSurname(),
-                'e-mobile'              => $customer->getMobile(),
-                'cc-code'               => is_object($customer->getCard()) ? $customer->getCard()->getCode() : '',
-                'e-driverLicense'       => $customer->getDriverLicense(),
-                'e-driverLicenseExpire' => is_object($customer->getDriverLicenseExpire()) ? $customer->getDriverLicenseExpire()->format('d-m-Y') : '',
-                'e-email'               => $customer->getEmail(),
-                'e-taxCode'             => $customer->getTaxCode(),
-                'e-registration'        => $customer->getRegistrationCompleted() ? 'Completata' : 'Non Completata',
-                'button'                => $customer->getId()
+                'e'      => [
+                    'id'                  => $customer->getId(),
+                    'name'                => $customer->getName(),
+                    'surname'             => $customer->getSurname(),
+                    'mobile'              => $customer->getMobile(),
+                    'driverLicense'       => $customer->getDriverLicense(),
+                    'driverLicenseExpire' => is_object($customer->getDriverLicenseExpire()) ? $customer->getDriverLicenseExpire()->format('d-m-Y') : '',
+                    'email'               => $customer->getEmail(),
+                    'taxCode'             => $customer->getTaxCode(),
+                    'registration'        => $customer->getRegistrationCompleted() ? 'Completata' : 'Non Completata',
+                ],
+                'cc'     => [
+                    'code' => is_object($customer->getCard()) ? $customer->getCard()->getCode() : '',
+                ],
+                'button' => $customer->getId()
             ];
         }, $customers);
     }

@@ -52,23 +52,33 @@ class TripsService
                 $trip->getCar()->getPlate());
 
             return [
-                'e-id'                 => $trip->getId(),
-                'cu-surname'           => $trip->getCustomer()->getSurname(),
-                'cu-name'              => $trip->getCustomer()->getName(),
-                'cu-mobile'            => $trip->getCustomer()->getMobile(),
-                'cc-code'              => is_object($trip->getCustomer()->getCard()) ? $trip->getCustomer()->getCard()->getCode() : '',
-                'c-plate'              => $plate,
-                'c-label'              => $trip->getCar()->getLabel(),
-                'e-kmBeginning'        => $trip->getKmBeginning(),
-                'e-kmEnd'              => $trip->getKmEnd(),
-                'e-timestampBeginning' => $trip->getTimestampBeginning()->format('H:i:s'),
-                'e-timestampEnd'       => (null != $trip->getTimestampEnd() ? $trip->getTimestampEnd()->format('H:i:s') : ''),
-                'duration'             => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd()),
-                'e-parkSeconds'        => $trip->getParkSeconds() . ' sec',
-                'price'                => ($trip->getPriceCent() + $trip->getVatCent()),
-                'StatoQuadro'          => '',
-                'c-parking'            => $trip->getCar()->getParking() ? 'Si' : 'No',
-                'e-payable'            => $trip->getPayable() ? 'Si' : 'No',
+                'e'          => [
+                    'id'                 => $trip->getId(),
+                    'kmBeginning'        => $trip->getKmBeginning(),
+                    'kmEnd'              => $trip->getKmEnd(),
+                    'timestampBeginning' => $trip->getTimestampBeginning()->format('H:i:s'),
+                    'timestampEnd'       => (null != $trip->getTimestampEnd() ? $trip->getTimestampEnd()->format('H:i:s') : ''),
+                    'parkSeconds'        => $trip->getParkSeconds() . ' sec',
+                    'payable'            => $trip->getPayable() ? 'Si' : 'No',
+                ],
+                'cu'         => [
+                    'surname' => $trip->getCustomer()->getSurname(),
+                    'name'    => $trip->getCustomer()->getName(),
+                    'mobile'  => $trip->getCustomer()->getMobile(),
+                ],
+                'c'          => [
+                    'code'    => is_object($trip->getCustomer()->getCard()) ? $trip->getCustomer()->getCard()->getCode() : '',
+                    'plate'   => $plate,
+                    'label'   => $trip->getCar()->getLabel(),
+                    'parking' => $trip->getCar()->getParking() ? 'Si' : 'No',
+                ],
+                'cc'         => [
+                    'code' => is_object($trip->getCustomer()->getCard()) ? $trip->getCustomer()->getCard()->getCode() : '',
+
+                ],
+                'duration'   => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd()),
+                'price'      => ($trip->getPriceCent() + $trip->getVatCent()),
+                'statePanel' => '-',
             ];
         }, $trips);
     }
