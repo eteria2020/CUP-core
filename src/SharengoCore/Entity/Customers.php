@@ -321,7 +321,7 @@ class Customers
      *
      * @ORM\OneToOne(targetEntity="Cards")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="card_code", referencedColumnName="rfid")
+     *   @ORM\JoinColumn(name="card_code", referencedColumnName="code")
      * })
      */
     private $card;
