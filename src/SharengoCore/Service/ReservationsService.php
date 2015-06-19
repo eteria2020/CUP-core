@@ -36,11 +36,13 @@ class ReservationsService
         return array_map(function (Reservations $reservation) {
 
             return [
-                'id'       => $reservation->getId(),
-                'carPlate' => $reservation->getCar()->getPlate(),
-                'customer' => $reservation->getCustomer()->getName() . ' ' . $reservation->getCustomer()->getSurname(),
-                'cards'    => $reservation->getCards(),
-                'active'   => $reservation->getActive() ? 'Si' : 'No',
+                'e' => [
+                    'id'       => $reservation->getId(),
+                    'carPlate' => $reservation->getCar()->getPlate(),
+                    'customer' => $reservation->getCustomer()->getName() . ' ' . $reservation->getCustomer()->getSurname(),
+                    'cards'    => $reservation->getCards(),
+                    'active'   => $reservation->getActive() ? 'Si' : 'No',
+                ]
             ];
         }, $reservations);
     }
