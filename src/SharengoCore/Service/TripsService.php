@@ -52,7 +52,7 @@ class TripsService
                 $trip->getCar()->getPlate());
 
             return [
-                'e'          => [
+                'e'        => [
                     'id'                 => $trip->getId(),
                     'kmBeginning'        => $trip->getKmBeginning(),
                     'kmEnd'              => $trip->getKmEnd(),
@@ -61,24 +61,24 @@ class TripsService
                     'parkSeconds'        => $trip->getParkSeconds() . ' sec',
                     'payable'            => $trip->getPayable() ? 'Si' : 'No',
                 ],
-                'cu'         => [
+                'cu'       => [
                     'surname' => $trip->getCustomer()->getSurname(),
                     'name'    => $trip->getCustomer()->getName(),
                     'mobile'  => $trip->getCustomer()->getMobile(),
                 ],
-                'c'          => [
-                    'code'    => is_object($trip->getCustomer()->getCard()) ? $trip->getCustomer()->getCard()->getCode() : '',
-                    'plate'   => $plate,
-                    'label'   => $trip->getCar()->getLabel(),
-                    'parking' => $trip->getCar()->getParking() ? 'Si' : 'No',
+                'c'        => [
+                    'plate'     => $plate,
+                    'label'     => $trip->getCar()->getLabel(),
+                    'parking'   => $trip->getCar()->getParking() ? 'Si' : 'No',
+                    'keyStatus' => $trip->getCar()->getKeystatus()
                 ],
-                'cc'         => [
+                'cc'       => [
                     'code' => is_object($trip->getCustomer()->getCard()) ? $trip->getCustomer()->getCard()->getCode() : '',
 
                 ],
-                'duration'   => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd()),
-                'price'      => ($trip->getPriceCent() + $trip->getVatCent()),
-                'statePanel' => '-',
+                'duration' => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd()),
+                'price'    => ($trip->getPriceCent() + $trip->getVatCent()),
+
             ];
         }, $trips);
     }
