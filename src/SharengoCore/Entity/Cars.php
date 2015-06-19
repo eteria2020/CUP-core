@@ -224,8 +224,28 @@ class Cars
      */
     private $status = 'maintenance';
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="soc", type="integer", nullable=true)
+     */
+    private $soc;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="vin", type="text", nullable=true)
+     */
+    private $vin;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="key_status", type="text", nullable=true)
+     */
+    private $keyStatus;
+
+    
     /**
      * Get plate
      *
@@ -940,5 +960,78 @@ class Cars
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * Set key soc
+     *
+     * @param int $soc
+     *
+     * @return Cars
+     */
+    public function setSoc($soc)
+    {
+        $this->soc = $soc;
+
+        return $this;
+    }
+
+    /**
+     * Get soc
+     *
+     * @return int
+     */
+    public function getSoc()
+    {
+        return $this->soc;
+    }
+
+
+    /**
+     * Set key vin
+     *
+     * @param string $vin
+     *
+     * @return Cars
+     */
+    public function setVin($vin)
+    {
+        $this->vin = $vin;
+
+        return $this;
+    }
+
+    /**
+     * Get vin
+     *
+     * @return string
+     */
+    public function getVin()
+    {
+        return $this->vin;
+    }
+
+    /**
+     * Set key keyStatus
+     *
+     * @param string $keyStatus
+     *
+     * @return Cars
+     */
+    public function setKeystatus($keyStatus)
+    {
+        $this->keyStatus = $keyStatus;
+
+        return $this;
+    }
+
+    /**
+     * Get keyStatus
+     *
+     * @return string
+     */
+    public function getKeystatus()
+    {
+        return $this->keyStatus;
     }
 }

@@ -5,7 +5,7 @@ namespace SharengoCore\Service;
 use Doctrine\ORM\EntityManager;
 use Zend\Crypt\Password\Bcrypt;
 use ZfcUser\Options\UserServiceOptionsInterface;
-use Application\Entity\Webuser;
+use SharengoCore\Entity\Webuser;
 
 
 class UsersService implements ValidatorServiceInterface
@@ -15,7 +15,7 @@ class UsersService implements ValidatorServiceInterface
      */
     private $entityManager;
 
-    /** @var  User */
+    /** @var  Webuser */
     private $userRepository;
 
     /**
@@ -30,7 +30,7 @@ class UsersService implements ValidatorServiceInterface
     public function __construct(EntityManager $entityManager, UserServiceOptionsInterface $options)
     {
         $this->entityManager = $entityManager;
-        $this->userRepository = $this->entityManager->getRepository('\Application\Entity\Webuser');
+        $this->userRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Webuser');
         $this->options = $options;
     }
 
