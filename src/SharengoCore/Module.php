@@ -20,7 +20,9 @@ class Module
         $platform->registerDoctrineTypeMapping('car_status', 'string');
         $platform->registerDoctrineTypeMapping('cleanliness', 'string');
         $platform->registerDoctrineTypeMapping('_text', 'string');
+        $platform->registerDoctrineTypeMapping('_int4', 'string');
         $platform->registerDoctrineTypeMapping('geometry', 'string');
+        $platform->registerDoctrineTypeMapping('jsonb', 'string');
 
     }
 
