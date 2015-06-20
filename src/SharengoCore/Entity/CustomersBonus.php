@@ -130,6 +130,21 @@ class CustomersBonus
     private $promocode;
 
 
+    public static function createFromPromoCode(PromoCodes $promoCode) {
+
+        $promoCodeDetails = $promoCode->getPromocodesinfo();
+
+        $me = new CustomersBonus();
+        $me->setInsertTs(new \DateTime());
+        $me->setUpdateTs($me->getInsertTs());
+        $me->setTotal($promoCodeDetails->getMinutes());
+        $me->setResidual($me->getTotal());
+        $me->setValidFrom($me->getInsertTs());
+        $me->setPromoCode($promoCode);
+
+        return $me;
+        
+    }
 
     /**
      * Get id
