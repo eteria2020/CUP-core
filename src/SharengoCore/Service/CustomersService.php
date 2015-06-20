@@ -42,6 +42,10 @@ class CustomersService implements ValidatorServiceInterface
         $this->datatableService = $datatableService;
     }
 
+    public function getCustomerEntity($serializedCustomer) {
+        return $this->entityManager->merge($serializedCustomer);
+    }
+
     /**
      * @return mixed
      */
@@ -225,4 +229,5 @@ class CustomersService implements ValidatorServiceInterface
 
         return $bonus;
     }
+    
 }

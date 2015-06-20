@@ -1407,4 +1407,43 @@ class Customers
 		return $this->customersbonuses;
 	}
 
+    public function getValidBonuses() {
+
+        $validBonuses = [];
+
+        foreach ($this->getBonuses() as $bonus) {
+            if ($bonus->getActive() &&
+                $bonus->getResidual() > 0 &&
+                $bonus->getValidFrom() <= new \DateTime() &&
+                $bonus->getValidTo() >= new \DateTime()) {
+                $validBonuses[] = $bonus;
+            }
+        }
+
+        return $validBonuses;
+        
+    }
+
+    public function getTotalBonuses() {
+
+        $total = 0;
+        foreach ($this->getValidBonuses() as $bonus) {
+            $total =+ $bonus->getTotal();
+        }
+
+        return $total;
+
+    }
+
+    public function getResidualBonuses() {
+
+        $total = 0;
+        foreach ($this->getValidBonuses() as $bonus) {
+            $total =+ $bonus->getResidual();
+        }
+
+        return $total;
+
+    }
+
 }
