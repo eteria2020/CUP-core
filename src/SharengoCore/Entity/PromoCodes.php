@@ -30,6 +30,20 @@ class PromoCodes
     private $promocode;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="text", nullable=true)
+     */
+    private $description;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="active", type="boolean", nullable=false)
+     */
+    private $active = true;
+    
+    /**
      * @var \PromoCodesInfo
      *
      * @ORM\ManyToOne(targetEntity="PromoCodesInfo")
@@ -38,9 +52,8 @@ class PromoCodes
      * })
      */
     private $promocodesinfo;
+
     
-
-
 
 
     /**
@@ -75,6 +88,54 @@ class PromoCodes
     public function getPromocode()
     {
         return $this->promocode;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     *
+     * @return PromoCodes
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set active
+     *
+     * @param boolean $active
+     *
+     * @return PromoCodesInfo
+     */
+    public function setActive($active)
+    {
+        $this->active = $active;
+
+        return $this;
+    }
+
+    /**
+     * Get active
+     *
+     * @return boolean
+     */
+    public function getActive()
+    {
+        return $this->active;
     }
 
     /**

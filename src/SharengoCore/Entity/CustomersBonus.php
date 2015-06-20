@@ -119,6 +119,16 @@ class CustomersBonus
      */
     private $webuser;
 
+    /**
+     * @var \PromoCodes
+     *
+     * @ORM\ManyToOne(targetEntity="PromoCodes")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="promocode_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $promocode;
+
 
 
     /**
@@ -441,5 +451,29 @@ class CustomersBonus
     public function getWebuser()
     {
         return $this->webuser;
+    }
+
+    /**
+     * Set promocode
+     *
+     * @param \SharengoCore\Entity\Promocodes $promocode
+     *
+     * @return CustomersBonus
+     */
+    public function setPromocode(\SharengoCore\Entity\PromoCodes $promocode = null)
+    {
+        $this->promocode = $promocode;
+
+        return $this;
+    }
+
+    /**
+     * Get promocode
+     *
+     * @return \SharengoCore\Entity\Promocodes
+     */
+    public function getPromocode()
+    {
+        return $this->promocode;
     }
 }
