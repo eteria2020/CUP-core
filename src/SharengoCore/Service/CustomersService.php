@@ -3,6 +3,7 @@
 namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\CustomersBonus;
 use SharengoCore\Service\DatatableService;
 
 use Zend\Authentication\AuthenticationService as UserService;
@@ -213,5 +214,15 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->flush();
 
         return $customer;
+    }
+
+    public function addBonus(Customers $customer, CustomersBonus $bonus)
+    {
+        $bonus->setCustomer($customer);
+
+        $this->entityManager->persist($bonus);
+        $this->entityManager->flush();
+
+        return $bonus;
     }
 }

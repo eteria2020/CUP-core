@@ -326,6 +326,14 @@ class Customers
      */
     private $card;
 
+    /**
+     * Bidirectional - One-To-Many (INVERSE SIDE)
+     *
+     * @ORM\OneToMany(targetEntity="CustomersBonus", mappedBy="customer")
+     */
+    private $customersbonuses;
+    
+
     public function __construct()
     {
         $this->insertedTs = date('Y-m-d h:i:s');
@@ -1389,4 +1397,14 @@ class Customers
     {
         return $this->card;
     }
+
+    /**
+	 * Get list of customer bonuses
+	 *
+	 * @return Array of Doctrine Entities
+	 */
+	public function getBonuses() {
+		return $this->customersbonuses;
+	}
+
 }
