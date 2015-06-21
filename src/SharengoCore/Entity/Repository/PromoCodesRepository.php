@@ -10,4 +10,23 @@ namespace SharengoCore\Entity\Repository;
  */
 class PromoCodesRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    public function getActivePromoCode($promoCode) {
+
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT pc
+                FROM \SharengoCore\Entity\Promocodes pc
+                JOIN pc.promocodesinfo pci
+                WHERE pc.promocode LIKE :promocode
+                AND pc.active = true
+                AND pci.active = true';
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('promocode', $promoCode);
+
+        return $query->getOneOrNullResult();
+
+    }
+
 }

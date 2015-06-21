@@ -326,6 +326,14 @@ class Customers
      */
     private $card;
 
+    /**
+     * Bidirectional - One-To-Many (INVERSE SIDE)
+     *
+     * @ORM\OneToMany(targetEntity="CustomersBonus", mappedBy="customer")
+     */
+    private $customersbonuses;
+    
+
     public function __construct()
     {
         $this->insertedTs = date('Y-m-d h:i:s');
@@ -1389,4 +1397,53 @@ class Customers
     {
         return $this->card;
     }
+
+    /**
+	 * Get list of customer bonuses
+	 *
+	 * @return Array of Doctrine Entities
+	 */
+	public function getBonuses() {
+		return $this->customersbonuses;
+	}
+
+    public function getValidBonuses() {
+
+        $validBonuses = [];
+        
+        foreach ($this->getBonuses() as $bonus) {
+            if ($bonus->getActive() &&
+                $bonus->getResidual() > 0 &&
+                $bonus->getValidFrom() <= new \DateTime() &&
+                (null == $bonus->getValidTo() || $bonus->getValidTo() >= new \DateTime())) {
+                $validBonuses[] = $bonus;
+            }
+        }
+
+        return $validBonuses;
+        
+    }
+
+    public function getTotalBonuses() {
+
+        $total = 0;
+        foreach ($this->getValidBonuses() as $bonus) {
+            $total =+ $bonus->getTotal();
+        }
+
+        return $total;
+
+    }
+
+    public function getResidualBonuses() {
+
+        $total = 0;
+        foreach ($this->getValidBonuses() as $bonus) {
+            $total =+ $bonus->getResidual();
+        }
+
+        return $total;
+
+    }
+
 }
