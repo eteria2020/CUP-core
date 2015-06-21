@@ -1410,12 +1410,12 @@ class Customers
     public function getValidBonuses() {
 
         $validBonuses = [];
-
+        
         foreach ($this->getBonuses() as $bonus) {
             if ($bonus->getActive() &&
                 $bonus->getResidual() > 0 &&
                 $bonus->getValidFrom() <= new \DateTime() &&
-                $bonus->getValidTo() >= new \DateTime()) {
+                (null == $bonus->getValidTo() || $bonus->getValidTo() >= new \DateTime())) {
                 $validBonuses[] = $bonus;
             }
         }
