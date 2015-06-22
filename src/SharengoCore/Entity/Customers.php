@@ -1428,7 +1428,7 @@ class Customers
 
         $total = 0;
         foreach ($this->getValidBonuses() as $bonus) {
-            $total =+ $bonus->getTotal();
+            $total += $bonus->getTotal();
         }
 
         return $total;
@@ -1439,7 +1439,7 @@ class Customers
 
         $total = 0;
         foreach ($this->getValidBonuses() as $bonus) {
-            $total =+ $bonus->getResidual();
+            $total += $bonus->getResidual();
         }
 
         return $total;
