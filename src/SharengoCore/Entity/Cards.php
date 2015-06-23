@@ -16,7 +16,6 @@ class Cards
      * @var string
      *
      * @ORM\Column(name="rfid", type="text", nullable=false)
-     * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
      */
     private $rfid;
@@ -25,6 +24,7 @@ class Cards
      * @var string
      *
      * @ORM\Column(name="code", type="text", nullable=false)
+     * @ORM\Id
      */
     private $code;
 
