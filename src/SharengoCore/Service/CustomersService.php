@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonus;
+use SharengoCore\Entity\Repository\CustomersBonusRepository;
 use SharengoCore\Service\DatatableService;
 
 use Zend\Authentication\AuthenticationService as UserService;
@@ -17,6 +18,9 @@ class CustomersService implements ValidatorServiceInterface
     private $entityManager;
 
     private $clientRepository;
+
+    /** @var  CustomersBonusRepository */
+    private $customersBonusRepository;
 
     /**
      * @var UserService
@@ -34,11 +38,9 @@ class CustomersService implements ValidatorServiceInterface
     public function __construct($entityManager, UserService $userService, DatatableService $datatableService)
     {
         $this->entityManager = $entityManager;
-
         $this->clientRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Customers');
-
+        $this->customersBonusRepository = $this->entityManager->getRepository('\SharengoCore\Entity\CustomersBonus');
         $this->userService = $userService;
-
         $this->datatableService = $datatableService;
     }
 
@@ -229,5 +231,11 @@ class CustomersService implements ValidatorServiceInterface
 
         return $bonus;
     }
-    
+
+    public function getAllBonus(Customers $customer)
+    {
+        return $this->customersBonusRepository->findBy([
+            'customer' => $customer
+        ]);
+    }
 }
