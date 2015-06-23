@@ -125,6 +125,14 @@ class CustomersService implements ValidatorServiceInterface
         return $customer;
     }
 
+    public function enableApi(Customers $customer)
+    {
+        $customer->setEnabled(true);
+
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush($customer);
+    }
+
     public function increaseCustomerProfilingCounter(Customers $customer)
     {
         $customer->setProfilingCounter($customer->getProfilingCounter() + 1);
