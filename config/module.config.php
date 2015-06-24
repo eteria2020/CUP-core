@@ -16,6 +16,7 @@ return [
             'SharengoCore\Service\TripsService'        => 'SharengoCore\Service\TripsServiceFactory',
             'SharengoCore\Service\DatatableService'    => 'SharengoCore\Service\DatatableServiceFactory',
             'SharengoCore\Service\CarsService'         => 'SharengoCore\Service\CarsServiceFactory',
+            'SharengoCore\Service\PoisService'         => 'SharengoCore\Service\PoisServiceFactory',
             'SharengoCore\Service\ReservationsService' => 'SharengoCore\Service\ReservationsServiceFactory',
             'SharengoCore\Service\PromoCodesService'   => 'SharengoCore\Service\PromoCodesServiceFactory',
             'SharengoCore\Service\CardsService'        => 'SharengoCore\Service\CardsServiceFactory',
