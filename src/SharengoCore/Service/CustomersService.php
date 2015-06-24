@@ -5,6 +5,7 @@ namespace SharengoCore\Service;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonus;
 use SharengoCore\Entity\Repository\CustomersBonusRepository;
+use SharengoCore\Entity\Cards;
 use SharengoCore\Service\DatatableService;
 
 use Zend\Authentication\AuthenticationService as UserService;
@@ -35,13 +36,18 @@ class CustomersService implements ValidatorServiceInterface
     /**
      * @param $entityManager
      */
-    public function __construct($entityManager, UserService $userService, DatatableService $datatableService)
-    {
+    public function __construct(
+        $entityManager,
+        UserService $userService,
+        DatatableService $datatableService,
+        CardsService $cardsService
+    ) {
         $this->entityManager = $entityManager;
         $this->clientRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Customers');
         $this->customersBonusRepository = $this->entityManager->getRepository('\SharengoCore\Entity\CustomersBonus');
         $this->userService = $userService;
         $this->datatableService = $datatableService;
+        $this->cardsService = $cardsService;
     }
 
     public function getCustomerEntity($serializedCustomer) {
@@ -245,5 +251,21 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersBonusRepository->findBy([
             'customer' => $customer
         ]);
+    }
+
+    /**
+     * assign a Card to the Customer.
+     * if the card is null, it first creates a virtual one
+     */
+    public function assignCard(Customers $customer, Cards $card = null)
+    {
+        if (is_null($card)) {
+            $card = $this->cardsService->createVirtualCard($customer);
+        }
+
+        $customer->setCard($card);
+
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
     }
 }

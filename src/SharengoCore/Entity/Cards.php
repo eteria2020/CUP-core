@@ -43,6 +43,19 @@ class Cards
     private $notes;
 
 
+    /**
+     * Set rfid
+     *
+     * @param string $rfid
+     *
+     * @return Cards
+     */
+    public function setRfid($rfid)
+    {
+        $this->rfid = $rfid;
+
+        return $this;
+    }
 
     /**
      * Get rfid

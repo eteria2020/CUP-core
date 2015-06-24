@@ -23,6 +23,8 @@ class CustomersServiceFactory implements FactoryInterface
             )
         );
 
-        return new CustomersService($entityManager, $userService, $I_datatableService);
+        $cardsService = $serviceLocator->get('SharengoCore\Service\CardsService');
+
+        return new CustomersService($entityManager, $userService, $I_datatableService, $cardsService);
     }
 }

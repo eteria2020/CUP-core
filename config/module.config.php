@@ -18,6 +18,7 @@ return [
             'SharengoCore\Service\CarsService'         => 'SharengoCore\Service\CarsServiceFactory',
             'SharengoCore\Service\ReservationsService' => 'SharengoCore\Service\ReservationsServiceFactory',
             'SharengoCore\Service\PromoCodesService'   => 'SharengoCore\Service\PromoCodesServiceFactory',
+            'SharengoCore\Service\CardsService'        => 'SharengoCore\Service\CardsServiceFactory',
         ]
     ],
     'doctrine'        => [
