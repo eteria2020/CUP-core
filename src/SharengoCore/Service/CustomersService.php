@@ -257,15 +257,31 @@ class CustomersService implements ValidatorServiceInterface
      * assign a Card to the Customer.
      * if the card is null, it first creates a virtual one
      */
-    public function assignCard(Customers $customer, Cards $card = null)
+    public function assignCard(Customers $customer, Cards $card = null, $isAssigned = null)
     {
         if (is_null($card)) {
             $card = $this->cardsService->createVirtualCard($customer);
         }
 
+        if(!is_null($isAssigned) && $isAssigned === true) {
+            $card->setIsAssigned(true);
+        }
+
         $customer->setCard($card);
 
         $this->entityManager->persist($customer);
+        $this->entityManager->flush();
+    }
+
+    public function removeCard(Customers $customer) {
+
+        $card = $customer->getCard();
+        $customer->setCard(null);
+        $card->setIsAssigned(false);
+
+        $this->entityManager->persist($card);
+        $this->entityManager->persist($customer);
+
         $this->entityManager->flush();
     }
 }

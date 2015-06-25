@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Cards
  *
  * @ORM\Table(name="cards", uniqueConstraints={@ORM\UniqueConstraint(name="cards_code_key", columns={"code"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CardsRepository")
  */
 class Cards
 {
