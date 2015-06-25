@@ -31,14 +31,15 @@ class CustomersController extends AbstractRestfulController
 
     public function getList()
     {
-        $customers = $this->customersService->getListCustomers();
+        $limit = $this->params()->fromQuery('limit');
+        $customers = $this->customersService->getListCustomersFilteredLimited([],$limit);
         $returnCustomers = [];
         $returnData = [];
 
         foreach ($customers as $value) {
             array_push($returnCustomers, $this->hydrator->extract($value));
         }
-        
+
         $returnData['status'] = 200;
         $returnData['reason'] = '';
         $returnData['data'] = $returnCustomers;

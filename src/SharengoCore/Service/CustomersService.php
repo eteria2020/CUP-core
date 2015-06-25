@@ -67,6 +67,19 @@ class CustomersService implements ValidatorServiceInterface
         return $this->clientRepository->getTotalCustomers();
     }
 
+    public function getListCustomersFiltered($filters = [])
+    {
+        return $this->clientRepository->findBy($filters, ['surname' => 'ASC']);
+    }
+
+    public function getListCustomersFilteredLimited($filters = [], $limit)
+    {
+        if ($limit === null || $limit > 10) {
+            $limit = 10;
+        }
+        return $this->clientRepository->findBy($filters, ['surname' => 'ASC'], $limit);
+    }
+
     public function getUserByEmailPassword($s_username, $s_password)
     {
         return $this->clientRepository->getUserByEmailPassword($s_username, $s_password);
