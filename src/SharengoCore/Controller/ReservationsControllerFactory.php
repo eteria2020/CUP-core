@@ -9,9 +9,6 @@ class ReservationsControllerFactory implements FactoryInterface
 {
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $config = $serviceLocator->getServiceLocator()->get('Config');
-        $apiUrl = $config['api']['url'] . '/reservations';
-
-        return new ReservationsController($apiUrl);
+        return new ReservationsController();
     }
 }

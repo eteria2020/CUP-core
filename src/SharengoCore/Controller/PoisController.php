@@ -12,11 +12,6 @@ class PoisController extends AbstractRestfulController
 {
 
     /**
-     * @var string
-     */
-    private $url;
-
-    /**
      * @var PoisService
      */
     private $poisService;
@@ -27,11 +22,9 @@ class PoisController extends AbstractRestfulController
     private $hydrator;
 
     public function __construct(
-      $url,
       PoisService $poisService,
       DoctrineHydrator $hydrator
     ) {
-        $this->url = sprintf($url, '');
         $this->poisService = $poisService;
         $this->hydrator = $hydrator;
     }

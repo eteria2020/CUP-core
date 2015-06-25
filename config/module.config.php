@@ -5,12 +5,11 @@ namespace SharengoCore;
 return [
 
     'router' => array(
-            'router_class' => 'Zend\Mvc\Router\Http\TranslatorAwareTreeRouteStack',
             'routes' => array(
                 'core' => [
                 'type' => 'Segment',
                 'options' => [
-                    'route' => '/{core}',
+                    'route' => '/core',
                     'defaults' => [
                         '__NAMESPACE__' => 'SharengoCore\Controller',
                         'controller' => 'Cars',

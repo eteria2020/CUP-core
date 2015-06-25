@@ -9,27 +9,14 @@ use Zend\Http\Client;
 class ReservationsController extends AbstractRestfulController
 {
 
-    /**
-     * @var string
-     */
-    private $url;
-
-    public function __construct($url)
+    public function __construct()
     {
-        $this->url = sprintf($url, '');
+        
     }
 
     public function getList()
     {
 
-    	$client = new Client($this->url, array(
-            'maxredirects' => 0,
-            'timeout'      => 30
-        ));
-
-        $response = $client->send();
-        
-        return new JsonModel(json_decode($response->getBody(), true));
     }
  
     public function get($plate)

@@ -12,11 +12,6 @@ class CarsController extends AbstractRestfulController
 {
 
     /**
-     * @var string
-     */
-    private $url;
-
-    /**
      * @var CarsService
      */
     private $carsService;
@@ -27,11 +22,9 @@ class CarsController extends AbstractRestfulController
     private $hydrator;
 
     public function __construct(
-        $url,
         CarsService $carsService,
         DoctrineHydrator $hydrator
     ) {
-        $this->url = sprintf($url, '');
         $this->carsService = $carsService;
         $this->hydrator = $hydrator;
     }

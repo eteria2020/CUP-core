@@ -10,13 +10,10 @@ class PoisControllerFactory implements FactoryInterface
 {
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $config = $serviceLocator->getServiceLocator()->get('Config');
-        $apiUrl = $config['api']['url'] . '/pois';
-
         $poisService = $serviceLocator->getServiceLocator()->get('SharengoCore\Service\PoisService');
         $entityManager = $serviceLocator->getServiceLocator()->get('doctrine.entitymanager.orm_default');
         $hydrator = new DoctrineHydrator($entityManager);
         
-        return new PoisController($apiUrl, $poisService, $hydrator);
+        return new PoisController($poisService, $hydrator);
     }
 }
