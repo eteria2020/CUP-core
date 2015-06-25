@@ -227,9 +227,9 @@ class Cars
     /**
      * @var integer
      *
-     * @ORM\Column(name="soc", type="integer", nullable=true)
+     * @ORM\Column(name="soc", type="integer", nullable=false)
      */
-    private $soc;
+    private $soc = 0;
 
     /**
      * @var string
