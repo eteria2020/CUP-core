@@ -53,7 +53,7 @@ class CardsService
         foreach ($cards as $card) {
 
             $as_cards[] = [
-                'id'   => $card->getRfid(),
+                'id'   => $card->getCode(),
                 'name' => sprintf('Rfid: %s - Codice: %s', $card->getRfid(), $card->getCode())
             ];
         }
@@ -61,10 +61,10 @@ class CardsService
         return $as_cards;
     }
 
-    public function getCard($rfid)
+    public function getCard($code)
     {
         return $this->cardsRepository->findOneBy([
-            'rfid' => $rfid
+            'code' => $code
         ]);
     }
 }
