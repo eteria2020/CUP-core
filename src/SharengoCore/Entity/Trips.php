@@ -182,6 +182,13 @@ class Trips
      */
     private $customer;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_accounted", type="boolean", nullable=false, options={"default" = FALSE})
+     */
+    private $isAccounted = false;
+
 
 
     /**
