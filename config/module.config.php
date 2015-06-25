@@ -7,10 +7,10 @@ return [
     'router' => array(
             'router_class' => 'Zend\Mvc\Router\Http\TranslatorAwareTreeRouteStack',
             'routes' => array(
-                'api' => [
+                'core' => [
                 'type' => 'Segment',
                 'options' => [
-                    'route' => '/{api}',
+                    'route' => '/{core}',
                     'defaults' => [
                         '__NAMESPACE__' => 'SharengoCore\Controller',
                         'controller' => 'Cars',
@@ -22,9 +22,9 @@ return [
                         'cars' => [
                             'type' => 'Segment',
                             'options' => [
-                                'route' => '/cars[/:id]',
+                                'route' => '/cars[/:plate]',
                                 'constraints' => array(
-                                    'id'     => '[0-9]+',
+                                    'plate'     => '[a-zA-Z0-9_-]+',
                                 ),
                                 'defaults' => [
                                     '__NAMESPACE__' => 'SharengoCore\Controller',

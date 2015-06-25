@@ -32,7 +32,17 @@ class ReservationsController extends AbstractRestfulController
         return new JsonModel(json_decode($response->getBody(), true));
     }
  
+    public function get($plate)
+    {
+        
+    }
+ 
     public function create($data)
+    {
+        
+    }
+ 
+    public function update($id, $data)
     {
         
     }

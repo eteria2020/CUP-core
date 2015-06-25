@@ -6,6 +6,7 @@ use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 use Zend\Http\Client;
 use SharengoCore\Service\PoisService;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class PoisController extends AbstractRestfulController
 {
@@ -20,36 +21,30 @@ class PoisController extends AbstractRestfulController
      */
     private $poisService;
 
-    public function __construct($url, PoisService $poisService)
-    {
+    /**
+     * @var DoctrineHydrator
+     */
+    private $hydrator;
+
+    public function __construct(
+      $url,
+      PoisService $poisService,
+      DoctrineHydrator $hydrator
+    ) {
         $this->url = sprintf($url, '');
         $this->poisService = $poisService;
+        $this->hydrator = $hydrator;
     }
 
     public function getList()
     {
-        /*
-        $client = new Client($this->url, array(
-            'maxredirects' => 0,
-            'timeout'      => 30
-        ));
-
-        $response = $client->send();
-        
-        return new JsonModel(json_decode($response->getBody(), true));
-        */
-       
        $poisList = $this->poisService->getListPois();
        $returnPois = [];
        $pois = [];
        $returnData = [];
 
        foreach ($poisList as $value) {
-           $pois['lat'] = $value->getLat();
-           $pois['lon'] = $value->getLon();
-           $pois['type'] = $value->getType();
-           $pois['address'] = $value->getAddress();
-           array_push($returnPois, $pois);
+           array_push($returnPois, $this->hydrator->extract($value));
        }
        $returnData['data'] = $returnPois;
 

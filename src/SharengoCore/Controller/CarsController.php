@@ -6,6 +6,7 @@ use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 use Zend\Http\Client;
 use SharengoCore\Service\CarsService;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class CarsController extends AbstractRestfulController
 {
@@ -20,48 +21,40 @@ class CarsController extends AbstractRestfulController
      */
     private $carsService;
 
-    public function __construct($url, CarsService $carsService)
-    {
+    /**
+     * @var DoctrineHydrator
+     */
+    private $hydrator;
+
+    public function __construct(
+        $url,
+        CarsService $carsService,
+        DoctrineHydrator $hydrator
+    ) {
         $this->url = sprintf($url, '');
         $this->carsService = $carsService;
+        $this->hydrator = $hydrator;
     }
 
     public function getList()
     {
-        /*
-        $client = new Client($this->url, array(
-            'maxredirects' => 0,
-            'timeout'      => 30
-        ));
+        $cars = $this->carsService->getListCars();
+        $returnCars = [];
+        $returnData = [];
 
-        $response = $client->send();
-
-        return new JsonModel(json_decode($response->getBody(), true));
-        */
-       
-       $cars = $this->carsService->getListCars();
-       $returnCars = [];
-       $car = [];
-       $returnData = [];
-
-       foreach ($cars as $value) {
-           $car['plate'] = $value->getPlate();
-           $car['intCleanliness'] = $value->getIntCleanliness();
-           $car['extCleanliness'] = $value->getExtCleanliness();
-           $car['battery'] = $value->getBattery();
-           $car['busy'] = $value->getBusy();
-           $car['status'] = $value->getStatus();
-           $car['latitude'] = $value->getLatitude();
-           $car['longitude'] = $value->getLongitude();
-           array_push($returnCars, $car);
-       }
-       $returnData['data'] = $returnCars;
+        foreach ($cars as $value) {
+            array_push($returnCars, $this->hydrator->extract($value));
+        }
+        $returnData['data'] = $returnCars;
 
        return new JsonModel($returnData);
     }
  
-    public function get($id)
+    public function get($plate)
     {
-        
+        $car = $carsService->getCarByPlate($plate);
+        $returnData = [];
+        $returnData['data'] = $car;
+        return new JsonModel($returnData);
     }
 }
