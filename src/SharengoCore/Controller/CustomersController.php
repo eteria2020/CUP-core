@@ -31,23 +31,25 @@ class CustomersController extends AbstractRestfulController
 
     public function getList()
     {
-        $cars = $this->carsService->getListCars();
-        $returnCars = [];
+        $customers = $this->customersService->getListCustomers();
+        $returnCustomers = [];
         $returnData = [];
 
-        foreach ($cars as $value) {
-            array_push($returnCars, $this->hydrator->extract($value));
+        foreach ($customers as $value) {
+            array_push($returnCustomers, $this->hydrator->extract($value));
         }
-        $returnData['data'] = $returnCars;
+        
+        $returnData['status'] = 200;
+        $returnData['reason'] = '';
+        $returnData['data'] = $returnCustomers;
 
        return new JsonModel($returnData);
     }
- 
-    public function get($plate)
-    {
-        $car = $carsService->getCarByPlate($plate);
-        $returnData = [];
-        $returnData['data'] = $car;
-        return new JsonModel($returnData);
-    }
+
+/*nella ricerca user c'è ma mettere la possibilità di filtrare anche per
+- surname
+- name
+- phone (nel db c'è phone e mobile, filtra in or secondo me)
+- card_code*/
+
 }

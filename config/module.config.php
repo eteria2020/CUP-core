@@ -39,6 +39,15 @@ return [
                                 ]
                             ]
                         ],
+                        'users' => [
+                            'type' => 'Literal',
+                            'options' => [
+                                'route' => '/users',
+                                'defaults' => [
+                                    'controller' => 'Customers'
+                                ]
+                            ]
+                        ],
                         'reservations' => [
                             'type' => 'Segment',
                             'options' => [
@@ -81,7 +90,7 @@ return [
             'SharengoCore\Service\ReservationsService' => 'SharengoCore\Service\ReservationsServiceFactory',
             'SharengoCore\Service\PromoCodesService'   => 'SharengoCore\Service\PromoCodesServiceFactory',
             'SharengoCore\Service\CardsService'        => 'SharengoCore\Service\CardsServiceFactory',
-            'SharengoCore\Service\CommandsService'        => 'SharengoCore\Service\CommandsServiceFactory',
+            'SharengoCore\Service\CommandsService'     => 'SharengoCore\Service\CommandsServiceFactory',
         ]
     ],
     'doctrine'        => [
