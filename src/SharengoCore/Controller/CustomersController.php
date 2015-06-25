@@ -52,7 +52,7 @@ class CustomersController extends AbstractRestfulController
             $filters['mobile'] = $this->params()->fromQuery('phone');
         }
         if ($this->params()->fromQuery('card_code') !== null) {
-            $filters['card_code'] = $this->params()->fromQuery('card_code');
+            $filters['card'] = $this->params()->fromQuery('card_code');
         }
 
         // get customers
@@ -70,11 +70,5 @@ class CustomersController extends AbstractRestfulController
 
        return new JsonModel($returnData);
     }
-
-/*nella ricerca user c'è ma mettere la possibilità di filtrare anche per
-- surname
-- name
-- phone (nel db c'è phone e mobile, filtra in or secondo me)
-- card_code*/
 
 }
