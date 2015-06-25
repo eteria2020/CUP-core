@@ -3,9 +3,73 @@
 namespace SharengoCore;
 
 return [
+
+    'router' => array(
+            'router_class' => 'Zend\Mvc\Router\Http\TranslatorAwareTreeRouteStack',
+            'routes' => array(
+                'api' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/{api}',
+                    'defaults' => [
+                        '__NAMESPACE__' => 'SharengoCore\Controller',
+                        'controller' => 'Cars',
+                        ]
+                    ],
+                    'may_terminate' => true,
+                    'child_routes' => [
+
+                        'cars' => [
+                            'type' => 'Segment',
+                            'options' => [
+                                'route' => '/cars[/:id]',
+                                'constraints' => array(
+                                    'id'     => '[0-9]+',
+                                ),
+                                'defaults' => [
+                                    '__NAMESPACE__' => 'SharengoCore\Controller',
+                                    'controller' => 'Cars'
+                                ]
+                            ]
+                        ],
+                        'pois' => [
+                            'type' => 'Literal',
+                            'options' => [
+                                'route' => '/pois',
+                                'defaults' => [
+                                    '__NAMESPACE__' => 'SharengoCore\Controller',
+                                    'controller' => 'Pois'
+                                ]
+                            ]
+                        ],
+                        'reservations' => [
+                            'type' => 'Segment',
+                            'options' => [
+                                'route' => '/reservations[/:id]',
+                                'constraints' => array(
+                                    'id'     => '[0-9]+',
+                                ),
+                                'defaults' => [
+                                    '__NAMESPACE__' => 'SharengoCore\Controller',
+                                    'controller' => 'Reservations'
+                                ]
+                            ]
+                        ],
+                    ],
+                ],
+            ),
+        ),
+    'controllers' => [
+        'factories' => [
+            'SharengoCore\Controller\Cars'             => 'SharengoCore\Controller\CarsControllerFactory',
+            'SharengoCore\Controller\Pois'             => 'SharengoCore\Controller\PoisControllerFactory',
+            'SharengoCore\Controller\Reservations'     => 'SharengoCore\Controller\ReservationsControllerFactory'
+        ],
+    ],
+
     'service_manager' => [
         'invokables' => [
-            'SharengoCore\Service\DatatableQueryBuilder' => 'SharengoCore\Service\DatatableQueryBuilders\Basic'
+            'SharengoCore\Service\DatatableQueryBuilder' => 'SharengoCore\Service\DatatableQueryBuilders\Basic',
         ],
         'factories' => [
             'SharengoCore\Service\CustomersService'    => 'SharengoCore\Service\CustomersServiceFactory',
@@ -37,4 +101,13 @@ return [
             ],
         ],
     ],
+    'bjyauthorize' => array(
+        'guards' => array(
+            'BjyAuthorize\Guard\Controller' => array(
+                array('controller' => 'SharengoCore\Controller\Cars', 'roles' => array()),
+                array('controller' => 'SharengoCore\Controller\Pois', 'roles' => array()),
+                array('controller' => 'SharengoCore\Controller\Reservations', 'roles' => array()),
+            ),
+        ),
+    ),
 ];
