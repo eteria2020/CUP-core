@@ -74,9 +74,6 @@ class CustomersService implements ValidatorServiceInterface
 
     public function getListCustomersFilteredLimited($filters = [], $limit)
     {
-        if ($limit === null || $limit > 10) {
-            $limit = 10;
-        }
         return $this->clientRepository->findBy($filters, ['surname' => 'ASC'], $limit);
     }
 
