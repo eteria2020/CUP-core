@@ -26,7 +26,6 @@ return [
                                     'plate'     => '[a-zA-Z0-9_-]+',
                                 ),
                                 'defaults' => [
-                                    '__NAMESPACE__' => 'SharengoCore\Controller',
                                     'controller' => 'Cars'
                                 ]
                             ]
@@ -36,7 +35,6 @@ return [
                             'options' => [
                                 'route' => '/pois',
                                 'defaults' => [
-                                    '__NAMESPACE__' => 'SharengoCore\Controller',
                                     'controller' => 'Pois'
                                 ]
                             ]
@@ -49,7 +47,6 @@ return [
                                     'id'     => '[0-9]+',
                                 ),
                                 'defaults' => [
-                                    '__NAMESPACE__' => 'SharengoCore\Controller',
                                     'controller' => 'Reservations'
                                 ]
                             ]
@@ -61,6 +58,7 @@ return [
     'controllers' => [
         'factories' => [
             'SharengoCore\Controller\Cars'             => 'SharengoCore\Controller\CarsControllerFactory',
+            'SharengoCore\Controller\Customers'             => 'SharengoCore\Controller\CustomersControllerFactory',
             'SharengoCore\Controller\Pois'             => 'SharengoCore\Controller\PoisControllerFactory',
             'SharengoCore\Controller\Reservations'     => 'SharengoCore\Controller\ReservationsControllerFactory'
         ],
@@ -83,6 +81,7 @@ return [
             'SharengoCore\Service\ReservationsService' => 'SharengoCore\Service\ReservationsServiceFactory',
             'SharengoCore\Service\PromoCodesService'   => 'SharengoCore\Service\PromoCodesServiceFactory',
             'SharengoCore\Service\CardsService'        => 'SharengoCore\Service\CardsServiceFactory',
+            'SharengoCore\Service\CommandsService'        => 'SharengoCore\Service\CommandsServiceFactory',
         ]
     ],
     'doctrine'        => [
@@ -104,6 +103,7 @@ return [
         'guards' => array(
             'BjyAuthorize\Guard\Controller' => array(
                 array('controller' => 'SharengoCore\Controller\Cars', 'roles' => array()),
+                array('controller' => 'SharengoCore\Controller\Customers', 'roles' => array()),
                 array('controller' => 'SharengoCore\Controller\Pois', 'roles' => array()),
                 array('controller' => 'SharengoCore\Controller\Reservations', 'roles' => array()),
             ),
