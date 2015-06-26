@@ -8,6 +8,7 @@ use SharengoCore\Entity\Repository\CarsRepository;
 use SharengoCore\Service\DatatableService;
 
 use Zend\Authentication\AuthenticationService as UserService;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class CarsService
 {
@@ -21,6 +22,11 @@ class CarsService
     private $datatableService;
 
     /**
+     * @var DoctrineHydrator
+     */
+    private $hydrator;
+
+    /**
      * @param EntityManager    $entityManager
      * @param CarsRepository   $carsRepository
      * @param DatatableService $datatableService
@@ -28,11 +34,13 @@ class CarsService
     public function __construct(
         EntityManager $entityManager,
         CarsRepository $carsRepository,
-        DatatableService $datatableService
+        DatatableService $datatableService,
+        DoctrineHydrator $hydrator
     ) {
         $this->entityManager = $entityManager;
         $this->carsRepository = $carsRepository;
         $this->datatableService = $datatableService;
+        $this->hydrator = $hydrator;
     }
 
     /**
