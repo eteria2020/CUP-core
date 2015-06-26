@@ -46,8 +46,8 @@ class TripsController extends AbstractRestfulController
         if ($this->params()->fromQuery('plate') !== null) {
             $filters['car'] = $this->params()->fromQuery('plate');
         }
-        if ($this->params()->fromQuery('user') !== null) {
-            $user = $this->params()->fromQuery('user');
+        if ($this->params()->fromQuery('customer') !== null) {
+            $user = $this->params()->fromQuery('customer');
             if (is_numeric($user)) {
                 $filters['customer'] = $user;
             }
