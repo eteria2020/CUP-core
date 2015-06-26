@@ -6,7 +6,6 @@ use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 use Zend\Http\Client;
 use SharengoCore\Service\CustomersService;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class CustomersController extends AbstractRestfulController
 {
@@ -16,17 +15,10 @@ class CustomersController extends AbstractRestfulController
      */
     private $customersService;
 
-    /**
-     * @var DoctrineHydrator
-     */
-    private $hydrator;
-
     public function __construct(
-        CustomersService $customersService,
-        DoctrineHydrator $hydrator
+        CustomersService $customersService
     ) {
         $this->customersService = $customersService;
-        $this->hydrator = $hydrator;
     }
 
     public function getList()
@@ -60,7 +52,8 @@ class CustomersController extends AbstractRestfulController
 
         // process customers
         foreach ($customers as $value) {
-            array_push($returnCustomers, $this->hydrator->extract($value));
+            $customer = $this->customersService->toArray($value);
+            array_push($returnCustomers, $customer);
         }
 
         // return data

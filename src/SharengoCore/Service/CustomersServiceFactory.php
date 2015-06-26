@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class CustomersServiceFactory implements FactoryInterface
 {
@@ -25,6 +26,8 @@ class CustomersServiceFactory implements FactoryInterface
 
         $cardsService = $serviceLocator->get('SharengoCore\Service\CardsService');
 
-        return new CustomersService($entityManager, $userService, $I_datatableService, $cardsService);
+        $hydrator = new DoctrineHydrator($entityManager);
+
+        return new CustomersService($entityManager, $userService, $I_datatableService, $cardsService, $hydrator);
     }
 }
