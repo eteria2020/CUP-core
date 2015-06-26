@@ -41,36 +41,24 @@ class CarsController extends AbstractRestfulController
     public function getList()
     {
         $returnCars = [];
-        $returnData = [];
 
         $cars = $this->carsService->getListCars();
         foreach ($cars as $value) {
             array_push($returnCars, $this->hydrator->extract($value));
         }
 
-        $returnData['status'] = 200;
-        $returnData['reason'] = '';
-        $returnData['data'] = $returnCars;
-
-        return new JsonModel($returnData);
+        return new JsonModel(buildReturnData(200, 'reason', $returnCars));
     }
  
     public function get($plate)
     {
-        $returnData = [];
-
         $car = $this->carsService->getCarByPlate($plate);
 
-        $returnData['status'] = 200;
-        $returnData['reason'] = '';
-        $returnData['data'] = $car;
-
-        return new JsonModel($returnData);
+        return new JsonModel(buildReturnData(200, 'reason', $car));
     }
  
     public function update($plate, $data)
     {
-        $returnData = [];
         $cmd = '';
         $status = 200;
         $reason = '';
@@ -104,11 +92,22 @@ class CarsController extends AbstractRestfulController
             $this->commandsService->createCommand($plate, true, $cmd);
         }
 
+        return new JsonModel(buildReturnData($status, $reason));
+
+    }
+
+    /**
+     * @param  integer
+     * @param  string
+     * @param  mixed[]
+     * @return mixed[]
+     */
+    private function buildReturnData($status, $reason, $data = [])
+    {
+        $returnData = [];
         $returnData['status'] = $status;
         $returnData['reason'] = $reason;
-        $returnData['data'] = [];
-
-        return new JsonModel($returnData);
-
+        $returnData['data'] = $data;
+        return $returnData;
     }
 }

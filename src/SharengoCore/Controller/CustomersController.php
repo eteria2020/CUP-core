@@ -24,7 +24,6 @@ class CustomersController extends AbstractRestfulController
     public function getList()
     {
         $returnCustomers = [];
-        $returnData = [];
 
         // get limit
         $limit = $this->params()->fromQuery('limit');
@@ -56,12 +55,22 @@ class CustomersController extends AbstractRestfulController
             array_push($returnCustomers, $customer);
         }
 
-        // return data
-        $returnData['status'] = 200;
-        $returnData['reason'] = '';
-        $returnData['data'] = $returnCustomers;
+        return new JsonModel(buildReturnData(200, '', $returnCustomers));
+    }
 
-        return new JsonModel($returnData);
+    /**
+     * @param  integer
+     * @param  string
+     * @param  mixed[]
+     * @return mixed[]
+     */
+    private function buildReturnData($status, $reason, $data = [])
+    {
+        $returnData = [];
+        $returnData['status'] = $status;
+        $returnData['reason'] = $reason;
+        $returnData['data'] = $data;
+        return $returnData;
     }
 
 }

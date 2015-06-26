@@ -34,16 +34,33 @@ class TripsController extends AbstractRestfulController
         $tripsList = $this->tripsService->getListTrips();
         $returnTrips = [];
         $trips = [];
-        $returnData = [];
 
         foreach ($tripsList as $value) {
             array_push($returnTrips, $this->hydrator->extract($value));
         }
 
-        $returnData['status'] = 200;
-        $returnData['reason'] = '';
-        $returnData['data'] = $returnTrips;
+        return new JsonModel(buildReturnData(200, '', $returnTrips));
+    }
+ 
+    public function get($tripId)
+    {
+        $trip = $this->tripsService->getTripById($tripId);
 
-        return new JsonModel($returnData);
+        return new JsonModel(buildReturnData(200, '', $trip));
+    }
+
+    /**
+     * @param  integer
+     * @param  string
+     * @param  mixed[]
+     * @return mixed[]
+     */
+    private function buildReturnData($status, $reason, $data = [])
+    {
+        $returnData = [];
+        $returnData['status'] = $status;
+        $returnData['reason'] = $reason;
+        $returnData['data'] = $data;
+        return $returnData;
     }
 }

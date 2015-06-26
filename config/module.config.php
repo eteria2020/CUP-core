@@ -63,9 +63,9 @@ return [
                         'trips' => [
                             'type' => 'Segment',
                             'options' => [
-                                'route' => '/trips[/:id]',
+                                'route' => '/trips[/:tripId]',
                                 'constraints' => array(
-                                    'id'     => '[0-9]+',
+                                    'tripId'     => '[a-zA-Z0-9_-]+',
                                 ),
                                 'defaults' => [
                                     'controller' => 'Trips'

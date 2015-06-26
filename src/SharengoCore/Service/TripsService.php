@@ -49,6 +49,15 @@ class TripsService
         return $this->tripRepository->findTripsByCustomer($customerId);
     }
 
+    /**
+     * @param string
+     * @return Trips
+     */
+    public function getTripById($id)
+    {
+        return $this->tripRepository->getTripById($id);
+    }
+
     public function getDataDataTable(array $as_filters = [])
     {
         $trips = $this->I_datatableService->getData('Trips', $as_filters);
