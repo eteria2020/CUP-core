@@ -47,14 +47,14 @@ class CarsController extends AbstractRestfulController
             array_push($returnCars, $this->hydrator->extract($value));
         }
 
-        return new JsonModel(buildReturnData(200, 'reason', $returnCars));
+        return new JsonModel($this->buildReturnData(200, '', $returnCars));
     }
  
     public function get($plate)
     {
         $car = $this->carsService->getCarByPlate($plate);
 
-        return new JsonModel(buildReturnData(200, 'reason', $car));
+        return new JsonModel($this->buildReturnData(200, '', $car));
     }
  
     public function update($plate, $data)
@@ -92,7 +92,7 @@ class CarsController extends AbstractRestfulController
             $this->commandsService->createCommand($plate, true, $cmd);
         }
 
-        return new JsonModel(buildReturnData($status, $reason));
+        return new JsonModel($this->buildReturnData($status, $reason));
 
     }
 

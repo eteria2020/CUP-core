@@ -63,9 +63,9 @@ return [
                         'trips' => [
                             'type' => 'Segment',
                             'options' => [
-                                'route' => '/trips[/:tripId]',
+                                'route' => '/trips[/:id]',
                                 'constraints' => array(
-                                    'tripId'     => '[a-zA-Z0-9_-]+',
+                                    'id'     => '[0-9]+',
                                 ),
                                 'defaults' => [
                                     'controller' => 'Trips'
@@ -79,10 +79,10 @@ return [
     'controllers' => [
         'factories' => [
             'SharengoCore\Controller\Cars'             => 'SharengoCore\Controller\CarsControllerFactory',
-            'SharengoCore\Controller\Customers'             => 'SharengoCore\Controller\CustomersControllerFactory',
+            'SharengoCore\Controller\Customers'        => 'SharengoCore\Controller\CustomersControllerFactory',
             'SharengoCore\Controller\Pois'             => 'SharengoCore\Controller\PoisControllerFactory',
             'SharengoCore\Controller\Reservations'     => 'SharengoCore\Controller\ReservationsControllerFactory',
-            'SharengoCore\Controller\Trips'     => 'SharengoCore\Controller\TripsControllerFactory'
+            'SharengoCore\Controller\Trips'            => 'SharengoCore\Controller\TripsControllerFactory'
         ],
     ],
 

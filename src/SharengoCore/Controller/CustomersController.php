@@ -55,7 +55,7 @@ class CustomersController extends AbstractRestfulController
             array_push($returnCustomers, $customer);
         }
 
-        return new JsonModel(buildReturnData(200, '', $returnCustomers));
+        return new JsonModel($this->buildReturnData(200, '', $returnCustomers));
     }
 
     /**

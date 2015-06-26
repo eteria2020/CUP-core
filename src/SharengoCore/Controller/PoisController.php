@@ -34,13 +34,26 @@ class PoisController extends AbstractRestfulController
         $poisList = $this->poisService->getListPois();
         $returnPois = [];
         $pois = [];
-        $returnData = [];
 
         foreach ($poisList as $value) {
             array_push($returnPois, $this->hydrator->extract($value));
         }
-        $returnData['data'] = $returnPois;
 
-        return new JsonModel($returnData);
+        return new JsonModel($this->buildReturnData(200, '', $returnPois));
+    }
+
+    /**
+     * @param  integer
+     * @param  string
+     * @param  mixed[]
+     * @return mixed[]
+     */
+    private function buildReturnData($status, $reason, $data = [])
+    {
+        $returnData = [];
+        $returnData['status'] = $status;
+        $returnData['reason'] = $reason;
+        $returnData['data'] = $data;
+        return $returnData;
     }
 }

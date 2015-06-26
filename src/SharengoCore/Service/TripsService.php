@@ -50,12 +50,22 @@ class TripsService
     }
 
     /**
-     * @param string
+     * @param integer
      * @return Trips
      */
     public function getTripById($id)
     {
-        return $this->tripRepository->getTripById($id);
+        return $this->tripRepository->find($id);
+    }
+
+    public function getListTripsFiltered($filters = [])
+    {
+        return $this->tripRepository->findBy($filters, ['timestampEnd' => 'DESC']);
+    }
+
+    public function getListTripsFilteredLimited($filters = [], $limit)
+    {
+        return $this->tripRepository->findBy($filters, ['timestampEnd' => 'DESC'], $limit);
     }
 
     public function getDataDataTable(array $as_filters = [])

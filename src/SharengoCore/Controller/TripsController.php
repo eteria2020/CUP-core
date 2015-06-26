@@ -35,18 +35,42 @@ class TripsController extends AbstractRestfulController
         $returnTrips = [];
         $trips = [];
 
+        // get limit
+        $limit = $this->params()->fromQuery('limit');
+        if ($limit === null || $limit > 10 || $limit <= 0) {
+            $limit = 10;
+        }
+
+        // get filters
+        $filters = [];
+        if ($this->params()->fromQuery('plate') !== null) {
+            $filters['car'] = $this->params()->fromQuery('plate');
+        }
+        if ($this->params()->fromQuery('user') !== null) {
+            $user = $this->params()->fromQuery('user');
+            if (is_numeric($user)) {
+                $filters['customer'] = $user;
+            }
+        }
+
+        // get customers
+        $trips = $this->tripsService->getListTripsFilteredLimited($filters, $limit);
+
         foreach ($tripsList as $value) {
             array_push($returnTrips, $this->hydrator->extract($value));
         }
 
-        return new JsonModel(buildReturnData(200, '', $returnTrips));
+        return new JsonModel($this->buildReturnData(200, '', $returnTrips));
     }
  
-    public function get($tripId)
+    public function get($id)
     {
-        $trip = $this->tripsService->getTripById($tripId);
+        $trip = $this->tripsService->getTripById($id);
+        if ($trip === null) {
+            $trip = [];
+        }
 
-        return new JsonModel(buildReturnData(200, '', $trip));
+        return new JsonModel($this->buildReturnData(200, '', $trip));
     }
 
     /**
@@ -63,4 +87,11 @@ class TripsController extends AbstractRestfulController
         $returnData['data'] = $data;
         return $returnData;
     }
+
+    /*
+    /trips/of-car/:plate
+    /trips/last-closed-of-car/:plate
+    /trips/last-user-trips/:user
+    /trips/of-user/:user
+     */
 }
