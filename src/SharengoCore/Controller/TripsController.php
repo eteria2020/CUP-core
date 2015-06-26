@@ -78,10 +78,8 @@ class TripsController extends AbstractRestfulController
             $returnArray = [];
             $trip = $this->tripsService->toArray($value);
 
-            if ($isPlateSet) {
+            if ($limit == 1) {
                 $returnArray['car'] = $trip['car'];
-            }
-            if ($isCustomerSet) {
                 $returnArray['customer'] = $trip['customer'];
             }
             $returnArray['trip'] = $trip['trip'];
