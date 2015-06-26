@@ -36,6 +36,14 @@ class TripsService
     /**
      * @return mixed
      */
+    public function getListTrips()
+    {
+        return $this->tripRepository->findAll();
+    }
+
+    /**
+     * @return mixed
+     */
     public function getTripsByCustomer($customerId)
     {
         return $this->tripRepository->findTripsByCustomer($customerId);

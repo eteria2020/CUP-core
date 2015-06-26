@@ -22,8 +22,8 @@ class PoisController extends AbstractRestfulController
     private $hydrator;
 
     public function __construct(
-      PoisService $poisService,
-      DoctrineHydrator $hydrator
+        PoisService $poisService,
+        DoctrineHydrator $hydrator
     ) {
         $this->poisService = $poisService;
         $this->hydrator = $hydrator;
@@ -31,16 +31,16 @@ class PoisController extends AbstractRestfulController
 
     public function getList()
     {
-       $poisList = $this->poisService->getListPois();
-       $returnPois = [];
-       $pois = [];
-       $returnData = [];
+        $poisList = $this->poisService->getListPois();
+        $returnPois = [];
+        $pois = [];
+        $returnData = [];
 
-       foreach ($poisList as $value) {
-           array_push($returnPois, $this->hydrator->extract($value));
-       }
-       $returnData['data'] = $returnPois;
+        foreach ($poisList as $value) {
+            array_push($returnPois, $this->hydrator->extract($value));
+        }
+        $returnData['data'] = $returnPois;
 
-       return new JsonModel($returnData);
+        return new JsonModel($returnData);
     }
 }

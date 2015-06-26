@@ -68,7 +68,7 @@ class CustomersController extends AbstractRestfulController
         $returnData['reason'] = '';
         $returnData['data'] = $returnCustomers;
 
-       return new JsonModel($returnData);
+        return new JsonModel($returnData);
     }
 
 }

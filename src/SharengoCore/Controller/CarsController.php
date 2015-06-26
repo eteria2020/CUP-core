@@ -52,7 +52,7 @@ class CarsController extends AbstractRestfulController
         $returnData['reason'] = '';
         $returnData['data'] = $returnCars;
 
-       return new JsonModel($returnData);
+        return new JsonModel($returnData);
     }
  
     public function get($plate)

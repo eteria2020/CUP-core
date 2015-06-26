@@ -60,6 +60,18 @@ return [
                                 ]
                             ]
                         ],
+                        'trips' => [
+                            'type' => 'Segment',
+                            'options' => [
+                                'route' => '/trips[/:id]',
+                                'constraints' => array(
+                                    'id'     => '[0-9]+',
+                                ),
+                                'defaults' => [
+                                    'controller' => 'Trips'
+                                ]
+                            ]
+                        ],
                     ],
                 ],
             ),
@@ -69,7 +81,8 @@ return [
             'SharengoCore\Controller\Cars'             => 'SharengoCore\Controller\CarsControllerFactory',
             'SharengoCore\Controller\Customers'             => 'SharengoCore\Controller\CustomersControllerFactory',
             'SharengoCore\Controller\Pois'             => 'SharengoCore\Controller\PoisControllerFactory',
-            'SharengoCore\Controller\Reservations'     => 'SharengoCore\Controller\ReservationsControllerFactory'
+            'SharengoCore\Controller\Reservations'     => 'SharengoCore\Controller\ReservationsControllerFactory',
+            'SharengoCore\Controller\Trips'     => 'SharengoCore\Controller\TripsControllerFactory'
         ],
     ],
 
@@ -115,6 +128,7 @@ return [
                 array('controller' => 'SharengoCore\Controller\Customers', 'roles' => array()),
                 array('controller' => 'SharengoCore\Controller\Pois', 'roles' => array()),
                 array('controller' => 'SharengoCore\Controller\Reservations', 'roles' => array()),
+                array('controller' => 'SharengoCore\Controller\Trips', 'roles' => array()),
             ),
         ),
     ),
