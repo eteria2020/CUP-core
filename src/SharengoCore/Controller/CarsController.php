@@ -7,6 +7,7 @@ use Zend\View\Model\JsonModel;
 use Zend\Http\Client;
 use SharengoCore\Entity\Cars;
 use SharengoCore\Service\CarsService;
+use SharengoCore\Service\ReservationsService;
 use SharengoCore\Service\CommandsService;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
@@ -17,6 +18,11 @@ class CarsController extends AbstractRestfulController
      * @var CarsService
      */
     private $carsService;
+
+    /**
+     * @var ReservationsService
+     */
+    private $reservationsService;
 
     /**
      * @var CommandsService
@@ -30,10 +36,12 @@ class CarsController extends AbstractRestfulController
 
     public function __construct(
         CarsService $carsService,
+        ReservationsService $reservationsService,
         CommandsService $commandsService,
         DoctrineHydrator $hydrator
     ) {
         $this->carsService = $carsService;
+        $this->reservationsService = $reservationsService;
         $this->commandsService = $commandsService;
         $this->hydrator = $hydrator;
     }
@@ -44,7 +52,9 @@ class CarsController extends AbstractRestfulController
 
         $cars = $this->carsService->getListCars();
         foreach ($cars as $value) {
-            array_push($returnCars, $this->hydrator->extract($value));
+            $car = $this->hydrator->extract($value);
+            $car = $this->setCarReservation($car);
+            array_push($returnCars, $car);
         }
 
         return new JsonModel($this->buildReturnData(200, '', $returnCars));
@@ -97,6 +107,18 @@ class CarsController extends AbstractRestfulController
 
     }
     */
+
+    /**
+     * @param Cars
+     * @return Cars
+     */
+    private function setCarReservation($car)
+    {
+        $plate = $car['plate'];
+        $reservations = $this->reservationsService->getActiveReservationsByCar($plate);
+        $car['reservation'] = !empty($reservations);
+        return $car;
+    }
 
     /**
      * @param  integer
