@@ -44,9 +44,9 @@ class CardsService
         return $card;
     }
 
-    public function autoCompleteAjax($query)
+    public function ajaxCardCodeAutocomplete($query)
     {
-        $cards = $this->cardsRepository->ajaxAutocomplete($query);
+        $cards = $this->cardsRepository->ajaxCardCodeAutocomplete($query);
         $as_cards = [];
 
         /** @var Cards $card */

@@ -10,7 +10,7 @@ namespace SharengoCore\Entity\Repository;
  */
 class CardsRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function ajaxAutocomplete($q)
+    public function ajaxCardCodeAutocomplete($q)
     {
         $em = $this->getEntityManager();
         $dql = 'SELECT c FROM \SharengoCore\Entity\Cards c ' .
