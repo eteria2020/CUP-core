@@ -186,7 +186,7 @@ class TripsService
 
         $extractedTrip = $this->hydrator->extract($trip);
         $extractedTrip['customer'] = $customer['id'];
-        $extractedTrip['car'] = $car['id'];
+        $extractedTrip['car'] = $car['plate'];
 
         $returnArray['customer'] = $customer;
         $returnArray['car'] = $car;
