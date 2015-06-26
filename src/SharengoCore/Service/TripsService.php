@@ -8,6 +8,7 @@ use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Trips;
 use Zend\View\Helper\Url;
 use SharengoCore\Service\CustomersService;
+use SharengoCore\Service\CarsService;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class TripsService
@@ -31,6 +32,11 @@ class TripsService
     private $customersService;
 
     /**
+     * @var CarsService
+     */
+    private $carsService;
+
+    /**
      * @var DoctrineHydrator
      */
     private $hydrator;
@@ -43,12 +49,14 @@ class TripsService
         DatatableService $I_datatableService,
         $I_urlHelper,
         CustomersService $customersService,
+        CarsService $carsService,
         DoctrineHydrator $hydrator
     ) {
         $this->tripRepository = $tripRepository;
         $this->I_datatableService = $I_datatableService;
         $this->I_urlHelper = $I_urlHelper;
         $this->customersService = $customersService;
+        $this->carsService = $carsService;
         $this->hydrator = $hydrator;
     }
 
@@ -170,10 +178,18 @@ class TripsService
         if ($customer !== null) {
             $customer = $this->customersService->toArray($customer);
         }
+
+        $car = $trip->getCar();
+        if ($car !== null) {
+            $car = $this->carsService->toArray($car);
+        }
+
         $extractedTrip = $this->hydrator->extract($trip);
         $extractedTrip['customer'] = $customer['id'];
+        $extractedTrip['car'] = $car['id'];
 
         $returnArray['customer'] = $customer;
+        $returnArray['car'] = $car;
         $returnArray['trip'] = $extractedTrip;
         
         return $returnArray;

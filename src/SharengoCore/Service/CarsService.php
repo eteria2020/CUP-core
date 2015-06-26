@@ -104,4 +104,15 @@ class CarsService
         $this->entityManager->remove($car);
         $this->entityManager->flush();
     }
+
+    /**
+     * @param Car
+     * @return mixed[]
+     */
+    public function toArray(Cars $car)
+    {
+        $car = $this->hydrator->extract($car);
+        
+        return $car;
+    }
 }

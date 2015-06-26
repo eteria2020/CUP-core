@@ -35,6 +35,10 @@ class TripsController extends AbstractRestfulController
         $returnTrips = [];
         $trips = [];
 
+        // param flags
+        $isPlateSet = false;
+        $isCustomerSet = false;
+
         // get limit
         $limit = $this->params()->fromQuery('limit');
         if ($limit === null || $limit <= 0) {
@@ -45,11 +49,13 @@ class TripsController extends AbstractRestfulController
         $filters = [];
         if ($this->params()->fromQuery('plate') !== null) {
             $filters['car'] = $this->params()->fromQuery('plate');
+            $isPlateSet = true;
         }
         if ($this->params()->fromQuery('customer') !== null) {
             $user = $this->params()->fromQuery('customer');
             if (is_numeric($user)) {
                 $filters['customer'] = $user;
+                $isCustomerSet = true;
             }
         }
 
@@ -57,8 +63,18 @@ class TripsController extends AbstractRestfulController
         $trips = $this->tripsService->getListTripsFilteredLimited($filters, $limit);
 
         foreach ($trips as $value) {
+            $returnArray = [];
             $trip = $this->tripsService->toArray($value);
-            array_push($returnTrips, $trip);
+
+            if ($isPlateSet) {
+                $returnArray['car'] = $trip['car'];
+            }
+            if ($isCustomerSet) {
+                $returnArray['customer'] = $trip['customer'];
+            }
+            $returnArray['trip'] = $trip['trip'];
+
+            array_push($returnTrips, $returnArray);
         }
 
         return new JsonModel($this->buildReturnData(200, '', $returnTrips));
