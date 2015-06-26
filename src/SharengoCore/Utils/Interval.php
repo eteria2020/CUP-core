@@ -1,20 +1,20 @@
 <?php
 
-namespace SharengoCore\Entity;
+namespace SharengoCore\Utils;
 
 final class Interval
 {
     /**
-     * @var DateTimeInterface $start
+     * @var DateTime $start
      */
     private $start;
 
     /**
-     * @var DateTimeInterface $end
+     * @var DateTime $end
      */
     private $end;
 
-    public function __construct(\DateTimeInterface $start, \DateTimeInterface $end)
+    public function __construct(\DateTime $start, \DateTime $end)
     {
         $this->start = $start;
         $this->end = $end;
@@ -46,7 +46,7 @@ final class Interval
         return $this->end;
     }
 
-    public function contains(DateTimeInterface $date)
+    public function contains(\DateTime $date)
     {
         return $this->start <= $date && $this->end <= $date;
     }

@@ -13,6 +13,6 @@ class BonusServiceFactory implements FactoryInterface
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $bonusRepository = $entityManager->getRepository('\SharengoCore\Entity\CustomersBonus');
 
-        return new BonusService($bonusRepository);
+        return new BonusService($entityManager, $bonusRepository);
     }
 }

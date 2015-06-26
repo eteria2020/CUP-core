@@ -4,7 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\CustomersBonus as Bonus;
 use SharengoCore\Entity\Trips;
-use SharengoCore\Entity\Interval;
+use SharengoCore\Utils\Interval;
 use SharengoCore\Entity\Repository\CustomersBonusRepository as BonusRepository;
 
 use Doctrine\ORM\EntityManager;
@@ -34,6 +34,7 @@ class BonusService
      *
      * @param Bonus $bonus
      * @param int $minutes
+     * @return Bonus
      */
     public function decreaseBonusMinutes(Bonus $bonus, $minutes)
     {
@@ -46,7 +47,9 @@ class BonusService
         $bonus->setResidual($availableMinutes - $minutes);
 
         $this->entityManager->persist($bonus);
-        $this->flush();
+        $this->entityManager->flush();
+
+        return $bonus;
     }
 
     /**

@@ -27,7 +27,7 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
             'AND cb.validTo >= :tripBeginning '.
             'AND cb.residual > 0 '.
             'AND cb.customer = :customer '.
-            'ORDER BY valid_to ASC';
+            'ORDER BY cb.validTo ASC';
 
         $query = $em->createQuery($dql);
         $query->setParameter('customer', $trip->getCustomer());

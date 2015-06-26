@@ -728,4 +728,28 @@ class Trips
     {
         return $this->customer;
     }
+
+    /**
+     * Set isAccounted
+     *
+     * @param boolean $isAccounted
+     *
+     * @return Trips
+     */
+    public function setIsAccounted($isAccounted)
+    {
+        $this->isAccounted = $isAccounted;
+
+        return $this;
+    }
+
+    /**
+     * Get isAccounted
+     *
+     * @return boolean
+     */
+    public function getIsAccounted()
+    {
+        return $this->isAccounted;
+    }
 }

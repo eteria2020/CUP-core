@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity;
 
+use SharengoCore\Utils\Interval;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -30,7 +32,7 @@ class TripBills
      *   @ORM\JoinColumn(name="trip_id", referencedColumnName="id")
      * })
      */
-    private $tripId;
+    private $trip;
 
     /**
      * @var integer
@@ -71,10 +73,165 @@ class TripBills
     {
         $interval = new Interval($trip->getTimestampBeginning(), $trip->getTimestampEnd());
 
-        return (new TripBills())->setTripId($trip->getTripId())
+        return (new TripBills())
+            ->setTrip($trip)
             ->setMinutes($interval->minutes())
             ->setCost($trip->getPriceCent() + $trip->getVatCent())
             ->setTimestampBeginning($trip->getTimestampBeginning())
             ->setTimestampEnd($trip->getTimestampEnd());
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set minutes
+     *
+     * @param integer $minutes
+     *
+     * @return TripBills
+     */
+    public function setMinutes($minutes)
+    {
+        $this->minutes = $minutes;
+
+        return $this;
+    }
+
+    /**
+     * Get minutes
+     *
+     * @return integer
+     */
+    public function getMinutes()
+    {
+        return $this->minutes;
+    }
+
+    /**
+     * Set cost
+     *
+     * @param integer $cost
+     *
+     * @return TripBills
+     */
+    public function setCost($cost)
+    {
+        $this->cost = $cost;
+
+        return $this;
+    }
+
+    /**
+     * Get cost
+     *
+     * @return integer
+     */
+    public function getCost()
+    {
+        return $this->cost;
+    }
+
+    /**
+     * Set timestampBeginning
+     *
+     * @param \DateTime $timestampBeginning
+     *
+     * @return TripBills
+     */
+    public function setTimestampBeginning($timestampBeginning)
+    {
+        $this->timestampBeginning = $timestampBeginning;
+
+        return $this;
+    }
+
+    /**
+     * Get timestampBeginning
+     *
+     * @return \DateTime
+     */
+    public function getTimestampBeginning()
+    {
+        return $this->timestampBeginning;
+    }
+
+    /**
+     * Set timestampEnd
+     *
+     * @param \DateTime $timestampEnd
+     *
+     * @return TripBills
+     */
+    public function setTimestampEnd($timestampEnd)
+    {
+        $this->timestampEnd = $timestampEnd;
+
+        return $this;
+    }
+
+    /**
+     * Get timestampEnd
+     *
+     * @return \DateTime
+     */
+    public function getTimestampEnd()
+    {
+        return $this->timestampEnd;
+    }
+
+    /**
+     * Set notes
+     *
+     * @param string $notes
+     *
+     * @return TripBills
+     */
+    public function setNotes($notes)
+    {
+        $this->notes = $notes;
+
+        return $this;
+    }
+
+    /**
+     * Get notes
+     *
+     * @return string
+     */
+    public function getNotes()
+    {
+        return $this->notes;
+    }
+
+    /**
+     * Set trip
+     *
+     * @param \SharengoCore\Entity\Trips $trip
+     *
+     * @return TripBills
+     */
+    public function setTrip(\SharengoCore\Entity\Trips $trip = null)
+    {
+        $this->trip = $trip;
+
+        return $this;
+    }
+
+    /**
+     * Get trip
+     *
+     * @return \SharengoCore\Entity\Trips
+     */
+    public function getTrip()
+    {
+        return $this->trip;
     }
 }
