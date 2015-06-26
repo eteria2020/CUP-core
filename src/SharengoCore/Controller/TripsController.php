@@ -6,13 +6,14 @@ use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 use Zend\Http\Client;
 use SharengoCore\Service\TripsService;
+use SharengoCore\Service\CustomersService;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class TripsController extends AbstractRestfulController
 {
 
     /**
-     * @var TripService
+     * @var ContService
      */
     private $tripsService;
 
@@ -31,7 +32,6 @@ class TripsController extends AbstractRestfulController
 
     public function getList()
     {
-        $tripsList = $this->tripsService->getListTrips();
         $returnTrips = [];
         $trips = [];
 
@@ -53,11 +53,12 @@ class TripsController extends AbstractRestfulController
             }
         }
 
-        // get customers
+        // get trips
         $trips = $this->tripsService->getListTripsFilteredLimited($filters, $limit);
 
-        foreach ($tripsList as $value) {
-            array_push($returnTrips, $this->hydrator->extract($value));
+        foreach ($trips as $value) {
+            $trip = $this->tripsService->toArray($value);
+            array_push($returnTrips, $trip);
         }
 
         return new JsonModel($this->buildReturnData(200, '', $returnTrips));
@@ -89,9 +90,9 @@ class TripsController extends AbstractRestfulController
     }
 
     /*
-    /trips/of-car/:plate
-    /trips/last-closed-of-car/:plate
-    /trips/last-user-trips/:user
-    /trips/of-user/:user
+    /trips/of-car/:plate -> diventa -> /trips?plate=83497
+    /trips/last-closed-of-car/:plate -> diventa -> /trips?limit=1&plate=2346
+    /trips/last-user-trips/:user -> diventa -> /trips?user=pippo
+    /trips/of-user/:user -> diventa -> /trips?limit=1&user=pippo
      */
 }
