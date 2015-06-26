@@ -174,7 +174,7 @@ class TripsService
         $extractedTrip['customer'] = $customer['id'];
 
         $returnArray['customer'] = $customer;
-        $returnArray['trip'] = $$extractedTrip;
+        $returnArray['trip'] = $extractedTrip;
         
         return $returnArray;
     }
