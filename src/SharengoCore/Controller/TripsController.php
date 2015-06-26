@@ -37,8 +37,8 @@ class TripsController extends AbstractRestfulController
 
         // get limit
         $limit = $this->params()->fromQuery('limit');
-        if ($limit === null || $limit > 10 || $limit <= 0) {
-            $limit = 10;
+        if ($limit === null || $limit <= 0) {
+            $limit = 1;
         }
 
         // get filters
