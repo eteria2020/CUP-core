@@ -57,6 +57,7 @@ class CarsController extends AbstractRestfulController
         return new JsonModel($this->buildReturnData(200, '', $car));
     }
  
+    /*
     public function update($plate, $data)
     {
         $cmd = '';
@@ -95,6 +96,7 @@ class CarsController extends AbstractRestfulController
         return new JsonModel($this->buildReturnData($status, $reason));
 
     }
+    */
 
     /**
      * @param  integer
