@@ -95,6 +95,16 @@ class TripsService
         return $this->tripRepository->findBy($filters, ['timestampEnd' => 'DESC'], $limit);
     }
 
+    public function getTripsByPlateNotEnded($plate)
+    {
+        return $this->tripRepository->findTripsByPlateNotEnded($plate);
+    }
+
+    public function getTripsByCustomerNotEnded($customer)
+    {
+        return $this->tripRepository->findTripsByCustomerNotEnded($customer);
+    }
+
     public function getDataDataTable(array $as_filters = [])
     {
         $trips = $this->I_datatableService->getData('Trips', $as_filters);

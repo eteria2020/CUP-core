@@ -60,8 +60,20 @@ class TripsController extends AbstractRestfulController
         }
 
         // get trips
-        $trips = $this->tripsService->getListTripsFilteredLimited($filters, $limit);
+        $trips = [];
+        if ($this->params()->fromQuery('running') == true) {
+            if ($isPlateSet) {
+                $trips = $this->tripsService->getTripsByPlateNotEnded($filters['car']);
+            } elseif ($isCustomerSet) {
+                $trips = $this->tripsService->getTripsByCustomerNotEnded($filters['customer']);
+            } else {
+                $trips = $this->tripsService->getListTripsFilteredLimited($filters, $limit);
+            }
+        } else {
+            $trips = $this->tripsService->getListTripsFilteredLimited($filters, $limit);
+        }
 
+        // parse trips
         foreach ($trips as $value) {
             $returnArray = [];
             $trip = $this->tripsService->toArray($value);
