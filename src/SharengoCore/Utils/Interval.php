@@ -48,6 +48,11 @@ final class Interval
 
     public function contains(\DateTime $date)
     {
-        return $this->start <= $date && $this->end <= $date;
+        return $this->start <= $date && $this->end >= $date;
+    }
+
+    public function strictlyContains(\DateTime $date)
+    {
+        return $this->start < $date && $this->end < $date;
     }
 }

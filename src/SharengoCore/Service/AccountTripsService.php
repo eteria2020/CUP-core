@@ -62,7 +62,7 @@ class AccountTripsService
 
         try {
             // divides the trip between free fares, bonuses and normal fares
-            $this->processTripAccountingDetails($trip);
+            $this->processTripAccountingDetails(clone $trip);
 
             // flag the trip as accounted
             $trip->setIsAccounted(true);
@@ -215,8 +215,8 @@ class AccountTripsService
     {
         $tripInterval = new Interval($trip->getTimestampBeginning(), $trip->getTimestampEnd());
 
-        if ($tripInterval->contains($interval->start())) {
-            if ($tripInterval->contains($interval->end())) {
+        if ($tripInterval->strictlyContains($interval->start())) {
+            if ($tripInterval->strictlyContains($interval->end())) {
                 // the bonus starts and ends during the trip
                 $firstTrip = clone $trip;
                 $secondTrip = clone $trip;
@@ -229,15 +229,15 @@ class AccountTripsService
                 // the bonus starts during the trips and ends later
                 $newTrip = clone $trip;
 
-                $newTrip->setTimestampEnd($interval->end());
+                $newTrip->setTimestampEnd($interval->start());
 
                 return [$newTrip];
             }
-        } else if ($tripInterval->contains($interval->end())) {
+        } else if ($tripInterval->strictlyContains($interval->end())) {
             // the bonus starts before the trip and ends during the trip
             $newTrip = clone $trip;
 
-            $newTrip->setTimestampBeginning($interval->start());
+            $newTrip->setTimestampBeginning($interval->end());
 
             return [$newTrip];
         } else if ($interval->contains($tripInterval->start()) && $interval->contains($tripInterval->end())) {
