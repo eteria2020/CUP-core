@@ -27,7 +27,7 @@ final class Interval
 
     public function minutes()
     {
-        return floor($this->seconds() / 60);
+        return ceil($this->seconds() / 60);
     }
 
     /**
@@ -53,6 +53,6 @@ final class Interval
 
     public function strictlyContains(\DateTime $date)
     {
-        return $this->start < $date && $this->end < $date;
+        return $this->start < $date && $this->end > $date;
     }
 }

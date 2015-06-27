@@ -92,6 +92,10 @@ class AccountTripsService
         $bonuses = $this->bonusRepository->getBonusesForTrip($trip);
         $trips = $this->applyBonuses($trips, $bonuses);
 
+        /*foreach($trips as $trip) {
+            echo $trip->getTimestampBeginning()->format('Y-m-d H:i:s') . '-' . $trip->getTimestampEnd()->format('Y-m-d H:i:s') . "\n";
+        }*/
+        
         // then see if we can use some bonuses
         /*$billableTrips = [];
 
@@ -221,15 +225,19 @@ class AccountTripsService
                 $firstTrip = clone $trip;
                 $secondTrip = clone $trip;
 
-                $firstTrip->setTimestampEnd($interval->start());
-                $secondTrip->setTimestampBeginning($interval->end());
+                // end 1 second before interval start
+                $firstTrip->setTimestampEnd($interval->start()->sub(new \DateInterval('PT1S')));
+
+                // start 1 second after interval end
+                $secondTrip->setTimestampBeginning($interval->end()->add(new \DateInterval('PT1S')));
 
                 return [$firstTrip, $secondTrip];
             } else {
                 // the bonus starts during the trips and ends later
                 $newTrip = clone $trip;
 
-                $newTrip->setTimestampEnd($interval->start());
+                // end 1 second before interval start
+                $newTrip->setTimestampEnd($interval->start()->sub(new \DateInterval('PT1S')));
 
                 return [$newTrip];
             }
@@ -237,7 +245,8 @@ class AccountTripsService
             // the bonus starts before the trip and ends during the trip
             $newTrip = clone $trip;
 
-            $newTrip->setTimestampBeginning($interval->end());
+            // start 1 second after interval end
+            $newTrip->setTimestampBeginning($interval->end()->add(new \DateInterval('PT1S')));
 
             return [$newTrip];
         } else if ($interval->contains($tripInterval->start()) && $interval->contains($tripInterval->end())) {
