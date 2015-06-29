@@ -729,12 +729,12 @@ class Trips
      */
     public function toArray(DoctrineHydrator $hydrator)
     {
-        $customer = $trip->getCustomer();
+        $customer = $this->getCustomer();
         if ($customer !== null) {
             $customer = $customer->toArray($hydrator);
         }
 
-        $car = $trip->getCar();
+        $car = $this->getCar();
         if ($car !== null) {
             $car = $car->toArray($hydrator);
         }
