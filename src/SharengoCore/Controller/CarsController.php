@@ -51,8 +51,8 @@ class CarsController extends AbstractRestfulController
         $returnCars = [];
 
         $cars = $this->carsService->getListCars();
-        foreach ($cars as $value) {
-            $car = $this->hydrator->extract($value);
+        foreach ($cars as $car) {
+            $car = $car->toArray($this->hydrator);
             $car = $this->setCarReservation($car);
             array_push($returnCars, $car);
         }
@@ -63,6 +63,7 @@ class CarsController extends AbstractRestfulController
     public function get($plate)
     {
         $car = $this->carsService->getCarByPlate($plate);
+        $car = $this->setCarReservation($car);
 
         return new JsonModel($this->buildReturnData(200, '', $car));
     }

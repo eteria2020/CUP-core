@@ -9,7 +9,6 @@ use SharengoCore\Entity\Trips;
 use Zend\View\Helper\Url;
 use SharengoCore\Service\CustomersService;
 use SharengoCore\Service\CarsService;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class TripsService
 {
@@ -37,11 +36,6 @@ class TripsService
     private $carsService;
 
     /**
-     * @var DoctrineHydrator
-     */
-    private $hydrator;
-
-    /**
      * @param EntityRepository $tripRepository
      */
     public function __construct(
@@ -49,15 +43,13 @@ class TripsService
         DatatableService $I_datatableService,
         $I_urlHelper,
         CustomersService $customersService,
-        CarsService $carsService,
-        DoctrineHydrator $hydrator
+        CarsService $carsService
     ) {
         $this->tripRepository = $tripRepository;
         $this->I_datatableService = $I_datatableService;
         $this->I_urlHelper = $I_urlHelper;
         $this->customersService = $customersService;
         $this->carsService = $carsService;
-        $this->hydrator = $hydrator;
     }
 
     /**
@@ -174,34 +166,5 @@ class TripsService
     public function getUrlHelper()
     {
         return $this->I_viewHelperManager->get('url');
-    }
-
-    /**
-     * @param Trips
-     * @return mixed[]
-     */
-    public function toArray(Trips $trip)
-    {
-        $returnArray = [];
-
-        $customer = $trip->getCustomer();
-        if ($customer !== null) {
-            $customer = $this->customersService->toArray($customer);
-        }
-
-        $car = $trip->getCar();
-        if ($car !== null) {
-            $car = $this->carsService->toArray($car);
-        }
-
-        $extractedTrip = $this->hydrator->extract($trip);
-        $extractedTrip['customer'] = $customer['id'];
-        $extractedTrip['car'] = $car['plate'];
-
-        $returnArray['customer'] = $customer;
-        $returnArray['car'] = $car;
-        $returnArray['trip'] = $extractedTrip;
-        
-        return $returnArray;
     }
 }

@@ -6,7 +6,6 @@ use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 use SharengoCore\Service\DatatableQueryBuilders;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class TripsServiceFactory implements FactoryInterface
 {
@@ -32,8 +31,7 @@ class TripsServiceFactory implements FactoryInterface
 
         $customersService = $serviceLocator->get('SharengoCore\Service\CustomersService');
         $carsService = $serviceLocator->get('SharengoCore\Service\CarsService');
-        $hydrator = new DoctrineHydrator($entityManager);
 
-        return new TripsService($tripRepository, $I_datatableService, $I_urlHelper, $customersService, $carsService, $hydrator);
+        return new TripsService($tripRepository, $I_datatableService, $I_urlHelper, $customersService, $carsService);
     }
 }

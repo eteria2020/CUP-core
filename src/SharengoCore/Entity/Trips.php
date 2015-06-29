@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * Trips
@@ -720,5 +721,28 @@ class Trips
     public function getCustomer()
     {
         return $this->customer;
+    }
+
+    /**
+     * @param DoctrineHydrator
+     * @return mixed[]
+     */
+    public function toArray(DoctrineHydrator $hydrator)
+    {
+        $customer = $trip->getCustomer();
+        if ($customer !== null) {
+            $customer = $customer->toArray($hydrator);
+        }
+
+        $car = $trip->getCar();
+        if ($car !== null) {
+            $car = $car->toArray($hydrator);
+        }
+
+        $extractedTrip = $hydrator->extract($this);
+        $extractedTrip['customer'] = $customer;
+        $extractedTrip['car'] = $car;
+        
+        return $extractedTrip;
     }
 }

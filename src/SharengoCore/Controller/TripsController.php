@@ -74,17 +74,9 @@ class TripsController extends AbstractRestfulController
         }
 
         // parse trips
-        foreach ($trips as $value) {
-            $returnArray = [];
-            $trip = $this->tripsService->toArray($value);
-
-            if ($limit == 1) {
-                $returnArray['car'] = $trip['car'];
-                $returnArray['customer'] = $trip['customer'];
-            }
-            $returnArray['trip'] = $trip['trip'];
-
-            array_push($returnTrips, $returnArray);
+        foreach ($trips as $trip) {
+            $trip = $trip->toArray($this->hydrator);
+            array_push($returnTrips, $trip);
         }
 
         return new JsonModel($this->buildReturnData(200, '', $returnTrips));

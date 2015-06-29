@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * Customers
@@ -339,11 +340,21 @@ class Customers
         $this->insertedTs = date('Y-m-d h:i:s');
     }
 
-    public function toArray()
+    /**
+     * @param DoctrineHydrator
+     * @return mixed[]
+     */
+    public function toArray(DoctrineHydrator $hydrator)
     {
-        return get_object_vars($this);
+        $card = $this->getCard();
+        if ($card !== null) {
+            $card = $card->toArray($hydrator);
+        }
+        $extractedCustomer = $hydrator->extract($this);
+        $extractedCustomer['card'] = $card;
+        
+        return $extractedCustomer;
     }
-
 
     /**
      * Get id

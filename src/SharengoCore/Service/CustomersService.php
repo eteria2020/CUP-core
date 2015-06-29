@@ -9,7 +9,6 @@ use SharengoCore\Entity\Cards;
 use SharengoCore\Service\DatatableService;
 
 use Zend\Authentication\AuthenticationService as UserService;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class CustomersService implements ValidatorServiceInterface
 {
@@ -35,11 +34,6 @@ class CustomersService implements ValidatorServiceInterface
     private $datatableService;
 
     /**
-     * @var DoctrineHydrator
-     */
-    private $hydrator;
-
-    /**
      * @param $entityManager
      * @param UserService
      * @param DatatableService
@@ -50,8 +44,7 @@ class CustomersService implements ValidatorServiceInterface
         $entityManager,
         UserService $userService,
         DatatableService $datatableService,
-        CardsService $cardsService,
-        DoctrineHydrator $hydrator
+        CardsService $cardsService
     ) {
         $this->entityManager = $entityManager;
         $this->clientRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Customers');
@@ -59,7 +52,6 @@ class CustomersService implements ValidatorServiceInterface
         $this->userService = $userService;
         $this->datatableService = $datatableService;
         $this->cardsService = $cardsService;
-        $this->hydrator = $hydrator;
     }
 
     public function getCustomerEntity($serializedCustomer) {
@@ -291,19 +283,4 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->flush();
     }
 
-    /**
-     * @param Customer
-     * @return mixed[]
-     */
-    public function toArray(Customers $customer)
-    {
-        $card = $customer->getCard();
-        if ($card !== null) {
-            $card = $this->hydrator->extract($card);
-        }
-        $extractedCustomer = $this->hydrator->extract($customer);
-        $extractedCustomer['card'] = $card;
-        
-        return $extractedCustomer;
-    }
 }
