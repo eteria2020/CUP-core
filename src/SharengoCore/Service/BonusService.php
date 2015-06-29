@@ -64,14 +64,15 @@ class BonusService
         $start = max($trip->getTimestampBeginning(), $bonus->getValidFrom());
         $end = min($trip->getTimestampEnd(), $bonus->getValidTo());
 
-        $interval = new Interval($start, $end);
-
         if ($start > $end) {
             return null;
         }
 
+        $interval = new Interval($start, $end);
+
         if ($interval->minutes() > $bonus->getResidual()) {
-            $end = $start->add(\DateInterval::createFromDateString($bonus->getResidual().' minutes'));
+            $tempStart = clone $start;
+            $end = $tempStart->add(\DateInterval::createFromDateString($bonus->getResidual().' minutes'));
             $interval = new Interval($start, $end);
         }
 
