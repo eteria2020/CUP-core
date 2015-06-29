@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity\Repository;
 
+use SharengoCore\Entity\Customers;
+
 /**
  * TripsRepository
  *
@@ -35,6 +37,19 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
             "AND t.timestampEnd IS NOT NULL ".
             "ORDER BY t.timestampEnd ASC";
         $query = $this->getEntityManager()->createQuery($dql);
+        return $query->getResult();
+    }
+
+    public function findCustomerTripsToBeAccounted(Customers $customer)
+    {
+        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
+            "WHERE t.isAccounted = false ".
+            "AND t.timestampEnd IS NOT NULL ".
+            "AND t.customer = :customer ".
+            "ORDER BY t.timestampEnd ASC";
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('customer', $customer);
+        //$query->setMaxResults(10);
         return $query->getResult();
     }
 }

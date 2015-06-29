@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Trips;
+use SharengoCore\Entity\Customers;
 
 use Zend\View\Helper\Url;
 
@@ -125,5 +126,14 @@ class TripsService
     public function getTripById($tripId)
     {
         return $this->tripRepository->findOneById($tripId);
+    }
+
+    /**
+     * @param Customers
+     * @return Trips[]
+     */
+    public function getCustomerTripsToBeAccounted(Customers $customer)
+    {
+        return $this->tripRepository->findCustomerTripsToBeAccounted($customer);
     }
 }
