@@ -103,7 +103,6 @@ return [
             'SharengoCore\Service\ReservationsService' => 'SharengoCore\Service\ReservationsServiceFactory',
             'SharengoCore\Service\PromoCodesService'   => 'SharengoCore\Service\PromoCodesServiceFactory',
             'SharengoCore\Service\CardsService'        => 'SharengoCore\Service\CardsServiceFactory',
-            'SharengoCore\Service\CommandsService'     => 'SharengoCore\Service\CommandsServiceFactory',
         ]
     ],
     'doctrine'        => [

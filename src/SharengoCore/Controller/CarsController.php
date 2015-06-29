@@ -8,7 +8,7 @@ use Zend\Http\Client;
 use SharengoCore\Entity\Cars;
 use SharengoCore\Service\CarsService;
 use SharengoCore\Service\ReservationsService;
-use SharengoCore\Service\CommandsService;
+//use SharengoCore\Service\CommandsService;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class CarsController extends AbstractRestfulController
@@ -27,7 +27,7 @@ class CarsController extends AbstractRestfulController
     /**
      * @var CommandsService
      */
-    private $commandsService;
+    //private $commandsService;
 
     /**
      * @var DoctrineHydrator
@@ -37,12 +37,12 @@ class CarsController extends AbstractRestfulController
     public function __construct(
         CarsService $carsService,
         ReservationsService $reservationsService,
-        CommandsService $commandsService,
+        /*CommandsService $commandsService,*/
         DoctrineHydrator $hydrator
     ) {
         $this->carsService = $carsService;
         $this->reservationsService = $reservationsService;
-        $this->commandsService = $commandsService;
+        //$this->commandsService = $commandsService;
         $this->hydrator = $hydrator;
     }
 
