@@ -106,11 +106,4 @@ class TripsController extends AbstractRestfulController
         $returnData['data'] = $data;
         return $returnData;
     }
-
-    /*
-    /trips/of-car/:plate -> diventa -> /trips?plate=83497
-    /trips/last-closed-of-car/:plate -> diventa -> /trips?limit=1&plate=2346
-    /trips/last-user-trips/:user -> diventa -> /trips?user=pippo
-    /trips/of-user/:user -> diventa -> /trips?limit=1&user=pippo
-     */
 }

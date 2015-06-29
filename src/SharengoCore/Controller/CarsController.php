@@ -60,9 +60,10 @@ class CarsController extends AbstractRestfulController
         return new JsonModel($this->buildReturnData(200, '', $returnCars));
     }
  
-    public function get($plate)
+    public function get($id)
     {
-        $car = $this->carsService->getCarByPlate($plate);
+        $car = $this->carsService->getCarByPlate($id);
+        $car = $car->toArray($this->hydrator);
         $car = $this->setCarReservation($car);
 
         return new JsonModel($this->buildReturnData(200, '', $car));
@@ -115,8 +116,7 @@ class CarsController extends AbstractRestfulController
      */
     private function setCarReservation($car)
     {
-        $plate = $car['plate'];
-        $reservations = $this->reservationsService->getActiveReservationsByCar($plate);
+        $reservations = $this->reservationsService->getActiveReservationsByCar($car['plate']);
         $car['reservation'] = !empty($reservations);
         return $car;
     }
