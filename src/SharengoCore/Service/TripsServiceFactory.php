@@ -29,6 +29,9 @@ class TripsServiceFactory implements FactoryInterface
             )
         );
 
-        return new TripsService($tripRepository, $I_datatableService, $I_urlHelper);
+        $customersService = $serviceLocator->get('SharengoCore\Service\CustomersService');
+        $carsService = $serviceLocator->get('SharengoCore\Service\CarsService');
+
+        return new TripsService($tripRepository, $I_datatableService, $I_urlHelper, $customersService, $carsService);
     }
 }

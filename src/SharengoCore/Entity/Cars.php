@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * Cars
@@ -1034,4 +1035,14 @@ class Cars
     {
         return $this->keyStatus;
     }
+
+    /**
+     * @param DoctrineHydrator
+     * @return mixed[]
+     */
+    public function toArray(DoctrineHydrator $hydrator)
+    {
+        return $hydrator->extract($this);
+    }
+    
 }

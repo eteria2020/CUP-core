@@ -7,6 +7,8 @@ use Doctrine\ORM\Mapping\Entity;
 use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Trips;
 use Zend\View\Helper\Url;
+use SharengoCore\Service\CustomersService;
+use SharengoCore\Service\CarsService;
 
 class TripsService
 {
@@ -24,13 +26,38 @@ class TripsService
     private $I_urlHelper;
 
     /**
+     * @var CustomersService
+     */
+    private $customersService;
+
+    /**
+     * @var CarsService
+     */
+    private $carsService;
+
+    /**
      * @param EntityRepository $tripRepository
      */
-    public function __construct($tripRepository, DatatableService $I_datatableService, $I_urlHelper)
-    {
+    public function __construct(
+        $tripRepository,
+        DatatableService $I_datatableService,
+        $I_urlHelper,
+        CustomersService $customersService,
+        CarsService $carsService
+    ) {
         $this->tripRepository = $tripRepository;
         $this->I_datatableService = $I_datatableService;
         $this->I_urlHelper = $I_urlHelper;
+        $this->customersService = $customersService;
+        $this->carsService = $carsService;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getListTrips()
+    {
+        return $this->tripRepository->findAll();
     }
 
     /**
@@ -39,6 +66,35 @@ class TripsService
     public function getTripsByCustomer($customerId)
     {
         return $this->tripRepository->findTripsByCustomer($customerId);
+    }
+
+    /**
+     * @param integer
+     * @return Trips
+     */
+    public function getTripById($id)
+    {
+        return $this->tripRepository->find($id);
+    }
+
+    public function getListTripsFiltered($filters = [])
+    {
+        return $this->tripRepository->findBy($filters, ['timestampEnd' => 'DESC']);
+    }
+
+    public function getListTripsFilteredLimited($filters = [], $limit)
+    {
+        return $this->tripRepository->findBy($filters, ['timestampEnd' => 'DESC'], $limit);
+    }
+
+    public function getTripsByPlateNotEnded($plate)
+    {
+        return $this->tripRepository->findTripsByPlateNotEnded($plate);
+    }
+
+    public function getTripsByCustomerNotEnded($customer)
+    {
+        return $this->tripRepository->findTripsByCustomerNotEnded($customer);
     }
 
     public function getDataDataTable(array $as_filters = [])

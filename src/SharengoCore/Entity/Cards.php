@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * Cards
@@ -138,4 +139,14 @@ class Cards
     {
         return $this->notes;
     }
+
+    /**
+     * @param DoctrineHydrator
+     * @return mixed[]
+     */
+    public function toArray(DoctrineHydrator $hydrator)
+    {
+        return $hydrator->extract($this);
+    }
+    
 }

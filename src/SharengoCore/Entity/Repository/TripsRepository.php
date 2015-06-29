@@ -19,6 +19,42 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    public function findTripsByPlateNotEnded($plate)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT trip, car, cust, card
+        FROM \SharengoCore\Entity\Trips trip 
+        JOIN trip.car car
+        JOIN trip.customer cust
+        JOIN cust.card card
+        WHERE trip.car = :id AND trip.timestampEnd = :time";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('id', $plate);
+        $query->setParameter('time', null);
+
+        return $query->getResult();
+    }
+
+    public function findTripsByCustomerNotEnded($customer)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT trip, car, cust, card
+        FROM \SharengoCore\Entity\Trips trip 
+        JOIN trip.car car
+        JOIN trip.customer cust
+        JOIN cust.card card
+        WHERE trip.customer = :id AND trip.timestampEnd = :time";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('id', $customer);
+        $query->setParameter('time', null);
+
+        return $query->getResult();
+    }
+
     public function getTotalTrips()
     {
         $em = $this->getEntityManager();

@@ -35,6 +35,10 @@ class CustomersService implements ValidatorServiceInterface
 
     /**
      * @param $entityManager
+     * @param UserService
+     * @param DatatableService
+     * @param CardsService
+     * @param DoctrineHydrator
      */
     public function __construct(
         $entityManager,
@@ -65,6 +69,16 @@ class CustomersService implements ValidatorServiceInterface
     public function getTotalCustomers()
     {
         return $this->clientRepository->getTotalCustomers();
+    }
+
+    public function getListCustomersFiltered($filters = [])
+    {
+        return $this->clientRepository->findBy($filters, ['surname' => 'ASC']);
+    }
+
+    public function getListCustomersFilteredLimited($filters = [], $limit)
+    {
+        return $this->clientRepository->findBy($filters, ['surname' => 'ASC'], $limit);
     }
 
     public function getUserByEmailPassword($s_username, $s_password)
