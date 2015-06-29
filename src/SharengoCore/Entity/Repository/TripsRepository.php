@@ -22,7 +22,15 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
     public function findTripsByPlateNotEnded($plate)
     {
         $em = $this->getEntityManager();
-        $query = $em->createQuery("SELECT t FROM \SharengoCore\Entity\Trips t WHERE t.car = :id AND t.timestampEnd = :time");
+
+        $dql = "SELECT trip, car, cust, card
+        FROM \SharengoCore\Entity\Trips trip 
+        JOIN trip.car car
+        JOIN trip.customer cust
+        JOIN cust.card card
+        WHERE trip.car = :id AND trip.timestampEnd = :time";
+
+        $query = $em->createQuery($dql);
         $query->setParameter('id', $plate);
         $query->setParameter('time', null);
 
@@ -32,7 +40,15 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
     public function findTripsByCustomerNotEnded($customer)
     {
         $em = $this->getEntityManager();
-        $query = $em->createQuery("SELECT t FROM \SharengoCore\Entity\Trips t WHERE t.customer = :id AND t.timestampEnd = :time");
+
+        $dql = "SELECT trip, car, cust, card
+        FROM \SharengoCore\Entity\Trips trip 
+        JOIN trip.car car
+        JOIN trip.customer cust
+        JOIN cust.card card
+        WHERE trip.customer = :id AND trip.timestampEnd = :time";
+
+        $query = $em->createQuery($dql);
         $query->setParameter('id', $customer);
         $query->setParameter('time', null);
 
