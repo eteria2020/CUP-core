@@ -42,6 +42,7 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         $query = $em->createQuery('SELECT COUNT(c.id) FROM \SharengoCore\Entity\Customers c');
         return $query->getSingleScalarResult();
     }
+
     public function findListCustomersFilteredLimited($filters, $limit)
     {
         $qb = $this->createQueryBuilder('c');
@@ -69,8 +70,18 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
 
         $qb->orderBy('c.surname', 'ASC');
         $qb->setMaxResults($limit);
-        
+
         return $qb->getQuery()->getResult();
+    }
+
+    public function findMaintainersCards()
+    {
+        $em = $this->getEntityManager();
+        $dql = 'SELECT c.card FROM \SharengoCore\Entity\Customers c WHERE c.maintainer = :value';
+        $query = $em->createQuery($dql);
+        $query->setParameter('value', true);
+
+        return $query->getResult();
     }
 
 }
