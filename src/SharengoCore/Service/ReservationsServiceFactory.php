@@ -18,7 +18,7 @@ class ReservationsServiceFactory implements FactoryInterface
         $I_datatableService->setQueryBuilder(
             new DatatableQueryBuilders\Cars(
                 new DatatableQueryBuilders\Customers(
-                    $I_datatableService->getQueryBuilder()
+                    new DatatableQueryBuilders\Basic()
                 )
             )
         );

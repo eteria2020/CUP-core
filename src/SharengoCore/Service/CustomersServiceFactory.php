@@ -16,14 +16,14 @@ class CustomersServiceFactory implements FactoryInterface
 
         $I_datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
 
+        $cardsService = $serviceLocator->get('SharengoCore\Service\CardsService');
+
         $I_datatableService->setQueryBuilder(
             new DatatableQueryBuilders\Cards(
-                $I_datatableService->getQueryBuilder(),
+                new DatatableQueryBuilders\Basic(),
                 'e'
             )
         );
-
-        $cardsService = $serviceLocator->get('SharengoCore\Service\CardsService');
 
         return new CustomersService($entityManager, $userService, $I_datatableService, $cardsService);
     }
