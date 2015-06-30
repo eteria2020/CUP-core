@@ -4,10 +4,13 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Service\BonusService;
 use SharengoCore\Entity\Repository\CustomersBonusRepository;
+use SharengoCore\Entity\Repository\FreeFaresRepository;
 use SharengoCore\Utils\Interval;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripBills;
 use SharengoCore\Entity\TripBonuses;
+use SharengoCore\Entity\FreeFares;
+use SharengoCore\Entity\TripFreeFares;
 use SharengoCore\Entity\CustomersBonus as Bonus;
 
 use Doctrine\ORM\EntityManager;
@@ -25,9 +28,19 @@ class AccountTripsService
     private $bonusRepository;
 
     /**
+     * @var FreeFaresRepository
+     */
+    private $freeFaresRepository;
+
+    /**
      * @var BonusService
      */
     private $bonusService;
+
+    /**
+     * @var FreeFaresService
+     */
+    private $freeFaresService;
 
     /**
      * @var Trips
@@ -37,11 +50,15 @@ class AccountTripsService
     public function __construct(
         EntityManager $entityManager,
         CustomersBonusRepository $bonusRepository,
-        BonusService $bonusService
+        FreeFaresRepository $freeFaresRepository,
+        BonusService $bonusService,
+        FreeFaresService $freeFaresService
     ) {
         $this->entityManager = $entityManager;
         $this->bonusRepository = $bonusRepository;
+        $this->freeFaresRepository = $freeFaresRepository;
         $this->bonusService = $bonusService;
+        $this->freeFaresService = $freeFaresService;
     }
 
     /**
@@ -92,17 +109,6 @@ class AccountTripsService
         $bonuses = $this->bonusRepository->getBonusesForTrip($trip);
         $trips = $this->applyBonuses($trips, $bonuses);
 
-        /*foreach($trips as $trip) {
-            echo $trip->getTimestampBeginning()->format('Y-m-d H:i:s') . '-' . $trip->getTimestampEnd()->format('Y-m-d H:i:s') . "\n";
-        }*/
-        
-        // then see if we can use some bonuses
-        /*$billableTrips = [];
-
-        foreach ($trips as $trip) {
-            $billableTrips = array_merge($billableTrips, $this->applyBonuses($trip));
-        }*/
-
         // eventually consider billable part
         $this->billTrips($trips);
     }
@@ -115,7 +121,62 @@ class AccountTripsService
      */
     private function applyFreeFares(Trips $trip)
     {
-        return [$trip]; // TODO: fix this to consider free fares
+        $freeFares = $this->freeFaresRepository->findAll();
+
+        $trips = [$trip];
+
+        foreach ($freeFares as $freefare) {
+            $trips = $this->applyFreeFare($trips, $freeFare);
+        }
+
+        return $trips;
+    }
+
+    /**
+     * Removes a free fare from an array of trips
+     * Returns an array of trips obtained by removing the free fare periods from
+     * the trips
+     *
+     * @param Trips[] $trips
+     * @param FreeFares $freeFare
+     * @return Trips[]
+     */
+    private function applyFreeFare(array $trips, FreeFares $freeFare)
+    {
+        $newTrips = [];
+
+        foreach ($trips as $trip) {
+            $tripTrips = $this->applyFreeFareToTrip($trip, $freeFare);
+            $newTrips = array_merge($newTrips, $tripTrips);
+        }
+
+        return $newTrips;
+    }
+
+    /**
+     * Apply a free fare to a single trip
+     * Returns an array of trips obtained by removing the bonus periods from
+     * the trip
+     *
+     * @param Trips $trip
+     * @param FreeFare $freeFare
+     * @return Trips[]
+     */
+    private function applyFreeFareToTrip(Trips $trip, FreeFares $freeFare)
+    {
+        $intervals = $this->freeFaresService->usedInterval($trip, $freeFare);
+
+        foreach ($intervals as $interval) {
+            $freeFareIntervalTrip = $this->newTripFromInterval($trip, $interval);
+
+            $tripFreeFare = TripFreeFares::createFromTripAndFreeFare($trip, $freeFare);
+            $tripFreeFare->setTrip($this->originalTrip);
+
+            $this->entityManager->persist($tripFreeFare);
+            $this->entityManager->flush();
+        }
+
+        return $this->removeIntervalsFromTrip($trip, $intervals);
     }
 
     /**
@@ -158,7 +219,7 @@ class AccountTripsService
     }
 
     /**
-     * Apply a single bonus to a signle trip
+     * Apply a single bonus to a single trip
      * Returns the modified bonus and an array of trips obtained by removing
      * the bonus periods from the trip
      *
@@ -173,8 +234,6 @@ class AccountTripsService
         $interval = $this->bonusService->usedInterval($trip, $bonus);
 
         if ($interval) {
-            $intervals[] = $interval;
-
             $bonus = $this->bonusService->decreaseBonusMinutes($bonus, $interval->minutes());
 
             $bonusIntervalTrip = $this->newTripFromInterval($trip, $interval);
@@ -206,6 +265,25 @@ class AccountTripsService
             ->setTimestampEnd($interval->end());
 
         return $newTrip;
+    }
+
+    /**
+     * remove an array of intervals from a single trip. Returns what it remains
+     *
+     * @param Trips $trip
+     * @param Interval[] $intervals
+     * @return Trips[]
+     */
+    private function removeIntervalsFromTrip(Trips $trip, array $intervals)
+    {
+        $newTrips = [];
+
+        foreach ($intervals as $interval) {
+            $tripTrips = $this->removeIntervalFromTrip($trip, $interval);
+            $newTrips = array_merge($newTrips, $tripTrips);
+        }
+
+        return $newTrips;
     }
 
     /**

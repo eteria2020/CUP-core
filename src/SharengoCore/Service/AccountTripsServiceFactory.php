@@ -12,12 +12,16 @@ class AccountTripsServiceFactory implements FactoryInterface
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $bonusRepository = $entityManager->getRepository('\SharengoCore\Entity\CustomersBonus');
+        $freeFaresRepository = $entityManager->getRepository('\SharengoCore\Entity\FreeFares');
         $bonusService = $serviceLocator->get('SharengoCore\Service\BonusService');
+        $freeFaresService = $serviceLocator->get('SharengoCore\Service\FreeFaresService');
 
         return new AccountTripsService(
             $entityManager,
             $bonusRepository,
-            $bonusService
+            $freeFaresRepository,
+            $bonusService,
+            $freeFaresService
         );
     }
 }
