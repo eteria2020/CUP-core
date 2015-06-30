@@ -246,6 +246,13 @@ class Cars
      */
     private $keyStatus;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="charging", type="boolean", nullable=true)
+     */
+    private $charging;
+
     
     /**
      * Get plate
@@ -1043,6 +1050,24 @@ class Cars
     public function toArray(DoctrineHydrator $hydrator)
     {
         return $hydrator->extract($this);
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getCharging()
+    {
+        return $this->charging;
+    }
+
+    /**
+     * @param boolean
+     * @return Cars
+     */
+    public function setCharging($charging)
+    {
+        $this->charging = $charging;
+        return $this;
     }
     
 }
