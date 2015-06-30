@@ -42,4 +42,16 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         $query = $em->createQuery('SELECT COUNT(c.id) FROM \SharengoCore\Entity\Customers c');
         return $query->getSingleScalarResult();
     }
+    public function findListCustomersFilteredLimited($filters, $limit)
+    {
+        $qb = $this->createQueryBuilder('c');
+        foreach ($filters as $key => $value) {
+            $qb->where('LOWER(c.' . $key . ') LIKE :value');
+            $qb->setParameter('value', strtolower('%'.$value.'%'));
+        }
+        $qb->setMaxResults($limit);
+        $qb->orderBy('c.surname', 'ASC');
+        return $qb->getQuery()->getResult();
+    }
+
 }
