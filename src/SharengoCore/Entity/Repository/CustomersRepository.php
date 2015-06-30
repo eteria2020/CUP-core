@@ -77,7 +77,11 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
     public function findMaintainersCards()
     {
         $em = $this->getEntityManager();
-        $dql = 'SELECT c.card FROM \SharengoCore\Entity\Customers c WHERE c.maintainer = :value';
+        
+        $dql = 'SELECT IDENTITY(c.card) 
+        FROM \SharengoCore\Entity\Customers c 
+        WHERE c.maintainer = :value';
+
         $query = $em->createQuery($dql);
         $query->setParameter('value', true);
 
