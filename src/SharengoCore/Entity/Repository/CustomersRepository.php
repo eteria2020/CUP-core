@@ -42,4 +42,35 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         $query = $em->createQuery('SELECT COUNT(c.id) FROM \SharengoCore\Entity\Customers c');
         return $query->getSingleScalarResult();
     }
+    public function findListCustomersFilteredLimited($filters, $limit)
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        $isFirstParam = true;
+        foreach ($filters as $key => $value) {
+
+            // retrieve card entity, not just card field
+            $processedKey = ($key == 'card') ? 'IDENTITY(c.' . $key . ')' : 'c.' . $key;
+
+            // generate the dql statement for the specific parameter
+            $statement = 'LOWER(' . $processedKey . ') LIKE :' . $key . 'Val';
+
+            // set WHERE ... or AND ... based on isFirstParam flag
+            if ($isFirstParam) {
+                $qb->where($statement);
+                $isFirstParam = false;
+            } else {
+                $qb->andWhere($statement);
+            }
+
+            // set the parameter
+            $qb->setParameter($key . 'Val', strtolower('%'.$value.'%'));
+        }
+
+        $qb->orderBy('c.surname', 'ASC');
+        $qb->setMaxResults($limit);
+        
+        return $qb->getQuery()->getResult();
+    }
+
 }
