@@ -24,6 +24,11 @@ class ReservationsService
         $this->datatableService = $datatableService;
     }
 
+    public function getListReservationsFiltered($filters = [])
+    {
+        return $this->reservationsRepository->findBy($filters);
+    }
+
     public function getActiveReservationsByCar($plate)
     {
         return $this->reservationsRepository->findActiveReservationsByCar($plate);

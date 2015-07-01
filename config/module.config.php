@@ -127,7 +127,7 @@ return [
                 array('controller' => 'SharengoCore\Controller\Cars', 'roles' => array()),
                 array('controller' => 'SharengoCore\Controller\Customers', 'roles' => array('admin')),
                 array('controller' => 'SharengoCore\Controller\Pois', 'roles' => array()),
-                array('controller' => 'SharengoCore\Controller\Reservations', 'roles' => array('admin')),
+                array('controller' => 'SharengoCore\Controller\Reservations', 'roles' => array()),
                 array('controller' => 'SharengoCore\Controller\Trips', 'roles' => array('admin')),
             ),
         ),
