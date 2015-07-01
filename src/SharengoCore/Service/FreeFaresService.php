@@ -25,15 +25,15 @@ class FreeFaresService
 
         $intervals = [$tripInterval];
 
-        /*if (isset($conditions['customer'])) {
+        if (isset($conditions['customer'])) {
             $intervals = $this->filterCustomer($intervals, $trip->getCustomer(), $conditions['customer']);
-        }*/
+        }
 
         if (isset($conditions['time'])) {
             $intervals = $this->filterTime($intervals, $conditions['time']);
         }
 
-        return []; //$intervals;
+        return $intervals;
     }
 
     /**
