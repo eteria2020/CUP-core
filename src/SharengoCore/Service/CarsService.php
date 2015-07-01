@@ -48,6 +48,11 @@ class CarsService
         return $this->carsRepository->getTotalCars();
     }
 
+    public function getCarsEligibleForAlarmCheck()
+    {
+        return $this->carsRepository->findCarsEligibleForAlarmCheck();
+    }
+
     public function getCarByPlate($plate)
     {
 
