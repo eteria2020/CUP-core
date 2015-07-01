@@ -55,4 +55,38 @@ final class Interval
     {
         return $this->start < $date && $this->end > $date;
     }
+
+    public function intersection(Interval $interval)
+    {
+        $start = max($this->start, $interval->start());
+        $end = min($this->end, $interval->end());
+
+        if ($start <= $end) {
+            return new Interval($start, $end);
+        }
+    }
+
+    /**
+     * returns an array with the range of years in which the interval spreads
+     *
+     * @return array of integers
+     */
+    public function years()
+    {
+        return range($this->start->format('Y'), $this->end->format('Y'));
+    }
+
+    /**
+     * returns an array with the range of days in which the interval spreads
+     *
+     * @return \DatePeriod
+     */
+    public function days()
+    {
+        $start = clone $this->start;
+        $end = clone $this->end;
+
+        $interval = new \DateInterval('P1D');
+        return new \DatePeriod($start->modify('00:00:00'), $interval, $end->modify('23:59:59'));
+    }
 }

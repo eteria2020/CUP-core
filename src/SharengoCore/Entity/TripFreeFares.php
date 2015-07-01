@@ -72,11 +72,11 @@ class TripFreeFares
      */
     private $notes;
 
-    public static function createFromTripAndFreeFare(Trips $trip, FreeFares $bonus)
+    public static function createFromTripAndFreeFare(Trips $trip, FreeFares $freeFare)
     {
         $interval = new Interval($trip->getTimestampBeginning(), $trip->getTimestampEnd());
 
-        return (new TripBonuses())
+        return (new TripFreeFares())
             ->setTrip($trip)
             ->setFreeFare($freeFare)
             ->setMinutes($interval->minutes())

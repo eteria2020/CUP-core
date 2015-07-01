@@ -5,7 +5,8 @@ namespace SharengoCore;
 return [
     'service_manager' => [
         'invokables' => [
-            'SharengoCore\Service\DatatableQueryBuilder' => 'SharengoCore\Service\DatatableQueryBuilders\Basic'
+            'SharengoCore\Service\DatatableQueryBuilder' => 'SharengoCore\Service\DatatableQueryBuilders\Basic',
+            'SharengoCore\Service\FreeFaresService' => 'SharengoCore\Service\FreeFaresService'
         ],
         'factories' => [
             'SharengoCore\Service\CustomersService'    => 'SharengoCore\Service\CustomersServiceFactory',

@@ -125,7 +125,7 @@ class AccountTripsService
 
         $trips = [$trip];
 
-        foreach ($freeFares as $freefare) {
+        foreach ($freeFares as $freeFare) {
             $trips = $this->applyFreeFare($trips, $freeFare);
         }
 
@@ -268,7 +268,7 @@ class AccountTripsService
     }
 
     /**
-     * remove an array of intervals from a single trip. Returns what it remains
+     * removes an array of intervals from a single trip. Returns what it remains
      *
      * @param Trips $trip
      * @param Interval[] $intervals
@@ -276,9 +276,27 @@ class AccountTripsService
      */
     private function removeIntervalsFromTrip(Trips $trip, array $intervals)
     {
-        $newTrips = [];
+        $trips = [$trip];
 
         foreach ($intervals as $interval) {
+            $trips = $this->removeIntervalFromTrips($trips, $interval);
+        }
+
+        return $trips;
+    }
+
+    /**
+     * removes an interval from an array of trips. Returns what it remains
+     *
+     * @param Trips[] $trips
+     * @param Interval $interval
+     * @return Trips[]
+     */
+    private function removeIntervalFromTrips(array $trips, Interval $interval)
+    {
+        $newTrips = [];
+
+        foreach ($trips as $trip) {
             $tripTrips = $this->removeIntervalFromTrip($trip, $interval);
             $newTrips = array_merge($newTrips, $tripTrips);
         }
@@ -287,7 +305,7 @@ class AccountTripsService
     }
 
     /**
-     * remove an interval from a single trip. Returns what it remains
+     * removes an interval from a single trip. Returns what it remains
      *
      * @param Trips $trip
      * @param Interval $interval

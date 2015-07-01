@@ -28,4 +28,38 @@ class FreeFares
      * @ORM\Column(name="conditions", type="string", nullable=false)
      */
     private $conditions;
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set conditions
+     *
+     * @param string $conditions
+     *
+     * @return FreeFares
+     */
+    public function setConditions($conditions)
+    {
+        $this->conditions = $conditions;
+
+        return $this;
+    }
+
+    /**
+     * Get conditions
+     *
+     * @return string
+     */
+    public function getConditions()
+    {
+        return $this->conditions;
+    }
 }
