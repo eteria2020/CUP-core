@@ -27,7 +27,7 @@ class PromoCodesService
         $activePromoCode = $this->pcRepository->getActivePromoCode($promoCode);
 
         if (null == $activePromoCode) {
-            echo "1";
+            //echo "1";
             return false;
         }
 
@@ -35,13 +35,13 @@ class PromoCodesService
         $promoCodeInfo = $activePromoCode->getPromocodesinfo();
         if (null != $promoCodeInfo->getValidfrom()) {
             if ($promoCodeInfo->getValidfrom() > new \DateTime()) {
-                echo "2";
+                //echo "2";
                 return false;
             }
         }
         if (null != $promoCodeInfo->getValidto()) {
             if ($promoCodeInfo->getValidto() < new \DateTime()) {
-                echo "3";
+                //echo "3";
                 return false;
             }
         }
