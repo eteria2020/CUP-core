@@ -279,6 +279,7 @@ class CustomersService implements ValidatorServiceInterface
 
         if(!is_null($isAssigned) && $isAssigned === true) {
             $card->setIsAssigned(true);
+            $card->setAssignable(false);
         }
 
         $customer->setCard($card);

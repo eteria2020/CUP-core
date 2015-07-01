@@ -43,6 +43,13 @@ class Cards
      */
     private $notes;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="assignable", type="boolean", nullable=false)
+     */
+    private $assignable = true;
+
 
     /**
      * Set rfid
@@ -141,6 +148,28 @@ class Cards
     }
 
     /**
+     * Get assignable
+     *
+     * @return boolean
+     */
+    public function getAssignable()
+    {
+        return $this->assignable;
+    }
+
+    /**
+     * Set assignable
+     *
+     * @param boolean $assignable
+     *
+     * @return Cards
+     */
+    public function setAssignable($assignable)
+    {
+        $this->assignable = $assignable;
+    }
+
+    /**
      * @param DoctrineHydrator
      * @return mixed[]
      */
@@ -148,5 +177,5 @@ class Cards
     {
         return $hydrator->extract($this);
     }
-    
+
 }
