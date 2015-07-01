@@ -80,10 +80,11 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         
         $dql = 'SELECT IDENTITY(c.card) 
         FROM \SharengoCore\Entity\Customers c 
-        WHERE c.maintainer = :value';
+        WHERE c.maintainer = :maintainerValue AND c.enabled = :enabledValue';
 
         $query = $em->createQuery($dql);
-        $query->setParameter('value', true);
+        $query->setParameter('maintainerValue', true);
+        $query->setParameter('enabledValue', true);
 
         return $query->getResult();
     }
