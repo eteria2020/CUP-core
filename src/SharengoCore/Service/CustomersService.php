@@ -272,6 +272,11 @@ class CustomersService implements ValidatorServiceInterface
         ]);
     }
 
+    public function getTotalBonusResidualByUser(Customers $customer)
+    {
+        return $this->customersBonusRepository->getTotalBonusResidualByUser($customer);
+    }
+
     /**
      * assign a Card to the Customer.
      * if the card is null, it first creates a virtual one
