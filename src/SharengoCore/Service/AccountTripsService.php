@@ -169,7 +169,7 @@ class AccountTripsService
         foreach ($intervals as $interval) {
             $freeFareIntervalTrip = $this->newTripFromInterval($trip, $interval);
 
-            $tripFreeFare = TripFreeFares::createFromTripAndFreeFare($trip, $freeFare);
+            $tripFreeFare = TripFreeFares::createFromTripAndFreeFare($freeFareIntervalTrip, $freeFare);
             $tripFreeFare->setTrip($this->originalTrip);
 
             $this->entityManager->persist($tripFreeFare);

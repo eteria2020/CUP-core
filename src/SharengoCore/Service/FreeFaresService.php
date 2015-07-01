@@ -52,7 +52,11 @@ class FreeFaresService
         }
 
         if (isset($customerConditions['birth_date'])) {
-            $intervals = $this->filterCustomerBirthday($intervals, $customer->getBirthdate());
+            if ($customer->getBirthdate()) {
+                $intervals = $this->filterCustomerBirthday($intervals, $customer->getBirthdate());
+            } else {
+                $intervals = [];
+            }
         }
 
         return $intervals;
