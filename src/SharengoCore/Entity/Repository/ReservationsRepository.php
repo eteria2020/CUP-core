@@ -17,11 +17,22 @@ class ReservationsRepository extends \Doctrine\ORM\EntityRepository
 
     public function findActiveReservationsByCar($plate)
     {
-    	$em = $this->getEntityManager();
+        $em = $this->getEntityManager();
         $query = $em->createQuery("SELECT t FROM \SharengoCore\Entity\Reservations t WHERE t.car = :id AND t.active = :active");
         $query->setParameter('id', $plate);
         $query->setParameter('active', true);
 
         return $query->getResult();
     }
+
+    public function findActiveReservationsByCustomer($customer)
+    {
+        $em = $this->getEntityManager();
+        $query = $em->createQuery("SELECT t FROM \SharengoCore\Entity\Reservations t WHERE t.customer = :id AND t.active = :active");
+        $query->setParameter('id', $customer);
+        $query->setParameter('active', true);
+
+        return $query->getResult();
+    }
+
 }

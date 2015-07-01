@@ -34,6 +34,11 @@ class ReservationsService
         return $this->reservationsRepository->findActiveReservationsByCar($plate);
     }
 
+    public function getActiveReservationsByCustomer($customer)
+    {
+        return $this->reservationsRepository->findActiveReservationsByCustomer($customer);
+    }
+
     public function getTotalReservations()
     {
         return $this->reservationsRepository->getTotalReservations();
