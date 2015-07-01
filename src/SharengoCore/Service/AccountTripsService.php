@@ -102,7 +102,7 @@ class AccountTripsService
      */
     private function processTripAccountingDetails(Trips $trip)
     {
-        //first see if we can apply a free fare to the trip
+        // first see if we can apply a free fare to the trip
         $trips = $this->applyFreeFares($trip);
 
         // then see if we can use some bonuses
@@ -233,7 +233,7 @@ class AccountTripsService
 
         $interval = $this->bonusService->usedInterval($trip, $bonus);
 
-        if ($interval) {
+        if ($interval && $bonus->getResidual() > 0) {
             $bonus = $this->bonusService->decreaseBonusMinutes($bonus, $interval->minutes());
 
             $bonusIntervalTrip = $this->newTripFromInterval($trip, $interval);
