@@ -44,7 +44,7 @@ class ReservationsService
                 'e' => [
                     'id'       => $reservation->getId(),
                     'carPlate' => $reservation->getCar()->getPlate(),
-                    'customer' => $reservation->getCustomer()->getName() . ' ' . $reservation->getCustomer()->getSurname(),
+                    'customer' => null != $reservation->getCustomer() ? $reservation->getCustomer()->getName() . ' ' . $reservation->getCustomer()->getSurname() : '',
                     'cards'    => $reservation->getCards(),
                     'active'   => $reservation->getActive() ? 'Si' : 'No',
                 ]
