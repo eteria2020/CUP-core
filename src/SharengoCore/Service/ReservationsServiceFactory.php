@@ -23,6 +23,9 @@ class ReservationsServiceFactory implements FactoryInterface
             )
         );
 
-        return new ReservationsService($reservationsRepository, $I_datatableService);
+        $carsService = $serviceLocator->get('SharengoCore\Service\CarsService');
+        $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
+
+        return new ReservationsService($reservationsRepository, $I_datatableService, $carsService, $entityManager);
     }
 }

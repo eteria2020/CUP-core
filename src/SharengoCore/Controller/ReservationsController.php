@@ -5,12 +5,8 @@ namespace SharengoCore\Controller;
 use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 use Zend\Http\Client;
-use SharengoCore\Entity\Reservations;
-use SharengoCore\Entity\Customers;
 use SharengoCore\Service\ReservationsService;
-use SharengoCore\Service\CarsService;
 use Zend\Authentication\AuthenticationService as AuthenticationService;
-use Doctrine\ORM\EntityManager;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class ReservationsController extends AbstractRestfulController
@@ -24,19 +20,9 @@ class ReservationsController extends AbstractRestfulController
     private $reservationsService;
 
     /**
-     * @var CarsService
-     */
-    private $carsService;
-
-    /**
      * @var AuthenticationService
      */
     private $authService;
-
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
 
     /**
      * @var DoctrineHydrator
@@ -45,15 +31,11 @@ class ReservationsController extends AbstractRestfulController
 
     public function __construct(
         ReservationsService $reservationsService,
-        CarsService $carsService,
         AuthenticationService $authService,
-        EntityManager $entityManager,
         DoctrineHydrator $hydrator
     ) {
         $this->reservationsService = $reservationsService;
-        $this->carsService = $carsService;
         $this->authService = $authService;
-        $this->entityManager = $entityManager;
         $this->hydrator = $hydrator;
     }
 
@@ -98,53 +80,23 @@ class ReservationsController extends AbstractRestfulController
         // get user id from AuthService
         $user = $this->authService->getIdentity();
 
-        if ($user instanceof Customers) {
-            // check if user has already active reservations
-            $reservations = $this->reservationsService->getActiveReservationsByCustomer($user);
+        // check if user has already active reservations
+        $reservations = $this->reservationsService->getActiveReservationsByCustomer($user);
+        if (count($reservations) < self::MAXRESERVATIONS) {
 
-            if (count($reservations) < self::MAXRESERVATIONS) {
+            $plate = $data['plate'];
+            if ($plate !== null) {
 
-                // get car from $data
-                $plate = $data['plate'];
-                if ($plate !== null) {
-
-                    $car = $this->carsService->getCarByPlate($plate);
-
-                    if ($car !== null) {
-
-                        // get card from user
-                        $card = $user->getCard();
-                        $card = json_encode(($card !== null) ? [$card->getCode()] : []);
-
-                        // create reservation for user
-                        $reservation = new Reservations();
-                        $reservation->setTs(date_create())
-                                ->setCar($car)
-                                ->setCustomer($user)
-                                ->setBeginningTs(date_create())
-                                ->setActive(true)
-                                ->setLength(30)
-                                ->setToSend(true)
-                                ->setCards($card);
-
-                        // persist and flush reservation
-                        $this->entityManager->persist($reservation);
-                        $this->entityManager->flush();
-
-                    } else {
-                        $reason = 'car does not exist';
-                    }
-
-                } else {
-                    $reason = 'no car specified';
+                if (!$this->reservationsService->reserveCarForCustomer($plate, $user)) {    
+                    $reason = 'car does not exist';
                 }
 
             } else {
-                $reason = 'max active reservations for user reached';
+                $reason = 'no car specified';
             }
-
+            
         } else {
-            // admin & callcenter
+            $reason = 'max active reservations for user reached';
         }
 
         return new JsonModel($this->buildReturnData($status, $reason));
@@ -155,41 +107,6 @@ class ReservationsController extends AbstractRestfulController
         $status = 200;
         $reason = 'OK';
 
-        $reservationFound = false;
-
-        // get user id from AuthService
-        $user = $this->authService->getIdentity();
-
-        if ($user instanceof Customers) {
-            // get user's active reservations
-            $reservations = $this->reservationsService->getActiveReservationsByCustomer($user);
-
-            foreach ($reservations as $reservation) {
-
-                if ($reservation->getId() == $id) {
-
-                    $reservationFound = true;
-
-                    $reservation->setActive(false)
-                            ->setToSend(true);
-
-                    // persist and flush reservation
-                    $this->entityManager->persist($reservation);
-                    $this->entityManager->flush();
-
-                    break;
-                }
-
-            }
-
-            if (!$reservationFound) {
-                $reason = 'reservation not found';
-            }
-
-        } else {
-            // admin & callcenter
-        }
-
         return new JsonModel($this->buildReturnData($status, $reason));
     }
  
@@ -197,6 +114,13 @@ class ReservationsController extends AbstractRestfulController
     {
         $status = 200;
         $reason = 'OK';
+
+        // get user id from AuthService
+        $user = $this->authService->getIdentity();
+
+        if (!$this->reservationsService->removeCustomerReservationWithId($user, $id)) {
+            $reason = 'reservation not found';
+        }
 
         return new JsonModel($this->buildReturnData($status, $reason));
     }
