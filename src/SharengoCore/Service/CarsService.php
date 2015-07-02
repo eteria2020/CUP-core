@@ -48,6 +48,11 @@ class CarsService
         return $this->carsRepository->getTotalCars();
     }
 
+    public function getListCarsFiltered($filters = [])
+    {
+        return $this->carsRepository->findBy($filters, ['plate' => 'ASC']);
+    }
+
     public function getCarsEligibleForAlarmCheck()
     {
         return $this->carsRepository->findCarsEligibleForAlarmCheck();
