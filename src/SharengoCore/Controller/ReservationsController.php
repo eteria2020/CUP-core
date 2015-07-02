@@ -6,6 +6,7 @@ use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 use Zend\Http\Client;
 use SharengoCore\Entity\Reservations;
+use SharengoCore\Entity\Customers;
 use SharengoCore\Service\ReservationsService;
 use SharengoCore\Service\CarsService;
 use Zend\Authentication\AuthenticationService as AuthenticationService;
@@ -58,6 +59,9 @@ class ReservationsController extends AbstractRestfulController
 
     public function getList()
     {
+        $status = 200;
+        $reason = 'OK';
+
         $returnReservations = [];
 
         // get filters
@@ -78,7 +82,7 @@ class ReservationsController extends AbstractRestfulController
             array_push($returnReservations, $reservation);
         }
 
-        return new JsonModel($this->buildReturnData(200, '', $returnReservations));
+        return new JsonModel($this->buildReturnData($status, $reason, $returnReservations));
     }
  
     public function get($id)
@@ -89,12 +93,12 @@ class ReservationsController extends AbstractRestfulController
     public function create($data)
     {
         $status = 200;
-        $reason = '';
+        $reason = 'OK';
 
         // get user id from AuthService
         $user = $this->authService->getIdentity();
 
-        // check if user has already active reservations?
+        // check if user has already active reservations
         $reservations = $this->reservationsService->getActiveReservationsByCustomer($user);
 
         if (count($reservations) < self::MAXRESERVATIONS) {
@@ -143,12 +147,53 @@ class ReservationsController extends AbstractRestfulController
  
     public function update($id, $data)
     {
-        return new JsonModel([]);
+        $status = 200;
+        $reason = 'OK';
+
+        $reservationFound = false;
+
+        // get user id from AuthService
+        $user = $this->authService->getIdentity();
+
+        if ($user instanceof Customers) {
+            // get user's active reservations
+            $reservations = $this->reservationsService->getActiveReservationsByCustomer($user);
+
+            foreach ($reservations as $reservation) {
+
+                if ($reservation->getId() == $id) {
+
+                    $reservationFound = true;
+
+                    $reservation->setActive(false)
+                            ->setToSend(true);
+
+                    // persist and flush reservation
+                    $this->entityManager->persist($reservation);
+                    $this->entityManager->flush();
+
+                    break;
+                }
+
+            }
+
+            if (!$reservationFound) {
+                $reason = 'reservation not found';
+            }
+
+        } else {
+            // admin & callcenter
+        }
+
+        return new JsonModel($this->buildReturnData($status, $reason));
     }
  
     public function delete($id)
     {
-        return new JsonModel([]);
+        $status = 200;
+        $reason = 'OK';
+
+        return new JsonModel($this->buildReturnData($status, $reason));
     }
 
     /**
