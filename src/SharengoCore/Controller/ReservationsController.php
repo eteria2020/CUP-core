@@ -98,48 +98,53 @@ class ReservationsController extends AbstractRestfulController
         // get user id from AuthService
         $user = $this->authService->getIdentity();
 
-        // check if user has already active reservations
-        $reservations = $this->reservationsService->getActiveReservationsByCustomer($user);
+        if ($user instanceof Customers) {
+            // check if user has already active reservations
+            $reservations = $this->reservationsService->getActiveReservationsByCustomer($user);
 
-        if (count($reservations) < self::MAXRESERVATIONS) {
+            if (count($reservations) < self::MAXRESERVATIONS) {
 
-            // get car from $data
-            $plate = $data['plate'];
-            if ($plate !== null) {
+                // get car from $data
+                $plate = $data['plate'];
+                if ($plate !== null) {
 
-                $car = $this->carsService->getCarByPlate($plate);
+                    $car = $this->carsService->getCarByPlate($plate);
 
-                if ($car !== null) {
+                    if ($car !== null) {
 
-                    // get card from user
-                    $card = $user->getCard();
-                    $card = json_encode(($card !== null) ? [$card->getCode()] : []);
+                        // get card from user
+                        $card = $user->getCard();
+                        $card = json_encode(($card !== null) ? [$card->getCode()] : []);
 
-                    // create reservation for user
-                    $reservation = new Reservations();
-                    $reservation->setTs(date_create())
-                            ->setCar($car)
-                            ->setCustomer($user)
-                            ->setBeginningTs(date_create())
-                            ->setActive(true)
-                            ->setLength(30)
-                            ->setToSend(true)
-                            ->setCards($card);
+                        // create reservation for user
+                        $reservation = new Reservations();
+                        $reservation->setTs(date_create())
+                                ->setCar($car)
+                                ->setCustomer($user)
+                                ->setBeginningTs(date_create())
+                                ->setActive(true)
+                                ->setLength(30)
+                                ->setToSend(true)
+                                ->setCards($card);
 
-                    // persist and flush reservation
-                    $this->entityManager->persist($reservation);
-                    $this->entityManager->flush();
+                        // persist and flush reservation
+                        $this->entityManager->persist($reservation);
+                        $this->entityManager->flush();
+
+                    } else {
+                        $reason = 'car does not exist';
+                    }
 
                 } else {
-                    $reason = 'car does not exist';
+                    $reason = 'no car specified';
                 }
 
             } else {
-                $reason = 'no car specified';
+                $reason = 'max active reservations for user reached';
             }
 
         } else {
-            $reason = 'max active reservations for user reached';
+            // admin & callcenter
         }
 
         return new JsonModel($this->buildReturnData($status, $reason));
