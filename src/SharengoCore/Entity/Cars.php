@@ -251,7 +251,7 @@ class Cars
      *
      * @ORM\Column(name="charging", type="boolean", nullable=true)
      */
-    private $charging;
+    private $charging = false;
 
     
     /**
