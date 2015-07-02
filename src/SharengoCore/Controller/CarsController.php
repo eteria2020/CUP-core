@@ -61,6 +61,9 @@ class CarsController extends AbstractRestfulController
         if ($this->params()->fromQuery('busy') !== null) {
             $filters['busy'] = $this->params()->fromQuery('busy');
         }
+        if ($this->params()->fromQuery('running') !== null) {
+            $filters['running'] = $this->params()->fromQuery('running');
+        }
         if ($this->params()->fromQuery('hidden') !== null) {
             $filters['hidden'] = $this->params()->fromQuery('hidden');
         }
