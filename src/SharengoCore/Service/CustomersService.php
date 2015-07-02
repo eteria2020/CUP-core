@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonus;
+use SharengoCore\Entity\PromoCodes;
 use SharengoCore\Entity\Repository\CustomersBonusRepository;
 use SharengoCore\Entity\Cards;
 use SharengoCore\Service\DatatableService;
@@ -307,5 +308,10 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->persist($customer);
 
         $this->entityManager->flush();
+    }
+
+    public function checkUsedPromoCode(Customers $customers, PromoCodes $promoCode)
+    {
+        return $this->customersBonusRepository->checkUsedPromoCode($customers, $promoCode);
     }
 }
