@@ -10,7 +10,9 @@ use SharengoCore\Entity\Reservations;
 
 class ReservationsArchiveService
 {
-    /** @var  ReservationsArchiveRepository */
+    /**
+     * @var  ReservationsArchiveRepository
+     */
     private $reservationsArchiveRepository;
 
     /**
