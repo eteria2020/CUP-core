@@ -30,6 +30,7 @@ class ReservationsArchiveService
     {
         $reservationsArchive = new ReservationsArchive();
 
+        $reservationsArchive->setReservationId($reservation->getId());
         $reservationsArchive->setTs($reservation->getTs());
         $reservationsArchive->setBeginningTs($reservation->getBeginningTs());
         $reservationsArchive->setActive($reservation->getActive());

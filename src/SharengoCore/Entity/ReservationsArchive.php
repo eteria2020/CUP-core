@@ -18,9 +18,16 @@ class ReservationsArchive
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="SEQUENCE")
-     * @ORM\SequenceGenerator(sequenceName="reservations_id_seq", allocationSize=1, initialValue=1)
+     * @ORM\SequenceGenerator(sequenceName="reservations_archive_id_seq", allocationSize=1, initialValue=1)
      */
     private $id;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="reservation_id", type="integer", nullable=false)
+     */
+    private $reservationId;
 
     /**
      * @var \DateTime
@@ -125,11 +132,35 @@ class ReservationsArchive
     }
 
     /**
+     * Set reservationId
+     *
+     * @param integer $reservationId
+     *
+     * @return ReservationsArchive
+     */
+    public function setReservationId($reservationId)
+    {
+        $this->reservationId = $reservationId;
+
+        return $this;
+    }
+
+    /**
+     * Get reservationId
+     *
+     * @return integer
+     */
+    public function getReservationId()
+    {
+        return $this->reservationId;
+    }
+
+    /**
      * Set ts
      *
      * @param \DateTime $ts
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setTs($ts)
     {
@@ -153,7 +184,7 @@ class ReservationsArchive
      *
      * @param \DateTime $beginningTs
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setBeginningTs($beginningTs)
     {
@@ -177,7 +208,7 @@ class ReservationsArchive
      *
      * @param boolean $active
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setActive($active)
     {
@@ -201,7 +232,7 @@ class ReservationsArchive
      *
      * @param string $cards
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setCards($cards)
     {
@@ -225,7 +256,7 @@ class ReservationsArchive
      *
      * @param integer $length
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setLength($length)
     {
@@ -249,7 +280,7 @@ class ReservationsArchive
      *
      * @param boolean $toSend
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setToSend($toSend)
     {
@@ -273,7 +304,7 @@ class ReservationsArchive
      *
      * @param \DateTime $sentTs
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setSentTs($sentTs)
     {
@@ -297,7 +328,7 @@ class ReservationsArchive
      *
      * @param \SharengoCore\Entity\Customers $customer
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setCustomer(\SharengoCore\Entity\Customers $customer = null)
     {
@@ -321,7 +352,7 @@ class ReservationsArchive
      *
      * @param \SharengoCore\Entity\Cars $carPlate
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setCar(\SharengoCore\Entity\Cars $car = null)
     {
@@ -354,7 +385,8 @@ class ReservationsArchive
      * Set consumedTs
      *
      * @param \DateTime $consumedTs
-     * @return Reservations
+     *
+     * @return ReservationsArchive
      */
     public function setConsumedTs($consumedTs)
     {
@@ -376,7 +408,8 @@ class ReservationsArchive
      * Set reason
      *
      * @param string $reason
-     * @return Reservations
+     *
+     * @return ReservationsArchive
      */
     public function setReason($reason)
     {
@@ -398,7 +431,8 @@ class ReservationsArchive
      * Set archivedTs
      *
      * @param \DateTime $archivedTs
-     * @return Reservations
+     *
+     * @return ReservationsArchive
      */
     public function setArchivedTs($archivedTs)
     {
