@@ -314,4 +314,11 @@ class CustomersService implements ValidatorServiceInterface
     {
         return $this->customersBonusRepository->checkUsedPromoCode($customers, $promoCode);
     }
+
+    public function addBonusFromPromoCode(Customers $customers, PromoCodes $promoCode)
+    {
+        $customerBonus = CustomersBonus::createFromPromoCode($promoCode);
+
+        $this->addBonus($customers, $customerBonus);
+    }
 }
