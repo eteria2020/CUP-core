@@ -5,12 +5,12 @@ namespace SharengoCore\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Reservations
+ * ReservationsArchive
  *
- * @ORM\Table(name="reservations", indexes={@ORM\Index(name="IDX_4DA2399395C3F3", columns={"customer_id"}), @ORM\Index(name="IDX_4DA239AE35528C", columns={"car_plate"})})
- * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\ReservationsRepository")
+ * @ORM\Table(name="reservations_archive", indexes={@ORM\Index(name="IDX_4DA2399395C3F3", columns={"customer_id"}), @ORM\Index(name="IDX_4DA239AE35528C", columns={"car_plate"})})
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\ReservationsArchiveRepository")
  */
-class Reservations
+class ReservationsArchive
 {
     /**
      * @var integer
@@ -97,6 +97,20 @@ class Reservations
      * @ORM\Column(name="consumed_ts", type="datetimetz")
      */
     private $consumedTs;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="reason", type="string", nullable=false)
+     */
+    private $reason;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="archived_ts", type="datetimetz", nullable=false)
+     */
+    private $archivedTs;
 
 
 
@@ -345,6 +359,50 @@ class Reservations
     public function setConsumedTs($consumedTs)
     {
         $this->consumedTs = $consumedTs;
+        return $this;
+    }
+
+    /**
+     * Get reason
+     *
+     * @return string
+     */
+    public function getReason()
+    {
+        return $this->reason;
+    }
+
+    /**
+     * Set reason
+     *
+     * @param string $reason
+     * @return Reservations
+     */
+    public function setReason($reason)
+    {
+        $this->reason = $reason;
+        return $this;
+    }
+
+    /**
+     * Get archivedTs
+     *
+     * @return \DateTime
+     */
+    public function getArchivedTs()
+    {
+        return $this->archivedTs;
+    }
+
+    /**
+     * Set archivedTs
+     *
+     * @param \DateTime $archivedTs
+     * @return Reservations
+     */
+    public function setArchivedTs($archivedTs)
+    {
+        $this->archivedTs = $archivedTs;
         return $this;
     }
 

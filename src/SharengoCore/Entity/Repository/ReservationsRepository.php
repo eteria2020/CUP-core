@@ -24,4 +24,26 @@ class ReservationsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+
+    public function findReservationsToDelete()
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT r
+        FROM \SharengoCore\Entity\Reservations r
+        WHERE r.consumedTs != :consumedTsVal
+        OR (r.length != :lengthVal AND DATE_ADD(r.beginningTs, (r.length / 60 / 60 / 24), 'DAY') < :nowVal)
+        OR (r.active = :activeVal AND r.toSend = :toSendVal)";
+
+        $query = $em->createQuery($dql);
+
+        $query->setParameter('consumedTsVal', null);
+        $query->setParameter('lengthVal', -1);
+        $query->setParameter('nowVal', date_create());
+        $query->setParameter('activeVal', false);
+        $query->setParameter('toSendVal', false);
+
+        return $query->getResult();
+    }
+
 }

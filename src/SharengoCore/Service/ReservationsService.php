@@ -34,6 +34,11 @@ class ReservationsService
         return $this->reservationsRepository->getTotalReservations();
     }
 
+    public function getReservationsToDelete()
+    {
+        return $this->reservationsRepository->findReservationsToDelete();
+    }
+
     public function getDataDataTable(array $as_filters = [])
     {
         $reservations = $this->datatableService->getData('Reservations', $as_filters);
