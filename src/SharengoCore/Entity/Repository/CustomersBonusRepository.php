@@ -15,7 +15,7 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
     {
         $s_query =  'SELECT SUM(cb.residual) AS residual ' .
             'FROM \SharengoCore\Entity\CustomersBonus cb ' .
-            'WHERE cb.customer = :id ' .
+            'WHERE cb.customer = :id AND cb.active = true ' .
             'AND CURRENT_TIMESTAMP() > cb.validFrom AND CURRENT_TIMESTAMP() < cb.validTo ';
 
         $I_query = $this->getEntityManager()->createQuery($s_query);
