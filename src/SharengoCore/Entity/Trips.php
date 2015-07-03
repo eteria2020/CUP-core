@@ -183,6 +183,13 @@ class Trips
      */
     private $customer;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_accounted", type="boolean", nullable=false, options={"default" = FALSE})
+     */
+    private $isAccounted = false;
+
 
 
     /**
@@ -724,6 +731,30 @@ class Trips
     }
 
     /**
+     * Set isAccounted
+     *
+     * @param boolean $isAccounted
+     *
+     * @return Trips
+     */
+    public function setIsAccounted($isAccounted)
+    {
+        $this->isAccounted = $isAccounted;
+
+        return $this;
+    }
+
+    /**
+     * Get isAccounted
+     *
+     * @return boolean
+     */
+    public function getIsAccounted()
+    {
+        return $this->isAccounted;
+    }
+
+    /**
      * @param DoctrineHydrator
      * @return mixed[]
      */
@@ -745,4 +776,5 @@ class Trips
         
         return $extractedTrip;
     }
+
 }

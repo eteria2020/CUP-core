@@ -2,10 +2,10 @@
 
 namespace SharengoCore\Service;
 
-use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping\Entity;
 use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Trips;
+use SharengoCore\Entity\Customers;
+
 use Zend\View\Helper\Url;
 use SharengoCore\Service\CustomersService;
 use SharengoCore\Service\CarsService;
@@ -104,8 +104,14 @@ class TripsService
         return array_map(function (Trips $trip) {
 
             $urlHelper = $this->I_urlHelper;
-            $plate = sprintf('<a href="%s">%s</a>', $urlHelper('cars/edit', ['plate' => $trip->getCar()->getPlate()]),
-                $trip->getCar()->getPlate());
+            $plate = sprintf(
+                '<a href="%s">%s</a>',
+                $urlHelper(
+                    'cars/edit',
+                    ['plate' => $trip->getCar()->getPlate()]
+                ),
+                $trip->getCar()->getPlate()
+            );
 
             return [
                 'e'        => [
@@ -166,5 +172,24 @@ class TripsService
     public function getUrlHelper()
     {
         return $this->I_viewHelperManager->get('url');
+    }
+
+    public function getTripsToBeAccounted()
+    {
+        return $this->tripRepository->findTripsToBeAccounted();
+    }
+
+    public function getTripById($tripId)
+    {
+        return $this->tripRepository->findOneById($tripId);
+    }
+
+    /**
+     * @param Customers
+     * @return Trips[]
+     */
+    public function getCustomerTripsToBeAccounted(Customers $customer)
+    {
+        return $this->tripRepository->findCustomerTripsToBeAccounted($customer);
     }
 }

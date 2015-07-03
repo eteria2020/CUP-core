@@ -89,6 +89,7 @@ return [
     'service_manager' => [
         'invokables' => [
             'SharengoCore\Service\DatatableQueryBuilder' => 'SharengoCore\Service\DatatableQueryBuilders\Basic',
+            'SharengoCore\Service\FreeFaresService' => 'SharengoCore\Service\FreeFaresService'
         ],
         'factories' => [
             'SharengoCore\Service\CustomersService'    => 'SharengoCore\Service\CustomersServiceFactory',
@@ -103,6 +104,8 @@ return [
             'SharengoCore\Service\ReservationsService' => 'SharengoCore\Service\ReservationsServiceFactory',
             'SharengoCore\Service\PromoCodesService'   => 'SharengoCore\Service\PromoCodesServiceFactory',
             'SharengoCore\Service\CardsService'        => 'SharengoCore\Service\CardsServiceFactory',
+            'SharengoCore\Service\BonusService'        => 'SharengoCore\Service\BonusServiceFactory',
+            'SharengoCore\Service\AccountTripsService' => 'SharengoCore\Service\AccountTripsServiceFactory',
             'SharengoCore\Service\CommandsService'     => 'SharengoCore\Service\CommandsServiceFactory',
         ]
     ],

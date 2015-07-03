@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity\Repository;
 
+use SharengoCore\Entity\Customers;
+
 /**
  * TripsRepository
  *
@@ -12,8 +14,9 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
 {
     public function findTripsByCustomer($customerId)
     {
-        $em = $this->getEntityManager();
-        $query = $em->createQuery("SELECT t FROM \SharengoCore\Entity\Trips t WHERE t.customer = :id");
+        $query = $this->getEntityManager()->createQuery(
+            "SELECT t FROM \SharengoCore\Entity\Trips t WHERE t.customer = :id"
+        );
         $query->setParameter('id', $customerId);
 
         return $query->getResult();
@@ -57,8 +60,32 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
 
     public function getTotalTrips()
     {
-        $em = $this->getEntityManager();
-        $query = $em->createQuery('SELECT COUNT(t.id) FROM \SharengoCore\Entity\Trips t');
+        $query = $this->getEntityManager()->createQuery(
+            'SELECT COUNT(t.id) FROM \SharengoCore\Entity\Trips t'
+        );
         return $query->getSingleScalarResult();
+    }
+
+    public function findTripsToBeAccounted()
+    {
+        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
+            "WHERE t.isAccounted = false ".
+            "AND t.timestampEnd IS NOT NULL ".
+            "ORDER BY t.timestampEnd ASC";
+        $query = $this->getEntityManager()->createQuery($dql);
+        return $query->getResult();
+    }
+
+    public function findCustomerTripsToBeAccounted(Customers $customer)
+    {
+        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
+            "WHERE t.isAccounted = false ".
+            "AND t.timestampEnd IS NOT NULL ".
+            "AND t.customer = :customer ".
+            "ORDER BY t.timestampEnd ASC";
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('customer', $customer);
+        //$query->setMaxResults(10);
+        return $query->getResult();
     }
 }
