@@ -68,15 +68,6 @@ class TripsService
         return $this->tripRepository->findTripsByCustomer($customerId);
     }
 
-    /**
-     * @param integer
-     * @return Trips
-     */
-    public function getTripById($id)
-    {
-        return $this->tripRepository->find($id);
-    }
-
     public function getListTripsFiltered($filters = [])
     {
         return $this->tripRepository->findBy($filters, ['timestampEnd' => 'DESC']);
