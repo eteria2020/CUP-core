@@ -5,9 +5,9 @@ namespace SharengoCore\Service;
 use BjyAuthorize\Service\Authorize;
 use Doctrine\ORM\EntityManager;
 use SharengoCore\Entity\Cars;
+use SharengoCore\Entity\CarsMaintenance;
 use SharengoCore\Entity\Repository\CarsRepository;
-use SharengoCore\Entity\Repository\UpdateCarsRepository;
-use SharengoCore\Entity\UpdateCars;
+use SharengoCore\Entity\Repository\CarsMaintenanceRepository;
 use SharengoCore\Service\DatatableService;
 
 use SharengoCore\Utility\StatusCar;
@@ -21,8 +21,8 @@ class CarsService
     /** @var  CarsRepository */
     private $carsRepository;
 
-    /** @var  UpdateCarsRepository */
-    private $updateCarsRepository;
+    /** @var  CarsMaintenance */
+    private $carsMaintenanceRepository;
 
     /** @var DatatableService */
     private $datatableService;
@@ -33,21 +33,24 @@ class CarsService
     /**
      * @param EntityManager    $entityManager
      * @param CarsRepository   $carsRepository
+     * @param CarsMaintenance  $carsMaintenanceRepository
      * @param DatatableService $datatableService
+     * @param UserService      $userService
      */
     public function __construct(
         EntityManager $entityManager,
         CarsRepository $carsRepository,
-        UpdateCarsRepository $updateCarsRepository,
+        CarsMaintenanceRepository $carsMaintenanceRepository,
         DatatableService $datatableService,
         UserService $userService
     ) {
         $this->entityManager = $entityManager;
         $this->carsRepository = $carsRepository;
-        $this->updateCarsRepository = $updateCarsRepository;
+        $this->carsMaintenanceRepository = $carsMaintenanceRepository;
         $this->datatableService = $datatableService;
         $this->userService = $userService;
     }
+
 
     /**
      * @return mixed
@@ -119,14 +122,13 @@ class CarsService
         if($cars->getStatus() == StatusCar::MAINTENANCE &&
             ($lastStatus == StatusCar::OPERATIVE || $lastStatus == StatusCar::OUT_OF_ORDER) &&
             !is_null($location)) {
-            $updateCar = new UpdateCars();
-            $updateCar->setCarPlate($cars);
-            $updateCar->setLocation($location);
-            $updateCar->setNote($postData['note']);
-            $updateCar->setUpdate(new \DateTime());
-            $updateCar->setWebuser($this->userService->getIdentity());
-            $updateCar->setStatus($cars->getStatus());
-            $this->entityManager->persist($updateCar);
+            $carsMaintenance = new CarsMaintenance();
+            $carsMaintenance->setCarPlate($cars);
+            $carsMaintenance->setLocation($location);
+            $carsMaintenance->setNotes($postData['note']);
+            $carsMaintenance->setUpdateTs(new \DateTime());
+            $carsMaintenance->setWebuser($this->userService->getIdentity());
+            $this->entityManager->persist($carsMaintenance);
             $this->entityManager->flush();
         }
     }
@@ -162,8 +164,8 @@ class CarsService
         return $as_status;
     }
 
-    public function getLastUpdateCar($plate)
+    public function getLastCarsMaintenance($plate)
     {
-        return $this->updateCarsRepository->findLastUpdateByPlate($plate);
+        return $this->carsMaintenanceRepository->findLastCarsMaintenance($plate);
     }
 }

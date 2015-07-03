@@ -6,13 +6,13 @@ namespace SharengoCore\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * UpdateCars
+ * CarsMaintenance
  *
- * @ORM\Table(name="update_cars", indexes={@ORM\Index(name="IDX_41AB4A8BAE35528C", columns={"car_plate"}), @ORM\Index(name="IDX_41AB4A8B49279951", columns={"webuser_id"})})
- * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\UpdateCarsRepository")
+ * @ORM\Table(name="cars_maintenance", indexes={@ORM\Index(name="IDX_41AB4A8BAE35528C", columns={"car_plate"}), @ORM\Index(name="IDX_41AB4A8B49279951", columns={"webuser_id"})})
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CarsMaintenanceRepository")
 
  */
-class UpdateCars
+class CarsMaintenance
 {
     /**
      * @var integer
@@ -20,7 +20,7 @@ class UpdateCars
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="SEQUENCE")
-     * @ORM\SequenceGenerator(sequenceName="update_cars_id_seq", allocationSize=1, initialValue=1)
+     * @ORM\SequenceGenerator(sequenceName="cars_maintenance_id_seq", allocationSize=1, initialValue=1)
      */
     private $id;
 
@@ -34,23 +34,16 @@ class UpdateCars
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="update", type="datetime", nullable=false)
+     * @ORM\Column(name="update_ts", type="datetime", nullable=false)
      */
-    private $update;
+    private $updateTs;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="status", type="string", nullable=false)
+     * @ORM\Column(name="notes", type="text", nullable=true)
      */
-    private $status;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="note", type="text", nullable=true)
-     */
-    private $note;
+    private $notes;
 
     /**
      * @var \Cars
@@ -108,71 +101,47 @@ class UpdateCars
     }
 
     /**
-     * Set update
+     * Set updateTs
      *
-     * @param \DateTime $update
+     * @param \DateTime $updateTs
      *
      * @return UpdateCars
      */
-    public function setUpdate($update)
+    public function setUpdateTs($updateTs)
     {
-        $this->update = $update;
+        $this->updateTs = $updateTs;
 
         return $this;
     }
 
     /**
-     * Get update
+     * Get updateTs
      *
      * @return \DateTime
      */
-    public function getUpdate()
+    public function getUpdateTs()
     {
-        return $this->update;
+        return $this->updateTs;
     }
 
     /**
-     * Set status
-     *
-     * @param string $status
-     *
-     * @return UpdateCars
-     */
-    public function setStatus($status)
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    /**
-     * Get status
+     * Get notes
      *
      * @return string
      */
-    public function getStatus()
+    public function getNotes()
     {
-        return $this->status;
+        return $this->notes;
     }
 
     /**
-     * Get note
+     * Set notes
      *
-     * @return string
+     * @param string $notes
      */
-    public function getNote()
+    public function setNotes($notes)
     {
-        return $this->note;
-    }
-
-    /**
-     * Set note
-     *
-     * @param string $note
-     */
-    public function setNote($note)
-    {
-        $this->note = $note;
+        $this->notes = $notes;
     }
 
     /**
