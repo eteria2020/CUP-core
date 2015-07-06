@@ -29,21 +29,13 @@ class ReservationsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $dql = "SELECT re, ca, cu
-        FROM \SharengoCore\Entity\Reservations re
-        JOIN re.car ca
-        JOIN re.customer cu
-        WHERE re.consumedTs != :consumedTsVal
-        OR (re.length != :lengthVal AND DATE_ADD(re.beginningTs, (re.length / 86400), 'DAY') < :nowVal)
-        OR (re.active = :activeVal AND re.toSend = :toSendVal)";
+        $dql = "SELECT re
+                FROM \SharengoCore\Entity\Reservations re
+                WHERE re.consumedTs IS NOT NULL
+                OR (re.length != -1 AND DATE_ADD(re.beginningTs, re.length, 'SECOND') < CURRENT_TIMESTAMP())
+                OR (re.active = false AND re.toSend = false)";
 
         $query = $em->createQuery($dql);
-
-        $query->setParameter('consumedTsVal', null);
-        $query->setParameter('lengthVal', -1);
-        $query->setParameter('nowVal', date_create());
-        $query->setParameter('activeVal', false);
-        $query->setParameter('toSendVal', false);
 
         return $query->getResult();
     }

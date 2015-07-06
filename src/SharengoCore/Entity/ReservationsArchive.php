@@ -23,13 +23,6 @@ class ReservationsArchive
     private $id;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="reservation_id", type="integer", nullable=false)
-     */
-    private $reservationId;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(name="ts", type="datetimetz", nullable=false)
@@ -120,6 +113,26 @@ class ReservationsArchive
     private $archivedTs;
 
 
+    public static function createFromReservation(Reservations $reservation, $reason) {
+
+        $reservationsArchive = new ReservationsArchive();
+
+        $reservationsArchive->setTs($reservation->getTs());
+        $reservationsArchive->setBeginningTs($reservation->getBeginningTs());
+        $reservationsArchive->setActive($reservation->getActive());
+        $reservationsArchive->setCards($reservation->getCards());
+        $reservationsArchive->setLength($reservation->getLength());
+        $reservationsArchive->setToSend($reservation->getToSend());
+        $reservationsArchive->setSentTs($reservation->getSentTs());
+        $reservationsArchive->setCustomer($reservation->getCustomer());
+        $reservationsArchive->setCar($reservation->getCar());
+        $reservationsArchive->setConsumedTs($reservation->getConsumedTs());
+        $reservationsArchive->setReason($reason);
+        $reservationsArchive->setArchivedTs(new \DateTime());
+
+        return $reservationsArchive;
+        
+    }
 
     /**
      * Get id
@@ -129,30 +142,6 @@ class ReservationsArchive
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set reservationId
-     *
-     * @param integer $reservationId
-     *
-     * @return ReservationsArchive
-     */
-    public function setReservationId($reservationId)
-    {
-        $this->reservationId = $reservationId;
-
-        return $this;
-    }
-
-    /**
-     * Get reservationId
-     *
-     * @return integer
-     */
-    public function getReservationId()
-    {
-        return $this->reservationId;
     }
 
     /**
