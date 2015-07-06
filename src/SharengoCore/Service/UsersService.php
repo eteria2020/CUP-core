@@ -72,9 +72,6 @@ class UsersService implements ValidatorServiceInterface
             $user->setPassword($bcrypt->create($user->getPassword()));
         }
 
-        // only role admin is allowed
-        $user->setRole('admin');
-
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
