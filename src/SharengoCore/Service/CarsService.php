@@ -150,27 +150,28 @@ class CarsService
 
     public function getStatusCarAvailable($status)
     {
-        $as_status = [];
 
         switch ($status) {
 
             case CarStatus::OPERATIVE:
-            case CarStatus::MAINTENANCE:
-                $as_status = [
-                    CarStatus::OPERATIVE   => CarStatus::OPERATIVE,
+                return [
                     CarStatus::MAINTENANCE => CarStatus::MAINTENANCE
                 ];
-                break;
+                
+            case CarStatus::MAINTENANCE:
+                return [
+                    CarStatus::OPERATIVE   => CarStatus::OPERATIVE,
+                ];
 
             case CarStatus::OUT_OF_ORDER:
-                $as_status = [
-                    CarStatus::OUT_OF_ORDER => CarStatus::OUT_OF_ORDER,
+                return [
+                    CarStatus::OPERATIVE => CarStatus::OPERATIVE,
                     CarStatus::MAINTENANCE  => CarStatus::MAINTENANCE
                 ];
-                break;
         }
 
-        return $as_status;
+        return [];
+
     }
 
     public function getLastCarsMaintenance($plate)
