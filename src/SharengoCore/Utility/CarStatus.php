@@ -2,10 +2,10 @@
 namespace SharengoCore\Utility;
 
 /**
- * Class StatusCar
+ * Class CarStatus
  * @package SharengoCore\Utility
  */
-class StatusCar
+class CarStatus
 {
     const OPERATIVE = 'operative';
     const OUT_OF_ORDER = 'out_of_order';

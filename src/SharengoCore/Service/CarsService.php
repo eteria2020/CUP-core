@@ -9,8 +9,7 @@ use SharengoCore\Entity\CarsMaintenance;
 use SharengoCore\Entity\Repository\CarsRepository;
 use SharengoCore\Entity\Repository\CarsMaintenanceRepository;
 use SharengoCore\Service\DatatableService;
-
-use SharengoCore\Utility\StatusCar;
+use SharengoCore\Utility\CarStatus;
 use Zend\Authentication\AuthenticationService as UserService;
 
 class CarsService
@@ -119,8 +118,8 @@ class CarsService
     {
         $location = !empty($postData['location']) ? $postData['location'] : null;
 
-        if($cars->getStatus() == StatusCar::MAINTENANCE &&
-            ($lastStatus == StatusCar::OPERATIVE || $lastStatus == StatusCar::OUT_OF_ORDER) &&
+        if($cars->getStatus() == CarStatus::MAINTENANCE &&
+            ($lastStatus == CarStatus::OPERATIVE || $lastStatus == CarStatus::OUT_OF_ORDER) &&
             !is_null($location)) {
             $carsMaintenance = new CarsMaintenance();
             $carsMaintenance->setCarPlate($cars);
@@ -145,18 +144,18 @@ class CarsService
 
         switch ($status) {
 
-            case StatusCar::OPERATIVE:
-            case StatusCar::MAINTENANCE:
+            case CarStatus::OPERATIVE:
+            case CarStatus::MAINTENANCE:
                 $as_status = [
-                    StatusCar::OPERATIVE   => StatusCar::OPERATIVE,
-                    StatusCar::MAINTENANCE => StatusCar::MAINTENANCE
+                    CarStatus::OPERATIVE   => CarStatus::OPERATIVE,
+                    CarStatus::MAINTENANCE => CarStatus::MAINTENANCE
                 ];
                 break;
 
-            case StatusCar::OUT_OF_ORDER:
+            case CarStatus::OUT_OF_ORDER:
                 $as_status = [
-                    StatusCar::OUT_OF_ORDER => StatusCar::OUT_OF_ORDER,
-                    StatusCar::MAINTENANCE  => StatusCar::MAINTENANCE
+                    CarStatus::OUT_OF_ORDER => CarStatus::OUT_OF_ORDER,
+                    CarStatus::MAINTENANCE  => CarStatus::MAINTENANCE
                 ];
                 break;
         }
