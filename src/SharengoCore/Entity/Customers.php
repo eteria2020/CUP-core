@@ -1457,4 +1457,8 @@ class Customers
 
     }
 
+    public function getUsedBonuses() {
+        return $this->getTotalBonuses() - $this->getResidualBonuses();
+    }
+
 }
