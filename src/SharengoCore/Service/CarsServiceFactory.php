@@ -15,7 +15,12 @@ class CarsServiceFactory implements FactoryInterface
         $carsRepository = $entityManager->getRepository('\SharengoCore\Entity\Cars');
         $carsMaintenanceRepository = $entityManager->getRepository('\SharengoCore\Entity\CarsMaintenance');
         $userService = $serviceLocator->get('zfcuser_auth_service');
+        $reservationsService = $serviceLocator->get('SharengoCore\Service\ReservationsService');
 
-        return new CarsService($entityManager, $carsRepository, $carsMaintenanceRepository, $datatableService, $userService);
+        $datatableService->setQueryBuilder(
+            new DatatableQueryBuilders\Basic()
+        );
+
+        return new CarsService($entityManager, $carsRepository, $carsMaintenanceRepository, $datatableService, $userService, $reservationsService);
     }
 }
