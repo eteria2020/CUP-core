@@ -57,4 +57,11 @@ class ReservationsService
         }, $reservations);
     }
 
+    public function getMaintenanceReservation($plate)
+    {
+        return $this->reservationsRepository->findOneBy(array('car_plate' => $plate,
+                                                              'length' => -1,
+                                                              'customer' => null));
+    }
+
 }

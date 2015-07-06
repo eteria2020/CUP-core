@@ -9,6 +9,7 @@ use SharengoCore\Entity\CarsMaintenance;
 use SharengoCore\Entity\Repository\CarsRepository;
 use SharengoCore\Entity\Repository\CarsMaintenanceRepository;
 use SharengoCore\Service\DatatableService;
+use SharengoCore\Service\ReservationsService;
 use SharengoCore\Utility\CarStatus;
 use Zend\Authentication\AuthenticationService as UserService;
 
@@ -29,6 +30,9 @@ class CarsService
     /** @var UserService   */
     private $userService;
 
+    /** @var ReservationsService   */
+    private $reservationsService;
+
     /**
      * @param EntityManager    $entityManager
      * @param CarsRepository   $carsRepository
@@ -41,13 +45,15 @@ class CarsService
         CarsRepository $carsRepository,
         CarsMaintenanceRepository $carsMaintenanceRepository,
         DatatableService $datatableService,
-        UserService $userService
+        UserService $userService,
+        ReservationsService $reservationsService
     ) {
         $this->entityManager = $entityManager;
         $this->carsRepository = $carsRepository;
         $this->carsMaintenanceRepository = $carsMaintenanceRepository;
         $this->datatableService = $datatableService;
         $this->userService = $userService;
+        $this->reservationsService = $reservationsService;
     }
 
 
@@ -124,22 +130,46 @@ class CarsService
         return $cars;
     }
 
-    public function updateCar(Cars $cars, $lastStatus, $postData)
+    public function updateCar(Cars $car, $lastStatus, $postData)
     {
         $location = !empty($postData['location']) ? $postData['location'] : null;
 
-        if($cars->getStatus() == CarStatus::MAINTENANCE &&
-            ($lastStatus == CarStatus::OPERATIVE || $lastStatus == CarStatus::OUT_OF_ORDER) &&
+        if($car->getStatus() == CarStatus::MAINTENANCE &&
             !is_null($location)) {
             $carsMaintenance = new CarsMaintenance();
-            $carsMaintenance->setCarPlate($cars);
+            $carsMaintenance->setCarPlate($car);
             $carsMaintenance->setLocation($location);
             $carsMaintenance->setNotes($postData['note']);
             $carsMaintenance->setUpdateTs(new \DateTime());
             $carsMaintenance->setWebuser($this->userService->getIdentity());
             $this->entityManager->persist($carsMaintenance);
-            $this->entityManager->flush();
         }
+
+        switch ($lastStatus) {
+            case CarStatus::OUT_OF_ORDER:
+                if ($cars->getStatus() == CarStatus::OPERATIVE) {
+                    $reservation = $this->reservationsService->getMaintenanceReservation($car->getPlate());
+                    $reservation->setActive(false);
+                    $reservation->setTosend(true);
+                    $this->entityManager->persist($reservation);
+                } else if ($cars->getStatus() == CarStatus::MAINTENANCE) {
+                    $reservation = $this->reservationsService->getMaintenanceReservation($car->getPlate());
+                    $reservation->setActive(true);
+                    $reservation->setTosend(true);
+                    $this->entityManager->persist($reservation);
+                }
+                break;
+            case CarStatus::OPERATIVE:
+                if ($cars->getStatus() == CarStatus::MAINTENANCE) {
+
+                    
+
+                }
+        }
+        
+
+        $this->entityManager->flush();
+        
     }
 
     public function deleteCar(Cars $car)
