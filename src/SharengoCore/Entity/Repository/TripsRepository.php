@@ -71,6 +71,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
             "WHERE t.isAccounted = false ".
             "AND t.timestampEnd IS NOT NULL ".
+            "AND t.timestampEnd >= t.timestampBeginning ".
             "ORDER BY t.timestampEnd ASC";
         $query = $this->getEntityManager()->createQuery($dql);
         return $query->getResult();
@@ -81,6 +82,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
             "WHERE t.isAccounted = false ".
             "AND t.timestampEnd IS NOT NULL ".
+            "AND t.timestampEnd >= t.timestampBeginning ".
             "AND t.customer = :customer ".
             "ORDER BY t.timestampEnd ASC";
         $query = $this->getEntityManager()->createQuery($dql);
