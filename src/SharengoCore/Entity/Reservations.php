@@ -99,6 +99,22 @@ class Reservations
     private $consumedTs;
 
 
+    public static function createMaintenanceReservation($car, $cards) {
+
+        $reservation = new Reservations();
+        $reservation->setTs(date_create())
+                    ->setCar($car)
+                    ->setCustomer(null)
+                    ->setBeginningTs(date_create())
+                    ->setActive(true)
+                    ->setLength(-1)
+                    ->setToSend(true)
+                    ->setCards($cards);
+
+        return $reservation;
+
+    }
+    
 
     /**
      * Get id

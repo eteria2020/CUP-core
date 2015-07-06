@@ -147,12 +147,12 @@ class CarsService
 
         switch ($lastStatus) {
             case CarStatus::OUT_OF_ORDER:
-                if ($cars->getStatus() == CarStatus::OPERATIVE) {
+                if ($car->getStatus() == CarStatus::OPERATIVE) {
                     $reservation = $this->reservationsService->getMaintenanceReservation($car->getPlate());
                     $reservation->setActive(false);
                     $reservation->setTosend(true);
                     $this->entityManager->persist($reservation);
-                } else if ($cars->getStatus() == CarStatus::MAINTENANCE) {
+                } else if ($car->getStatus() == CarStatus::MAINTENANCE) {
                     $reservation = $this->reservationsService->getMaintenanceReservation($car->getPlate());
                     $reservation->setActive(true);
                     $reservation->setTosend(true);
@@ -160,11 +160,18 @@ class CarsService
                 }
                 break;
             case CarStatus::OPERATIVE:
-                if ($cars->getStatus() == CarStatus::MAINTENANCE) {
-
-                    
-
+                if ($car->getStatus() == CarStatus::MAINTENANCE) {
+                    $this->reservationsService->createMaintenanceReservation($car);
                 }
+                break;
+            case CarStatus::MAINTENANCE:
+                if ($car->getStatus() == CarStatus::OPERATIVE) {
+                    $reservation = $this->reservationsService->getMaintenanceReservation($car->getPlate());
+                    $reservation->setActive(false);
+                    $reservation->setTosend(true);
+                    $this->entityManager->persist($reservation);
+                }
+                break;
         }
         
 

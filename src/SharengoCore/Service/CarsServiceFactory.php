@@ -17,6 +17,10 @@ class CarsServiceFactory implements FactoryInterface
         $userService = $serviceLocator->get('zfcuser_auth_service');
         $reservationsService = $serviceLocator->get('SharengoCore\Service\ReservationsService');
 
+        $datatableService->setQueryBuilder(
+            new DatatableQueryBuilders\Basic()
+        );
+
         return new CarsService($entityManager, $carsRepository, $carsMaintenanceRepository, $datatableService, $userService, $reservationsService);
     }
 }

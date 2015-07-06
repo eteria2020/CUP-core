@@ -12,6 +12,7 @@ class ReservationsServiceFactory implements FactoryInterface
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $I_datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
+        $customersService = $serviceLocator->get('SharengoCore\Service\CustomersService');
         $reservationsRepository = $entityManager->getRepository('\SharengoCore\Entity\Reservations');
 
         // decorate the query builder with the needed decorators
@@ -23,6 +24,6 @@ class ReservationsServiceFactory implements FactoryInterface
             )
         );
 
-        return new ReservationsService($reservationsRepository, $I_datatableService);
+        return new ReservationsService($entityManager, $reservationsRepository, $I_datatableService, $customersService);
     }
 }
