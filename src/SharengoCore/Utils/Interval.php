@@ -27,7 +27,8 @@ final class Interval
 
     public function minutes()
     {
-        return ceil($this->seconds() / 60);
+        // round to the nearest minute
+        return ceil(($this->seconds() - 29) / 60);
     }
 
     /**
