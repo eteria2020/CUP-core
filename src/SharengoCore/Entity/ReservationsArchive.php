@@ -5,12 +5,12 @@ namespace SharengoCore\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Reservations
+ * ReservationsArchive
  *
- * @ORM\Table(name="reservations", indexes={@ORM\Index(name="IDX_4DA2399395C3F3", columns={"customer_id"}), @ORM\Index(name="IDX_4DA239AE35528C", columns={"car_plate"})})
- * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\ReservationsRepository")
+ * @ORM\Table(name="reservations_archive", indexes={@ORM\Index(name="IDX_4DA2399395C3F3", columns={"customer_id"}), @ORM\Index(name="IDX_4DA239AE35528C", columns={"car_plate"})})
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\ReservationsArchiveRepository")
  */
-class Reservations
+class ReservationsArchive
 {
     /**
      * @var integer
@@ -18,7 +18,7 @@ class Reservations
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="SEQUENCE")
-     * @ORM\SequenceGenerator(sequenceName="reservations_id_seq", allocationSize=1, initialValue=1)
+     * @ORM\SequenceGenerator(sequenceName="reservations_archive_id_seq", allocationSize=1, initialValue=1)
      */
     private $id;
 
@@ -98,7 +98,41 @@ class Reservations
      */
     private $consumedTs;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="reason", type="string", nullable=false)
+     */
+    private $reason;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="archived_ts", type="datetimetz", nullable=false)
+     */
+    private $archivedTs;
+
+
+    public static function createFromReservation(Reservations $reservation, $reason) {
+
+        $reservationsArchive = new ReservationsArchive();
+
+        $reservationsArchive->setTs($reservation->getTs());
+        $reservationsArchive->setBeginningTs($reservation->getBeginningTs());
+        $reservationsArchive->setActive($reservation->getActive());
+        $reservationsArchive->setCards($reservation->getCards());
+        $reservationsArchive->setLength($reservation->getLength());
+        $reservationsArchive->setToSend($reservation->getToSend());
+        $reservationsArchive->setSentTs($reservation->getSentTs());
+        $reservationsArchive->setCustomer($reservation->getCustomer());
+        $reservationsArchive->setCar($reservation->getCar());
+        $reservationsArchive->setConsumedTs($reservation->getConsumedTs());
+        $reservationsArchive->setReason($reason);
+        $reservationsArchive->setArchivedTs(new \DateTime());
+
+        return $reservationsArchive;
+        
+    }
 
     /**
      * Get id
@@ -115,7 +149,7 @@ class Reservations
      *
      * @param \DateTime $ts
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setTs($ts)
     {
@@ -139,7 +173,7 @@ class Reservations
      *
      * @param \DateTime $beginningTs
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setBeginningTs($beginningTs)
     {
@@ -163,7 +197,7 @@ class Reservations
      *
      * @param boolean $active
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setActive($active)
     {
@@ -187,7 +221,7 @@ class Reservations
      *
      * @param string $cards
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setCards($cards)
     {
@@ -211,7 +245,7 @@ class Reservations
      *
      * @param integer $length
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setLength($length)
     {
@@ -235,7 +269,7 @@ class Reservations
      *
      * @param boolean $toSend
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setToSend($toSend)
     {
@@ -259,7 +293,7 @@ class Reservations
      *
      * @param \DateTime $sentTs
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setSentTs($sentTs)
     {
@@ -283,7 +317,7 @@ class Reservations
      *
      * @param \SharengoCore\Entity\Customers $customer
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setCustomer(\SharengoCore\Entity\Customers $customer = null)
     {
@@ -307,7 +341,7 @@ class Reservations
      *
      * @param \SharengoCore\Entity\Cars $carPlate
      *
-     * @return Reservations
+     * @return ReservationsArchive
      */
     public function setCar(\SharengoCore\Entity\Cars $car = null)
     {
@@ -340,11 +374,58 @@ class Reservations
      * Set consumedTs
      *
      * @param \DateTime $consumedTs
-     * @return Reservations
+     *
+     * @return ReservationsArchive
      */
     public function setConsumedTs($consumedTs)
     {
         $this->consumedTs = $consumedTs;
+        return $this;
+    }
+
+    /**
+     * Get reason
+     *
+     * @return string
+     */
+    public function getReason()
+    {
+        return $this->reason;
+    }
+
+    /**
+     * Set reason
+     *
+     * @param string $reason
+     *
+     * @return ReservationsArchive
+     */
+    public function setReason($reason)
+    {
+        $this->reason = $reason;
+        return $this;
+    }
+
+    /**
+     * Get archivedTs
+     *
+     * @return \DateTime
+     */
+    public function getArchivedTs()
+    {
+        return $this->archivedTs;
+    }
+
+    /**
+     * Set archivedTs
+     *
+     * @param \DateTime $archivedTs
+     *
+     * @return ReservationsArchive
+     */
+    public function setArchivedTs($archivedTs)
+    {
+        $this->archivedTs = $archivedTs;
         return $this;
     }
 
