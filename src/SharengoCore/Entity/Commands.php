@@ -103,13 +103,15 @@ class Commands
      *
      * @var array
      */
-    private static $codes = [1 => ['label' => 'Abilita motore', 'command' => 'SET_ENGINE', 'params' => ['intarg1' => 1]],
-                             2 => ['label' => 'Disabilita motore', 'command' => 'SET_ENGINE', 'params' => ['intarg1' => 0]],
-                             3 => ['label' => 'Apri portiere', 'command' => 'SET_DOORS', 'params' => ['intarg1' => 1]],
-                             4 => ['label' => 'Chiudi portiere', 'command' => 'SET_DOORS', 'params' => ['intarg1' => 0]],
-                             5 => ['label' => 'Scarica whitelist', 'command' => 'WLUPDATE', 'params' => []],
-                             6 => ['label' => 'Cancella e riscarica whitelist', 'command' => 'WLCLEAN', 'params' => []],
-                             7 => ['label' => 'Rispedisci corse', 'command' => 'RESEND_TRIP', 'params' => []],
+    private static $codes = [1 => ['label' => 'Abilita motore', 'command' => 'SET_ENGINE', 'params' => ['intarg1' => 1], 'ttl' => 180],
+                             2 => ['label' => 'Disabilita motore', 'command' => 'SET_ENGINE', 'params' => ['intarg1' => 0], 'ttl' => 180],
+                             3 => ['label' => 'Apri portiere', 'command' => 'SET_DOORS', 'params' => ['intarg1' => 1], 'ttl' => 180],
+                             4 => ['label' => 'Chiudi portiere', 'command' => 'SET_DOORS', 'params' => ['intarg1' => 0], 'ttl' => 180],
+                             5 => ['label' => 'Scarica whitelist', 'command' => 'WLUPDATE', 'params' => [], 'ttl' => 180],
+                             6 => ['label' => 'Cancella e riscarica whitelist', 'command' => 'WLCLEAN', 'params' => [], 'ttl' => 180],
+                             7 => ['label' => 'Rispedisci corse', 'command' => 'RESEND_TRIP', 'params' => [], 'ttl' => 180],
+                             8 => ['label' => 'Apri finestra di servizio', 'command' => 'OPEN_SERVICE', 'params' => [], 'ttl' => 60],
+                             9 => ['label' => 'Chiudi ultima corsa aperta', 'command' => 'CLOSE_TRIP', 'params' => [], 'ttl' => 60],
                             ];
                             
 
@@ -119,18 +121,20 @@ class Commands
             throw new \InvalidArgumentException('Command not found');
         }
 
+        $commandData = self::$codes[$commandIndex];
+
         $command = new Commands();
         $command->setCarPlate($car->getPlate());
-        $command->setCommand(self::$codes[$commandIndex]['command']);
+        $command->setCommand($commandData['command']);
 
-        foreach(self::$codes[$commandIndex]['params'] as $param => $value) {
+        foreach($commandData['params'] as $param => $value) {
             $methodName = 'set' . ucfirst($param);
             $command->$methodName($value);
         }
 
         $command->setQueued(new \DateTime());
         $command->setToSend(true);
-        $command->setTtl(180);  // 3 minutes
+        $command->setTtl($commandData['ttl']);
 
         return $command;
 
