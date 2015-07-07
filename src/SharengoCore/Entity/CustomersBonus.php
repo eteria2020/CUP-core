@@ -140,6 +140,8 @@ class CustomersBonus
         $me->setTotal($promoCodeDetails->getMinutes());
         $me->setResidual($me->getTotal());
         $me->setValidFrom($me->getInsertTs());
+        $me->setValidTo($promoCodeDetails->getValidTo());
+        $me->setDescription($promoCode->getDescription());
         $me->setPromoCode($promoCode);
 
         return $me;

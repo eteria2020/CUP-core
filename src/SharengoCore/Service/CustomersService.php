@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonus;
+use SharengoCore\Entity\PromoCodes;
 use SharengoCore\Entity\Repository\CustomersBonusRepository;
 use SharengoCore\Entity\Cards;
 use SharengoCore\Service\DatatableService;
@@ -272,6 +273,11 @@ class CustomersService implements ValidatorServiceInterface
         ]);
     }
 
+    public function findBonus($bonus)
+    {
+        return $this->customersBonusRepository->find($bonus);
+    }
+
     /**
      * assign a Card to the Customer.
      * if the card is null, it first creates a virtual one
@@ -302,5 +308,42 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->persist($customer);
 
         $this->entityManager->flush();
+    }
+
+    public function checkUsedPromoCode(Customers $customers, PromoCodes $promoCode)
+    {
+        return $this->customersBonusRepository->checkUsedPromoCode($customers, $promoCode);
+    }
+
+    public function addBonusFromPromoCode(Customers $customers, PromoCodes $promoCode)
+    {
+        $customerBonus = CustomersBonus::createFromPromoCode($promoCode);
+
+        $this->addBonus($customers, $customerBonus);
+    }
+
+    public function addBonusFromWebUser(Customers $customers, CustomersBonus $customersBonus)
+    {
+        $customersBonus->setCustomer($customers);
+        $customersBonus->setResidual($customersBonus->getTotal());
+        $customersBonus->setInsertTs(new \DateTime());
+        $customersBonus->setUpdateTs($customersBonus->getInsertTs());
+        $customersBonus->setWebuser($this->userService->getIdentity());
+
+        $this->entityManager->persist($customersBonus);
+        $this->entityManager->flush();
+    }
+
+    public function removeBonus(CustomersBonus $customerBonus) {
+
+        if($customerBonus->getTotal() == $customerBonus->getResidual()) {
+
+            $this->entityManager->remove($customerBonus);
+            $this->entityManager->flush();
+
+            return true;
+        }
+
+        return false;
     }
 }
