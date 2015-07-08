@@ -23,6 +23,7 @@ class Module
         $platform->registerDoctrineTypeMapping('_int4', 'string');
         $platform->registerDoctrineTypeMapping('geometry', 'string');
         $platform->registerDoctrineTypeMapping('jsonb', 'string');
+        $platform->registerDoctrineTypeMapping('reservations_archive_reason', 'string');
 
     }
 
