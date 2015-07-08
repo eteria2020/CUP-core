@@ -145,35 +145,44 @@ class CarsService
             $this->entityManager->persist($carsMaintenance);
         }
 
-        switch ($lastStatus) {
-            case CarStatus::OUT_OF_ORDER:
-                if ($car->getStatus() == CarStatus::OPERATIVE) {
-                    $reservation = $this->reservationsService->getMaintenanceReservation($car->getPlate());
-                    $reservation->setActive(false);
-                    $reservation->setTosend(true);
-                    $this->entityManager->persist($reservation);
-                } else if ($car->getStatus() == CarStatus::MAINTENANCE) {
-                    $reservation = $this->reservationsService->getMaintenanceReservation($car->getPlate());
-                    $reservation->setActive(true);
-                    $reservation->setTosend(true);
-                    $this->entityManager->persist($reservation);
-                }
-                break;
-            case CarStatus::OPERATIVE:
-                if ($car->getStatus() == CarStatus::MAINTENANCE) {
-                    $this->reservationsService->createMaintenanceReservation($car);
-                }
-                break;
-            case CarStatus::MAINTENANCE:
-                if ($car->getStatus() == CarStatus::OPERATIVE) {
-                    $reservation = $this->reservationsService->getMaintenanceReservation($car->getPlate());
-                    $reservation->setActive(false);
-                    $reservation->setTosend(true);
-                    $this->entityManager->persist($reservation);
-                }
-                break;
+        /* set system reservation according to status change */
+        if ($lastStatus != $car->getStatus()) {
+            switch ($lastStatus) {
+                case CarStatus::OUT_OF_ORDER:
+                    if ($car->getStatus() == CarStatus::OPERATIVE) {
+                        $reservation = $this->reservationsService->getMaintenanceReservation($car->getPlate());
+                        if (null != $reservation) {
+                            $reservation->setActive(false);
+                            $reservation->setTosend(true);
+                            $this->entityManager->persist($reservation);
+                        }
+                    } else if ($car->getStatus() == CarStatus::MAINTENANCE) {
+                        $reservation = $this->reservationsService->getMaintenanceReservation($car->getPlate());
+                        if (null != $reservation) {
+                            $reservation->setActive(true);
+                            $reservation->setTosend(true);
+                            $this->entityManager->persist($reservation);
+                        }
+                    }
+                    break;
+                case CarStatus::OPERATIVE:
+                    if ($car->getStatus() == CarStatus::MAINTENANCE) {
+                        $this->reservationsService->createMaintenanceReservation($car);
+                    }
+                    break;
+                case CarStatus::MAINTENANCE:
+                    if ($car->getStatus() == CarStatus::OPERATIVE) {
+                        $reservation = $this->reservationsService->getMaintenanceReservation($car->getPlate());
+
+                        if (null != $reservation) {
+                            $reservation->setActive(false);
+                            $reservation->setTosend(true);
+                            $this->entityManager->persist($reservation);
+                        }
+                    }
+                    break;
+            }
         }
-        
 
         $this->entityManager->flush();
         
@@ -192,16 +201,19 @@ class CarsService
 
             case CarStatus::OPERATIVE:
                 return [
-                    CarStatus::MAINTENANCE => CarStatus::MAINTENANCE
+                    CarStatus::OPERATIVE => CarStatus::OPERATIVE,
+                    CarStatus::MAINTENANCE => CarStatus::MAINTENANCE,
                 ];
                 
             case CarStatus::MAINTENANCE:
                 return [
+                    CarStatus::MAINTENANCE => CarStatus::MAINTENANCE,
                     CarStatus::OPERATIVE   => CarStatus::OPERATIVE,
                 ];
 
             case CarStatus::OUT_OF_ORDER:
                 return [
+                    CarStatus::OUT_OF_ORDER => CarStatus::OUT_OF_ORDER,
                     CarStatus::OPERATIVE => CarStatus::OPERATIVE,
                     CarStatus::MAINTENANCE  => CarStatus::MAINTENANCE
                 ];
