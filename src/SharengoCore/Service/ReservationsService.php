@@ -139,7 +139,8 @@ class ReservationsService
             if ($reservation->getId() == $id) {
 
                 $reservation->setActive(false)
-                        ->setToSend(true);
+                        ->setToSend(true)
+                        ->setDeletedTs(date_create());
 
                 // persist and flush reservation
                 $this->entityManager->persist($reservation);
