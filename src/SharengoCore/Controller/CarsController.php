@@ -8,6 +8,7 @@ use Zend\Http\Client;
 use SharengoCore\Entity\Cars;
 use SharengoCore\Service\CarsService;
 use SharengoCore\Service\ReservationsService;
+use SharengoCore\Service\TripsService;
 //use SharengoCore\Service\CommandsService;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
@@ -25,6 +26,11 @@ class CarsController extends AbstractRestfulController
     private $reservationsService;
 
     /**
+     * @var TripsService
+     */
+    private $tripsService;
+
+    /**
      * @var CommandsService
      */
     //private $commandsService;
@@ -37,11 +43,13 @@ class CarsController extends AbstractRestfulController
     public function __construct(
         CarsService $carsService,
         ReservationsService $reservationsService,
+        TripsService $tripsService,
         /*CommandsService $commandsService,*/
         DoctrineHydrator $hydrator
     ) {
         $this->carsService = $carsService;
         $this->reservationsService = $reservationsService;
+        $this->tripsService = $tripsService;
         //$this->commandsService = $commandsService;
         $this->hydrator = $hydrator;
     }
@@ -73,21 +81,23 @@ class CarsController extends AbstractRestfulController
         foreach ($cars as $car) {
             $car = $car->toArray($this->hydrator);
             $car = $this->setCarReservation($car);
+            $car = $this->setCarBusy($car);
             array_push($returnCars, $car);
         }
 
         return new JsonModel($this->buildReturnData(200, '', $returnCars));
     }
- 
+
     public function get($id)
     {
         $car = $this->carsService->getCarByPlate($id);
         $car = $car->toArray($this->hydrator);
         $car = $this->setCarReservation($car);
+        $car = $this->setCarBusy($car);
 
         return new JsonModel($this->buildReturnData(200, '', $car));
     }
- 
+
     /*
     public function update($plate, $data)
     {
@@ -137,6 +147,17 @@ class CarsController extends AbstractRestfulController
     {
         $reservations = $this->reservationsService->getActiveReservationsByCar($car['plate']);
         $car['reservation'] = !empty($reservations);
+        return $car;
+    }
+
+    /**
+     * @param Cars
+     * @return Cars
+     */
+    private function setCarBusy($car)
+    {
+        $reservations = $this->tripsService->getTripsByPlateNotEnded($car['plate']);
+        $car['busy'] = !empty($reservations);
         return $car;
     }
 
