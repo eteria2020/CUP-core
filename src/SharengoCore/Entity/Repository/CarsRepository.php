@@ -16,19 +16,4 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
         $query = $em->createQuery('SELECT COUNT(c.plate) FROM \SharengoCore\Entity\Cars c');
         return $query->getSingleScalarResult();
     }
-
-    public function findCarsEligibleForAlarmCheck()
-    {
-        $em = $this->getEntityManager();
-
-        $dql = 'SELECT c
-        FROM \SharengoCore\Entity\Cars c
-        WHERE c.busy = :busyVal AND c.status != :statusVal';
-
-        $query = $em->createQuery($dql);
-        $query->setParameter('busyVal', false);
-        $query->setParameter('statusVal', 'maintenance');
-
-        return $query->getResult();
-    }
 }

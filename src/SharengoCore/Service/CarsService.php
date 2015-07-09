@@ -77,7 +77,7 @@ class CarsService
 
     public function getCarsEligibleForAlarmCheck()
     {
-        return $this->carsRepository->findCarsEligibleForAlarmCheck();
+        return $this->carsRepository->findByBusy(false);
     }
 
     public function getCarByPlate($plate)
@@ -185,7 +185,7 @@ class CarsService
         }
 
         $this->entityManager->flush();
-        
+
     }
 
     public function deleteCar(Cars $car)
@@ -204,7 +204,7 @@ class CarsService
                     CarStatus::OPERATIVE => CarStatus::OPERATIVE,
                     CarStatus::MAINTENANCE => CarStatus::MAINTENANCE,
                 ];
-                
+
             case CarStatus::MAINTENANCE:
                 return [
                     CarStatus::MAINTENANCE => CarStatus::MAINTENANCE,
