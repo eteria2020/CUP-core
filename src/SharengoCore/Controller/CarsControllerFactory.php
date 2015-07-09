@@ -12,10 +12,10 @@ class CarsControllerFactory implements FactoryInterface
     {
         $carsService = $serviceLocator->getServiceLocator()->get('SharengoCore\Service\CarsService');
         $reservationsService = $serviceLocator->getServiceLocator()->get('SharengoCore\Service\ReservationsService');
-        //$commandsService = $serviceLocator->getServiceLocator()->get('SharengoCore\Service\CommandsService');
+        $authService = $serviceLocator->getServiceLocator()->get('zfcuser_auth_service');
         $entityManager = $serviceLocator->getServiceLocator()->get('doctrine.entitymanager.orm_default');
         $hydrator = new DoctrineHydrator($entityManager);
 
-        return new CarsController($carsService, $reservationsService, $hydrator);
+        return new CarsController($carsService, $reservationsService, $authService, $hydrator);
     }
 }
