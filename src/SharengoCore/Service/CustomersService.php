@@ -322,16 +322,15 @@ class CustomersService implements ValidatorServiceInterface
         $this->addBonus($customers, $customerBonus);
     }
 
-    public function addBonusFromWebUser(Customers $customers, CustomersBonus $customersBonus)
+    public function addBonusFromWebUser(Customers $customer, CustomersBonus $bonus)
     {
-        $customersBonus->setCustomer($customers);
-        $customersBonus->setResidual($customersBonus->getTotal());
-        $customersBonus->setInsertTs(new \DateTime());
-        $customersBonus->setUpdateTs($customersBonus->getInsertTs());
-        $customersBonus->setWebuser($this->userService->getIdentity());
+        $bonus->setType('promo');
+        $bonus->setResidual($bonus->getTotal());
+        $bonus->setInsertTs(new \DateTime());
+        $bonus->setUpdateTs($bonus->getInsertTs());
+        $bonus->setWebuser($this->userService->getIdentity());
 
-        $this->entityManager->persist($customersBonus);
-        $this->entityManager->flush();
+        $this->addBonus($customer, $bonus);
     }
 
     public function removeBonus(CustomersBonus $customerBonus) {
