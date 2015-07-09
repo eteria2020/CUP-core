@@ -157,7 +157,7 @@ class CarsController extends AbstractRestfulController
     private function setCarBusy($car)
     {
         $reservations = $this->tripsService->getTripsByPlateNotEnded($car['plate']);
-        $car['busy'] = !empty($reservations);
+        $car['busy'] = !empty($reservations) || $car['busy'];
         return $car;
     }
 
