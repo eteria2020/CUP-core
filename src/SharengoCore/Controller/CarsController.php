@@ -89,7 +89,7 @@ class CarsController extends AbstractRestfulController
         if ($car['reservation']) {
             $customer = $reservations[0]->getCustomer();
             if ($customer !== null) {
-                $car['reserved_by_you'] = $customer->getId() == $userId;
+                $car['reserved_by_current_user'] = $customer->getId() == $userId;
             }
         }
         return $car;
