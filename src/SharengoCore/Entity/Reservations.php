@@ -99,6 +99,13 @@ class Reservations
      */
     private $consumedTs;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="deleted_ts", type="datetimetz")
+     */
+    private $deletedTs;
+
 
     public static function createMaintenanceReservation($car, $cards) {
 
@@ -115,7 +122,7 @@ class Reservations
         return $reservation;
 
     }
-    
+
 
     /**
      * returns an array containing all of the reservation's fields
@@ -385,6 +392,28 @@ class Reservations
     public function setConsumedTs($consumedTs)
     {
         $this->consumedTs = $consumedTs;
+        return $this;
+    }
+
+    /**
+     * Get deletedTs
+     *
+     * @return \DateTime
+     */
+    public function getDeletedTs()
+    {
+        return $this->deletedTs;
+    }
+
+    /**
+     * Set deletedTs
+     *
+     * @param \DateTime $deletedTs
+     * @return Reservations
+     */
+    public function setDeletedTs($deletedTs)
+    {
+        $this->deletedTs = $deletedTs;
         return $this;
     }
 
