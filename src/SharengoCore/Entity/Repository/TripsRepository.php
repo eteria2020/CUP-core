@@ -48,11 +48,10 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         JOIN trip.car car
         JOIN trip.customer cust
         JOIN cust.card card
-        WHERE trip.customer = :id AND trip.timestampEnd = :time";
+        WHERE trip.customer = :id AND trip.timestampEnd IS NULL";
 
         $query = $em->createQuery($dql);
         $query->setParameter('id', $customer);
-        $query->setParameter('time', null);
 
         return $query->getResult();
     }
