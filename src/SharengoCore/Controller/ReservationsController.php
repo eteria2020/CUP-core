@@ -6,6 +6,7 @@ use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 use Zend\Http\Client;
 use SharengoCore\Service\ReservationsService;
+use SharengoCore\Service\CarsService;
 use Zend\Authentication\AuthenticationService as AuthenticationService;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
@@ -20,6 +21,11 @@ class ReservationsController extends AbstractRestfulController
     private $reservationsService;
 
     /**
+     * @var CarsService
+     */
+    private $carsService;
+
+    /**
      * @var AuthenticationService
      */
     private $authService;
@@ -31,10 +37,12 @@ class ReservationsController extends AbstractRestfulController
 
     public function __construct(
         ReservationsService $reservationsService,
+        CarsService $carsService,
         AuthenticationService $authService,
         DoctrineHydrator $hydrator
     ) {
         $this->reservationsService = $reservationsService;
+        $this->carsService = $carsService;
         $this->authService = $authService;
         $this->hydrator = $hydrator;
     }
@@ -66,12 +74,12 @@ class ReservationsController extends AbstractRestfulController
 
         return new JsonModel($this->buildReturnData($status, $reason, $returnReservations));
     }
- 
+
     public function get($id)
     {
         return new JsonModel([]);
     }
- 
+
     public function create($data)
     {
         $status = 200;
@@ -87,21 +95,28 @@ class ReservationsController extends AbstractRestfulController
             $plate = $data['plate'];
             if ($plate !== null) {
 
-                if (!$this->reservationsService->reserveCarForCustomer($plate, $user)) {    
-                    $reason = 'car does not exist';
+                $car = $this->carsService->getCarByPlate($plate);
+                if ($car instanceof SharengoCore\Entity\Cars) {
+
+                    if (!$this->reservationsService->reserveCarForCustomer($car, $user)) {
+                        $reason = "L'auto è già occupata";
+                    }
+
+                } else {
+                    $reason = '';
                 }
 
             } else {
-                $reason = 'no car specified';
+                $reason = '';
             }
-            
+
         } else {
-            $reason = 'max active reservations for user reached';
+            $reason = 'Hai già una prenotazione attiva';
         }
 
         return new JsonModel($this->buildReturnData($status, $reason));
     }
- 
+
     public function update($id, $data)
     {
         $status = 200;
@@ -109,7 +124,7 @@ class ReservationsController extends AbstractRestfulController
 
         return new JsonModel($this->buildReturnData($status, $reason));
     }
- 
+
     public function delete($id)
     {
         $status = 200;

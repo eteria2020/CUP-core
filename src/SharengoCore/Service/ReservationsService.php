@@ -8,7 +8,6 @@ use SharengoCore\Entity\Reservations;
 use SharengoCore\Entity\Cars;
 use SharengoCore\Service\CustomersService;
 use SharengoCore\Entity\Customers;
-use SharengoCore\Service\CarsService;
 
 class ReservationsService
 {
@@ -22,13 +21,10 @@ class ReservationsService
      */
     private $datatableService;
 
-    /** @var CustomerService */
-    private $customersService;
-
     /**
-     * @var CarsService
+     * @var CustomerService
      */
-    private $carsService;
+    private $customersService;
 
     /**
      * @var EntityManager
@@ -38,21 +34,19 @@ class ReservationsService
     /**
      * @param ReservationsRepository $reservationsRepository
      * @param DatatableService $datatableService
-     * @param CarsService $carsService
+     * @param CustomersService $customersService
      * @param EntityManager $entityManager
      */
     public function __construct(
         ReservationsRepository $reservationsRepository,
         DatatableService $datatableService,
-        CarsService $carsService,
         CustomersService $customersService,
         EntityManager $entityManager
     ) {
         $this->reservationsRepository = $reservationsRepository;
         $this->datatableService = $datatableService;
-        $this->carsService = $carsService;
-        $this->entityManager = $entityManager;
         $this->customersService = $customersService;
+        $this->entityManager = $entityManager;
     }
 
     public function getListReservationsFiltered($filters = [])
@@ -117,7 +111,7 @@ class ReservationsService
         $reservation = Reservations::createMaintenanceReservation($car, $cardsString);
         $this->entityManager->persist($reservation);
         $this->entityManager->flush();
-        
+
     }
 
     /**
@@ -125,12 +119,9 @@ class ReservationsService
      * @param Customers $customer
      * @return boolean returns true if successful, returns false otherwise
      */
-    public function reserveCarForCustomer($plate, Customers $customer)
+    public function reserveCarForCustomer(Cars $car, Customers $customer)
     {
-        $car = $this->carsService->getCarByPlate($plate);
-
-        if ($car !== null) {
-
+        if (count($this->getActiveReservationsByCar($car->getPlate())) == 0) {
             // get card from user
             $card = $customer->getCard();
             $card = json_encode(($card !== null) ? [$card->getCode()] : []);
@@ -151,11 +142,9 @@ class ReservationsService
             $this->entityManager->flush();
 
             return true;
-
         } else {
             return false;
         }
-
     }
 
     /**

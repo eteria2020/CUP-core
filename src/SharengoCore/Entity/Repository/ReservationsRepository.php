@@ -35,7 +35,6 @@ class ReservationsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
-}
     public function findReservationsToDelete()
     {
         $em = $this->getEntityManager();
