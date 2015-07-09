@@ -2,7 +2,10 @@
 
 namespace SharengoCore\Entity\Repository;
 
+use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\PromoCodes;
 use SharengoCore\Entity\Trips;
+use SharengoCore\Service\PromoCodesService;
 
 /**
  * CustomersBonusRepository
@@ -35,5 +38,19 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('tripEnd', $trip->getTimestampEnd());
 
         return $query->getResult();
+    }
+
+    public function checkUsedPromoCode(Customers $I_customer, PromoCodes $I_promoCode)
+    {
+        $s_query =  'SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb ' .
+            'WHERE cb.customer = :id AND cb.promocode = :code ' ;
+
+        $I_query = $this->getEntityManager()->createQuery($s_query);
+        $I_query->setParameters([
+            'id'   => $I_customer->getId(),
+            'code' => $I_promoCode->getId()
+        ]);
+
+        return $I_query->getResult();
     }
 }
