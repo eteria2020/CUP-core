@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * Reservations
@@ -115,6 +116,29 @@ class Reservations
 
     }
     
+
+    /**
+     * returns an array containing all of the reservation's fields
+     * does not return hydrated customer and car, only id and plate
+     * @param DoctrineHydrator
+     * @return mixed[]
+     */
+    public function toArray(DoctrineHydrator $hydrator)
+    {
+        $extractedCustomer = $hydrator->extract($this);
+        
+        $car = $this->getCar();
+        if ($car !== null) {
+            $extractedCustomer['car'] = $car->getPlate();
+        }
+
+        $customer = $this->getCustomer();
+        if ($customer !== null) {
+            $extractedCustomer['customer'] = $customer->getId();
+        }
+        
+        return $extractedCustomer;
+    }
 
     /**
      * Get id

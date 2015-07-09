@@ -7,40 +7,67 @@ use SharengoCore\Entity\Repository\ReservationsRepository;
 use SharengoCore\Entity\Reservations;
 use SharengoCore\Entity\Cars;
 use SharengoCore\Service\CustomersService;
-
+use SharengoCore\Entity\Customers;
+use SharengoCore\Service\CarsService;
 
 class ReservationsService
 {
-    /** @var EntityManager */
-    private $entityManager;
-    
-    /** @var  ReservationsRepository */
+    /**
+     * @var  ReservationsRepository
+     */
     private $reservationsRepository;
 
-    /** @var DatatableService */
+    /**
+     * @var DatatableService
+     */
     private $datatableService;
 
     /** @var CustomerService */
     private $customersService;
 
     /**
+     * @var CarsService
+     */
+    private $carsService;
+
+    /**
+     * @var EntityManager
+     */
+    private $entityManager;
+
+    /**
      * @param ReservationsRepository $reservationsRepository
+     * @param DatatableService $datatableService
+     * @param CarsService $carsService
+     * @param EntityManager $entityManager
      */
     public function __construct(
-        EntityManager $entityManager,
         ReservationsRepository $reservationsRepository,
         DatatableService $datatableService,
-        CustomersService $customersService)
-    {
-        $this->entityManager = $entityManager;
+        CarsService $carsService,
+        CustomersService $customersService,
+        EntityManager $entityManager
+    ) {
         $this->reservationsRepository = $reservationsRepository;
         $this->datatableService = $datatableService;
+        $this->carsService = $carsService;
+        $this->entityManager = $entityManager;
         $this->customersService = $customersService;
+    }
+
+    public function getListReservationsFiltered($filters = [])
+    {
+        return $this->reservationsRepository->findBy($filters);
     }
 
     public function getActiveReservationsByCar($plate)
     {
         return $this->reservationsRepository->findActiveReservationsByCar($plate);
+    }
+
+    public function getActiveReservationsByCustomer($customer)
+    {
+        return $this->reservationsRepository->findActiveReservationsByCustomer($customer);
     }
 
     public function getTotalReservations()
@@ -91,6 +118,75 @@ class ReservationsService
         $this->entityManager->persist($reservation);
         $this->entityManager->flush();
         
+    }
+
+    /**
+     * @param string $plate
+     * @param Customers $customer
+     * @return boolean returns true if successful, returns false otherwise
+     */
+    public function reserveCarForCustomer($plate, Customers $customer)
+    {
+        $car = $this->carsService->getCarByPlate($plate);
+
+        if ($car !== null) {
+
+            // get card from user
+            $card = $customer->getCard();
+            $card = json_encode(($card !== null) ? [$card->getCode()] : []);
+
+            // create reservation for user
+            $reservation = new Reservations();
+            $reservation->setTs(date_create())
+                    ->setCar($car)
+                    ->setCustomer($customer)
+                    ->setBeginningTs(date_create())
+                    ->setActive(true)
+                    ->setLength(1800)
+                    ->setToSend(true)
+                    ->setCards($card);
+
+            // persist and flush reservation
+            $this->entityManager->persist($reservation);
+            $this->entityManager->flush();
+
+            return true;
+
+        } else {
+            return false;
+        }
+
+    }
+
+    /**
+     * @param  Customers $customer
+     * @param  integer $id
+     * @return boolean returns true if successful, returns false otherwise
+     */
+    public function removeCustomerReservationWithId(Customers $customer, $id)
+    {
+        // get user's active reservations
+        $reservations = $this->getActiveReservationsByCustomer($customer);
+
+        foreach ($reservations as $reservation) {
+
+            if ($reservation->getId() == $id) {
+
+                $reservation->setActive(false)
+                        ->setToSend(true)
+                        ->setDeletedTs(date_create());
+
+                // persist and flush reservation
+                $this->entityManager->persist($reservation);
+                $this->entityManager->flush();
+
+                return true;
+            }
+
+        }
+
+        return false;
+
     }
 
 }
