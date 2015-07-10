@@ -55,10 +55,6 @@ class CustomersService implements ValidatorServiceInterface
         $this->cardsService = $cardsService;
     }
 
-    public function getCustomerEntity($serializedCustomer) {
-        return $this->entityManager->merge($serializedCustomer);
-    }
-
     /**
      * @return mixed
      */
@@ -122,9 +118,6 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->entityManager->persist($customer);
         $this->entityManager->flush($customer);
-
-        // updates the identity in session
-        $this->userService->getStorage()->write($customer);
     }
 
     public function setCustomerDiscountRate(Customers $customer, $discount)
@@ -134,9 +127,6 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->entityManager->persist($customer);
         $this->entityManager->flush($customer);
-
-        // updates the identity in session
-        $this->userService->getStorage()->write($customer);
     }
 
     public function setCustomerReprofilingOption(Customers $customer, $option)
@@ -146,9 +136,6 @@ class CustomersService implements ValidatorServiceInterface
         $customer = $this->entityManager->merge($customer);
         $this->entityManager->persist($customer);
         $this->entityManager->flush($customer);
-
-        // updates the identity in session
-        $this->userService->getStorage()->write($customer);
 
         return $customer;
     }
@@ -167,9 +154,6 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->entityManager->persist($customer);
         $this->entityManager->flush($customer);
-
-        // updates the identity in session
-        $this->userService->getStorage()->write($customer);
 
         return $customer;
     }
@@ -204,9 +188,6 @@ class CustomersService implements ValidatorServiceInterface
         $customer->setDriverLicenseCategories('{' . implode(',', $customer->getDriverLicenseCategories()) . '}');
         $this->entityManager->persist($customer);
         $this->entityManager->flush();
-
-        // updates the identity in session
-        $this->userService->getStorage()->write($customer);
 
         return $customer;
     }
