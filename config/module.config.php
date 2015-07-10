@@ -30,6 +30,18 @@ return [
                                 ]
                             ]
                         ],
+                        'publiccars' => [
+                            'type' => 'Segment',
+                            'options' => [
+                                'route' => '/publiccars[/:id]',
+                                'constraints' => array(
+                                    'id'     => '[a-zA-Z0-9_-]+',
+                                ),
+                                'defaults' => [
+                                    'controller' => 'PublicCars'
+                                ]
+                            ]
+                        ],
                         'pois' => [
                             'type' => 'Literal',
                             'options' => [
@@ -82,7 +94,8 @@ return [
             'SharengoCore\Controller\Customers'        => 'SharengoCore\Controller\CustomersControllerFactory',
             'SharengoCore\Controller\Pois'             => 'SharengoCore\Controller\PoisControllerFactory',
             'SharengoCore\Controller\Reservations'     => 'SharengoCore\Controller\ReservationsControllerFactory',
-            'SharengoCore\Controller\Trips'            => 'SharengoCore\Controller\TripsControllerFactory'
+            'SharengoCore\Controller\Trips'            => 'SharengoCore\Controller\TripsControllerFactory',
+            'SharengoCore\Controller\PublicCars'       => 'SharengoCore\Controller\PublicCarsControllerFactory'
         ],
     ],
 
@@ -127,11 +140,12 @@ return [
     'bjyauthorize' => array(
         'guards' => array(
             'BjyAuthorize\Guard\Controller' => array(
-                array('controller' => 'SharengoCore\Controller\Cars', 'roles' => array()),
-                array('controller' => 'SharengoCore\Controller\Customers', 'roles' => array('admin')),
+                array('controller' => 'SharengoCore\Controller\Cars', 'roles' => array('admin', 'callcenter')),
+                array('controller' => 'SharengoCore\Controller\PublicCars', 'roles' => array()),
+                array('controller' => 'SharengoCore\Controller\Customers', 'roles' => array('admin', 'callcenter')),
                 array('controller' => 'SharengoCore\Controller\Pois', 'roles' => array()),
-                array('controller' => 'SharengoCore\Controller\Reservations', 'roles' => array('admin')),
-                array('controller' => 'SharengoCore\Controller\Trips', 'roles' => array('admin')),
+                array('controller' => 'SharengoCore\Controller\Reservations', 'roles' => array('admin', 'callcenter')),
+                array('controller' => 'SharengoCore\Controller\Trips', 'roles' => array('admin', 'callcenter')),
             ),
         ),
     ),

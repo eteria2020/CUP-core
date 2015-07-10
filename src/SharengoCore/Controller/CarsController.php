@@ -58,21 +58,9 @@ class CarsController extends AbstractRestfulController
     {
         $returnCars = [];
 
-        // get filters
+        // set filter
         $filters = [];
-        if ($this->params()->fromQuery('status') !== null) {
-            $filters['status'] = $this->params()->fromQuery('status');
-        }
-        if ($this->params()->fromQuery('active') !== null) {
-            $filters['active'] = $this->params()->fromQuery('active');
-        }
-        if ($this->params()->fromQuery('busy') !== null) {
-            $filters['busy'] = $this->params()->fromQuery('busy');
-        }
-        if ($this->params()->fromQuery('running') !== null) {
-            $filters['running'] = $this->params()->fromQuery('running');
-        }
-        $filters['hidden'] = fasle;
+        $filters['hidden'] = false;
 
         // get customers
         $cars = $this->carsService->getListCarsFiltered($filters);

@@ -31,4 +31,22 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+
+    public function findPublicCars()
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT c
+        FROM \SharengoCore\Entity\Cars c
+        WHERE c.status = 'operative'
+        AND c.active = true
+        AND c.hidden = false
+        AND c.longitude != 0
+        AND c.latitude != 0";
+
+        $query = $em->createQuery($dql);
+
+        return $query->getResult();
+    }
+
 }
