@@ -27,15 +27,14 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $em = $this->getEntityManager();
 
         $dql = "SELECT trip, car, cust, card
-        FROM \SharengoCore\Entity\Trips trip 
+        FROM \SharengoCore\Entity\Trips trip
         JOIN trip.car car
         JOIN trip.customer cust
         JOIN cust.card card
-        WHERE trip.car = :id AND trip.timestampEnd = :time";
+        WHERE trip.car = :id AND trip.timestampEnd IS NULL";
 
         $query = $em->createQuery($dql);
         $query->setParameter('id', $plate);
-        $query->setParameter('time', null);
 
         return $query->getResult();
     }
@@ -45,15 +44,14 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $em = $this->getEntityManager();
 
         $dql = "SELECT trip, car, cust, card
-        FROM \SharengoCore\Entity\Trips trip 
+        FROM \SharengoCore\Entity\Trips trip
         JOIN trip.car car
         JOIN trip.customer cust
         JOIN cust.card card
-        WHERE trip.customer = :id AND trip.timestampEnd = :time";
+        WHERE trip.customer = :id AND trip.timestampEnd IS NULL";
 
         $query = $em->createQuery($dql);
         $query->setParameter('id', $customer);
-        $query->setParameter('time', null);
 
         return $query->getResult();
     }
