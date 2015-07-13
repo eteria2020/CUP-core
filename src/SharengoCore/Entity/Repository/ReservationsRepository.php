@@ -43,7 +43,8 @@ class ReservationsRepository extends \Doctrine\ORM\EntityRepository
                 FROM \SharengoCore\Entity\Reservations re
                 WHERE re.consumedTs IS NOT NULL
                 OR (re.length != -1 AND DATE_ADD(re.beginningTs, re.length, 'SECOND') < CURRENT_TIMESTAMP())
-                OR re.deletedTs IS NOT NULL";
+                OR re.deletedTs IS NOT NULL
+                OR (re.active = false AND re.toSend = false)";
 
         $query = $em->createQuery($dql);
 
