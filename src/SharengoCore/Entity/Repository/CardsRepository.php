@@ -14,7 +14,7 @@ class CardsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
         $dql = 'SELECT c FROM \SharengoCore\Entity\Cards c ' .
-               'WHERE c.isAssigned = false AND (LOWER(c.rfid) LIKE :value OR LOWER(c.code) LIKE :value)';
+               'WHERE c.isAssigned = false AND c.assignable = true AND (LOWER(c.rfid) LIKE :value OR LOWER(c.code) LIKE :value)';
 
         $query = $em->createQuery();
 

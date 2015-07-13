@@ -269,8 +269,13 @@ class CustomersService implements ValidatorServiceInterface
             $card = $this->cardsService->createVirtualCard($customer);
         }
 
+        if(!$card->getAssignable()) {
+            return false;
+        }
+
         if(!is_null($isAssigned) && $isAssigned === true) {
             $card->setIsAssigned(true);
+            $card->setAssignable(false);
         }
 
         $customer->setCard($card);
