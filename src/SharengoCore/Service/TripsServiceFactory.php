@@ -17,9 +17,6 @@ class TripsServiceFactory implements FactoryInterface
         $I_datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
         $I_urlHelper = $serviceLocator->get('viewhelpermanager')->get('url');
 
-        $customersService = $serviceLocator->get('SharengoCore\Service\CustomersService');
-        $carsService = $serviceLocator->get('SharengoCore\Service\CarsService');
-
         // decorate the query builder with the needed decorators
         $I_datatableService->setQueryBuilder(
             new DatatableQueryBuilders\Cars(
@@ -32,6 +29,6 @@ class TripsServiceFactory implements FactoryInterface
             )
         );
 
-        return new TripsService($tripRepository, $I_datatableService, $I_urlHelper, $customersService, $carsService);
+        return new TripsService($tripRepository, $I_datatableService, $I_urlHelper);
     }
 }

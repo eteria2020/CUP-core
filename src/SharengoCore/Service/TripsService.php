@@ -7,8 +7,6 @@ use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\Customers;
 
 use Zend\View\Helper\Url;
-use SharengoCore\Service\CustomersService;
-use SharengoCore\Service\CarsService;
 
 class TripsService
 {
@@ -30,10 +28,6 @@ class TripsService
      */
     private $customersService;
 
-    /**
-     * @var CarsService
-     */
-    private $carsService;
 
     /**
      * @param EntityRepository $tripRepository
@@ -41,15 +35,11 @@ class TripsService
     public function __construct(
         $tripRepository,
         DatatableService $I_datatableService,
-        $I_urlHelper,
-        CustomersService $customersService,
-        CarsService $carsService
+        $I_urlHelper
     ) {
         $this->tripRepository = $tripRepository;
         $this->I_datatableService = $I_datatableService;
         $this->I_urlHelper = $I_urlHelper;
-        $this->customersService = $customersService;
-        $this->carsService = $carsService;
     }
 
     /**
