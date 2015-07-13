@@ -5,6 +5,7 @@ namespace SharengoCore\Controller;
 use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 use Zend\Http\Client;
+use SharengoCore\Entity\Cars;
 use SharengoCore\Service\ReservationsService;
 use SharengoCore\Service\CarsService;
 use Zend\Authentication\AuthenticationService as AuthenticationService;
@@ -96,7 +97,7 @@ class ReservationsController extends AbstractRestfulController
             if ($plate !== null) {
 
                 $car = $this->carsService->getCarByPlate($plate);
-                if ($car instanceof SharengoCore\Entity\Cars) {
+                if ($car instanceof Cars) {
 
                     if (!$this->reservationsService->reserveCarForCustomer($car, $user)) {
                         $reason = "L'auto è già occupata";

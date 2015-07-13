@@ -6,10 +6,8 @@ use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 use Zend\Http\Client;
 use SharengoCore\Entity\Cars;
-use SharengoCore\Entity\Customers;
 use SharengoCore\Service\CarsService;
 use SharengoCore\Service\ReservationsService;
-use Zend\Authentication\AuthenticationService as AuthenticationService;
 use SharengoCore\Service\TripsService;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
@@ -32,11 +30,6 @@ class CarsController extends AbstractRestfulController
     private $tripsService;
 
     /**
-     * @var AuthenticationService
-     */
-    private $authService;
-
-    /**
      * @var DoctrineHydrator
      */
     private $hydrator;
@@ -45,12 +38,10 @@ class CarsController extends AbstractRestfulController
         CarsService $carsService,
         ReservationsService $reservationsService,
         TripsService $tripsService,
-        AuthenticationService $authService,
         DoctrineHydrator $hydrator
     ) {
         $this->carsService = $carsService;
         $this->reservationsService = $reservationsService;
-        $this->authService = $authService;
         $this->tripsService = $tripsService;
         $this->hydrator = $hydrator;
     }
@@ -58,13 +49,6 @@ class CarsController extends AbstractRestfulController
     public function getList()
     {
         $returnCars = [];
-
-        // get user id from AuthService
-        $user = $this->authService->getIdentity();
-        $userId = '';
-        if ($user instanceof Customers) {
-            $userId = $user->getId();
-        }
 
         // set filter
         $filters = [];
@@ -74,7 +58,7 @@ class CarsController extends AbstractRestfulController
         $cars = $this->carsService->getListCarsFiltered($filters);
         foreach ($cars as $car) {
             $car = $car->toArray($this->hydrator);
-            $car = $this->setCarReservation($car, $userId);
+            $car = $this->setCarReservation($car);
             $car = $this->setCarBusy($car);
             array_push($returnCars, $car);
         }
@@ -96,17 +80,10 @@ class CarsController extends AbstractRestfulController
      * @param Cars
      * @return Cars
      */
-    private function setCarReservation($car, $userId)
+    private function setCarReservation($car)
     {
         $reservations = $this->reservationsService->getActiveReservationsByCar($car['plate']);
         $car['reservation'] = !empty($reservations);
-        $car['reserved_by_you'] = false;
-        if ($car['reservation']) {
-            $customer = $reservations[0]->getCustomer();
-            if ($customer !== null) {
-                $car['reserved_by_current_user'] = $customer->getId() == $userId;
-            }
-        }
         return $car;
     }
 
