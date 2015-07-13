@@ -253,7 +253,7 @@ class CustomersService implements ValidatorServiceInterface
             'customer' => $customer
         ]);
     }
-
+    
     public function findBonus($bonus)
     {
         return $this->customersBonusRepository->find($bonus);
