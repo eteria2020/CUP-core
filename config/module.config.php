@@ -144,7 +144,7 @@ return [
                 array('controller' => 'SharengoCore\Controller\PublicCars', 'roles' => array()),
                 array('controller' => 'SharengoCore\Controller\Customers', 'roles' => array('admin', 'callcenter')),
                 array('controller' => 'SharengoCore\Controller\Pois', 'roles' => array()),
-                array('controller' => 'SharengoCore\Controller\Reservations', 'roles' => array('admin', 'callcenter')),
+                array('controller' => 'SharengoCore\Controller\Reservations', 'roles' => array('user', 'admin', 'callcenter')),
                 array('controller' => 'SharengoCore\Controller\Trips', 'roles' => array('admin', 'callcenter')),
             ),
         ),

@@ -6,10 +6,11 @@ use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 use Zend\Http\Client;
 use SharengoCore\Entity\Cars;
+use SharengoCore\Entity\Customers;
 use SharengoCore\Service\CarsService;
 use SharengoCore\Service\ReservationsService;
+use Zend\Authentication\AuthenticationService as AuthenticationService;
 use SharengoCore\Service\TripsService;
-//use SharengoCore\Service\CommandsService;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class CarsController extends AbstractRestfulController
@@ -31,9 +32,9 @@ class CarsController extends AbstractRestfulController
     private $tripsService;
 
     /**
-     * @var CommandsService
+     * @var AuthenticationService
      */
-    //private $commandsService;
+    private $authService;
 
     /**
      * @var DoctrineHydrator
@@ -44,19 +45,26 @@ class CarsController extends AbstractRestfulController
         CarsService $carsService,
         ReservationsService $reservationsService,
         TripsService $tripsService,
-        /*CommandsService $commandsService,*/
+        AuthenticationService $authService,
         DoctrineHydrator $hydrator
     ) {
         $this->carsService = $carsService;
         $this->reservationsService = $reservationsService;
+        $this->authService = $authService;
         $this->tripsService = $tripsService;
-        //$this->commandsService = $commandsService;
         $this->hydrator = $hydrator;
     }
 
     public function getList()
     {
         $returnCars = [];
+
+        // get user id from AuthService
+        $user = $this->authService->getIdentity();
+        $userId = '';
+        if ($user instanceof Customers) {
+            $userId = $user->getId();
+        }
 
         // set filter
         $filters = [];
@@ -66,7 +74,7 @@ class CarsController extends AbstractRestfulController
         $cars = $this->carsService->getListCarsFiltered($filters);
         foreach ($cars as $car) {
             $car = $car->toArray($this->hydrator);
-            $car = $this->setCarReservation($car);
+            $car = $this->setCarReservation($car, $userId);
             $car = $this->setCarBusy($car);
             array_push($returnCars, $car);
         }
@@ -84,55 +92,21 @@ class CarsController extends AbstractRestfulController
         return new JsonModel($this->buildReturnData(200, '', $car));
     }
 
-    /*
-    public function update($plate, $data)
-    {
-        $cmd = '';
-        $status = 200;
-        $reason = '';
-
-        $car = $this->carsService->getCarByPlate($plate);
-
-        if ($car instanceof Cars) {
-            $action = strtolower($data['action']);
-
-            switch ($action) {
-                  case 'open' :
-                    $cmd = 'OPEN_TRIP';
-                    break;
-                  case 'close':
-                    $cmd = 'CLOSE_TRIP';
-                    break;
-                  case 'park':
-                    $cmd = 'PARK_TRIP';
-                    break;
-                  case 'unpark':
-                    $cmd = 'UNPARK_TRIP';
-                    break;
-
-                  default:
-                    $reason = "Invalid action";
-                    $status = 400;
-            }
-        }
-
-        if ($status == 200) {
-            $this->commandsService->createCommand($plate, true, $cmd);
-        }
-
-        return new JsonModel($this->buildReturnData($status, $reason));
-
-    }
-    */
-
     /**
      * @param Cars
      * @return Cars
      */
-    private function setCarReservation($car)
+    private function setCarReservation($car, $userId)
     {
         $reservations = $this->reservationsService->getActiveReservationsByCar($car['plate']);
         $car['reservation'] = !empty($reservations);
+        $car['reserved_by_you'] = false;
+        if ($car['reservation']) {
+            $customer = $reservations[0]->getCustomer();
+            if ($customer !== null) {
+                $car['reserved_by_current_user'] = $customer->getId() == $userId;
+            }
+        }
         return $car;
     }
 
