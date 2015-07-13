@@ -23,9 +23,11 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
 
         $dql = "SELECT c
         FROM \SharengoCore\Entity\Cars c
-        JOIN c.trips t
-        WHERE c.hidden = false
-        AND ";
+        WHERE NOT EXISTS
+        (SELECT 1
+        FROM \SharengoCore\Entity\Trips t
+        WHERE t.car = c
+        AND t.timestampEnd is null)";
 
         $query = $em->createQuery($dql);
 

@@ -253,6 +253,16 @@ class Cars
      */
     private $charging = false;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Trips", mappedBy="car")
+     */
+    private $trips;
+
+    public function __construct()
+    {
+        $this->trips = new ArrayCollection();
+    }
+
     
     /**
      * Get plate
