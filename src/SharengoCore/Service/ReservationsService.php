@@ -11,6 +11,11 @@ use SharengoCore\Entity\Customers;
 
 class ReservationsService
 {
+
+    /**
+     * @const integer
+     */
+    const MAXRESERVATIONS = 1;
     /**
      * @var  ReservationsRepository
      */
@@ -62,6 +67,11 @@ class ReservationsService
     public function getActiveReservationsByCustomer($customer)
     {
         return $this->reservationsRepository->findActiveReservationsByCustomer($customer);
+    }
+
+    public function hasActiveReservationsByCustomer($customer)
+    {
+        return count($this->getActiveReservationsByCustomer($customer)) < self::MAX_RESERVATIONS;
     }
 
     public function getTotalReservations()

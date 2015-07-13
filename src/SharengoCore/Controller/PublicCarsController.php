@@ -60,7 +60,7 @@ class PublicCarsController extends AbstractRestfulController
 
         // get user id from AuthService
         $user = $this->authService->getIdentity();
-        $userId = '';
+        $userId = null;
         if ($user instanceof Customers) {
             $userId = $user->getId();
         }
@@ -85,18 +85,18 @@ class PublicCarsController extends AbstractRestfulController
         // check for active reservations
         $reservations = $this->reservationsService->getActiveReservationsByCar($car->getPlate());
         $isReservedByCurrentUser = false;
-        if (!empty($reservations)) {
+        $isFree = empty($reservations);
+        if (!$isFree) {
             $customer = $reservations[0]->getCustomer();
             if ($customer !== null) {
                 $isReservedByCurrentUser = $customer->getId() == $userId;
             }
         }
-        $isReserved = !empty($reservations);
-        // check for active trips and busy param
-        $reservations = $this->tripsService->getTripsByPlateNotEnded($car->getPlate());
-        $isBusy = !empty($reservations) || $car->getBusy();
+        // check for active trips
+        $trips = $this->tripsService->getTripsByPlateNotEnded($car->getPlate());
+        $isNotBusy = empty($trips);
 
-        return (!$isReserved && !$isBusy) || $isReservedByCurrentUser;
+        return ($isFree && $isNotBusy) || $isReservedByCurrentUser;
     }
 
     /**

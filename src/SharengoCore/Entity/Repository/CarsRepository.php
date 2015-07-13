@@ -21,13 +21,13 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $dql = 'SELECT c
+        $dql = "SELECT c
         FROM \SharengoCore\Entity\Cars c
-        WHERE c.busy = :busyVal AND c.status != :statusVal';
+        JOIN c.trips t
+        WHERE c.hidden = false
+        AND ";
 
         $query = $em->createQuery($dql);
-        $query->setParameter('busyVal', false);
-        $query->setParameter('statusVal', 'maintenance');
 
         return $query->getResult();
     }

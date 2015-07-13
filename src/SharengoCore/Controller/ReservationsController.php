@@ -14,8 +14,6 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 class ReservationsController extends AbstractRestfulController
 {
 
-    const MAXRESERVATIONS = 1;
-
     /**
      * @var ReservationsService
      */
@@ -57,12 +55,8 @@ class ReservationsController extends AbstractRestfulController
 
         // get filters
         $filters = [];
-        if ($this->params()->fromQuery('plate') !== null) {
-            $filters['car'] = $this->params()->fromQuery('plate');
-        }
-        if ($this->params()->fromQuery('active') !== null) {
-            $filters['active'] = $this->params()->fromQuery('active');
-        }
+        $filters['car'] = $this->params()->fromQuery('plate');
+        $filters['active'] = true;
 
         // get reservations
         $reservations = $this->reservationsService->getListReservationsFiltered($filters);
@@ -84,35 +78,30 @@ class ReservationsController extends AbstractRestfulController
     public function create($data)
     {
         $status = 200;
-        $reason = 'OK';
+        $reason = '';
 
         // get user id from AuthService
         $user = $this->authService->getIdentity();
 
-        // check if user has already active reservations
-        $reservations = $this->reservationsService->getActiveReservationsByCustomer($user);
-        if (count($reservations) < self::MAXRESERVATIONS) {
+        $plate = $data['plate'];
+        if ($plate !== null) {
 
-            $plate = $data['plate'];
-            if ($plate !== null) {
+            $car = $this->carsService->getCarByPlate($plate);
+            if ($car instanceof Cars) {
 
-                $car = $this->carsService->getCarByPlate($plate);
-                if ($car instanceof Cars) {
+                // check if user has already active reservations
+                if (!$this->reservationsService->hasActiveReservationsByCustomer($user)) {
 
                     if (!$this->reservationsService->reserveCarForCustomer($car, $user)) {
                         $reason = "L'auto è già occupata";
                     }
 
                 } else {
-                    $reason = '';
+                    $reason = 'Hai già una prenotazione attiva';
                 }
 
-            } else {
-                $reason = '';
             }
 
-        } else {
-            $reason = 'Hai già una prenotazione attiva';
         }
 
         return new JsonModel($this->buildReturnData($status, $reason));
@@ -120,8 +109,8 @@ class ReservationsController extends AbstractRestfulController
 
     public function update($id, $data)
     {
-        $status = 200;
-        $reason = 'OK';
+        $status = 501;
+        $reason = '';
 
         return new JsonModel($this->buildReturnData($status, $reason));
     }

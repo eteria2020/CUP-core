@@ -77,7 +77,7 @@ class CarsService
 
     public function getCarsEligibleForAlarmCheck()
     {
-        return $this->carsRepository->findByBusy(false);
+        return $this->carsRepository->findCarsEligibleForAlarmCheck();
     }
 
     public function getPublicCars()
