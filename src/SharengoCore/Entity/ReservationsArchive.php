@@ -112,6 +112,13 @@ class ReservationsArchive
      */
     private $archivedTs;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="deleted_ts", type="datetimetz", nullable=true)
+     */
+    private $deletedTs;
+
 
     public static function createFromReservation(Reservations $reservation, $reason) {
 
@@ -129,9 +136,10 @@ class ReservationsArchive
         $reservationsArchive->setConsumedTs($reservation->getConsumedTs());
         $reservationsArchive->setReason($reason);
         $reservationsArchive->setArchivedTs(new \DateTime());
+        $reservationsArchive->setDeletedTs($reservation->getDeletedTs());
 
         return $reservationsArchive;
-        
+
     }
 
     /**
@@ -426,6 +434,29 @@ class ReservationsArchive
     public function setArchivedTs($archivedTs)
     {
         $this->archivedTs = $archivedTs;
+        return $this;
+    }
+
+    /**
+     * Get deletedTs
+     *
+     * @return \DateTime
+     */
+    public function getDeletedTs()
+    {
+        return $this->deletedTs;
+    }
+
+    /**
+     * Set deletedTs
+     *
+     * @param \DateTime $deletedTs
+     *
+     * @return ReservationsArchive
+     */
+    public function setDeletedTs($deletedTs)
+    {
+        $this->deletedTs = $deletedTs;
         return $this;
     }
 

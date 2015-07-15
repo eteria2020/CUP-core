@@ -9,7 +9,6 @@ use SharengoCore\Entity\Cars;
 use SharengoCore\Service\CarsService;
 use SharengoCore\Service\ReservationsService;
 use SharengoCore\Service\TripsService;
-//use SharengoCore\Service\CommandsService;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class CarsController extends AbstractRestfulController
@@ -31,11 +30,6 @@ class CarsController extends AbstractRestfulController
     private $tripsService;
 
     /**
-     * @var CommandsService
-     */
-    //private $commandsService;
-
-    /**
      * @var DoctrineHydrator
      */
     private $hydrator;
@@ -44,13 +38,11 @@ class CarsController extends AbstractRestfulController
         CarsService $carsService,
         ReservationsService $reservationsService,
         TripsService $tripsService,
-        /*CommandsService $commandsService,*/
         DoctrineHydrator $hydrator
     ) {
         $this->carsService = $carsService;
         $this->reservationsService = $reservationsService;
         $this->tripsService = $tripsService;
-        //$this->commandsService = $commandsService;
         $this->hydrator = $hydrator;
     }
 
@@ -84,47 +76,6 @@ class CarsController extends AbstractRestfulController
         return new JsonModel($this->buildReturnData(200, '', $car));
     }
 
-    /*
-    public function update($plate, $data)
-    {
-        $cmd = '';
-        $status = 200;
-        $reason = '';
-
-        $car = $this->carsService->getCarByPlate($plate);
-
-        if ($car instanceof Cars) {
-            $action = strtolower($data['action']);
-
-            switch ($action) {
-                  case 'open' :
-                    $cmd = 'OPEN_TRIP';
-                    break;
-                  case 'close':
-                    $cmd = 'CLOSE_TRIP';
-                    break;
-                  case 'park':
-                    $cmd = 'PARK_TRIP';
-                    break;
-                  case 'unpark':
-                    $cmd = 'UNPARK_TRIP';
-                    break;
-
-                  default:
-                    $reason = "Invalid action";
-                    $status = 400;
-            }
-        }
-
-        if ($status == 200) {
-            $this->commandsService->createCommand($plate, true, $cmd);
-        }
-
-        return new JsonModel($this->buildReturnData($status, $reason));
-
-    }
-    */
-
     /**
      * @param Cars
      * @return Cars
@@ -143,7 +94,7 @@ class CarsController extends AbstractRestfulController
     private function setCarBusy($car)
     {
         $reservations = $this->tripsService->getTripsByPlateNotEnded($car['plate']);
-        $car['busy'] = !empty($reservations) || $car['busy'];
+        $car['busy'] = !empty($reservations);
         return $car;
     }
 
