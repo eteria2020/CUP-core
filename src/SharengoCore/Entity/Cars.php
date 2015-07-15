@@ -4,6 +4,7 @@ namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Cars
