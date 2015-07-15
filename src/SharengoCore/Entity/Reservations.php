@@ -106,13 +106,6 @@ class Reservations
      */
     private $deletedTs;
 
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="resent_ts", type="datetimetz")
-     */
-    private $resentTs;
-
 
     public static function createMaintenanceReservation($car, $cards) {
 
@@ -421,28 +414,6 @@ class Reservations
     public function setDeletedTs($deletedTs)
     {
         $this->deletedTs = $deletedTs;
-        return $this;
-    }
-
-    /**
-     * Get resentTs
-     *
-     * @return \DateTime
-     */
-    public function getResentTs()
-    {
-        return $this->resentTs;
-    }
-
-    /**
-     * Set resentTs
-     *
-     * @param \DateTime $resentTs
-     * @return Reservations
-     */
-    public function setResentTs($resentTs)
-    {
-        $this->resentTs = $resentTs;
         return $this;
     }
 
