@@ -333,7 +333,56 @@ class Customers
      * @ORM\OneToMany(targetEntity="CustomersBonus", mappedBy="customer")
      */
     private $customersbonuses;
-    
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="general_condition_read", type="boolean", nullable=true)
+     */
+    private $generalConditionRead = false;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="general_condition_accepted", type="boolean", nullable=true)
+     */
+    private $generalConditionAccepted = false;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="regulation_condition_read", type="boolean", nullable=true)
+     */
+    private $regulationConditionRead = false;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="regulation_condition_accepted", type="boolean", nullable=true)
+     */
+    private $regulationConditionAccepted = false;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="privacy_condition_accepted", type="boolean", nullable=true)
+     */
+    private $privacyConditionAccepted = false;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="commercial_condition1_accepted", type="boolean", nullable=true)
+     */
+    private $commercialCondition1Accepted = false;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="commercial_condition2_accepted", type="boolean", nullable=true)
+     */
+    private $commercialCondition2Accepted = false;
+
 
     public function __construct()
     {
@@ -352,7 +401,7 @@ class Customers
         }
         $extractedCustomer = $hydrator->extract($this);
         $extractedCustomer['card'] = $card;
-        
+
         return $extractedCustomer;
     }
 
@@ -1421,7 +1470,7 @@ class Customers
     public function getValidBonuses() {
 
         $validBonuses = [];
-        
+
         foreach ($this->getBonuses() as $bonus) {
             if ($bonus->getActive() &&
                 $bonus->getResidual() > 0 &&
@@ -1432,7 +1481,7 @@ class Customers
         }
 
         return $validBonuses;
-        
+
     }
 
     public function getTotalBonuses() {
@@ -1459,6 +1508,132 @@ class Customers
 
     public function getUsedBonuses() {
         return $this->getTotalBonuses() - $this->getResidualBonuses();
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getGeneralConditionRead()
+    {
+        return $this->generalConditionRead;
+    }
+
+    /**
+     * @param boolean $generalConditionRead
+     * @return Customers
+     */
+    public function setGeneralConditionRead($generalConditionRead)
+    {
+        $this->generalConditionRead = $generalConditionRead;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getGeneralConditionAccepted()
+    {
+        return $this->generalConditionAccepted;
+    }
+
+    /**
+     * @param boolean $generalConditionAccepted
+     * @return Customers
+     */
+    public function setGeneralConditionAccepted($generalConditionAccepted)
+    {
+        $this->generalConditionAccepted = $generalConditionAccepted;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getRegulationConditionRead()
+    {
+        return $this->regulationConditionRead;
+    }
+
+    /**
+     * @param boolean $regulationConditionRead
+     * @return Customers
+     */
+    public function setRegulationConditionRead($regulationConditionRead)
+    {
+        $this->regulationConditionRead = $regulationConditionRead;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getRegulationConditionAccepted()
+    {
+        return $this->regulationConditionAccepted;
+    }
+
+    /**
+     * @param boolean $regulationConditionAccepted
+     * @return Customers
+     */
+    public function setRegulationConditionAccepted($regulationConditionAccepted)
+    {
+        $this->regulationConditionAccepted = $regulationConditionAccepted;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getPrivacyConditionAccepted()
+    {
+        return $this->privacyConditionAccepted;
+    }
+
+    /**
+     * @param boolean $privacyConditionAccepted
+     * @return Customers
+     */
+    public function setPrivacyConditionAccepted($privacyConditionAccepted)
+    {
+        $this->privacyConditionAccepted = $privacyConditionAccepted;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getCommercialCondition1Accepted()
+    {
+        return $this->commercialCondition1Accepted;
+    }
+
+    /**
+     * @param boolean $commercialCondition1Accepted
+     * @return Customers
+     */
+    public function setCommercialCondition1Accepted($commercialCondition1Accepted)
+    {
+        $this->commercialCondition1Accepted = $commercialCondition1Accepted;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getCommercialCondition2Accepted()
+    {
+        return $this->commercialCondition2Accepted;
+    }
+
+    /**
+     * @param boolean $commercialCondition2Accepted
+     * @return Customers
+     */
+    public function setCommercialCondition2Accepted($commercialCondition2Accepted)
+    {
+        $this->commercialCondition2Accepted = $commercialCondition2Accepted;
+        return $this;
     }
 
 }
