@@ -152,41 +152,46 @@ class CarsService
 
         /* set system reservation according to status change */
         if ($lastStatus != $car->getStatus()) {
+            $maintenanceReservation = $this->reservationsService->getMaintenanceReservation($car->getPlate());
+
             switch ($lastStatus) {
                 case CarStatus::OUT_OF_ORDER:
                     if ($car->getStatus() == CarStatus::OPERATIVE) {
-                        $reservation = $this->reservationsService->getMaintenanceReservation($car->getPlate());
-                        if (null != $reservation) {
-                            $reservation->setActive(false);
-                            $reservation->setTosend(true);
-                            $this->entityManager->persist($reservation);
+                        if (null != $maintenanceReservation) {
+                            $maintenanceReservation->setActive(false);
+                            $maintenanceReservation->setTosend(true);
                         }
                     } else if ($car->getStatus() == CarStatus::MAINTENANCE) {
-                        $reservation = $this->reservationsService->getMaintenanceReservation($car->getPlate());
-                        if (null != $reservation) {
-                            $reservation->setActive(true);
-                            $reservation->setTosend(true);
-                            $this->entityManager->persist($reservation);
+                        if (null != $maintenanceReservation) {
+                            $maintenanceReservation->setActive(true);
+                            $maintenanceReservation->setTosend(true);
                         }
                     }
                     break;
                 case CarStatus::OPERATIVE:
                     if ($car->getStatus() == CarStatus::MAINTENANCE) {
-                        $this->reservationsService->createMaintenanceReservation($car);
+                        if (null != $maintenanceReservation) {
+                            $maintenanceReservation->setActive(true);
+                            $maintenanceReservation->setTosend(true);
+                        } else {
+                            $this->reservationsService->createMaintenanceReservation($car);
+                        }
                     }
                     break;
                 case CarStatus::MAINTENANCE:
                     if ($car->getStatus() == CarStatus::OPERATIVE) {
-                        $reservation = $this->reservationsService->getMaintenanceReservation($car->getPlate());
-
-                        if (null != $reservation) {
-                            $reservation->setActive(false);
-                            $reservation->setTosend(true);
-                            $this->entityManager->persist($reservation);
+                        if (null != $maintenanceReservation) {
+                            $maintenanceReservation->setActive(false);
+                            $maintenanceReservation->setTosend(true);
                         }
                     }
                     break;
             }
+
+            if (null != $maintenanceReservation) {
+                $this->entityManager->persist($maintenanceReservation);
+            }
+            
         }
 
         $this->entityManager->flush();
