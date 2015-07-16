@@ -337,51 +337,51 @@ class Customers
     /**
      * @var boolean
      *
-     * @ORM\Column(name="general_condition_read", type="boolean", nullable=true)
+     * @ORM\Column(name="general_condition1", type="boolean", nullable=false)
      */
-    private $generalConditionRead = false;
+    private $generalCondition1 = false;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="general_condition_accepted", type="boolean", nullable=true)
+     * @ORM\Column(name="general_condition2", type="boolean", nullable=false)
      */
-    private $generalConditionAccepted = false;
+    private $generalCondition2 = false;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="regulation_condition_read", type="boolean", nullable=true)
+     * @ORM\Column(name="regulation_condition1", type="boolean", nullable=false)
      */
-    private $regulationConditionRead = false;
+    private $regulationCondition1 = false;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="regulation_condition_accepted", type="boolean", nullable=true)
+     * @ORM\Column(name="regulation_condition2", type="boolean", nullable=false)
      */
-    private $regulationConditionAccepted = false;
+    private $regulationCondition2 = false;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="privacy_condition_accepted", type="boolean", nullable=true)
+     * @ORM\Column(name="privacy_condition", type="boolean", nullable=false)
      */
-    private $privacyConditionAccepted = false;
+    private $privacyCondition = false;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="commercial_condition1_accepted", type="boolean", nullable=true)
+     * @ORM\Column(name="commercial_condition1", type="boolean", nullable=false)
      */
-    private $commercialCondition1Accepted = false;
+    private $commercialCondition1 = false;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="commercial_condition2_accepted", type="boolean", nullable=true)
+     * @ORM\Column(name="commercial_condition2", type="boolean", nullable=false)
      */
-    private $commercialCondition2Accepted = false;
+    private $commercialCondition2 = false;
 
 
     public function __construct()
@@ -1513,126 +1513,126 @@ class Customers
     /**
      * @return boolean
      */
-    public function getGeneralConditionRead()
+    public function getGeneralCondition1()
     {
-        return $this->generalConditionRead;
+        return $this->generalCondition1;
     }
 
     /**
-     * @param boolean $generalConditionRead
+     * @param boolean $generalCondition1
      * @return Customers
      */
-    public function setGeneralConditionRead($generalConditionRead)
+    public function setGeneralCondition1($generalCondition1)
     {
-        $this->generalConditionRead = $generalConditionRead;
+        $this->generalCondition1 = $generalCondition1;
         return $this;
     }
 
     /**
      * @return boolean
      */
-    public function getGeneralConditionAccepted()
+    public function getGeneralCondition2()
     {
-        return $this->generalConditionAccepted;
+        return $this->generalCondition2;
     }
 
     /**
-     * @param boolean $generalConditionAccepted
+     * @param boolean $generalCondition2
      * @return Customers
      */
-    public function setGeneralConditionAccepted($generalConditionAccepted)
+    public function setGeneralCondition2($generalCondition2)
     {
-        $this->generalConditionAccepted = $generalConditionAccepted;
+        $this->generalCondition2 = $generalCondition2;
         return $this;
     }
 
     /**
      * @return boolean
      */
-    public function getRegulationConditionRead()
+    public function getRegulationCondition1()
     {
-        return $this->regulationConditionRead;
+        return $this->regulationCondition1;
     }
 
     /**
-     * @param boolean $regulationConditionRead
+     * @param boolean $regulationCondition1
      * @return Customers
      */
-    public function setRegulationConditionRead($regulationConditionRead)
+    public function setRegulationCondition1($regulationCondition1)
     {
-        $this->regulationConditionRead = $regulationConditionRead;
+        $this->regulationCondition1 = $regulationCondition1;
         return $this;
     }
 
     /**
      * @return boolean
      */
-    public function getRegulationConditionAccepted()
+    public function getRegulationCondition2()
     {
-        return $this->regulationConditionAccepted;
+        return $this->regulationCondition2;
     }
 
     /**
-     * @param boolean $regulationConditionAccepted
+     * @param boolean $regulationCondition2
      * @return Customers
      */
-    public function setRegulationConditionAccepted($regulationConditionAccepted)
+    public function setRegulationCondition2($regulationCondition2)
     {
-        $this->regulationConditionAccepted = $regulationConditionAccepted;
+        $this->regulationCondition2 = $regulationCondition2;
         return $this;
     }
 
     /**
      * @return boolean
      */
-    public function getPrivacyConditionAccepted()
+    public function getPrivacyCondition()
     {
-        return $this->privacyConditionAccepted;
+        return $this->privacyCondition;
     }
 
     /**
-     * @param boolean $privacyConditionAccepted
+     * @param boolean $privacyCondition
      * @return Customers
      */
-    public function setPrivacyConditionAccepted($privacyConditionAccepted)
+    public function setPrivacyCondition($privacyCondition)
     {
-        $this->privacyConditionAccepted = $privacyConditionAccepted;
+        $this->privacyCondition = $privacyCondition;
         return $this;
     }
 
     /**
      * @return boolean
      */
-    public function getCommercialCondition1Accepted()
+    public function getCommercialCondition1()
     {
-        return $this->commercialCondition1Accepted;
+        return $this->commercialCondition1;
     }
 
     /**
-     * @param boolean $commercialCondition1Accepted
+     * @param boolean $commercialCondition1
      * @return Customers
      */
-    public function setCommercialCondition1Accepted($commercialCondition1Accepted)
+    public function setCommercialCondition1($commercialCondition1)
     {
-        $this->commercialCondition1Accepted = $commercialCondition1Accepted;
+        $this->commercialCondition1 = $commercialCondition1;
         return $this;
     }
 
     /**
      * @return boolean
      */
-    public function getCommercialCondition2Accepted()
+    public function getCommercialCondition2()
     {
-        return $this->commercialCondition2Accepted;
+        return $this->commercialCondition2;
     }
 
     /**
-     * @param boolean $commercialCondition2Accepted
+     * @param boolean $commercialCondition2
      * @return Customers
      */
-    public function setCommercialCondition2Accepted($commercialCondition2Accepted)
+    public function setCommercialCondition2($commercialCondition2)
     {
-        $this->commercialCondition2Accepted = $commercialCondition2Accepted;
+        $this->commercialCondition2 = $commercialCondition2;
         return $this;
     }
 
