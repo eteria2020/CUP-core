@@ -87,7 +87,7 @@ class ReservationsController extends AbstractRestfulController
         if ($plate !== null) {
 
             $car = $this->carsService->getCarByPlate($plate);
-            if ($car instanceof Cars) {
+            if ($car instanceof Cars && $car->getStatus() == 'operative') {
 
                 // check if user has already active reservations
                 if (!$this->reservationsService->hasActiveReservationsByCustomer($user)) {
@@ -102,6 +102,8 @@ class ReservationsController extends AbstractRestfulController
                     $reason = 'Hai già una prenotazione attiva';
                 }
 
+            } else {
+                $reason = "L'auto non è al momento disponibile";
             }
 
         }
