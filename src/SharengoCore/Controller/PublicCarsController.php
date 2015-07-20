@@ -15,6 +15,12 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 class PublicCarsController extends AbstractRestfulController
 {
 
+    const OCCUPIED = 0;
+
+    const FREE = 1;
+
+    const RESERVED_BY_CURRENT_USER = 2;
+
     /**
      * @var CarsService
      */
@@ -67,8 +73,10 @@ class PublicCarsController extends AbstractRestfulController
 
         $cars = $this->carsService->getPublicCars();
         foreach ($cars as $car) {
-            if ($this->isCarAvailable($car, $userId)) {
+            $status = $this->isCarAvailable($car, $userId);
+            if ($status != self::OCCUPIED) {
                 $car = $car->toArray($this->hydrator);
+                $car['isReservedByCurrentUser'] = ($status == self::RESERVED_BY_CURRENT_USER) ? true : false;
                 array_push($returnCars, $car);
             }
         }
@@ -78,7 +86,7 @@ class PublicCarsController extends AbstractRestfulController
     /**
      * @param  Cars  $car
      * @param  string  $userId
-     * @return boolean
+     * @return integer
      */
     private function isCarAvailable($car, $userId)
     {
@@ -96,7 +104,13 @@ class PublicCarsController extends AbstractRestfulController
         $trips = $this->tripsService->getTripsByPlateNotEnded($car->getPlate());
         $isNotBusy = empty($trips);
 
-        return ($isFree && $isNotBusy) || $isReservedByCurrentUser;
+        if ($isReservedByCurrentUser) {
+            return self::RESERVED_BY_CURRENT_USER;
+        } elseif ($isFree && $isNotBusy) {
+            return self::FREE;
+        } else {
+            return self::OCCUPIED;
+        }
     }
 
     /**
