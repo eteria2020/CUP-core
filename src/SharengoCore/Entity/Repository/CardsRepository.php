@@ -22,4 +22,23 @@ class CardsRepository extends \Doctrine\ORM\EntityRepository
         $query->setDql($dql);
         return $query->getResult();
     }
+
+    public function getLastRfid()
+    {
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT c.rfid FROM \SharengoCore\Entity\Cards c ORDER BY c.rfid DESC';
+
+        $query = $em->createQuery($dql);
+        $query->setMaxResults(1);
+
+        return $query->getOneOrNullResult();
+    }
+
+    public function getTotalCards()
+    {
+        $em = $this->getEntityManager();
+        $query = $em->createQuery('SELECT COUNT(c.rfid) FROM \SharengoCore\Entity\Cards c');
+        return $query->getSingleScalarResult();
+    }
 }

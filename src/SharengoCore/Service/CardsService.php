@@ -5,6 +5,8 @@ namespace SharengoCore\Service;
 use SharengoCore\Entity\Cards;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Repository\CardsRepository;
+use SharengoCore\Service\DatatableQueryBuilders\Basic;
+use Zend\Validator\IsInstanceOf;
 
 class CardsService
 {
@@ -13,13 +15,19 @@ class CardsService
      */
     private $entityManager;
 
+    /**
+     * @var DatatableService
+     */
+    private $datatableService;
+
     /** @var  CardsRepository */
     private $cardsRepository;
 
-    public function __construct($entityManager)
+    public function __construct($entityManager, DatatableService $datatableService)
     {
         $this->entityManager = $entityManager;
         $this->cardsRepository = $entityManager->getRepository('\SharengoCore\Entity\Cards');
+        $this->datatableService = $datatableService;
     }
 
     /**
@@ -66,5 +74,50 @@ class CardsService
         return $this->cardsRepository->findOneBy([
             'code' => $code
         ]);
+    }
+
+    public function getDataDataTable(array $as_filters = [])
+    {
+        $cards = $this->datatableService->getData('Cards', $as_filters, new Basic());
+
+        return array_map(function (Cards $card) {
+            return [
+                'e' => [
+                    'rfid'       => $card->getRfid(),
+                    'code'       => $card->getCode(),
+                    'isAssigned' => $card->getIsAssigned(),
+                    'notes'      => $card->getNotes(),
+                    'assignable' => $card->getAssignable(),
+                    'customer'   => is_object($card->getCustomer()) ? $card->getCustomer()->getName() .' '. $card->getCustomer()->getSurname() : ''
+                ]
+            ];
+        }, $cards);
+    }
+
+    public function createCard(Cards $card, $customer = null)
+    {
+        $rfid = $this->cardsRepository->getLastRfid();
+        $lastRifd = substr($rfid['rfid'], 4);
+        $newRfid = sprintf('CARD%d', ($lastRifd + 1));
+        $card->setRfid($newRfid);
+        $card->setIsAssigned(false);
+        $card->setAssignable(true);
+
+        if($customer instanceof Customers) {
+            $customer->setCard($card);
+            $card->setIsAssigned(true);
+            $card->setAssignable(false);
+            $this->entityManager->persist($customer);
+        }
+
+        $this->entityManager->persist($card);
+        $this->entityManager->flush();
+
+        return $card;
+    }
+
+    public function getTotalCards()
+    {
+        return $this->cardsRepository->getTotalCards();
     }
 }

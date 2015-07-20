@@ -29,10 +29,15 @@ class DatatableService
     /**
      * @inheritdoc
      */
-    public function getData($entity, array $options/*, array $joinTable = []*/)
+    public function getData($entity, array $options, DatatableQueryBuilderInterface $interface = null)
     {
+        if(!is_null($interface)) {
+            $this->setQueryBuilder($interface);
+        }
+
         $select = $this->queryBuilder->select();
         $join = $this->queryBuilder->join();
+
         $where = false;
         $as_parameters = [];
 

@@ -50,6 +50,10 @@ class Cards
      */
     private $assignable = true;
 
+    /**
+     * @ORM\OneToOne(targetEntity="Customers", mappedBy="card")
+     **/
+    private $customer;
 
     /**
      * Set rfid
@@ -178,4 +182,19 @@ class Cards
         return $hydrator->extract($this);
     }
 
+    /**
+     * @return mixed
+     */
+    public function getCustomer()
+    {
+        return $this->customer;
+    }
+
+    /**
+     * @param mixed $customer
+     */
+    public function setCustomer($customer)
+    {
+        $this->customer = $customer;
+    }
 }
