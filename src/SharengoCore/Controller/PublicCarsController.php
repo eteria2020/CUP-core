@@ -76,7 +76,7 @@ class PublicCarsController extends AbstractRestfulController
             $status = $this->isCarAvailable($car, $userId);
             if ($status != self::OCCUPIED) {
                 $car = $car->toArray($this->hydrator);
-                $car['isReservedByCurrentUser'] = ($status == self::RESERVED_BY_CURRENT_USER) ? true : false;
+                $car['isReservedByCurrentUser'] = $status == self::RESERVED_BY_CURRENT_USER;
                 array_push($returnCars, $car);
             }
         }
