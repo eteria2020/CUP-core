@@ -2,7 +2,7 @@
 
 namespace SharengoCore\Service\DatatableQueryBuilders;
 
-class __Cards implements DatatableQueryBuilderInterface
+class Cards implements DatatableQueryBuilderInterface
 {
     /**
      * @var DatatableQueryBuilderInterface
