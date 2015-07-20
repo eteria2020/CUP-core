@@ -224,7 +224,6 @@ class CarsService
             case CarStatus::OUT_OF_ORDER:
                 return [
                     CarStatus::OUT_OF_ORDER => CarStatus::OUT_OF_ORDER,
-                    CarStatus::OPERATIVE => CarStatus::OPERATIVE,
                     CarStatus::MAINTENANCE  => CarStatus::MAINTENANCE
                 ];
         }
