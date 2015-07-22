@@ -78,6 +78,11 @@ class CustomersService implements ValidatorServiceInterface
         return $this->clientRepository->findListCustomersFilteredLimited($filters, $limit);
     }
 
+    public function getCistomersFirstPaymentCompleted()
+    {
+        return $this->clientRepository->findByFirstPaymentCompleted(true);
+    }
+
     public function getListMaintainersCards()
     {
         return $this->clientRepository->findMaintainersCards();
@@ -253,7 +258,7 @@ class CustomersService implements ValidatorServiceInterface
             'customer' => $customer
         ]);
     }
-    
+
     public function findBonus($bonus)
     {
         return $this->customersBonusRepository->find($bonus);
