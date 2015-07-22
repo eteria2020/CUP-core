@@ -120,6 +120,7 @@ return [
             'SharengoCore\Service\BonusService'        => 'SharengoCore\Service\BonusServiceFactory',
             'SharengoCore\Service\AccountTripsService' => 'SharengoCore\Service\AccountTripsServiceFactory',
             'SharengoCore\Service\CommandsService'     => 'SharengoCore\Service\CommandsServiceFactory',
+            'SharengoCore\Service\Invoices' => 'SharengoCore\Service\InvoicesServiceFactory'
         ]
     ],
     'doctrine'        => [
