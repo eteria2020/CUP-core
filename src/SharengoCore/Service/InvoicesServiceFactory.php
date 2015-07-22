@@ -14,6 +14,6 @@ class InvoicesServiceFactory implements FactoryInterface
         $config = $serviceLocator->get('Config');
         $invoicesConfig = $config['invoice'];
 
-        return new InvoicesService($invoicesRepository, $entityManager, $invoicesConfig);
+        return new InvoicesService($invoicesRepository, $invoicesConfig);
     }
 }

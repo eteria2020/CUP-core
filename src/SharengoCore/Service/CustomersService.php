@@ -78,7 +78,7 @@ class CustomersService implements ValidatorServiceInterface
         return $this->clientRepository->findListCustomersFilteredLimited($filters, $limit);
     }
 
-    public function getCistomersFirstPaymentCompleted()
+    public function getCustomersFirstPaymentCompleted()
     {
         return $this->clientRepository->findByFirstPaymentCompleted(true);
     }

@@ -3,7 +3,6 @@
 namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Repository\InvoicesRepository;
-use Doctrine\ORM\EntityManager;
 use SharengoCore\Entity\Invoices;
 
 class InvoicesService
@@ -14,27 +13,19 @@ class InvoicesService
     private $invoicesRepository;
 
     /**
-     * @var EntityManager
-     */
-    private $entityManager;
-
-    /**
      * @var mixed
      */
     private $invoiceConfig;
 
     /**
      * @param EntityRepository $invoicesRepository
-     * @param EntityManager $entityManager
      * @param mixed $invoiceConfig
      */
     public function __construct(
         InvoicesRepository $invoicesRepository,
-        EntityManager $entityManager,
         $invoiceConfig
     ) {
         $this->invoicesRepository = $invoicesRepository;
-        $this->entityManager = $entityManager;
         $this->invoiceConfig = $invoiceConfig;
     }
 
@@ -61,7 +52,6 @@ class InvoicesService
     public function createInvoiceForFirstPayment($customer)
     {
         $invoice = Invoices::createInvoiceForFirstPayment($customer, $invoiceConfig['template_version']);
-        $this->entityManager->persist($invoice);
-        $this->entityManager->flush();
+        return $invoice;
     }
 }
