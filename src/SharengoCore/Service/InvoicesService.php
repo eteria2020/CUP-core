@@ -38,15 +38,6 @@ class InvoicesService
     }
 
     /**
-     * @param \SharengoCore\Entity\Customers $customer
-     * @return mixed
-     */
-    public function getCustomersInvoicesFirstPayment($customer)
-    {
-        return $this->invoicesRepository->findByCustomerFirstPayment($customer);
-    }
-
-    /**
      * @var \SharengoCore\Entity\Customers
      */
     public function createInvoiceForFirstPayment($customer)

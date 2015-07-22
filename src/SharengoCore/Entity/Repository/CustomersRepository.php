@@ -77,15 +77,32 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
     public function findMaintainersCards()
     {
         $em = $this->getEntityManager();
-        
-        $dql = 'SELECT IDENTITY(c.card) 
-        FROM \SharengoCore\Entity\Customers c 
+
+        $dql = 'SELECT IDENTITY(c.card)
+        FROM \SharengoCore\Entity\Customers c
         WHERE c.maintainer = :maintainerValue AND c.enabled = :enabledValue';
 
         $query = $em->createQuery($dql);
         $query->setParameter('maintainerValue', true);
         $query->setParameter('enabledValue', true);
 
+        return $query->getResult();
+    }
+
+    public function findByFirstPaymentCompletedNoInvoice()
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT c
+        FROM \SharengoCore\Entity\Customers c
+        WHERE c.firstPaymentCompleted = true
+        AND NOT EXISTS
+        (SELECT 1 FROM \SharengoCore\Entity\Invoices i
+         WHERE i.customer = c
+         AND i.type = 'FIRST_PAYMENT'
+        )";
+
+        $query = $em->createQuery($dql);
         return $query->getResult();
     }
 
