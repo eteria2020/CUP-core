@@ -13,9 +13,9 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $dql = "SELECT t FROM \SharengoCore\Entity\Invoices i
+        $dql = "SELECT i FROM \SharengoCore\Entity\Invoices i
             WHERE i.customer = :customerId
-            AND i.isFirstPayment = true";
+            AND i.type = 'FIRST_PAYMENT'";
 
         $query = $em->createQuery($dql);
         $query->setParameter('customerId', $customer->getId());
