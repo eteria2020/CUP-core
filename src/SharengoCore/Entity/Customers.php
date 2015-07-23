@@ -369,20 +369,6 @@ class Customers
      */
     private $privacyCondition = false;
 
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="commercial_condition1", type="boolean", nullable=false)
-     */
-    private $commercialCondition1 = false;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="commercial_condition2", type="boolean", nullable=false)
-     */
-    private $commercialCondition2 = false;
-
 
     public function __construct()
     {
@@ -1597,42 +1583,6 @@ class Customers
     public function setPrivacyCondition($privacyCondition)
     {
         $this->privacyCondition = $privacyCondition;
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function getCommercialCondition1()
-    {
-        return $this->commercialCondition1;
-    }
-
-    /**
-     * @param boolean $commercialCondition1
-     * @return Customers
-     */
-    public function setCommercialCondition1($commercialCondition1)
-    {
-        $this->commercialCondition1 = $commercialCondition1;
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function getCommercialCondition2()
-    {
-        return $this->commercialCondition2;
-    }
-
-    /**
-     * @param boolean $commercialCondition2
-     * @return Customers
-     */
-    public function setCommercialCondition2($commercialCondition2)
-    {
-        $this->commercialCondition2 = $commercialCondition2;
         return $this;
     }
 
