@@ -38,10 +38,29 @@ class InvoicesService
     }
 
     /**
+     * @param integer $id
+     * @return Invoices
+     */
+    public function getInvoiceById($id)
+    {
+        return $this->invoicesRepository->findOneById($id);
+    }
+
+    /**
      * @var \SharengoCore\Entity\Customers
      */
     public function createInvoiceForFirstPayment($customer)
     {
         return Invoices::createInvoiceForFirstPayment($customer, $this->templateVarsion);
+    }
+
+    /**
+     * @param  Invoices $invoice
+     */
+    public function generateHtmlFromInvoice($invoice)
+    {
+        // generate html from invoice
+
+        // return html
     }
 }

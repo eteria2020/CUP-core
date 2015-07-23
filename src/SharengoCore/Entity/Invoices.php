@@ -99,7 +99,7 @@ class Invoices
         $content = [
             'name' => $customer->getName(),
             'surname' => $customer->getSurname(),
-            'invoice_number' => $invoice->getId(),
+            'invoice_number' => 'iN',
             'emitted_ts' => date_create(date('Y-m-d H:i:s')),
             'amount' => 1000,
             'card' => $customer->getCard()->getCode(),
@@ -115,7 +115,7 @@ class Invoices
             ->setType('FIRST_PAYMENT')
             ->setEmittedTs($content['emitted_ts'])
             ->setAmount(1000)
-            ->setInvoiceNumber($invoice->getId());
+            ->setInvoiceNumber('iN');
 
         return $invoice;
     }
