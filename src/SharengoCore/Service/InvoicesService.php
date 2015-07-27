@@ -59,12 +59,15 @@ class InvoicesService
      * @param integer $date
      * @return mixed
      */
-    public function getInvoicesByCustomerWithDate($customer, $date)
+    public function getInvoicesByCustomerWithDate($customer, $date = null)
     {
-        $filters = [];
-        $filters['customer'] = $customer;
-        $filters['invoiceDate'] = $date;
-        return $this->invoicesRepository->findBy($filters, ['invoiceDate' => 'DESC']);
+        if ($date == null) {
+            return $this->invoicesRepository->findByCustomer($customer);
+        } elseif ($date < 10000000) {
+            return $this->invoicesRepository->findInvoicesByCustomerWithDateNoDay($customer, $date);
+        } else {
+            return $this->invoicesRepository->findInvoicesByCustomerWithDate($customer, $date);
+        }
     }
 
     /**
@@ -73,6 +76,6 @@ class InvoicesService
      */
     public function getDistinctDatesForCustomerByMonth($customer)
     {
-        return $this->invoicesRepository->findDistinctDatesForCustomerByMonth($customer);
+        return $this->invoicesRepository->findDistinctDatesForCustomerByMonth($customer)[0];
     }
 }

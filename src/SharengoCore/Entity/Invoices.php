@@ -4,6 +4,7 @@ namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use SharengoCore\Entity\Invoices;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * Invoices
@@ -85,6 +86,23 @@ class Invoices
     public function __construct()
     {
         $this->generatedTs = date_create(date('Y-m-d H:i:s'));
+    }
+
+    /**
+     * @param DoctrineHydrator
+     * @return mixed[]
+     */
+    public function toArray(DoctrineHydrator $hydrator)
+    {
+        $customer = $this->getCustomer();
+        if ($customer != null) {
+            $customer = $customer->toArray($hydrator);
+        }
+
+        $extractedInvoice = $hydrator->extract($this);
+        $extractedInvoice['customer'] = $customer;
+
+        return $extractedInvoice;
     }
 
     /**

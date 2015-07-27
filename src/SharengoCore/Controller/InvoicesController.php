@@ -43,17 +43,26 @@ class InvoicesController extends AbstractRestfulController
         $status = 200;
         $reason = '';
 
-        $invoices = [];
+        $extractedInvoices = [];
 
         // get user id from AuthService
         $user = $this->authService->getIdentity();
 
         if($user != null && $user instanceof Customers) {
 
-            $date = $this->params()->fromQuery('date');
+            $date = null;
+
+            if ($this->params()->fromQuery('date') != null) {
+                $date = $this->params()->fromQuery('date');
+            } elseif ($this->params()->fromQuery('shortDate')) {
+                $date = $this->params()->fromQuery('shortDate');
+            }
 
             // get invoices
             $invoices = $this->invoicesService->getInvoicesByCustomerWithDate($user, $date);
+            foreach ($invoices as $invoice) {
+                array_push($extractedInvoices, $invoice->toArray($this->hydrator));
+            }
             $reason = 'OK';
 
         } else {
@@ -61,7 +70,7 @@ class InvoicesController extends AbstractRestfulController
             $reason = 'Authentication failed';
         }
 
-        return new JsonModel($this->buildReturnData(200, $reason, $invoices));
+        return new JsonModel($this->buildReturnData(200, $reason, $extractedInvoices));
     }
 
     /**
