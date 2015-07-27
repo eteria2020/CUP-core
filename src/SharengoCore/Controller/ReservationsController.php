@@ -86,7 +86,7 @@ class ReservationsController extends AbstractRestfulController
         $plate = $data['plate'];
         if ($plate !== null) {
 
-            if ($user->getEnabled() == true) {
+            if ($user->getEnabled()) {
 
                 $car = $this->carsService->getCarByPlate($plate);
                 if ($car instanceof Cars && $car->getStatus() == 'operative') {
