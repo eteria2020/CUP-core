@@ -55,12 +55,24 @@ class InvoicesService
     }
 
     /**
-     * @param  Invoices $invoice
+     * @param Customers $customer
+     * @param integer $date
+     * @return mixed
      */
-    public function generateHtmlFromInvoice($invoice)
+    public function getInvoicesByCustomerWithDate($customer, $date)
     {
-        // generate html from invoice
+        $filters = [];
+        $filters['customer'] = $customer;
+        $filters['invoiceDate'] = $date;
+        return $this->invoicesRepository->findBy($filters, ['invoiceDate' => 'DESC']);
+    }
 
-        // return html
+    /**
+     * @param Customers $customer
+     * @return mixed
+     */
+    public function getDistinctDatesForCustomerByMonth($customer)
+    {
+        return $this->invoicesRepository->findDistinctDatesForCustomerByMonth($customer);
     }
 }

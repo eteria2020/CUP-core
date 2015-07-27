@@ -41,7 +41,7 @@ class Invoices
     private $generatedTs;
 
     /**
-     * @var string
+     * @var mixed
      *
      * @ORM\Column(name="content", type="json_array", nullable=false)
      */
@@ -62,11 +62,11 @@ class Invoices
     private $type;
 
     /**
-     * @var \DateTime
+     * @var integer
      *
-     * @ORM\Column(name="emitted_ts", type="datetime", nullable=false)
+     * @ORM\Column(name="invoice_date", type="integer", nullable=false)
      */
-    private $emittedTs;
+    private $invoiceDate;
 
     /**
      * @var integer
@@ -96,26 +96,41 @@ class Invoices
     {
         $invoice = new Invoices();
 
-        $content = [
-            'name' => $customer->getName(),
-            'surname' => $customer->getSurname(),
-            'invoice_number' => 'iN',
-            'emitted_ts' => date_create(date('Y-m-d H:i:s')),
-            'amount' => 1000,
-            'card' => $customer->getCard()->getCode(),
-            'email' => $customer->getEmail(),
-            'address' => $customer->getAddress(),
-            'cf' => $customer->getTaxCode(),
-            'piva' => $customer->getVat()
-        ];
-
         $invoice->setCustomer($customer)
-            ->setContent($content)
             ->setVersion($version)
             ->setType('FIRST_PAYMENT')
-            ->setEmittedTs($content['emitted_ts'])
+            ->setInvoiceDate(intval(date("Ymd")))
             ->setAmount(1000)
             ->setInvoiceNumber('iN');
+
+        $content = [
+            'invoice_number' => $invoice->getInvoiceNumber(), // create sequence
+            'invoice_date' => $invoice->getInvoiceDate(), // not correct
+            'amounts' => [
+                'total' => $invoice->getAmount(),
+                'iva' => $invoice->getAmount(),
+                'grand_total' => $invoice->getAmount(),
+            ],
+            'customer' => [
+                'name' => $customer->getName(),
+                'surname' => $customer->getSurname(),
+                'card' => $customer->getCard()->getCode(),
+                'email' => $customer->getEmail(),
+                'address' => $customer->getAddress(),
+                'town' => $customer->getTown(),
+                'province' => $customer->getProvince(),
+                'country' => $customer->getCountry(),
+                'cf' => $customer->getTaxCode(),
+                'piva' => $customer->getVat()
+            ],
+            'type' => $invoice->getType(),
+            'body' => [
+                'greeting_message' => '',
+                'description' => 'Pagamento iscrizione al servizio'
+            ]
+        ];
+
+        $invoice->setContent($content);
 
         return $invoice;
     }
@@ -220,20 +235,20 @@ class Invoices
     }
 
     /**
-     * @return \DateTime
+     * @return integer
      */
-    public function getEmittedTs()
+    public function getInvoiceDate()
     {
-        return $this->emittedTs;
+        return $this->invoiceDate;
     }
 
     /**
-     * @var \DateTime $emittedTs
+     * @var integer $invoiceDate
      * @return Invoices
      */
-    public function setEmittedTs($emittedTs)
+    public function setInvoiceDate($invoiceDate)
     {
-        $this->emittedTs = $emittedTs;
+        $this->invoiceDate = $invoiceDate;
         return $this;
     }
 
