@@ -86,26 +86,39 @@ class ReservationsController extends AbstractRestfulController
         $plate = $data['plate'];
         if ($plate !== null) {
 
-            $car = $this->carsService->getCarByPlate($plate);
-            if ($car instanceof Cars && $car->getStatus() == 'operative') {
+            if ($user->getEnabled() == true) {
 
-                // check if user has already active reservations
-                if (!$this->reservationsService->hasActiveReservationsByCustomer($user)) {
+                $car = $this->carsService->getCarByPlate($plate);
+                if ($car instanceof Cars && $car->getStatus() == 'operative') {
 
-                    if (!$this->reservationsService->reserveCarForCustomer($car, $user)) {
-                        $reason = "L'auto è già occupata";
+                    // check if user has already active reservations
+                    if (!$this->reservationsService->hasActiveReservationsByCustomer($user)) {
+
+                        if (!$this->reservationsService->reserveCarForCustomer($car, $user)) {
+                            $reason = "L'auto è già occupata";
+                            $status = 210;
+                        } else {
+                            $reason = "Prenotazione effettuata";
+                        }
+
                     } else {
-                        $reason = "Prenotazione effettuata";
+                        $reason = 'Hai già una prenotazione attiva';
+                        $status = 211;
                     }
 
                 } else {
-                    $reason = 'Hai già una prenotazione attiva';
+                    $reason = "L'auto non è al momento disponibile";
+                    $status = 212;
                 }
 
             } else {
-                $reason = "L'auto non è al momento disponibile";
+                $reason = "Prenotazioni non disponibili per questo utente";
+                $status = 213;
             }
 
+        } else {
+            $reason = "Si è verificato un errore, riprovare più tardi";
+            $status = 214;
         }
 
         return new JsonModel($this->buildReturnData($status, $reason));
@@ -128,7 +141,8 @@ class ReservationsController extends AbstractRestfulController
         $user = $this->authService->getIdentity();
 
         if (!$this->reservationsService->removeCustomerReservationWithId($user, $id)) {
-            $reason = 'reservation not found';
+            $reason = 'Si è verificato un errore, riprovare più tardi';
+            $status = 210;
         }
 
         return new JsonModel($this->buildReturnData($status, $reason));
