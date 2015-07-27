@@ -18,6 +18,11 @@ class InvoicesService
     private $templateVarsion;
 
     /**
+     * @var integer
+     */
+    private $subscriptionAmount;
+
+    /**
      * @param EntityRepository $invoicesRepository
      * @param mixed $invoiceConfig
      */
@@ -27,6 +32,7 @@ class InvoicesService
     ) {
         $this->invoicesRepository = $invoicesRepository;
         $this->templateVarsion = $invoiceConfig['template_version'];
+        $this->subscriptionAmount = $invoiceConfig['subscription_amount'];
     }
 
     /**
@@ -51,7 +57,7 @@ class InvoicesService
      */
     public function createInvoiceForFirstPayment($customer)
     {
-        return Invoices::createInvoiceForFirstPayment($customer, $this->templateVarsion);
+        return Invoices::createInvoiceForFirstPayment($customer, $this->templateVarsion, $this->subscriptionAmount);
     }
 
     /**

@@ -14,6 +14,9 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
  */
 class Invoices
 {
+
+    const TYPE_FIRST_PAYMENT = 'FIRST_PAYMENT';
+
     /**
      * @var integer
      *
@@ -110,23 +113,25 @@ class Invoices
      * @param integer $version
      * @return Invoice
      */
-    public static function createInvoiceForFirstPayment($customer, $version)
+    public static function createInvoiceForFirstPayment($customer, $version, $amount)
     {
         $invoice = new Invoices();
 
         $invoice->setCustomer($customer)
             ->setVersion($version)
-            ->setType('FIRST_PAYMENT')
-            ->setInvoiceDate(intval(date("Ymd")))
-            ->setAmount(1000)
-            ->setInvoiceNumber('iN');
+            ->setType(self::TYPE_FIRST_PAYMENT)
+            ->setInvoiceDate(20150701)//intval(date("Ymd")))
+            ->setAmount($amount)
+            ->setInvoiceNumber('2015/xxxxxxxxxx'); // create sequence is postgresql
+
+        $iva = (integer) ($invoice->getAmount() / 100 * 22);
 
         $content = [
-            'invoice_number' => $invoice->getInvoiceNumber(), // create sequence
-            'invoice_date' => $invoice->getInvoiceDate(), // not correct
+            'invoice_number' => $invoice->getInvoiceNumber(),
+            'invoice_date' => $invoice->getInvoiceDate(),
             'amounts' => [
-                'total' => $invoice->getAmount(),
-                'iva' => $invoice->getAmount(),
+                'total' => $invoice->getAmount() - $iva,
+                'iva' => $iva,
                 'grand_total' => $invoice->getAmount(),
             ],
             'customer' => [
@@ -138,14 +143,22 @@ class Invoices
                 'town' => $customer->getTown(),
                 'province' => $customer->getProvince(),
                 'country' => $customer->getCountry(),
+                'zip_code' => $customer->getZipCode(),
                 'cf' => $customer->getTaxCode(),
                 'piva' => $customer->getVat()
             ],
             'type' => $invoice->getType(),
             'body' => [
-                'greeting_message' => '',
+                'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento per l\'iscrizione al servizio<br>' .
+                    'L\'importo totale della fattura è di EUR ' .
+                    substr(strval($invoice->getAmount()), 0, strlen(strval($invoice->getAmount())) - 2) .
+                    ',' .
+                    substr(strval($invoice->getAmount()), strlen(strval($invoice->getAmount())) - 2, 2) .
+                    '</p>' .
+                    '<p>Share`n Go ha già provveduto ad addebitare la Sua carta di credito n° xxxx per il suddetto importo</p>',
                 'description' => 'Pagamento iscrizione al servizio'
-            ]
+            ],
+            'template_version' => $invoice->getVersion()
         ];
 
         $invoice->setContent($content);
