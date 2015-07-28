@@ -96,9 +96,8 @@ class CardsService
 
     public function createCard(Cards $card, $customer = null)
     {
-        $rfid = $this->cardsRepository->getLastRfid();
-        $lastRifd = substr($rfid['rfid'], 4);
-        $newRfid = sprintf('CARD%d', ($lastRifd + 1));
+        $rfid = $this->cardsRepository->getLastCardRfid();
+        $newRfid = sprintf('CARD%d', ($rfid['lastrfid'] + 1));
         $card->setRfid($newRfid);
         $card->setIsAssigned(false);
         $card->setAssignable(true);
