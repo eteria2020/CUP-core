@@ -175,4 +175,9 @@ class TripsService
     {
         return $this->tripRepository->findCustomerTripsToBeAccounted($customer);
     }
+
+    public function getLastTrip($plate)
+    {
+        return $this->tripRepository->findLastTrip($plate);
+    }
 }
