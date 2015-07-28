@@ -103,13 +103,13 @@ class InvoicesService
         $amounts = [];
 
         // calculate amounts
-        $iva = (integer) ($amount / 100 * 22);
+        $iva = (integer) ($amount / 122 * 22);
         $total = $amount - $iva;
 
         // format amounts
-        $amounts['iva'] = (integer) ($iva / 100) . ',' . $this->parseDecimal($iva % 100);
-        $amounts['total'] = (integer) ($total / 100) . ',' . $this->parseDecimal($total % 100);
-        $amounts['grand_total'] = (integer) ($amount / 100) . ',' . $this->parseDecimal($amount % 100);
+        $amounts['iva'] = $this->parseDecimal($iva);
+        $amounts['total'] = $this->parseDecimal($total);
+        $amounts['grand_total'] = $this->parseDecimal($amount);
 
         $amounts['grand_total_cents'] = $amount;
 
@@ -122,6 +122,6 @@ class InvoicesService
      */
     private function parseDecimal($decimal)
     {
-        return (($decimal < 10) ? '0' : '') . $decimal;
+        return number_format((float) $decimal / 100, 2, ',', '');
     }
 }

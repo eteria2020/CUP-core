@@ -17,6 +17,10 @@ class Invoices
 
     const TYPE_FIRST_PAYMENT = 'FIRST_PAYMENT';
 
+    const TYPE_TRIP = 'TRIP';
+
+    const TYPE_PENALTY = 'PENALTY';
+
     /**
      * @var integer
      *
