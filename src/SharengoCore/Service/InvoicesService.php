@@ -57,7 +57,11 @@ class InvoicesService
      */
     public function createInvoiceForFirstPayment($customer)
     {
-        return Invoices::createInvoiceForFirstPayment($customer, $this->templateVarsion, $this->subscriptionAmount);
+        return Invoices::createInvoiceForFirstPayment(
+            $customer,
+            $this->templateVarsion,
+            $this->calculateAmounts($this->subscriptionAmount)
+        );
     }
 
     /**
@@ -88,5 +92,36 @@ class InvoicesService
             array_push($returnDates, $date[1]);
         }
         return $returnDates;
+    }
+
+    /**
+     * @param integer $amount
+     * @return mixed
+     */
+    private function calculateAmounts($amount)
+    {
+        $amounts = [];
+
+        // calculate amounts
+        $iva = (integer) ($amount / 100 * 22);
+        $total = $amount - $iva;
+
+        // format amounts
+        $amounts['iva'] = (integer) ($iva / 100) . ',' . $this->parseDecimal($iva % 100);
+        $amounts['total'] = (integer) ($total / 100) . ',' . $this->parseDecimal($total % 100);
+        $amounts['grand_total'] = (integer) ($amount / 100) . ',' . $this->parseDecimal($amount % 100);
+
+        $amounts['grand_total_cents'] = $amount;
+
+        return $amounts;
+    }
+
+    /**
+     * @param integer
+     * @return string
+     */
+    private function parseDecimal($decimal)
+    {
+        return (($decimal < 10) ? '0' : '') . $decimal;
     }
 }

@@ -113,7 +113,7 @@ class Invoices
      * @param integer $version
      * @return Invoice
      */
-    public static function createInvoiceForFirstPayment($customer, $version, $amount)
+    public static function createInvoiceForFirstPayment($customer, $version, $amounts)
     {
         $invoice = new Invoices();
 
@@ -121,7 +121,7 @@ class Invoices
             ->setVersion($version)
             ->setType(self::TYPE_FIRST_PAYMENT)
             ->setInvoiceDate(20150701)//intval(date("Ymd")))
-            ->setAmount($amount)
+            ->setAmount($amounts['grand_total_cents'])
             ->setInvoiceNumber('2015/xxxxxxxxxx'); // create sequence is postgresql
 
         $iva = (integer) ($invoice->getAmount() / 100 * 22);
@@ -129,11 +129,7 @@ class Invoices
         $content = [
             'invoice_number' => $invoice->getInvoiceNumber(),
             'invoice_date' => $invoice->getInvoiceDate(),
-            'amounts' => [
-                'total' => $invoice->getAmount() - $iva,
-                'iva' => $iva,
-                'grand_total' => $invoice->getAmount(),
-            ],
+            'amounts' => $amounts,
             'customer' => [
                 'name' => $customer->getName(),
                 'surname' => $customer->getSurname(),
@@ -151,7 +147,7 @@ class Invoices
             'body' => [
                 'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento per l\'iscrizione al servizio<br>' .
                     'L\'importo totale della fattura è di EUR ' .
-                    (integer) ($invoice->getAmount() / 100) . ',' . ($invoice->getAmount() % 100) .
+                    $amounts['grand_total'] .
                     '</p>' .
                     '<p>Share`n Go ha già provveduto ad addebitare la Sua carta di credito n° xxxx per il suddetto importo</p>',
                 'description' => 'Pagamento iscrizione al servizio'
