@@ -82,6 +82,11 @@ class InvoicesService
      */
     public function getDistinctDatesForCustomerByMonth($customer)
     {
-        return $this->invoicesRepository->findDistinctDatesForCustomerByMonth($customer)[0];
+        $dates = $this->invoicesRepository->findDistinctDatesForCustomerByMonth($customer);
+        $returnDates = [];
+        foreach ($dates as $date) {
+            array_push($returnDates, $date[1]);
+        }
+        return $returnDates;
     }
 }

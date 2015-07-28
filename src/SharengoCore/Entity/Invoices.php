@@ -151,9 +151,7 @@ class Invoices
             'body' => [
                 'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento per l\'iscrizione al servizio<br>' .
                     'L\'importo totale della fattura è di EUR ' .
-                    substr(strval($invoice->getAmount()), 0, strlen(strval($invoice->getAmount())) - 2) .
-                    ',' .
-                    substr(strval($invoice->getAmount()), strlen(strval($invoice->getAmount())) - 2, 2) .
+                    (integer) ($invoice->getAmount() / 100) . ',' . ($invoice->getAmount() % 100) .
                     '</p>' .
                     '<p>Share`n Go ha già provveduto ad addebitare la Sua carta di credito n° xxxx per il suddetto importo</p>',
                 'description' => 'Pagamento iscrizione al servizio'

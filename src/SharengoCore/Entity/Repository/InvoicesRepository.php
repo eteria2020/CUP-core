@@ -12,9 +12,10 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $dql = "SELECT DISTINCT (i.invoiceDate/100)
+        $dql = "SELECT DISTINCT i.invoiceDate / 100
         FROM \SharengoCore\Entity\Invoices i
-        WHERE i.customer = :customer";
+        WHERE i.customer = :customer
+        ORDER BY i.invoiceDate / 100 DESC";
 
         $query = $em->createQuery($dql);
         $query->setParameter('customer', $customer);
