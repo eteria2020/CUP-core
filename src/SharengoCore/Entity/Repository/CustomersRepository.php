@@ -100,7 +100,8 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         (SELECT 1 FROM \SharengoCore\Entity\Invoices i
          WHERE i.customer = c
          AND i.type = 'FIRST_PAYMENT'
-        )";
+        )
+        ORDER BY c.insertedTs ASC";
 
         $query = $em->createQuery($dql);
         return $query->getResult();

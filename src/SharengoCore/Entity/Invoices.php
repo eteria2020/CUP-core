@@ -151,7 +151,19 @@ class Invoices
                     'L\'importo totale della fattura è di EUR ' .
                     $amounts['grand_total'] .
                     '</p>',
-                'description' => 'Pagamento iscrizione al servizio'
+                'description' => 'Pagamento iscrizione al servizio',
+                'contents' => [
+                    'header' => [
+                        'Descrizione',
+                        'Imponibile'
+                    ],
+                    'body' => [
+                        [
+                            'Pagamento iscrizione al servizio',
+                            $amounts['total'] . '€'
+                        ]
+                    ]
+                ]
             ],
             'template_version' => $invoice->getVersion()
         ];
