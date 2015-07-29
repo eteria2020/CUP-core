@@ -15,7 +15,7 @@ class InvoicesService
     /**
      * @var string
      */
-    private $templateVarsion;
+    private $templateVersion;
 
     /**
      * @var integer
@@ -31,16 +31,8 @@ class InvoicesService
         $invoiceConfig
     ) {
         $this->invoicesRepository = $invoicesRepository;
-        $this->templateVarsion = $invoiceConfig['template_version'];
+        $this->templateVersion = $invoiceConfig['template_version'];
         $this->subscriptionAmount = $invoiceConfig['subscription_amount'];
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getListInvoices()
-    {
-        return $this->invoicesRepository->findAll();
     }
 
     /**
@@ -53,14 +45,15 @@ class InvoicesService
     }
 
     /**
-     * @var \SharengoCore\Entity\Customers
+     * @param \SharengoCore\Entity\Customers
+     * @return Invoices
      */
-    public function createInvoiceForFirstPayment($customer)
+    public function prepareInvoiceForFirstPayment($customer)
     {
         return Invoices::createInvoiceForFirstPayment(
             $customer,
-            $this->templateVarsion,
-            $this->calculateAmounts($this->subscriptionAmount)
+            $this->templateVersion,
+            $this->calculateAmountsWithTaxesFromTotal($this->subscriptionAmount)
         );
     }
 
@@ -71,10 +64,13 @@ class InvoicesService
      */
     public function getInvoicesByCustomerWithDate($customer, $date = null)
     {
+        // if no date param is given
         if ($date == null) {
             return $this->invoicesRepository->findByCustomer($customer);
+        // if date param has no day (YYYYMM)
         } elseif ($date < 10000000) {
             return $this->invoicesRepository->findInvoicesByCustomerWithDateNoDay($customer, $date);
+        // if date param is complete with day (YYYYMMDD)
         } else {
             return $this->invoicesRepository->findInvoicesByCustomerWithDate($customer, $date);
         }
@@ -98,7 +94,7 @@ class InvoicesService
      * @param integer $amount
      * @return mixed
      */
-    private function calculateAmounts($amount)
+    private function calculateAmountsWithTaxesFromTotal($amount)
     {
         $amounts = [];
 
