@@ -125,13 +125,11 @@ class Invoices
             ->setVersion($version)
             ->setType(self::TYPE_FIRST_PAYMENT)
             ->setInvoiceDate(20150701)//intval(date("Ymd")))
-            ->setAmount($amounts['grand_total_cents'])
-            ->setInvoiceNumber('2015/xxxxxxxxxx'); // create sequence is postgresql
+            ->setAmount($amounts['grand_total_cents']);
 
-        $iva = (integer) ($invoice->getAmount() / 100 * 22);
+        $invoiceDate = $invoice->getInvoiceDate();
 
         $content = [
-            'invoice_number' => $invoice->getInvoiceNumber(),
             'invoice_date' => $invoice->getInvoiceDate(),
             'amounts' => $amounts,
             'customer' => [
@@ -152,8 +150,7 @@ class Invoices
                 'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento per l\'iscrizione al servizio<br>' .
                     'L\'importo totale della fattura è di EUR ' .
                     $amounts['grand_total'] .
-                    '</p>' .
-                    '<p>Share`n Go ha già provveduto ad addebitare la Sua carta di credito n° xxxx per il suddetto importo</p>',
+                    '</p>',
                 'description' => 'Pagamento iscrizione al servizio'
             ],
             'template_version' => $invoice->getVersion()
