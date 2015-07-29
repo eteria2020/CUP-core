@@ -26,7 +26,7 @@ class CardsRepository extends \Doctrine\ORM\EntityRepository
 
     public function getLastCardRfid()
     {
-        $s_query = 'SELECT substring(rfid, 5)::INT as LastRfid FROM cards ORDER BY LastRfid DESC LIMIT 1';
+        $s_query = "SELECT substring(rfid, 5)::INT as LastRfid FROM cards WHERE rfid ILIKE 'CARD%' ORDER BY LastRfid DESC LIMIT 1";
         $query = $this->getEntityManager()->getConnection()->query($s_query);
         return $query->fetch();
     }
