@@ -84,6 +84,18 @@ return [
                                 ]
                             ]
                         ],
+                        'invoices' => [
+                            'type' => 'Segment',
+                            'options' => [
+                                'route' => '/invoices[/:id]',
+                                'constraints' => array(
+                                    'id'     => '[0-9]+',
+                                ),
+                                'defaults' => [
+                                    'controller' => 'Invoices'
+                                ]
+                            ]
+                        ],
                     ],
                 ],
             ),
@@ -95,7 +107,8 @@ return [
             'SharengoCore\Controller\Pois'             => 'SharengoCore\Controller\PoisControllerFactory',
             'SharengoCore\Controller\Reservations'     => 'SharengoCore\Controller\ReservationsControllerFactory',
             'SharengoCore\Controller\Trips'            => 'SharengoCore\Controller\TripsControllerFactory',
-            'SharengoCore\Controller\PublicCars'       => 'SharengoCore\Controller\PublicCarsControllerFactory'
+            'SharengoCore\Controller\PublicCars'       => 'SharengoCore\Controller\PublicCarsControllerFactory',
+            'SharengoCore\Controller\Invoices'       => 'SharengoCore\Controller\InvoicesControllerFactory'
         ],
     ],
 
@@ -120,6 +133,7 @@ return [
             'SharengoCore\Service\BonusService'        => 'SharengoCore\Service\BonusServiceFactory',
             'SharengoCore\Service\AccountTripsService' => 'SharengoCore\Service\AccountTripsServiceFactory',
             'SharengoCore\Service\CommandsService'     => 'SharengoCore\Service\CommandsServiceFactory',
+            'SharengoCore\Service\Invoices' => 'SharengoCore\Service\InvoicesServiceFactory'
         ]
     ],
     'doctrine'        => [
@@ -146,6 +160,7 @@ return [
                 array('controller' => 'SharengoCore\Controller\Pois', 'roles' => array()),
                 array('controller' => 'SharengoCore\Controller\Reservations', 'roles' => array('user', 'admin', 'callcenter')),
                 array('controller' => 'SharengoCore\Controller\Trips', 'roles' => array('admin', 'callcenter')),
+                array('controller' => 'SharengoCore\Controller\Invoices', 'roles' => array('user')),
             ),
         ),
     ),
