@@ -162,6 +162,12 @@ class Invoices
                             'Pagamento iscrizione al servizio',
                             $amounts['total'] . '€'
                         ]
+                    ],
+                    'body-format' => [
+                        'alignment' => [
+                            'left',
+                            'right'
+                        ]
                     ]
                 ]
             ],
