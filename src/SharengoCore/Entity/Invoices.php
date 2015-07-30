@@ -160,7 +160,7 @@ class Invoices
                     'body' => [
                         [
                             'Pagamento iscrizione al servizio',
-                            $amounts['total'] . '€'
+                            $amounts['total'] . ' €'
                         ]
                     ],
                     'body-format' => [
