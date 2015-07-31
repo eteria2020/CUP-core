@@ -135,7 +135,6 @@ class Invoices
             'customer' => [
                 'name' => $customer->getName(),
                 'surname' => $customer->getSurname(),
-                'card' => $customer->getCard()->getCode(),
                 'email' => $customer->getEmail(),
                 'address' => $customer->getAddress(),
                 'town' => $customer->getTown(),
