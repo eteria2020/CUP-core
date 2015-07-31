@@ -124,7 +124,7 @@ class Invoices
         $invoice->setCustomer($customer)
             ->setVersion($version)
             ->setType(self::TYPE_FIRST_PAYMENT)
-            ->setInvoiceDate(20150701)//intval(date("Ymd")))
+            ->setInvoiceDate(intval(date("Ymd")))
             ->setAmount($amounts['grand_total_cents']);
 
         $invoiceDate = $invoice->getInvoiceDate();
