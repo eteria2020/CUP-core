@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Repository\InvoicesRepository;
 use SharengoCore\Entity\Invoices;
+use SharengoCore\Service\DatatableService;
 
 class InvoicesService
 {
@@ -23,16 +24,28 @@ class InvoicesService
     private $subscriptionAmount;
 
     /**
+     * @var DatatableService
+     */
+    private $datatableService;
+
+    /**
      * @param EntityRepository $invoicesRepository
      * @param mixed $invoiceConfig
      */
     public function __construct(
         InvoicesRepository $invoicesRepository,
-        $invoiceConfig
+        $invoiceConfig,
+        DatatableService $datatableService
     ) {
         $this->invoicesRepository = $invoicesRepository;
         $this->templateVersion = $invoiceConfig['template_version'];
         $this->subscriptionAmount = $invoiceConfig['subscription_amount'];
+        $this->datatableService = $datatableService;
+    }
+
+    public function getTotalInvoices()
+    {
+        return $this->invoicesRepository->getTotalInvoices();
     }
 
     /**
@@ -91,6 +104,27 @@ class InvoicesService
     }
 
     /**
+     * @param mixed $filters
+     * @return mixed
+     */
+    public function getDataDataTable($filters)
+    {
+        $invoices = $this->datatableService->getData('Invoices', $filters);
+
+        return array_map(function (Invoices $invoice) {
+            return [
+                'e' => [
+                    'invoiceNumber' => $invoice->getInvoiceNumber(),
+                    'invoiceDate' => $invoice->getInvoiceDate(),
+                    'type' => $invoice->getType(),
+                    'amount' => $invoice->getAmount()
+                ],
+                'link' => $this->generateLink($invoice->getId())
+            ];
+        }, $invoices);
+    }
+
+    /**
      * @param integer $amount
      * @return mixed
      */
@@ -119,5 +153,11 @@ class InvoicesService
     private function parseDecimal($decimal)
     {
         return number_format((float) $decimal / 100, 2, ',', '');
+    }
+
+    private function generateLink($id)
+    {
+        // TODO get correct path (needs route in Core)
+        return 'path/' . $id;
     }
 }

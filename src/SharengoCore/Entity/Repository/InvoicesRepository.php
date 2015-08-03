@@ -4,6 +4,13 @@ namespace SharengoCore\Entity\Repository;
 
 class InvoicesRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getTotalInvoices()
+    {
+        $em = $this->getEntityManager();
+        $query = $em->createQuery('SELECT COUNT(c.id) FROM \SharengoCore\Entity\Invoices c');
+        return $query->getSingleScalarResult();
+    }
+
     /**
      * @param Customers $customer
      * @return mixed
