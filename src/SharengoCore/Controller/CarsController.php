@@ -60,6 +60,7 @@ class CarsController extends AbstractRestfulController
             $car = $car->toArray($this->hydrator);
             $car = $this->setCarReservation($car);
             $car = $this->setCarBusy($car);
+            $car = $this->setCarMinutesSinceLastTrip($car);
             array_push($returnCars, $car);
         }
 
@@ -72,6 +73,7 @@ class CarsController extends AbstractRestfulController
         $car = $car->toArray($this->hydrator);
         $car = $this->setCarReservation($car);
         $car = $this->setCarBusy($car);
+        $car = $this->setCarMinutesSinceLastTrip($car);
 
         return new JsonModel($this->buildReturnData(200, '', $car));
     }
@@ -95,6 +97,21 @@ class CarsController extends AbstractRestfulController
     {
         $reservations = $this->tripsService->getTripsByPlateNotEnded($car['plate']);
         $car['busy'] = !empty($reservations);
+        return $car;
+    }
+
+    /**
+     * @param Cars
+     * @return Cars
+     */
+    private function setCarMinutesSinceLastTrip($car)
+    {
+        $lastTrip = $this->tripsService->getLastTrip($car['plate']);
+        $minutesSinceLastTrip = null;
+        if ($lastTrip != null) {
+            $minutesSinceLastTrip = (integer) ((time() - $lastTrip->getTimestampEnd()->getTimestamp()) / 60);
+        }
+        $car['sinceLastTrip'] = $minutesSinceLastTrip;
         return $car;
     }
 

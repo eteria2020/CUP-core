@@ -88,4 +88,19 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         //$query->setMaxResults(10);
         return $query->getResult();
     }
+
+    public function findLastTrip($plate)
+    {
+        $dql = "SELECT t
+        FROM \SharengoCore\Entity\Trips t
+        WHERE t.car = :plate
+        AND t.timestampEnd IS NOT NULL
+        ORDER BY t.timestampEnd DESC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('plate', $plate);
+        $query->setMaxResults(1);
+
+        return $query->getOneOrNullResult();
+    }
 }
