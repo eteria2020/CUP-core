@@ -191,6 +191,12 @@ return [
     'invoice' => [
         'template_version' => '1',
         'subscription_amount' => 1000
-    ]
+    ],
+
+    'asset_manager' => [
+        'resolver_configs' => [
+            __DIR__ . '/../public',
+        ]
+    ],
 
 ];

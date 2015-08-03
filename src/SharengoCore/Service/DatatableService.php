@@ -41,15 +41,6 @@ class DatatableService
 
         $query = $this->entityManager->createQuery();
 
-        // query an id parameter
-        if(!empty($options['idColumn']) &&
-           !empty($options['idValue'])
-        ) {
-            $dql .= 'JOIN ' . $options['idColumn'] . ' e2 WHERE e2.id = :idValue ';
-            $as_parameters['idValue'] = $options['idValue'];
-            $where = true;
-        }
-
         if ($options['column'] != 'select' &&
             !empty($options['searchValue']) &&
             !empty($options['column'])
@@ -57,19 +48,38 @@ class DatatableService
 
             // if there is a selected filter, we apply it to the query
             $checkIdColumn = strpos($options['column'], 'id');
-            $withAndWhere = $where ? 'AND ' : 'WHERE ';
 
             if ($options['column'] == 'id' || $checkIdColumn) {
-                $dql .= $withAndWhere . $options['column'] . ' = :id ';
+                $dql .= 'WHERE ' . $options['column'] . ' = :id ';
                 $as_parameters['id'] = (int)$options['searchValue'];
                 $where = true;
 
             } else {
                 $value = strtolower("%" . $options['searchValue'] . "%");
-                $dql .= $withAndWhere . 'LOWER(' . $options['column'] . ') LIKE :value ';
+                $dql .= 'WHERE LOWER(' . $options['column'] . ') LIKE :value ';
                 $as_parameters['value'] = $value;
                 $where = true;
             }
+        }
+
+        // query a fixed parameter
+        if(!empty($options['fixedColumn']) &&
+           !empty($options['fixedValue']) &&
+           !empty($options['fixedLike']) &&
+           !empty($options['fixedId'])
+        ) {
+            $withAndWhere = $where ? 'AND ' : 'WHERE ';
+            $dql .= $withAndWhere . $options['fixedColumn'] . ' ';
+            if ($options['fixedValue'] != null) {
+                $dql .= ($options['fixedLike'] == 'true' ? 'LIKE ' : '= ') .
+                ':fixedValue ';
+                $as_parameters['fixedValue'] = $options['fixedId'] == 'true' ?
+                    (int)$options['fixedValue'] :
+                    $options['fixedValue'];
+            } else {
+                $dql .= 'IS NULL ';
+            }
+            $where = true;
         }
 
         //query with null
