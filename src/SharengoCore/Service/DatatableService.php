@@ -41,6 +41,15 @@ class DatatableService
 
         $query = $this->entityManager->createQuery();
 
+        // query an id parameter
+        if(!empty($options['idColumn']) &&
+           !empty($options['idValue'])
+        ) {
+            $dql .= 'JOIN ' . $options['idColumn'] . ' e2 WHERE e2.id = :idValue ';
+            $as_parameters['idValue'] = $options['idValue'];
+            $where = true;
+        }
+
         if ($options['column'] != 'select' &&
             !empty($options['searchValue']) &&
             !empty($options['column'])
@@ -48,15 +57,16 @@ class DatatableService
 
             // if there is a selected filter, we apply it to the query
             $checkIdColumn = strpos($options['column'], 'id');
+            $withAndWhere = $where ? 'AND ' : 'WHERE ';
 
             if ($options['column'] == 'id' || $checkIdColumn) {
-                $dql .= 'WHERE ' . $options['column'] . ' = :id ';
+                $dql .= $withAndWhere . $options['column'] . ' = :id ';
                 $as_parameters['id'] = (int)$options['searchValue'];
                 $where = true;
 
             } else {
                 $value = strtolower("%" . $options['searchValue'] . "%");
-                $dql .= 'WHERE LOWER(' . $options['column'] . ') LIKE :value ';
+                $dql .= $withAndWhere . 'LOWER(' . $options['column'] . ') LIKE :value ';
                 $as_parameters['value'] = $value;
                 $where = true;
             }
