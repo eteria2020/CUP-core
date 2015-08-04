@@ -29,12 +29,8 @@ class DatatableService
     /**
      * @inheritdoc
      */
-    public function getData($entity, array $options, DatatableQueryBuilderInterface $interface = null)
+    public function getData($entity, array $options)
     {
-        if(!is_null($interface)) {
-            $this->setQueryBuilder($interface);
-        }
-
         $select = $this->queryBuilder->select();
         $join = $this->queryBuilder->join();
 
@@ -139,7 +135,7 @@ class DatatableService
         }
 
         $query->setDql($dql);
-
+        
         return $query->getResult();
     }
 

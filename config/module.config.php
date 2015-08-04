@@ -220,7 +220,7 @@ return [
         ],
         'shared' => [
             'SharengoCore\Service\TripCostComputerService' => false,
-            'SharengoCore\Service\DatatableService' => false
+            'SharengoCore\Service\DatatableService' => false,
         ]
     ],
 

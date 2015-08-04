@@ -78,17 +78,19 @@ class CardsService
 
     public function getDataDataTable(array $as_filters = [])
     {
-        $cards = $this->datatableService->getData('Cards', $as_filters, new Basic());
+        $cards = $this->datatableService->getData('Cards', $as_filters);
 
         return array_map(function (Cards $card) {
             return [
                 'e' => [
                     'rfid'       => $card->getRfid(),
                     'code'       => $card->getCode(),
-                    'isAssigned' => $card->getIsAssigned(),
+                    'isAssigned' => $card->getIsAssigned() ? 'Si' : 'No',
                     'notes'      => $card->getNotes(),
-                    'assignable' => $card->getAssignable(),
-                    'customer'   => is_object($card->getCustomer()) ? $card->getCustomer()->getName() .' '. $card->getCustomer()->getSurname() : ''
+                    'assignable' => $card->getAssignable() ? 'Si' : 'No',
+                ],
+                'cu' => [
+                    'surname'   => is_object($card->getCustomer()) ? $card->getCustomer()->getSurname() .' '. $card->getCustomer()->getName() : ''
                 ]
             ];
         }, $cards);
