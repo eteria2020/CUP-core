@@ -65,17 +65,14 @@ class DatatableService
         // query a fixed parameter
         if(!empty($options['fixedColumn']) &&
            !empty($options['fixedValue']) &&
-           !empty($options['fixedLike']) &&
-           !empty($options['fixedId'])
+           !empty($options['fixedLike'])
         ) {
             $withAndWhere = $where ? 'AND ' : 'WHERE ';
             $dql .= $withAndWhere . $options['fixedColumn'] . ' ';
             if ($options['fixedValue'] != null) {
                 $dql .= ($options['fixedLike'] == 'true' ? 'LIKE ' : '= ') .
                 ':fixedValue ';
-                $as_parameters['fixedValue'] = $options['fixedId'] == 'true' ?
-                    (int)$options['fixedValue'] :
-                    $options['fixedValue'];
+                $as_parameters['fixedValue'] = $options['fixedValue'];
             } else {
                 $dql .= 'IS NULL ';
             }
@@ -142,7 +139,7 @@ class DatatableService
     }
 
     /**
-     * @ret DatatableQueryBuilderInterface
+     * @return DatatableQueryBuilderInterface
      */
     public function getQueryBuilder()
     {
