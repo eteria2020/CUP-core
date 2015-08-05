@@ -6,6 +6,7 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Authentication\AuthenticationService;
+use Zend\Http\Response;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Invoices;
 use SharengoCore\Entity\Webuser;
@@ -57,7 +58,9 @@ class PdfController extends AbstractActionController
                 return $this->generatePdfFromInvoice($invoice);
             }
         }
-        return new JsonModel([]);
+        $response = new Response();
+        $response->setStatusCode(403);
+        return $response;
     }
 
     private function generatePdfFromInvoice(Invoices $invoice)
