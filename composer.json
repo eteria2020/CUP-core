@@ -4,10 +4,7 @@
     "require": {
         "php": ">=5.4.0",
         "zendframework/zendframework": "2.4.*",
-        "doctrine/doctrine-orm-module": "0.*",
-        "mvlabs/mvlabs-snappy": "0.2.*",
-        "h4cc/wkhtmltopdf-amd64": "0.12.0",
-        "rwoverdijk/assetmanager": "1.*"
+        "doctrine/doctrine-orm-module": "0.*"
     },
     "autoload": {
         "psr-0": {
