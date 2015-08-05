@@ -72,8 +72,6 @@ class PdfController extends AbstractActionController
             'image-quality' => 100
         ]);
 
-        $now = new \DateTime();
-
         $layoutViewModel = $this->layout();
         $layoutViewModel->setTemplate('layout/pdf-layout');
 

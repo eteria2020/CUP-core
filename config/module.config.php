@@ -185,10 +185,11 @@ return [
                 array('controller' => 'SharengoCore\Controller\Reservations', 'roles' => array('user', 'admin', 'callcenter')),
                 array('controller' => 'SharengoCore\Controller\Trips', 'roles' => array('admin', 'callcenter')),
                 array('controller' => 'SharengoCore\Controller\Invoices', 'roles' => array('user')),
-                array('controller' => 'SharengoCore\Controller\Pdf', 'roles' => []),
+                array('controller' => 'SharengoCore\Controller\Pdf', 'roles' => ['user', 'admin']),
             ),
         ),
     ),
+
     'invoice' => [
         'template_version' => '1',
         'subscription_amount' => 1000
@@ -196,7 +197,9 @@ return [
 
     'asset_manager' => [
         'resolver_configs' => [
-            __DIR__ . '/../public',
+            'paths' => [
+                __DIR__ . '/../public',
+            ]
         ]
     ],
 
