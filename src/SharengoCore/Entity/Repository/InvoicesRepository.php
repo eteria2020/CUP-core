@@ -63,4 +63,20 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+
+    public function findTotalDatatableInvoices($column, $value, $like)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT count(e.id)
+        FROM \SharengoCore\Entity\Invoices e
+        WHERE " . $column .
+        (($like == "true") ? " LIKE " : " = ") .
+        ":value";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('value', $value);
+
+        return $query->getSingleScalarResult();
+    }
 }

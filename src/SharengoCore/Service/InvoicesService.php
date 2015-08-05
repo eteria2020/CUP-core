@@ -43,6 +43,9 @@ class InvoicesService
         $this->datatableService = $datatableService;
     }
 
+    /**
+     * @return integer
+     */
     public function getTotalInvoices()
     {
         return $this->invoicesRepository->getTotalInvoices();
@@ -122,6 +125,26 @@ class InvoicesService
                 'link' => $invoice->getId()
             ];
         }, $invoices);
+    }
+
+    /**
+     * @param mixed $filters
+     * @return integer
+     */
+    public function getTotalDatatableInvoices($filters)
+    {
+        if (!empty($filters['fixedColumn']) &&
+            !empty($filters['fixedValue']) &&
+            !empty($filters['fixedLike'])
+        ) {
+            return $this->invoicesRepository->findTotalDatatableInvoices(
+                $filters['fixedColumn'],
+                $filters['fixedValue'],
+                $filters['fixedLike']
+            );
+        } else {
+            return $this->getTotalInvoices();
+        }
     }
 
     /**
