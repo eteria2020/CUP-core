@@ -7,7 +7,7 @@
         "doctrine/doctrine-orm-module": "0.*",
         "mvlabs/mvlabs-snappy": "0.2.*",
         "h4cc/wkhtmltopdf-amd64": "0.12.0",
-        "rwoverdijk/assetmanager": "1.*"
+        "rwoverdijk/assetmanager": "1.4.*"
     },
     "autoload": {
         "psr-0": {
