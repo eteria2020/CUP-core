@@ -190,6 +190,15 @@ return [
         ),
     ),
 
+    'view_manager' => [
+        'template_map' => [
+            'layout/pdf-layout' => __DIR__ . '/../view/layout/layout_pdf.phtml',
+        ],
+        'template_path_stack' => [
+            __DIR__ . '/../view',
+        ],
+    ],
+
     'invoice' => [
         'template_version' => '1',
         'subscription_amount' => 1000
@@ -203,13 +212,11 @@ return [
         ]
     ],
 
-    'view_manager' => [
-        'template_map' => [
-            'layout/pdf-layout' => __DIR__ . '/../view/layout/layout_pdf.phtml',
-        ],
-        'template_path_stack' => [
-            __DIR__ . '/../view',
-        ],
-    ],
+    'mvlabs-snappy' => [
+        'pdf' => [
+           'binary'  => __DIR__ . '/../../../vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltopdf-amd64',
+           'options' => [],
+        ]
+    ]
 
 ];
