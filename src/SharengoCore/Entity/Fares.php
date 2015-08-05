@@ -44,6 +44,8 @@ class Fares
      * the keys MUST be stored in decreasing order for the trip cost algorithm
      * to work correctly
      *
+     * TODO: enforce in the construction the decrescence in this field
+     *
      * @ORM\Column(name="cost_steps", type="string", nullable=false)
      */
     private $costSteps;
