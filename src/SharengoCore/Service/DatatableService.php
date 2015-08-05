@@ -62,6 +62,23 @@ class DatatableService
             }
         }
 
+        // query a fixed parameter
+        if(!empty($options['fixedColumn']) &&
+           !empty($options['fixedValue']) &&
+           !empty($options['fixedLike'])
+        ) {
+            $withAndWhere = $where ? 'AND ' : 'WHERE ';
+            $dql .= $withAndWhere . $options['fixedColumn'] . ' ';
+            if ($options['fixedValue'] != null) {
+                $dql .= ($options['fixedLike'] == 'true' ? 'LIKE ' : '= ') .
+                ':fixedValue ';
+                $as_parameters['fixedValue'] = $options['fixedValue'];
+            } else {
+                $dql .= 'IS NULL ';
+            }
+            $where = true;
+        }
+
         //query with null
         if ($options['column'] != 'select' &&
             isset($options['columnNull']) &&
@@ -122,7 +139,7 @@ class DatatableService
     }
 
     /**
-     * @ret DatatableQueryBuilderInterface
+     * @return DatatableQueryBuilderInterface
      */
     public function getQueryBuilder()
     {

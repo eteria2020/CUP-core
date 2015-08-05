@@ -98,6 +98,29 @@ return [
                         ],
                     ],
                 ],
+                'pdf' => [
+                    'type' => 'Segment',
+                    'options' => [
+                        'route' => '/pdf',
+                        'defaults' => [
+                            '__NAMESPACE__' => 'SharengoCore\Controller',
+                            'controller' => 'Pdf',
+                            'action'     => 'index',
+                        ]
+                    ],
+                    'may_terminate' => true,
+                    'child_routes' => [
+                        'invoices' => [
+                            'type' => 'Segment',
+                            'options' => [
+                                'route' => '/invoices[/:id]',
+                                'defaults' => [
+                                    'action' => 'index',
+                                ]
+                            ]
+                        ],
+                    ]
+                ],
             ),
         ),
     'controllers' => [
@@ -108,7 +131,8 @@ return [
             'SharengoCore\Controller\Reservations'     => 'SharengoCore\Controller\ReservationsControllerFactory',
             'SharengoCore\Controller\Trips'            => 'SharengoCore\Controller\TripsControllerFactory',
             'SharengoCore\Controller\PublicCars'       => 'SharengoCore\Controller\PublicCarsControllerFactory',
-            'SharengoCore\Controller\Invoices'       => 'SharengoCore\Controller\InvoicesControllerFactory'
+            'SharengoCore\Controller\Invoices' => 'SharengoCore\Controller\InvoicesControllerFactory',
+            'SharengoCore\Controller\Pdf' => 'SharengoCore\Controller\PdfControllerFactory',
         ],
     ],
 
@@ -161,7 +185,38 @@ return [
                 array('controller' => 'SharengoCore\Controller\Reservations', 'roles' => array('user', 'admin', 'callcenter')),
                 array('controller' => 'SharengoCore\Controller\Trips', 'roles' => array('admin', 'callcenter')),
                 array('controller' => 'SharengoCore\Controller\Invoices', 'roles' => array('user')),
+                array('controller' => 'SharengoCore\Controller\Pdf', 'roles' => ['user', 'admin']),
             ),
         ),
     ),
+
+    'view_manager' => [
+        'template_map' => [
+            'layout/pdf-layout' => __DIR__ . '/../view/layout/layout_pdf.phtml',
+        ],
+        'template_path_stack' => [
+            __DIR__ . '/../view',
+        ],
+    ],
+
+    'invoice' => [
+        'template_version' => '1',
+        'subscription_amount' => 1000
+    ],
+
+    'asset_manager' => [
+        'resolver_configs' => [
+            'paths' => [
+                __DIR__ . '/../public',
+            ]
+        ]
+    ],
+
+    'mvlabs-snappy' => [
+        'pdf' => [
+           'binary'  => __DIR__ . '/../../../vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltopdf-amd64',
+           'options' => [],
+        ]
+    ]
+
 ];

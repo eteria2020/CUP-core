@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Repository\InvoicesRepository;
 use SharengoCore\Entity\Invoices;
+use SharengoCore\Service\DatatableService;
 
 class InvoicesService
 {
@@ -23,16 +24,31 @@ class InvoicesService
     private $subscriptionAmount;
 
     /**
+     * @var DatatableService
+     */
+    private $datatableService;
+
+    /**
      * @param EntityRepository $invoicesRepository
      * @param mixed $invoiceConfig
      */
     public function __construct(
         InvoicesRepository $invoicesRepository,
-        $invoiceConfig
+        $invoiceConfig,
+        DatatableService $datatableService
     ) {
         $this->invoicesRepository = $invoicesRepository;
         $this->templateVersion = $invoiceConfig['template_version'];
         $this->subscriptionAmount = $invoiceConfig['subscription_amount'];
+        $this->datatableService = $datatableService;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getTotalInvoices()
+    {
+        return $this->invoicesRepository->getTotalInvoices();
     }
 
     /**
@@ -88,6 +104,47 @@ class InvoicesService
             array_push($returnDates, $date[1]);
         }
         return $returnDates;
+    }
+
+    /**
+     * @param mixed $filters
+     * @return mixed
+     */
+    public function getDataDataTable($filters)
+    {
+        $invoices = $this->datatableService->getData('Invoices', $filters);
+
+        return array_map(function (Invoices $invoice) {
+            return [
+                'e' => [
+                    'invoiceNumber' => $invoice->getInvoiceNumber(),
+                    'invoiceDate' => $invoice->getInvoiceDate(),
+                    'type' => $invoice->getType(),
+                    'amount' => $invoice->getAmount()
+                ],
+                'link' => $invoice->getId()
+            ];
+        }, $invoices);
+    }
+
+    /**
+     * @param mixed $filters
+     * @return integer
+     */
+    public function getTotalDatatableInvoices($filters)
+    {
+        if (!empty($filters['fixedColumn']) &&
+            !empty($filters['fixedValue']) &&
+            !empty($filters['fixedLike'])
+        ) {
+            return $this->invoicesRepository->findTotalDatatableInvoices(
+                $filters['fixedColumn'],
+                $filters['fixedValue'],
+                $filters['fixedLike']
+            );
+        } else {
+            return $this->getTotalInvoices();
+        }
     }
 
     /**
