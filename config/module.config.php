@@ -200,4 +200,16 @@ return [
         ]
     ],
 
+    'view_manager' => [
+        'template_map' => [
+            'layout/pdf-layout' => __DIR__ . '/../view/layout/layout_pdf.phtml',
+        ],
+        'template_path_stack' => [
+            __DIR__ . '/../view',
+        ],
+        'strategies' => [
+            'ViewJsonStrategy',
+        ],
+    ],
+
 ];
