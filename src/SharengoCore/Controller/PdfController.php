@@ -89,7 +89,7 @@ class PdfController extends AbstractActionController
             return $response;
 
         } else {
-            $this->redirect()->toRoute('login');
+            //$this->redirect()->toRoute('login');
         }
     }
 }

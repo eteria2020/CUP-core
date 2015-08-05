@@ -119,7 +119,7 @@ class InvoicesService
                     'type' => $invoice->getType(),
                     'amount' => $invoice->getAmount()
                 ],
-                'link' => $this->generateLink($invoice->getId())
+                'link' => $invoice->getId()
             ];
         }, $invoices);
     }
@@ -153,11 +153,5 @@ class InvoicesService
     private function parseDecimal($decimal)
     {
         return number_format((float) $decimal / 100, 2, ',', '');
-    }
-
-    private function generateLink($id)
-    {
-        // TODO get correct path (needs route in Core)
-        return 'path/' . $id;
     }
 }
