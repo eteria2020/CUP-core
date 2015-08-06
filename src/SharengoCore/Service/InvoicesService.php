@@ -5,6 +5,7 @@ namespace SharengoCore\Service;
 use SharengoCore\Entity\Repository\InvoicesRepository;
 use SharengoCore\Entity\Invoices;
 use SharengoCore\Service\DatatableService;
+use SharengoCore\Entity\Customers;
 
 class InvoicesService
 {
@@ -29,6 +30,11 @@ class InvoicesService
     private $datatableService;
 
     /**
+     * @var integer
+     */
+    private $ivaPercentage;
+
+    /**
      * @param EntityRepository $invoicesRepository
      * @param mixed $invoiceConfig
      */
@@ -40,6 +46,7 @@ class InvoicesService
         $this->invoicesRepository = $invoicesRepository;
         $this->templateVersion = $invoiceConfig['template_version'];
         $this->subscriptionAmount = $invoiceConfig['subscription_amount'];
+        $this->ivaPercentage = $invoiceConfig['iva_percentage'];
         $this->datatableService = $datatableService;
     }
 
@@ -61,15 +68,35 @@ class InvoicesService
     }
 
     /**
-     * @param \SharengoCore\Entity\Customers
+     * @param Customers
      * @return Invoices
      */
-    public function prepareInvoiceForFirstPayment($customer)
+    public function prepareInvoiceForFirstPayment(Customers $customer)
     {
         return Invoices::createInvoiceForFirstPayment(
             $customer,
             $this->templateVersion,
             $this->calculateAmountsWithTaxesFromTotal($this->subscriptionAmount)
+        );
+    }
+
+    /**
+     * @param Customers
+     * @param mixed $tripPayments
+     * @return Invoices
+     */
+    public function prepareInvoiceForTrips(Customers $customer, $tripPayments)
+    {
+        $total = 0;
+        foreach ($tripPayments as $tripPayment) {
+            $total += $tripPayment->getTotalCost();
+        }
+
+        return Invoices::createInvoiceForTrips(
+            $customer,
+            $tripPayments,
+            $this->templateVersion,
+            $this->calculateAmountsWithTaxesFromTotal($total)
         );
     }
 
@@ -158,7 +185,7 @@ class InvoicesService
         $amounts = [];
 
         // calculate amounts
-        $iva = (integer) ($amount / 122 * 22);
+        $iva = (integer) ($amount / 122 * $this->ivaPercentage);
         $total = $amount - $iva;
 
         // format amounts
