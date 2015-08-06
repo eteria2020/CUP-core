@@ -66,7 +66,7 @@ class InvoicesService
 
     /**
      * @param Customers
-     * @param mixed $tripPayments
+     * @param TripPayments[] $tripPayments
      * @return Invoices
      */
     public function prepareInvoiceForTrips(Customers $customer, $tripPayments)

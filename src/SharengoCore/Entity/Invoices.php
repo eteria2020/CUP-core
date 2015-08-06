@@ -208,7 +208,7 @@ class Invoices
 
     /**
      * @param Customers $customer
-     * @param mixed $tripPayments
+     * @param TripPayments[] $tripPayments
      * @param integer $version
      * @param mixed $amounts
      * @return Invoices
