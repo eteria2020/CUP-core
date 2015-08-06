@@ -367,25 +367,10 @@ class AccountTripsService
      */
     private function billTrip(Trips $trip)
     {
-        list($price, $vat) = $this->computeCost($trip);
-        $trip->setPriceCent($price);
-        $trip->setVatCent($vat);
-
         $billTrip = TripBills::createFromTrip($trip);
         $billTrip->setTrip($this->originalTrip);
 
         $this->entityManager->persist($billTrip);
         $this->entityManager->flush();
-    }
-
-    /**
-     * computes the cost of a trip
-     *
-     * @param Trips $trip
-     * @retun array
-     */
-    private function computeCost(Trips $trip)
-    {
-        return [0, 0]; //TODO: fix this
     }
 }

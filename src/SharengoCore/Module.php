@@ -25,6 +25,7 @@ class Module
         $platform->registerDoctrineTypeMapping('jsonb', 'string');
         $platform->registerDoctrineTypeMapping('reservations_archive_reason', 'string');
         $platform->registerDoctrineTypeMapping('invoice_type', 'string');
+        $platform->registerDoctrineTypeMapping('trip_payment_status', 'string');
     }
 
     /**
