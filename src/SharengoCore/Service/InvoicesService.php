@@ -120,7 +120,9 @@ class InvoicesService
                     'invoiceNumber' => $invoice->getInvoiceNumber(),
                     'invoiceDate' => $invoice->getInvoiceDate(),
                     'type' => $invoice->getType(),
-                    'amount' => $invoice->getAmount()
+                    'amount' => $invoice->getAmount(),
+                    'customerName' => $invoice->getCustomer()->getName(),
+                    'customerSurname' => $invoice->getCustomer()->getSurname()
                 ],
                 'link' => $invoice->getId()
             ];
