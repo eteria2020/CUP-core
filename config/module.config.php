@@ -214,7 +214,7 @@ return [
 
     'mvlabs-snappy' => [
         'pdf' => [
-           'binary'  => __DIR__ . '/../../../vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltopdf-amd64',
+           'binary'  => __DIR__ . '/../../../../vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltopdf-amd64',
            'options' => [],
         ]
     ]
