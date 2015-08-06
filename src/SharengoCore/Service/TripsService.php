@@ -180,4 +180,19 @@ class TripsService
     {
         return $this->tripRepository->findLastTrip($plate);
     }
+
+    public function getTripsByUsersInGoldList()
+    {
+        return $this->tripRepository->findTripsByUsersInGoldList();
+    }
+
+    public function setTripsAsNotPayable($tripIds)
+    {
+        return $this->tripRepository->updateTripsPayable($tripIds, false);
+    }
+
+    public function setTripAsNotPayable(Trips $trip)
+    {
+        return $this->setTripsAsNotPayable([$trip->getId()]);
+    }
 }

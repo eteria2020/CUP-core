@@ -157,7 +157,8 @@ return [
             'SharengoCore\Service\BonusService'        => 'SharengoCore\Service\BonusServiceFactory',
             'SharengoCore\Service\AccountTripsService' => 'SharengoCore\Service\AccountTripsServiceFactory',
             'SharengoCore\Service\CommandsService'     => 'SharengoCore\Service\CommandsServiceFactory',
-            'SharengoCore\Service\Invoices' => 'SharengoCore\Service\InvoicesServiceFactory'
+            'SharengoCore\Service\Invoices' => 'SharengoCore\Service\InvoicesServiceFactory',
+            'SharengoCore\Service\AccountedTripsService' => 'SharengoCore\Service\AccountedTripsServiceFactory'
         ]
     ],
     'doctrine'        => [

@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * TripBills
  *
  * @ORM\Table(name="trip_bills")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\TripBillsRepository")
  */
 class TripBills
 {
@@ -42,13 +42,6 @@ class TripBills
     private $minutes = 0;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="cost", type="integer", nullable= false)
-     */
-    private $cost = 0;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(name="timestamp_beginning", type="datetimetz", nullable=false)
@@ -76,7 +69,6 @@ class TripBills
         return (new TripBills())
             ->setTrip($trip)
             ->setMinutes($interval->minutes())
-            ->setCost($trip->getPriceCent() + $trip->getVatCent())
             ->setTimestampBeginning($trip->getTimestampBeginning())
             ->setTimestampEnd($trip->getTimestampEnd());
     }
@@ -113,30 +105,6 @@ class TripBills
     public function getMinutes()
     {
         return $this->minutes;
-    }
-
-    /**
-     * Set cost
-     *
-     * @param integer $cost
-     *
-     * @return TripBills
-     */
-    public function setCost($cost)
-    {
-        $this->cost = $cost;
-
-        return $this;
-    }
-
-    /**
-     * Get cost
-     *
-     * @return integer
-     */
-    public function getCost()
-    {
-        return $this->cost;
     }
 
     /**

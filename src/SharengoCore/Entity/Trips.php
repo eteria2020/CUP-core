@@ -150,20 +150,6 @@ class Trips
     private $payable = true;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="price_cent", type="integer", nullable=false)
-     */
-    private $priceCent;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="vat_cent", type="integer", nullable=false)
-     */
-    private $vatCent;
-
-    /**
      * @var \Cars
      *
      * @ORM\ManyToOne(targetEntity="Cars")
@@ -635,54 +621,6 @@ class Trips
     }
 
     /**
-     * Set priceCent
-     *
-     * @param integer $priceCent
-     *
-     * @return Trips
-     */
-    public function setPriceCent($priceCent)
-    {
-        $this->priceCent = $priceCent;
-
-        return $this;
-    }
-
-    /**
-     * Get priceCent
-     *
-     * @return integer
-     */
-    public function getPriceCent()
-    {
-        return $this->priceCent;
-    }
-
-    /**
-     * Set vatCent
-     *
-     * @param integer $vatCent
-     *
-     * @return Trips
-     */
-    public function setVatCent($vatCent)
-    {
-        $this->vatCent = $vatCent;
-
-        return $this;
-    }
-
-    /**
-     * Get vatCent
-     *
-     * @return integer
-     */
-    public function getVatCent()
-    {
-        return $this->vatCent;
-    }
-
-    /**
      * Set car
      *
      * @param \SharengoCore\Entity\Cars $car
@@ -777,4 +715,14 @@ class Trips
         return $extractedTrip;
     }
 
+    /**
+     * checks if a trip should be accounted
+     * For the moment this checks only if the user is in gold list
+     *
+     * @return boolean
+     */
+    public function isAccountable()
+    {
+        return !$this->getCustomer()->getGoldList();
+    }
 }

@@ -103,4 +103,33 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getOneOrNullResult();
     }
+
+    public function findTripsByUsersInGoldList()
+    {
+        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
+            "JOIN t.customer c ".
+            "WHERE c.goldList = true";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        return $query->getResult();
+    }
+
+    /**
+     * update the payable field of the selected trips
+     *
+     * @param int[] an array of trip Ids
+     * @param boolean wether to set the trips payable or not
+     */
+    public function updateTripsPayable($tripIds, $payable)
+    {
+        $dql = "UPDATE \SharengoCore\Entity\Trips t ".
+            "SET t.payable = :payable ".
+            "WHERE t.id IN (:tripIds)";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('payable', $payable);
+        $query->setParameter('tripIds', $tripIds);
+
+        return $query->execute();
+    }
 }

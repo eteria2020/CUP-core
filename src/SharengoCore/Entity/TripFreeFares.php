@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * TripFreeFares
  *
  * @ORM\Table(name="trip_free_fares")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\TripFreeFaresRepository")
  */
 class TripFreeFares
 {
