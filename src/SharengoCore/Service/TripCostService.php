@@ -4,8 +4,11 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripPayments;
+use SharengoCore\Entity\TripPaymentTries;
 use SharengoCore\Entity\Customers;
 use Cartasi\Service\CartasiContractsService;
+use Cartasi\Entity\Repository\TransactionsRepository;
+use Cartasi\Entity\Transactions;
 
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\EntityManager;
@@ -47,9 +50,29 @@ class TripCostService
     private $cartasiContractsService;
 
     /**
+     * @var TransactionsRepository
+     */
+    private $transactionsRepository;
+
+    /**
      * @var array
      */
     private $websiteConfig;
+
+    /**
+     * @var EmailService
+     */
+    private $emailService;
+
+    /**
+     * @var boolean
+     */
+    private $avoidEmail = true;
+
+    /**
+     * @var boolean
+     */
+    private $avoidCartasi = true;
 
     public function __construct(
         FaresService $faresService,
@@ -58,7 +81,9 @@ class TripCostService
         Client $httpClient,
         Url $url,
         CartasiContractsService $cartasiContractsService,
-        array $websiteConfig
+        TransactionsRepository $transactionsRepository,
+        array $websiteConfig,
+        EmailService $emailService
     ) {
         $this->faresService = $faresService;
         $this->tripFaresService = $tripFaresService;
@@ -66,17 +91,30 @@ class TripCostService
         $this->httpClient = $httpClient;
         $this->url = $url;
         $this->cartasiContractsService = $cartasiContractsService;
+        $this->transactionsRepository = $transactionsRepository;
         $this->websiteConfig = $websiteConfig;
+        $this->emailService = $emailService;
     }
 
     /**
      * process a trip to compute its cost and writes it to database in the
      * trip_payments and the trip_payments_tries tables
+     * the three boolean parameters allow the run the function without side effects
      *
      * @param Trips $trip
+     * @param boolean $avoidPersistance
+     * @param boolean $avoidEmail
+     * @param boolean $avoidCartasi
      */
-    public function computeTripCost(Trips $trip)
-    {
+    public function computeTripCost(
+        Trips $trip,
+        $avoidCartasi = true,
+        $avoidPersistance = true,
+        $avoidEmail = true
+    ) {
+        $this->avoidEmail = $avoidEmail;
+        $this->avoidCartasi = $avoidCartasi;
+
         $tripPayment = $this->retrieveTripCost($trip);
 
         $this->entityManager->getConnection()->beginTransaction();
@@ -87,10 +125,14 @@ class TripCostService
             if ($trip->canBePayed()) {
                 $this->tryTripPayment($trip->getCustomer(), $tripPayment);
             } else {
-                $this->notifyUserHeHasToPay($trip->getCustomer());
+                $this->notifyCustomerHeHasToPay($trip->getCustomer());
             }
 
-            $this->entityManager->getConnection()->commit();
+            if (!$avoidPersistance) {
+                $this->entityManager->getConnection()->commit();
+            } else {
+                $this->entityManager->getConnection()->rollback();
+            }
         } catch (\Exception $e) {
             $this->entityManager->getConnection()->rollback();
             throw $e;
@@ -159,7 +201,7 @@ class TripCostService
     /**
      * persists the newly created tripPayment record
      *
-     * @param TripPayment $tripPayment
+     * @param TripPayments $tripPayment
      */
     private function saveTripPayment(TripPayments $tripPayment)
     {
@@ -175,7 +217,18 @@ class TripCostService
      */
     private function tryTripPayment(Customers $customer, TripPayments $tripPayment)
     {
-        $this->sendPaymentRequest($customer, $tripPayment->getTotalCost());
+        $response = $this->sendPaymentRequest($customer, $tripPayment->getTotalCost());
+
+        if ($response->completedCorrectly) {
+            $this->markTripAsPayed($tripPayment);
+        } else {
+            $this->unpayableConsequences($customer, $tripPayment);
+        }
+
+        $tripPaymentTry = new TripPaymentTries($tripPayment, $response->outcome, $response->transaction);
+
+        $this->entityManager->persist($tripPaymentTry);
+        $this->entityManager->flush();
     }
 
     /**
@@ -188,10 +241,15 @@ class TripCostService
      */
     private function sendPaymentRequest(Customers $customer, $amount)
     {
+        $ret = new \StdClass;
+        $ret->completedCorrectly = false;
+        $ret->outcome = 'KO';
+        $ret->transaction = null;
+
         $contractNumber = $this->cartasiContractsService->getCartasiContractNumber($customer);
 
         if (!$contractNumber) {
-            return false;
+            return $ret;
         }
 
         $uri = new HttpUri($this->websiteConfig['uri']);
@@ -211,9 +269,83 @@ class TripCostService
         $request = new Request();
         $request->setUri($url);
 
-        $response = $this->httpClient->send($request);var_dump($response); die;
+        if (!$this->avoidCartasi) {
+            $response = $this->httpClient->send($request);
 
-        return true;
+
+            if ($response->getstatusCode() === 200) {
+                $parsedBody = json_decode($response->getBody());
+
+                $ret->outcome = $parsedBody->outcome;
+                $ret->completedCorrectly = ($ret->outcome === 'OK');
+                $ret->transaction = $this->transactionsRepository->findOneById($parsedBody->codTrans);
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
+     * @param TripsPayments $tripPayment
+     */
+    private function markTripAsPayed(TripPayments $tripPayment)
+    {
+        $tripPayment->setPayedCorrectly();
+
+        $this->entityManager->persist($tripPayment);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * If the payment of a trip does not complete correctly we:
+     * - disable the customer
+     * - trip payment set as not payed
+     * - send mail to notify customer
+     *
+     * @param Customers $customer
+     * @param Transactions $transaction
+     */
+    private function unpayableConsequences(Customers $customer, TripPayments $tripPayment)
+    {
+        // disable the customer
+        $customer->disable();
+
+        $this->entityManager->persist($customer);
+
+        // set the trip payment as wrong payment
+        $tripPayment->setWrongPayment();
+
+        $this->entityManager->persist($tripPayment);
+        $this->entityManager->flush();
+
+        //notify the customer
+        $this->notifyCustomerOfWrongPayment($customer, $tripPayment);
+    }
+
+    /**
+     * @param Customers $customer
+     * @param Transactions $transaction
+     */
+    private function notifyCustomerOfWrongPayment(Customers $customer, TripPayments $tripPayment)
+    {
+        $content = sprintf(
+            file_get_contents(__DIR__.'/../../../view/emails/wrong-payment-it_IT.html'),
+            $customer->getName(),
+            $customer->getSurname()
+        );
+
+        $attachments = [
+            'bannerphono.jpg' => __DIR__.'/../../../../../public/images/bannerphono.jpg'
+        ];
+
+        if (!$this->avoidEmail) {
+            $this->emailService->sendEmail(
+                'pasafama@gmail.com', //$customer->getEmail(),
+                'SHARENGO - ERRORE NEL PAGAMENTO',
+                $content,
+                $attachments
+            );
+        }
     }
 
     /**
@@ -221,8 +353,28 @@ class TripCostService
      *
      * @param Customers $customer
      */
-    private function notifyUserHeHasToPay(Customers $customer)
+    private function notifyCustomerHeHasToPay(Customers $customer)
     {
+        $link = ''; //TODO: retrieve correct link for first payment
 
+        $content = sprintf(
+            file_get_contents(__DIR__.'/../../../view/emails/first-payment-request-it_IT.html'),
+            $customer->getName(),
+            $customer->getSurname(),
+            $link
+        );
+
+        $attachments = [
+            'bannerphono.jpg' => __DIR__.'/../../../../../public/images/bannerphono.jpg'
+        ];
+
+        if (!$this->avoidEmail) {
+            $this->emailService->sendEmail(
+                'pasafama@gmail.com', //$customer->getEmail(),
+                'SHARENGO - RICHIESTA DI PRIMO PAGAMENTO',
+                $content,
+                $attachments
+            );
+        }
     }
 }

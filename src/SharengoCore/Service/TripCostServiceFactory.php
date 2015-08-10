@@ -16,8 +16,10 @@ class TripCostServiceFactory implements FactoryInterface
         $httpClient = new Client();
         $url = $serviceLocator->get('ViewHelperManager')->get('Url');
         $cartasiContractsService = $serviceLocator->get('Cartasi\Service\CartasiContracts');
+        $cartasiTransactionsRepository = $entityManager->getRepository('\Cartasi\Entity\Transactions');
         $config = $serviceLocator->get('Config');
         $websiteConfig = $config['website'];
+        $emailService = $serviceLocator->get('SharengoCore\Service\EmailService');
 
         return new TripCostService(
             $faresService,
@@ -26,7 +28,9 @@ class TripCostServiceFactory implements FactoryInterface
             $httpClient,
             $url,
             $cartasiContractsService,
-            $websiteConfig
+            $cartasiTransactionsRepository,
+            $websiteConfig,
+            $emailService
         );
     }
 }

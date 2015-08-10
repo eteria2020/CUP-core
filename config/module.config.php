@@ -164,6 +164,7 @@ return [
             'SharengoCore\Service\FaresService' => 'SharengoCore\Service\FaresServiceFactory',
             'SharengoCore\Service\TripPaymentsService' => 'SharengoCore\Service\TripPaymentsServiceFactory',
             'SharengoCore\Service\SimpleLoggerService' => 'SharengoCore\Service\SimpleLoggerServiceFactory'
+            'SharengoCore\Service\EmailService' => 'SharengoCore\Service\EmailServiceFactory'
         ]
     ],
     'doctrine'        => [

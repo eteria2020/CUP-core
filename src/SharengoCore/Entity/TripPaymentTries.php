@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity;
 
+use Cartasi\Entity\Transactions;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -61,8 +63,16 @@ class TripPaymentTries
      *
      * @ORM\ManyToOne(targetEntity="Cartasi\Entity\Transactions")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id", nullable=false)
+     *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id", nullable=true)
      * })
      */
     private $transaction;
+
+    public function __construct(TripPayments $tripPayment, $outcome, Transactions $transaction = null)
+    {
+        $this->tripPayment = $tripPayment;
+        $this->outcome = $outcome;
+        $this->transaction = $transaction;
+        $this->ts = date_create(date('Y-m-d H:i:s'));
+    }
 }
