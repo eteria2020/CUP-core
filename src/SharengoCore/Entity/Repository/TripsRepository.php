@@ -132,4 +132,23 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->execute();
     }
+
+    /**
+     * selects the trips that are already accounted but still need to be
+     * processed for the cost computation
+     * At the moment this means that the trip isAccounted but has not a linked
+     * record in the trip_payments table
+     *
+     * @return Trips[]
+     */
+    public function findTripsForCostComputation()
+    {
+        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
+            "LEFT JOIN t.tripPayments tp ".
+            "WHERE t.isAccounted = true ".
+            "AND tp.id IS NULL";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        return $query->getResult();
+    }
 }

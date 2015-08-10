@@ -176,6 +176,20 @@ class Trips
      */
     private $isAccounted = false;
 
+    /**
+     * @var TripPayments
+     *
+     * @ORM\OneToMany(targetEntity="TripPayments", mappedBy="trip")
+     */
+    private $tripPayments;
+
+    /**
+     * @var TripBills
+     *
+     * @ORM\OneToMany(targetEntity="TripBills", mappedBy="trip")
+     */
+    private $tripBills;
+
 
 
     /**
@@ -693,6 +707,16 @@ class Trips
     }
 
     /**
+     * Get trip bills
+     *
+     * @return TripBills[]
+     */
+    public function getTripBills()
+    {
+        return $this->tripBills;
+    }
+
+    /**
      * @param DoctrineHydrator
      * @return mixed[]
      */
@@ -723,6 +747,28 @@ class Trips
      */
     public function isAccountable()
     {
-        return !$this->getCustomer()->getGoldList();
+        return !$this->customer->getGoldList();
+    }
+
+    /**
+     * retrieve the discount percentage applied to the trip. At the moment it
+     * depends uniquely on the customer
+     *
+     * @return int
+     */
+    public function getDiscountPercentage()
+    {
+        return $this->customer->getDiscountRate();
+    }
+
+    /**
+     * determines if we ca try to pay the trip.
+     * At the moment it checks if the customer already copleted the firt payment
+     *
+     * @return boolean
+     */
+    public function canBePayed()
+    {
+        return $this->customer->getFirstPaymentCompleted();
     }
 }

@@ -76,7 +76,7 @@ class TripPayments
      *
      * @ORM\ManyToOne(targetEntity="Invoices")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="invoice_id", referencedColumnName="id", nullable=false)
+     *   @ORM\JoinColumn(name="invoice_id", referencedColumnName="id", nullable=true)
      * })
      */
     private $invoice;
@@ -102,19 +102,49 @@ class TripPayments
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="payed_successfully_at", type="datetime", nullable=false)
+     * @ORM\Column(name="payed_successfully_at", type="datetime", nullable=true)
      */
     private $payedSuccessfullyAt;
 
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="invoiced_at", type="datetime", nullable=false)
+     * @ORM\Column(name="invoiced_at", type="datetime", nullable=true)
      */
     private $invoicedAt;
 
-    public function __construct()
-    {
+    /**
+     * @param Trips $trip
+     * @param fares $fare
+     * @param int $tripMinutes
+     * @param int $parkingMinutes
+     * @param int $discountPercentage
+     * @param int $totalCost
+     * @return TripPayments
+     */
+    public function __construct(
+        Trips $trip,
+        Fares $fare,
+        $tripMinutes,
+        $parkingMinutes,
+        $discountPercentage,
+        $totalCost
+    ) {
+        $this->trip = $trip;
+        $this->fare = $fare;
+        $this->tripMinutes = $tripMinutes;
+        $this->parkingMinutes = $parkingMinutes;
+        $this->discountPercentage = $discountPercentage;
+        $this->totalCost = $totalCost;
+        $this->status = 'not_payed';
         $this->createdAt = date_create(date('Y-m-d H:i:s'));
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalCost()
+    {
+        return $this->totalCost;
     }
 }
