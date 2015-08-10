@@ -6,6 +6,9 @@ use SharengoCore\Entity\Repository\InvoicesRepository;
 use SharengoCore\Entity\Invoices;
 use SharengoCore\Service\DatatableService;
 use SharengoCore\Entity\Customers;
+use SharengoCore\Service\SimpleLoggerService as Logger;
+
+use Doctrine\ORM\EntityManager;
 
 class InvoicesService
 {
@@ -35,19 +38,33 @@ class InvoicesService
     private $ivaPercentage;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
+     * @var EntityManager
+     */
+    private $entityManager;
+
+    /**
      * @param EntityRepository $invoicesRepository
      * @param mixed $invoiceConfig
      */
     public function __construct(
         InvoicesRepository $invoicesRepository,
-        $invoiceConfig,
-        DatatableService $datatableService
+        DatatableService $datatableService,
+        EntityManager $entityManager,
+        Logger $logger,
+        $invoiceConfig
     ) {
         $this->invoicesRepository = $invoicesRepository;
+        $this->datatableService = $datatableService;
+        $this->entityManager = $entityManager;
+        $this->logger = $logger;
         $this->templateVersion = $invoiceConfig['template_version'];
         $this->subscriptionAmount = $invoiceConfig['subscription_amount'];
         $this->ivaPercentage = $invoiceConfig['iva_percentage'];
-        $this->datatableService = $datatableService;
     }
 
     /**
@@ -78,6 +95,43 @@ class InvoicesService
             $this->templateVersion,
             $this->calculateAmountsWithTaxesFromTotal($this->subscriptionAmount)
         );
+    }
+
+    public function createInvoicesForTrips($tripPayments, $writeToDb = true)
+    {
+        $this->logger->setOutputEnviornment(Logger::OUTPUT_ON);
+        $this->logger->setOutputType(Logger::TYPE_CONSOLE);
+
+        $invoices = [];
+
+        // loop through each day
+        foreach ($tripPayments as $dateKey => $tripPaymentsForDate) {
+            // generate date for invoices
+            $date = date_create_from_format('Y-m-d', $dateKey);
+            $this->logger->log("Generating invoices for date: " . $dateKey . "\n\n");
+            // loop through each customer in day
+            foreach ($$tripPaymentsForDate as $customerId => $tripPaymentsForCustomer) {
+                $this->logger->log("Generating invoice for customer: " . $customerId . "\n");
+                // get customer for group of tripPayments
+                $customer = $tripPaymentsForCustomer[0]->getTrip()->getCustomer();
+                // generate invoice from group of tripPayments
+                $invoice = $this->prepareInvoiceForTrips($customer, $tripPaymentsForCustomer);
+                $this->logger->log("Invoice created: " . $invoice->getId() . "\n");
+                $this->entityManager->persist($invoice);
+                $this->logger->log("EntityManager: invoice persisted\n\n");
+                array_push($invoices, $invoice);
+                $invoicesCreated ++;
+            }
+        }
+
+        // save invoices to db
+        if ($writeToDb) {
+            $this->logger->log("EntityManager: about to flush\n");
+            $this->entityManager->flush();
+            $this->logger->log("EntityManager: flushed\n");
+        }
+
+        return $invoices;
     }
 
     /**
