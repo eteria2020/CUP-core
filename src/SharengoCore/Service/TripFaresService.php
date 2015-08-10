@@ -54,6 +54,6 @@ class TripFaresService
      */
     public function userTripCost(Fares $fare, $tripMinutes, $parkMinutes, $discountPercentage)
     {
-        return $this->tripCost($fare, $tripMinutes, $parkMinutes) * (100 - $discountPercentage) / 100;
+        return round($this->tripCost($fare, $tripMinutes, $parkMinutes) * (100 - $discountPercentage) / 100);
     }
 }
