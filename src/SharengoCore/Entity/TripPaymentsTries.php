@@ -37,7 +37,7 @@ class TripPaymentTries
      *
      * @ORM\ManyToOne(targetEntity="Webuser")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="webuser_id", referencedColumnName="id", nullable=false)
+     *   @ORM\JoinColumn(name="webuser_id", referencedColumnName="id", nullable=true)
      * })
      */
     private $webuser;

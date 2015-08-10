@@ -4,7 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Fares;
 
-class FaresServiceTest extends \PHPUnit_Framework_TestCase
+class TripFaresServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Fares
@@ -12,13 +12,13 @@ class FaresServiceTest extends \PHPUnit_Framework_TestCase
     private $fare;
 
     /**
-     * @var FaresService
+     * @var TripFaresService
      */
-    private $faresService;
+    private $tripFaresService;
 
     public function setUp()
     {
-        $this->faresService = new FaresService();
+        $this->tripFaresService = new TripFaresService();
         $this->fare = $this->getFare();
     }
 
@@ -82,10 +82,10 @@ class FaresServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function testMinutesToEuros($minutes, $cost)
     {
-        $minutesToEurosMethod = new \ReflectionMethod('SharengoCore\Service\FaresService', 'minutesToEuros');
+        $minutesToEurosMethod = new \ReflectionMethod('SharengoCore\Service\TripFaresService', 'minutesToEuros');
         $minutesToEurosMethod->setAccessible(true);
 
-        $this->assertEquals($cost, $minutesToEurosMethod->invoke($this->faresService, $this->fare, $minutes));
+        $this->assertEquals($cost, $minutesToEurosMethod->invoke($this->tripFaresService, $this->fare, $minutes));
     }
 
     public function tripsCostProvider()
@@ -106,12 +106,12 @@ class FaresServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function testTripCost($tripMinutes, $parkMinutes, $cost)
     {
-        $tripCostMethod = new \ReflectionMethod('SharengoCore\Service\FaresService', 'tripCost');
+        $tripCostMethod = new \ReflectionMethod('SharengoCore\Service\TripFaresService', 'tripCost');
         $tripCostMethod->setAccessible(true);
 
         $this->assertEquals(
             $cost,
-            $tripCostMethod->invoke($this->faresService, $this->fare, $tripMinutes, $parkMinutes)
+            $tripCostMethod->invoke($this->tripFaresService, $this->fare, $tripMinutes, $parkMinutes)
         );
     }
 
@@ -134,7 +134,7 @@ class FaresServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             $cost,
-            $this->faresService->userTripCost($this->fare, $tripMinutes, $parkMinutes, $discountPercentage)
+            $this->tripFaresService->userTripCost($this->fare, $tripMinutes, $parkMinutes, $discountPercentage)
         );
     }
 }

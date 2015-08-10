@@ -139,7 +139,8 @@ return [
     'service_manager' => [
         'invokables' => [
             'SharengoCore\Service\DatatableQueryBuilder' => 'SharengoCore\Service\DatatableQueryBuilders\Basic',
-            'SharengoCore\Service\FreeFaresService' => 'SharengoCore\Service\FreeFaresService'
+            'SharengoCore\Service\FreeFaresService' => 'SharengoCore\Service\FreeFaresService',
+            'SharengoCore\Service\TripFaresService' => 'SharengoCore\Service\TripFaresService'
         ],
         'factories' => [
             'SharengoCore\Service\CustomersService'    => 'SharengoCore\Service\CustomersServiceFactory',
@@ -158,7 +159,9 @@ return [
             'SharengoCore\Service\AccountTripsService' => 'SharengoCore\Service\AccountTripsServiceFactory',
             'SharengoCore\Service\CommandsService'     => 'SharengoCore\Service\CommandsServiceFactory',
             'SharengoCore\Service\Invoices' => 'SharengoCore\Service\InvoicesServiceFactory',
-            'SharengoCore\Service\AccountedTripsService' => 'SharengoCore\Service\AccountedTripsServiceFactory'
+            'SharengoCore\Service\AccountedTripsService' => 'SharengoCore\Service\AccountedTripsServiceFactory',
+            'SharengoCore\Service\TripCostService' => 'SharengoCore\Service\TripCostServiceFactory',
+            'SharengoCore\Service\FaresService' => 'SharengoCore\Service\FaresServiceFactory'
         ]
     ],
     'doctrine'        => [

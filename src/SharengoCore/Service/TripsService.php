@@ -195,4 +195,12 @@ class TripsService
     {
         return $this->setTripsAsNotPayable([$trip->getId()]);
     }
+
+    /**
+     * retrieves all the trips that we need to process to compute the cost
+     */
+    public function getTripsForCostComputation()
+    {
+        return $this->tripRepository->findTripsForCostComputation();
+    }
 }

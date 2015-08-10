@@ -3,57 +3,29 @@
 namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Fares;
+use SharengoCore\Entity\Repository\FaresRepository;
 
 class FaresService
 {
     /**
-     * computes the cost of a trip of $minutes minutes according to the fare
-     *
-     * @param Fares $fare
-     * @param int $minutes
-     * @return int cost of the trip in euros
+     * @var FaresRepository
      */
-    private function minutesToEuros(Fares $fare, $minutes)
+    private $faresRepository;
+
+    public function __construct(FaresRepository $faresRepository)
     {
-        $previousStep = INF;
-
-        foreach ($fare->getCostSteps() as $step => $stepCost) {
-            if ($minutes > $step) {
-                return min($previousStep, $stepCost + $this->minutesToEuros($fare, $minutes - $step));
-            }
-
-            $previousStep = $stepCost;
-        }
-
-        return min($previousStep, $fare->getMotionCostPerMinute() * $minutes);
+        $this->faresRepository = $faresRepository;
     }
 
     /**
-     * computes the cost of a trip considering the minutes of parking
+     * at the moment there is only one fare, so we return that one. When there
+     * will be more than one fare, this will have input parameters to decide
+     * which fare to consider
      *
-     * @param Fares $fare
-     * @param int $tripMinutes includes the parking minutes
-     * @param int $parkMinutes
+     * @return Fares
      */
-    private function tripCost(Fares $fare, $tripMinutes, $parkMinutes)
+    public function getFare()
     {
-        return min(
-            $this->minutesToEuros($fare, $tripMinutes),
-            $this->minutesToEuros($fare, $tripMinutes - $parkMinutes) + $parkMinutes * $fare->getParkCostPerMinute()
-        );
-    }
-
-    /**
-     * computes the cost of a trip considering the percentage of discount for a
-     * given user
-     *
-     * @param Fares $fare
-     * @param int $tripMinutes includes the parking minutes
-     * @param int $parkMinutes
-     * @param int $discountPercentage
-     */
-    public function userTripCost(Fares $fare, $tripMinutes, $parkMinutes, $discountPercentage)
-    {
-        return $this->tripCost($fare, $tripMinutes, $parkMinutes) * (100 - $discountPercentage) / 100;
+        return $this->faresRepository->findOne();
     }
 }
