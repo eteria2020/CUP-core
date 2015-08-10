@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * TripPayments
  *
  * @ORM\Table(name="trip_payments")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\TripPaymentsRepository")
  */
 class TripPayments
 {
