@@ -12,7 +12,7 @@ class SimpleLoggerService
 
     const OUTPUT_DEV = 3;
 
-    const TYPE_CONSOLE = 'console';
+    const TYPE_CONSOLE = -1;
 
     const ENV_PROD = 'production';
 
