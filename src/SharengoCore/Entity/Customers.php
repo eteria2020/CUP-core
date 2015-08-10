@@ -1586,4 +1586,13 @@ class Customers
         return $this;
     }
 
+    /**
+     * @return Customers
+     */
+    public function disable()
+    {
+        $this->enabled = false;
+
+        return $this;
+    }
 }

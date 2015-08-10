@@ -147,4 +147,31 @@ class TripPayments
     {
         return $this->totalCost;
     }
+
+    /**
+     * @param string $status
+     * @return TripPayments
+     */
+    private function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return TripPayments
+     */
+    public function setPayedCorrectly()
+    {
+        return $this->setStatus('payed_correctly');
+    }
+
+    /**
+     * @return TripPayments
+     */
+    public function setWrongPayment()
+    {
+        return $this->setStatus('wrong_payment');
+    }
 }
