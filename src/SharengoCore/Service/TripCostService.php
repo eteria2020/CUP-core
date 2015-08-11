@@ -167,7 +167,7 @@ class TripCostService
      * computes the total number of payable minutes of a trip, summing the
      * length of all the trip bills intervals
      *
-     * @param TripBills[] $tripBills
+     * @param PersistentCollection[TripBills] $tripBills
      * @return int
      */
     private function cumulateMinutes(PersistentCollection $tripBills)
@@ -271,7 +271,6 @@ class TripCostService
 
         if (!$this->avoidCartasi) {
             $response = $this->httpClient->send($request);
-
 
             if ($response->getstatusCode() === 200) {
                 $parsedBody = json_decode($response->getBody());
