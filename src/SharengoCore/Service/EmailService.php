@@ -37,7 +37,7 @@ class EmailService
      *  the keys are the names of the attachments
      *  the values are the location of the attachments
      */
-    public function sendEmail($to, $subject, $content, array $attachments)
+    public function sendEmail($to, $subject, $content, array $attachments = [])
     {
         $text = new Mime\Part($content);
         $text->type = Mime\Mime::TYPE_HTML;
