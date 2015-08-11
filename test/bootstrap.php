@@ -22,7 +22,8 @@ class Bootstrap
 
         $config = [
             'modules' => [
-                'SharengoCore'
+                'SharengoCore',
+                'Cartasi'
             ],
             'module_listener_options' => [
                 'module_paths' => [
