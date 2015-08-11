@@ -13,7 +13,8 @@ class InvoicesServiceFactory implements FactoryInterface
         $invoicesRepository = $entityManager->getRepository('\SharengoCore\Entity\Invoices');
         $config = $serviceLocator->get('Config');
         $invoicesConfig = $config['invoice'];
+        $simpleLoggerService = $serviceLocator->get('\SharengoCore\Service\SimpleLoggerService');
 
-        return new InvoicesService($invoicesRepository, $invoicesConfig);
+        return new InvoicesService($invoicesRepository, $simpleLoggerService, $entityManager, $invoicesConfig);
     }
 }

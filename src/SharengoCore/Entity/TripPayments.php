@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * TripPayments
  *
  * @ORM\Table(name="trip_payments")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\TripPaymentsRepository")
  */
 class TripPayments
 {
@@ -140,8 +140,103 @@ class TripPayments
         $this->createdAt = date_create(date('Y-m-d H:i:s'));
     }
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
     /**
-     * @return int
+     * @return Trips
+     */
+    public function getTrip()
+    {
+        return $this->trip;
+    }
+
+    /**
+     * @param Trip $trip
+     * @return TripPayments
+     */
+    public function setTrip(Trips $trip)
+    {
+        $this->trip = $trip;
+        return $this;
+    }
+
+    /**
+     * @return Fares
+     */
+    public function getFare()
+    {
+        return $this->fare;
+    }
+
+    /**
+     * @param Fares $fare
+     * @return TripPayments
+     */
+    public function setFare(Fares $fare)
+    {
+        $this->fare = $fare;
+        return $this;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getTripMinutes()
+    {
+        return $this->tripMinutes;
+    }
+
+    /**
+     * @param integer $tripMinutes
+     * @return TripPayments
+     */
+    public function setTripMinutes($tripMinutes)
+    {
+        $this->ripMinutes = $tripMinutes;
+        return $this;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getParkingMinutes($parkingMinutes)
+    {
+        return $this->parkingMinutes;
+    }
+
+    /**
+     * @param integer $parkingMinutes
+     * @return TripPayments
+     */
+    public function setParkingMinutes($parkingMinutes)
+    {
+        $this->parkingMinutes = $parkingMinutes;
+        return $this;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getDiscountPercentage()
+    {
+        return $this->discountPercentage;
+    }
+
+    /**
+     * @param integer $discountPercentage
+     * @return TripPayments
+     */
+    public function setDiscountPercentage($discountPercentage)
+    {
+        $this->discountPercentage = $discountPercentage;
+        return $this;
+    }
+
+    /**
+     * @return integer
      */
     public function getTotalCost()
     {
@@ -149,13 +244,66 @@ class TripPayments
     }
 
     /**
+     * @param integer $totalCost
+     * @return TripPayments
+     */
+    public function setTotalCost($totalCost)
+    {
+        $this->totalCost = $totalCost;
+        return $this;
+    }
+
+    /**
+     * @return Invoices
+     */
+    public function getInvoice()
+    {
+        return $this->invoice;
+    }
+
+    /**
+     * @param Invoices $invoice
+     * @return TripPayments
+     */
+    public function setInvoice(Invoices $invoice)
+    {
+        $this->invoice = $invoice;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
      * @param string $status
      * @return TripPayments
      */
-    private function setStatus($status)
+    public function setStatus($status)
     {
         $this->status = $status;
+        return $this;
+    }
 
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime $createdAt
+     * @return TripPayments
+     */
+    public function setcreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
         return $this;
     }
 
@@ -173,5 +321,41 @@ class TripPayments
     public function setWrongPayment()
     {
         return $this->setStatus('wrong_payment');
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getPayedSuccessfullyAt()
+    {
+        return $this->payedSuccessfullyAt;
+    }
+
+    /**
+     * @param \DateTime $payedSuccessfullyAt
+     * @return TripPayments
+     */
+    public function setPayedSuccessfullyAt($payedSuccessfullyAt)
+    {
+        $this->payedSuccessfullyAt = $payedSuccessfullyAt;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getInvoicedAt()
+    {
+        return $this->invoicedAt;
+    }
+
+    /**
+     * @param \DateTime $invoicedAt
+     * @return TripPayments
+     */
+    public function setInvoicedAt($invoicedAt)
+    {
+        $this->invoicedAt = $invoicedAt;
+        return $this;
     }
 }

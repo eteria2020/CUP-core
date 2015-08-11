@@ -1,0 +1,17 @@
+<?php
+
+namespace SharengoCore\Service;
+
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
+
+class TripPaymentsServiceFactory implements FactoryInterface
+{
+    public function createService(ServiceLocatorInterface $serviceLocator)
+    {
+        $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
+        $tripPaymentsRepository = $entityManager->getRepository('\SharengoCore\Entity\TripPayments');
+
+        return new TripPaymentsService($tripPaymentsRepository);
+    }
+}

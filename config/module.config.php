@@ -138,7 +138,9 @@ return [
             'SharengoCore\Service\AccountedTripsService' => 'SharengoCore\Service\AccountedTripsServiceFactory',
             'SharengoCore\Service\TripCostService' => 'SharengoCore\Service\TripCostServiceFactory',
             'SharengoCore\Service\FaresService' => 'SharengoCore\Service\FaresServiceFactory',
-            'SharengoCore\Service\EmailService' => 'SharengoCore\Service\EmailServiceFactory'
+            'SharengoCore\Service\EmailService' => 'SharengoCore\Service\EmailServiceFactory',
+            'SharengoCore\Service\TripPaymentsService' => 'SharengoCore\Service\TripPaymentsServiceFactory',
+            'SharengoCore\Service\SimpleLoggerService' => 'SharengoCore\Service\SimpleLoggerServiceFactory'
         ]
     ],
     'doctrine'        => [
