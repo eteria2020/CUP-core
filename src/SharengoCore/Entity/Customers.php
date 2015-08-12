@@ -369,6 +369,13 @@ class Customers
      */
     private $privacyCondition = false;
 
+    /**
+     * Bidirectional - One-To-Many (INVERSE SIDE)
+     *
+     * @ORM\OneToMany(targetEntity="Trips", mappedBy="customer")
+     */
+    private $trips;
+
 
     public function __construct()
     {
@@ -1449,12 +1456,13 @@ class Customers
 	 *
 	 * @return Array of Doctrine Entities
 	 */
-	public function getBonuses() {
-		return $this->customersbonuses;
-	}
+    public function getBonuses()
+    {
+        return $this->customersbonuses;
+    }
 
-    public function getValidBonuses() {
-
+    public function getValidBonuses()
+    {
         $validBonuses = [];
 
         foreach ($this->getBonuses() as $bonus) {
@@ -1470,8 +1478,8 @@ class Customers
 
     }
 
-    public function getTotalBonuses() {
-
+    public function getTotalBonuses()
+    {
         $total = 0;
         foreach ($this->getValidBonuses() as $bonus) {
             $total += $bonus->getTotal();
@@ -1481,8 +1489,8 @@ class Customers
 
     }
 
-    public function getResidualBonuses() {
-
+    public function getResidualBonuses()
+    {
         $total = 0;
         foreach ($this->getValidBonuses() as $bonus) {
             $total += $bonus->getResidual();
@@ -1492,7 +1500,8 @@ class Customers
 
     }
 
-    public function getUsedBonuses() {
+    public function getUsedBonuses()
+    {
         return $this->getTotalBonuses() - $this->getResidualBonuses();
     }
 

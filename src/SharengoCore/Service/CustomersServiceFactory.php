@@ -14,17 +14,27 @@ class CustomersServiceFactory implements FactoryInterface
 
         $userService = $serviceLocator->get('zfcuser_auth_service');
 
-        $I_datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
+        $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
 
         $cardsService = $serviceLocator->get('SharengoCore\Service\CardsService');
 
-        $I_datatableService->setQueryBuilder(
+        $datatableService->setQueryBuilder(
             new DatatableQueryBuilders\Cards(
                 new DatatableQueryBuilders\Basic(),
                 'e'
             )
         );
 
-        return new CustomersService($entityManager, $userService, $I_datatableService, $cardsService);
+        $emailService = $serviceLocator->get('SharengoCore\Service\EmailService');
+        $logger = $serviceLocator->get('SharengoCore\Service\SimpleLoggerService');
+
+        return new CustomersService(
+            $entityManager,
+            $userService,
+            $datatableService,
+            $cardsService,
+            $emailService,
+            $logger
+        );
     }
 }
