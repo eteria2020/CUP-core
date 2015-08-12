@@ -339,7 +339,7 @@ class TripCostService
 
         if (!$this->avoidEmail) {
             $this->emailService->sendEmail(
-                'pasafama@gmail.com', //$customer->getEmail(),
+                $customer->getEmail(),
                 'SHARENGO - ERRORE NEL PAGAMENTO',
                 $content,
                 $attachments
@@ -369,7 +369,7 @@ class TripCostService
 
         if (!$this->avoidEmail) {
             $this->emailService->sendEmail(
-                'pasafama@gmail.com', //$customer->getEmail(),
+                $customer->getEmail(),
                 'SHARENGO - RICHIESTA DI PRIMO PAGAMENTO',
                 $content,
                 $attachments

@@ -107,4 +107,20 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    public function getLatePayers()
+    {
+        $dql = "SELECT c FROM \SharengoCore\Entity\Customers c ".
+            "JOIN c.trips t ".
+            "JOIN t.tripPayments tp ".
+            "WHERE c.enabled = FALSE ".
+            "AND tp.status = :status ".
+            "AND tp.createdAt <= :oneWeekAgo ".
+            "GROUP BY c.id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('status', 'not_payed');
+        $query->setParameter('oneWeekAgo', date_create('-1 week'));
+
+        return $query->getResult();
+    }
 }
