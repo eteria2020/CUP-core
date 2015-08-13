@@ -131,7 +131,6 @@ class InvoicesService
         foreach ($tripPayments as $tripPayment) {
             $total += $tripPayment->getTotalCost();
         }
-        $this->logger->log("Total amount: " . $total . "\n");
 
         return Invoices::createInvoiceForTrips(
             $customer,
