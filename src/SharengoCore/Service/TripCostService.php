@@ -9,6 +9,7 @@ use SharengoCore\Entity\Customers;
 use Cartasi\Service\CartasiContractsService;
 use Cartasi\Entity\Repository\TransactionsRepository;
 use Cartasi\Entity\Transactions;
+use SharengoCore\Service\SimpleLoggerService as Logger;
 
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\EntityManager;
@@ -74,6 +75,11 @@ class TripCostService
      */
     private $avoidCartasi = true;
 
+    /**
+     * @var Logger
+     */
+    private $logger;
+
     public function __construct(
         FaresService $faresService,
         TripFaresService $tripFaresService,
@@ -83,7 +89,8 @@ class TripCostService
         CartasiContractsService $cartasiContractsService,
         TransactionsRepository $transactionsRepository,
         array $websiteConfig,
-        EmailService $emailService
+        EmailService $emailService,
+        Logger $logger
     ) {
         $this->faresService = $faresService;
         $this->tripFaresService = $tripFaresService;
@@ -94,6 +101,7 @@ class TripCostService
         $this->transactionsRepository = $transactionsRepository;
         $this->websiteConfig = $websiteConfig;
         $this->emailService = $emailService;
+        $this->logger = $logger;
     }
 
     /**
@@ -121,7 +129,6 @@ class TripCostService
 
         try {
             $this->saveTripPayment($tripPayment);
-
             if ($trip->canBePayed()) {
                 $this->tryTripPayment($trip->getCustomer(), $tripPayment);
             } else {

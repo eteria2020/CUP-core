@@ -20,6 +20,7 @@ class TripCostServiceFactory implements FactoryInterface
         $config = $serviceLocator->get('Config');
         $websiteConfig = $config['website'];
         $emailService = $serviceLocator->get('SharengoCore\Service\EmailService');
+        $logger = $serviceLocator->get('SharengoCore\Service\SimpleLoggerService');
 
         return new TripCostService(
             $faresService,
@@ -30,7 +31,8 @@ class TripCostServiceFactory implements FactoryInterface
             $cartasiContractsService,
             $cartasiTransactionsRepository,
             $websiteConfig,
-            $emailService
+            $emailService,
+            $logger
         );
     }
 }
