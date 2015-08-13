@@ -180,7 +180,6 @@ class Invoices
                 'L\'importo totale della fattura è di EUR ' .
                 $amounts['grand_total'] .
                 '</p>',
-            'description' => 'Pagamento iscrizione al servizio',
             'contents' => [
                 'header' => [
                     'Descrizione',
@@ -224,42 +223,38 @@ class Invoices
             $version,
             self::TYPE_TRIP,
             intval($tripPayments[0]->getCreatedAt()->format("Ymd")),
-            $amounts
+            $amounts['sum']
         );
 
         $content = $invoice->getContent();
 
         $body = [];
 
-        foreach ($tripPayments as $tripPayment) {
+        foreach ($tripPayments as $key => $tripPayment) {
             $trip = $tripPayment->getTrip();
             array_push($body, [
                 $trip->getTimestampBeginning()->format("Y-m-d H:i:s"),
                 $tripPayment->getTripMinutes(),
-                $trip->getParkSeconds(),
-                $trip->getKmEnd() - $trip->getKmBeginning(),
-                $tripPayment->getTotalCost()
+                $tripPayment->getParkingMinutes(),
+                $amounts['rows'][$key]['total']
             ]);
         }
 
         $content['body'] = [
             'greeting_message' => '',
-            'description' => '',
             'contents' => [
                 'header' => [
                     'Ora inizio',
-                    'Durata',
-                    'Tempo in sosta',
-                    'Distanza',
-                    'Totale'
+                    'Durata (min)',
+                    'Tempo in sosta (min)',
+                    'Imponibile'
                 ],
                 'body' => $body,
                 'body-format' => [
                     'alignment' => [
                         'left',
-                        'left',
-                        'left',
-                        'left',
+                        'right',
+                        'right',
                         'right'
                     ]
                 ]

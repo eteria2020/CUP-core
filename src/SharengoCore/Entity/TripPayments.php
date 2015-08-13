@@ -202,7 +202,7 @@ class TripPayments
     /**
      * @return integer
      */
-    public function getParkingMinutes($parkingMinutes)
+    public function getParkingMinutes()
     {
         return $this->parkingMinutes;
     }
