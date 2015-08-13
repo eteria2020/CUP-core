@@ -308,22 +308,6 @@ class TripPayments
     }
 
     /**
-     * @return TripPayments
-     */
-    public function setPayedCorrectly()
-    {
-        return $this->setStatus('payed_correctly');
-    }
-
-    /**
-     * @return TripPayments
-     */
-    public function setWrongPayment()
-    {
-        return $this->setStatus('wrong_payment');
-    }
-
-    /**
      * @return \DateTime
      */
     public function getPayedSuccessfullyAt()
@@ -357,5 +341,21 @@ class TripPayments
     {
         $this->invoicedAt = $invoicedAt;
         return $this;
+    }
+
+    /**
+     * @return TripPayments
+     */
+    public function setPayedCorrectly()
+    {
+        return $this->setStatus('payed_correctly');
+    }
+
+    /**
+     * @return TripPayments
+     */
+    public function setWrongPayment()
+    {
+        return $this->setStatus('wrong_payment');
     }
 }

@@ -15,6 +15,21 @@ class InvoicesServiceFactory implements FactoryInterface
         $invoicesConfig = $config['invoice'];
         $simpleLoggerService = $serviceLocator->get('\SharengoCore\Service\SimpleLoggerService');
 
-        return new InvoicesService($invoicesRepository, $simpleLoggerService, $entityManager, $invoicesConfig);
+        $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
+
+        // decorate the query builder with the needed decorators
+        $datatableService->setQueryBuilder(
+            new DatatableQueryBuilders\Customers(
+                new DatatableQueryBuilders\Basic()
+            )
+        );
+
+        return new InvoicesService(
+            $invoicesRepository,
+            $datatableService,
+            $entityManager,
+            $simpleLoggerService,
+            $invoicesConfig
+        );
     }
 }

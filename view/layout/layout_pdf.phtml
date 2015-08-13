@@ -1,0 +1,26 @@
+<?php echo $this->doctype(); ?>
+    <head>
+        <meta charset="utf-8">
+        <?php echo $this->headTitle('Share \'N Go - Fattura')->setSeparator(' - ')->setAutoEscape(false) ?>
+
+        <?php echo $this->headMeta()->appendName('description', '')?>
+
+         <!-- CSS
+          ================================================== -->
+        <?php echo $this->headLink()
+                        ->prependStylesheet($this->serverUrl() . '/assets-modules/sharengo-core/css/invoices.css');
+
+        ?>
+
+    </head>
+    <body>
+
+    <?php
+        echo $this->content;
+        echo $this->headScript();
+        echo $this->inlineScript();
+        echo $this->headStyle() ;
+    ?>
+    </body>
+
+</html>

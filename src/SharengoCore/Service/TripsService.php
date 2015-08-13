@@ -121,9 +121,7 @@ class TripsService
                     'code' => is_object($trip->getCustomer()->getCard()) ? $trip->getCustomer()->getCard()->getCode() : '',
 
                 ],
-                'duration' => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd()),
-                'price'    => ($trip->getPriceCent() + $trip->getVatCent()),
-
+                'duration' => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd())
             ];
         }, $trips);
     }

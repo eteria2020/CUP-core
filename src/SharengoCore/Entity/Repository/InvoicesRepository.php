@@ -4,6 +4,13 @@ namespace SharengoCore\Entity\Repository;
 
 class InvoicesRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getTotalInvoices()
+    {
+        $em = $this->getEntityManager();
+        $query = $em->createQuery('SELECT COUNT(c.id) FROM \SharengoCore\Entity\Invoices c');
+        return $query->getSingleScalarResult();
+    }
+
     /**
      * @param Customers $customer
      * @return mixed
@@ -55,5 +62,21 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('dateMax', ($date + 1) * 100);
 
         return $query->getResult();
+    }
+
+    public function findTotalDatatableInvoices($column, $value, $like)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT count(e.id)
+        FROM \SharengoCore\Entity\Invoices e
+        WHERE " . $column .
+        (($like == "true") ? " LIKE " : " = ") .
+        ":value";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('value', $value);
+
+        return $query->getSingleScalarResult();
     }
 }

@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Repository\InvoicesRepository;
 use SharengoCore\Entity\Invoices;
+use SharengoCore\Service\DatatableService;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 
@@ -27,6 +28,11 @@ class InvoicesService
     private $subscriptionAmount;
 
     /**
+     * @var DatatableService
+     */
+    private $datatableService;
+
+    /**
      * @var integer
      */
     private $ivaPercentage;
@@ -47,16 +53,26 @@ class InvoicesService
      */
     public function __construct(
         InvoicesRepository $invoicesRepository,
-        Logger $logger,
+        DatatableService $datatableService,
         EntityManager $entityManager,
+        Logger $logger,
         $invoiceConfig
     ) {
         $this->invoicesRepository = $invoicesRepository;
+        $this->datatableService = $datatableService;
+        $this->entityManager = $entityManager;
+        $this->logger = $logger;
         $this->templateVersion = $invoiceConfig['template_version'];
         $this->subscriptionAmount = $invoiceConfig['subscription_amount'];
         $this->ivaPercentage = $invoiceConfig['iva_percentage'];
-        $this->logger = $logger;
-        $this->entityManager = $entityManager;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getTotalInvoices()
+    {
+        return $this->invoicesRepository->getTotalInvoices();
     }
 
     /**
@@ -171,6 +187,49 @@ class InvoicesService
             array_push($returnDates, $date[1]);
         }
         return $returnDates;
+    }
+
+    /**
+     * @param mixed $filters
+     * @return mixed
+     */
+    public function getDataDataTable($filters)
+    {
+        $invoices = $this->datatableService->getData('Invoices', $filters);
+
+        return array_map(function (Invoices $invoice) {
+            return [
+                'e' => [
+                    'invoiceNumber' => $invoice->getInvoiceNumber(),
+                    'invoiceDate' => $invoice->getInvoiceDate(),
+                    'type' => $invoice->getType(),
+                    'amount' => $invoice->getAmount(),
+                    'customerName' => $invoice->getCustomer()->getName(),
+                    'customerSurname' => $invoice->getCustomer()->getSurname()
+                ],
+                'link' => $invoice->getId()
+            ];
+        }, $invoices);
+    }
+
+    /**
+     * @param mixed $filters
+     * @return integer
+     */
+    public function getTotalDatatableInvoices($filters)
+    {
+        if (!empty($filters['fixedColumn']) &&
+            !empty($filters['fixedValue']) &&
+            !empty($filters['fixedLike'])
+        ) {
+            return $this->invoicesRepository->findTotalDatatableInvoices(
+                $filters['fixedColumn'],
+                $filters['fixedValue'],
+                $filters['fixedLike']
+            );
+        } else {
+            return $this->getTotalInvoices();
+        }
     }
 
     /**
