@@ -29,11 +29,18 @@ class SimpleLoggerService
     private $environment;
 
     /**
+     * @var string defines the environment in which to log
+     */
+    private $outputEnvironment;
+
+    /**
      * @param [string] $simpleLoggerConfig
      */
     public function __construct($simpleLoggerConfig)
     {
         $this->environment = $simpleLoggerConfig['environment'];
+        $this->outputType = self::TYPE_CONSOLE;
+        $this->outputEnvironment = self::OUTPUT_ON;
     }
 
     /**
