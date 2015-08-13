@@ -22,6 +22,10 @@ class TripPaymentsServiceFactory implements FactoryInterface
             )
         );
 
-        return new TripPaymentsService($tripPaymentsRepository, $datatableService);
+        return new TripPaymentsService(
+            $tripPaymentsRepository,
+            $datatableService,
+            $entityManager
+        );
     }
 }

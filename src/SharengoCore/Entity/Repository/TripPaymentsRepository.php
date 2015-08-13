@@ -10,7 +10,7 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
 
         $dql = 'SELECT tp
             FROM SharengoCore\Entity\TripPayments tp
-            JOIN SharengoCore\Entity\Trips t
+            JOIN tp.trip t
             WHERE tp.status = :status
             AND tp.invoice IS NULL
             AND tp.totalCost != 0
@@ -22,6 +22,7 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+
 
     public function countTotalFailedPayments()
     {
@@ -51,5 +52,26 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('paymentAble', true);
 
         return $query->getResult();
+    }
+
+    public function findFirstTripPaymentNotPayedByCustomer($customer)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT tp
+            FROM SharengoCore\Entity\TripPayments tp
+            JOIN tp.trip t
+            WHERE t.customer = :customer
+            AND (tp.status = :not_payed
+            OR tp.status = :wrong_payment)
+            ORDER BY t.timestampBeginning ASC';
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('customer', $customer);
+        $query->setParameter('not_payed', 'not_payed');
+        $query->setParameter('wrong_payment', 'wrong_payment');
+        $query->setMaxResults(1);
+
+        return $query->getOneOrNullResult();
     }
 }

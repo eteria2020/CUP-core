@@ -6,6 +6,9 @@ use SharengoCore\Entity\Repository\TripPaymentsRepository;
 use SharengoCore\Entity\TripPayments;
 use SharengoCore\Service\DatatableService;
 use SharengoCore\Entity\Trips;
+use SharengoCore\Entity\Customers;
+
+use Doctrine\ORM\EntityManager;
 
 class TripPaymentsService
 {
@@ -20,14 +23,21 @@ class TripPaymentsService
     private $datatableService;
 
     /**
+     * @var EntityManager
+     */
+    private $entityManager;
+
+    /**
      * @param TripPayments
      */
     public function __construct(
         TripPaymentsRepository $tripPaymentsRepository,
-        DatatableService $datatableService
+        DatatableService $datatableService,
+        EntityManager $entityManager
     ) {
         $this->tripPaymentsRepository = $tripPaymentsRepository;
         $this->datatableService = $datatableService;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -111,5 +121,25 @@ class TripPaymentsService
     public function getTripPaymentsForPayment()
     {
         return $this->tripPaymentsRepository->findTripPaymentsForPayment();
+    }
+
+    /*
+     * @param Customers $customer
+     * @return TripPayments | null
+     */
+    public function getFirstTripPaymentNotPayedByCustomer(Customers $customer)
+    {
+        return $this->tripPaymentsRepository->findFirstTripPaymentNotPayedByCustomer($customer);
+    }
+
+    /**
+     * @param TripPayments $tripPayment
+     */
+    public function setTripPaymentPayed(TripPayments $tripPayment)
+    {
+        $tripPayment->setPayedCorrectly();
+
+        $this->entityManager->persist($tripPayment);
+        $this->entityManager->flush();
     }
 }
