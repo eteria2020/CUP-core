@@ -143,8 +143,10 @@ class InvoicesService
      */
     public function prepareInvoiceForTrips(Customers $customer, $tripPayments)
     {
+        $rowAmounts = [];
         $total = 0;
         foreach ($tripPayments as $tripPayment) {
+            array_push($rowAmounts, $this->calculateAmountsWithTaxesFromTotal($tripPayment->getTotalCost()));
             $total += $tripPayment->getTotalCost();
         }
 
@@ -152,7 +154,10 @@ class InvoicesService
             $customer,
             $tripPayments,
             $this->templateVersion,
-            $this->calculateAmountsWithTaxesFromTotal($total)
+            [
+                'sum' => $this->calculateAmountsWithTaxesFromTotal($total),
+                'rows' => $rowAmounts
+            ]
         );
     }
 
