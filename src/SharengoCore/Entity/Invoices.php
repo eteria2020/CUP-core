@@ -257,6 +257,9 @@ class Invoices
                 'body-format' => [
                     'alignment' => [
                         'left',
+                        'left',
+                        'left',
+                        'left',
                         'right'
                     ]
                 ]
