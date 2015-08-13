@@ -24,24 +24,24 @@ class SimpleLoggerService
     private $outputType;
 
     /**
-     * @var string   defines the enviornment (development | production)
+     * @var string   defines the environment (development | production)
      */
-    private $enviornment;
+    private $environment;
 
     /**
      * @param [string] $simpleLoggerConfig
      */
     public function __construct($simpleLoggerConfig)
     {
-        $this->enviornment = $simpleLoggerConfig['enviornment'];
+        $this->environment = $simpleLoggerConfig['environment'];
     }
 
     /**
-     * @param integer $outputEnviornment
+     * @param integer $outputEnvironment
      */
-    public function setOutputEnviornment($outputEnviornment = self::OUTPUT_OFF)
+    public function setOutputEnvironment($outputEnvironment = self::OUTPUT_OFF)
     {
-        $this->outputEnviornment = $outputEnviornment;
+        $this->outputEnvironment = $outputEnvironment;
     }
 
     /**
@@ -57,9 +57,9 @@ class SimpleLoggerService
      */
     public function log($message = "")
     {
-        if ($this->outputEnviornment == self::OUTPUT_ON ||
-            ($this->outputEnviornment == self::OUTPUT_DEV && $this->enviornment == self::ENV_DEV) ||
-            ($this->outputEnviornment == self::OUTPUT_PROD && $this->enviornment == self::ENV_PROD)
+        if ($this->outputEnvironment == self::OUTPUT_ON ||
+            ($this->outputEnvironment == self::OUTPUT_DEV && $this->environment == self::ENV_DEV) ||
+            ($this->outputEnvironment == self::OUTPUT_PROD && $this->environment == self::ENV_PROD)
         ) {
             $this->writeMessage($message);
         }

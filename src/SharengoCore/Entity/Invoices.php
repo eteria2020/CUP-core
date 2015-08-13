@@ -165,7 +165,7 @@ class Invoices
         $version,
         $amounts
     ) {
-        $invoice = $this->createBasicInvoice(
+        $invoice = Invoices::createBasicInvoice(
             $customer,
             $version,
             self::TYPE_FIRST_PAYMENT,
@@ -219,11 +219,11 @@ class Invoices
         $version,
         $amounts
     ) {
-        $invoice = $this->createBasicInvoice(
+        $invoice = Invoices::createBasicInvoice(
             $customer,
             $version,
             self::TYPE_TRIP,
-            $tripPayment[0]->getCreatedAt(),
+            intval($tripPayments[0]->getCreatedAt()->format("Ymd")),
             $amounts
         );
 
@@ -234,10 +234,10 @@ class Invoices
         foreach ($tripPayments as $tripPayment) {
             $trip = $tripPayment->getTrip();
             array_push($body, [
-                $trip->getTimestampBeginning(),
+                $trip->getTimestampBeginning()->format("Y-m-d H:i:s"),
                 $tripPayment->getTripMinutes(),
                 $trip->getParkSeconds(),
-                $trip->getKmEnd() - $trip->getKmStart(),
+                $trip->getKmEnd() - $trip->getKmBeginning(),
                 $tripPayment->getTotalCost()
             ]);
         }
@@ -262,6 +262,10 @@ class Invoices
                 ]
             ]
         ];
+
+        $invoice->setContent($content);
+
+        return $invoice;
     }
 
     /**
