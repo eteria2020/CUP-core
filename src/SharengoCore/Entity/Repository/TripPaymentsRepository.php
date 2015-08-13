@@ -11,11 +11,13 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         $dql = 'SELECT tp
         FROM SharengoCore\Entity\TripPayments tp
         JOIN SharengoCore\Entity\Trips t
-        WHERE tp.status = :status';
+        WHERE tp.status = :status
+        AND tp.invoice IS NULL
+        AND tp.totalCost != 0';
 
         $query = $em->createQuery($dql);
 
-        $query->setParameter('status', 'not_payed');
+        $query->setParameter('status', 'payed_correctly');
 
         return $query->getResult();
     }
