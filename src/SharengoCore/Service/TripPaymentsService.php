@@ -41,6 +41,15 @@ class TripPaymentsService
     }
 
     /**
+     * @param integer $tripPaymentId
+     * @return TripPayments
+     */
+    public function getTripPaymentById($tripPaymentId)
+    {
+        return $this->tripPaymentsRepository->findOneById($tripPaymentId);
+    }
+
+    /**
      * @return [[[TripPayments]]]
      */
     public function getTripPaymentsNoInvoiceGrouped()

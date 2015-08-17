@@ -2,7 +2,7 @@
 
 namespace SharengoCore\Entity\Repository;
 
-class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
+class TripPaymentTriesRepository extends \Doctrine\ORM\EntityRepository
 {
     public function findTripPaymentTry($tripPayment, $transaction)
     {

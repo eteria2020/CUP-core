@@ -6,6 +6,8 @@ use SharengoCore\Entity\Repository\TripPaymentTriesRepository;
 use SharengoCore\Entity\TripPaymentTries;
 use SharengoCore\Entity\TripPayments;
 
+use Cartasi\Entity\Transactions;
+
 use Doctrine\ORM\EntityManager;
 
 class TripPaymentTriesService
@@ -40,13 +42,13 @@ class TripPaymentTriesService
     {
         $tripPaymentTry = $this->tripPaymentTriesRepository->findTripPaymentTry($tripPayment, $transaction);
 
-        if ($tripPayment != null) {
+        if ($tripPaymentTry !== null) {
             $tripPaymentTry->setOutcome($outcome);
         } else {
             $tripPaymentTry = new TripPaymentTries($tripPayment, $outcome, $transaction);
         }
 
-        $entityManager->persist($tripPaymentTry);
-        $entityManager->flush();
+        $this->entityManager->persist($tripPaymentTry);
+        $this->entityManager->flush();
     }
 }
