@@ -112,7 +112,7 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         $dql = "SELECT c FROM \SharengoCore\Entity\Customers c ".
             "JOIN c.trips t ".
             "JOIN t.tripPayments tp ".
-            "WHERE c.enabled = FALSE ".
+            "WHERE c.enabled = TRUE ".
             "AND tp.status = :status ".
             "AND tp.createdAt <= :oneWeekAgo ".
             "GROUP BY c.id";
