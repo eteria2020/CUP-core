@@ -370,6 +370,13 @@ class Customers
     private $privacyCondition = false;
 
     /**
+     * @var boolean false if we know that the user in not able to perform a payment
+     *
+     * @ORM\Column(name="payment_able", type="boolean", options={"default" = TRUE})
+     */
+    private $paymentAble;
+
+    /**
      * Bidirectional - One-To-Many (INVERSE SIDE)
      *
      * @ORM\OneToMany(targetEntity="Trips", mappedBy="customer")
@@ -1593,6 +1600,14 @@ class Customers
     {
         $this->privacyCondition = $privacyCondition;
         return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getPaymentAble()
+    {
+        return $this->paymentAble;
     }
 
     /**

@@ -771,4 +771,14 @@ class Trips
     {
         return $this->customer->getFirstPaymentCompleted();
     }
+
+    /**
+     * checks if a customer is able to perform a payment
+     *
+     * @return boolean
+     */
+    public function customerIsPaymentAble()
+    {
+        return $this->customer->getPaymentAble();
+    }
 }

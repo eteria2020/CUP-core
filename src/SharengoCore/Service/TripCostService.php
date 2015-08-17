@@ -74,6 +74,11 @@ class TripCostService
      */
     private $avoidCartasi = true;
 
+    /**
+     * @var boolean
+     */
+    private $avoidPersistance = true;
+
     public function __construct(
         FaresService $faresService,
         TripFaresService $tripFaresService,
@@ -115,27 +120,31 @@ class TripCostService
         $this->avoidEmail = $avoidEmail;
         $this->avoidCartasi = $avoidCartasi;
 
-        $tripPayment = $this->retrieveTripCost($trip);
+        if ($trip->customerIsPaymentAble()) {
+            $tripPayment = $this->retrieveTripCost($trip);
 
-        $this->entityManager->getConnection()->beginTransaction();
+            if ($tripPayment->getTotalCost() > 0) {
+                $this->entityManager->getConnection()->beginTransaction();
 
-        try {
-            $this->saveTripPayment($tripPayment);
+                try {
+                    $this->saveTripPayment($tripPayment);
 
-            if ($trip->canBePayed()) {
-                $this->tryTripPayment($trip->getCustomer(), $tripPayment);
-            } else {
-                $this->notifyCustomerHeHasToPay($trip->getCustomer());
+                    if ($trip->canBePayed()) {
+                        $this->tryTripPayment($trip->getCustomer(), $tripPayment);
+                    } else {
+                        $this->notifyCustomerHeHasToPay($trip->getCustomer());
+                    }
+
+                    if (!$avoidPersistance) {
+                        $this->entityManager->getConnection()->commit();
+                    } else {
+                        $this->entityManager->getConnection()->rollback();
+                    }
+                } catch (\Exception $e) {
+                    $this->entityManager->getConnection()->rollback();
+                    throw $e;
+                }
             }
-
-            if (!$avoidPersistance) {
-                $this->entityManager->getConnection()->commit();
-            } else {
-                $this->entityManager->getConnection()->rollback();
-            }
-        } catch (\Exception $e) {
-            $this->entityManager->getConnection()->rollback();
-            throw $e;
         }
     }
 
