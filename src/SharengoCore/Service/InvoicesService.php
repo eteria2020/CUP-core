@@ -144,27 +144,13 @@ class InvoicesService
     public function prepareInvoiceForTrips(Customers $customer, $tripPayments)
     {
         $rowAmounts = [];
-        $totalAmounts = [
-            'iva' => 0,
-            'total' => 0,
-            'grand_total' => 0,
-            'grand_total_cents' => 0
-        ];
 
+        $total = 0;
         // calculate amounts for single rows and add them to total
         foreach ($tripPayments as $tripPayment) {
-            array_push($rowAmounts, $this->calculateAmountsWithTaxesFromTotal($tripPayment->getTotalCost()));
-            $rowAmount = $this->calculateAmountsWithTaxesFromTotalNoFormat($tripPayment->getTotalCost());
-            $totalAmounts['iva'] += $rowAmount['iva'];
-            $totalAmounts['total'] += $rowAmount['total'];
-            $totalAmounts['grand_total'] += $tripPayment->getTotalCost();
+            array_push($rowAmounts, $this->parseDecimal($tripPayment->getTotalCost()));
+            $total += $tripPayment->getTotalCost();
         }
-
-        // complete total amounts with format
-        $totalAmounts['grand_total_cents'] = $totalAmounts['grand_total'];
-        $totalAmounts['iva'] = $this->parseDecimal($totalAmounts['iva']);
-        $totalAmounts['total'] = $this->parseDecimal($totalAmounts['total']);
-        $totalAmounts['grand_total'] = $this->parseDecimal($totalAmounts['grand_total']);
 
         // create invoice
         return Invoices::createInvoiceForTrips(
@@ -172,7 +158,7 @@ class InvoicesService
             $tripPayments,
             $this->templateVersion,
             [
-                'sum' => $totalAmounts,
+                'sum' => $this->calculateAmountsWithTaxesFromTotal($total),
                 'rows' => $rowAmounts
             ]
         );
@@ -272,25 +258,6 @@ class InvoicesService
         $amounts['grand_total'] = $this->parseDecimal($amount);
 
         $amounts['grand_total_cents'] = $amount;
-
-        return $amounts;
-    }
-
-    /**
-     * @param integer $amount
-     * @return mixed
-     */
-    private function calculateAmountsWithTaxesFromTotalNoFormat($amount)
-    {
-        $amounts = [];
-
-        // calculate amounts
-        $iva = (integer) ($amount / 122 * $this->ivaPercentage);
-        $total = $amount - $iva;
-
-        // format amounts
-        $amounts['iva'] = $iva;
-        $amounts['total'] = $total;
 
         return $amounts;
     }

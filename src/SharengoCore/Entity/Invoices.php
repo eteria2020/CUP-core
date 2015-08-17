@@ -236,7 +236,7 @@ class Invoices
                 $trip->getTimestampBeginning()->format("Y-m-d H:i:s"),
                 $tripPayment->getTripMinutes(),
                 $tripPayment->getParkingMinutes(),
-                $amounts['rows'][$key]['total']
+                $amounts['rows'][$key]
             ]);
         }
 
@@ -247,7 +247,7 @@ class Invoices
                     'Ora inizio',
                     'Durata (min)',
                     'Tempo in sosta (min)',
-                    'Imponibile'
+                    'Costo (con iva)'
                 ],
                 'body' => $body,
                 'body-format' => [
