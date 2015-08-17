@@ -9,6 +9,8 @@ use RuntimeException;
 
 class Bootstrap
 {
+    protected static $serviceManager;
+
     public static function init()
     {
         $modulePath = static::findParentPath('module');
@@ -36,6 +38,7 @@ class Bootstrap
         $serviceManager = new ServiceManager(new ServiceManagerConfig());
         $serviceManager->setService('ApplicationConfig', $config);
         $serviceManager->get('ModuleManager')->loadModules();
+        static::$serviceManager = $serviceManager;
     }
 
     protected static function findParentPath($path)
@@ -50,6 +53,11 @@ class Bootstrap
             $previousDir = $dir;
         }
         return $dir . '/' . $path;
+    }
+
+    public static function getServiceManager()
+    {
+        return static::$serviceManager;
     }
 }
 
