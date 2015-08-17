@@ -24,8 +24,6 @@ class ReservationsServiceFactory implements FactoryInterface
             )
         );
 
-        $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
-
         return new ReservationsService($reservationsRepository, $I_datatableService, $customersService, $entityManager);
     }
 }

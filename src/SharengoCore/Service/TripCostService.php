@@ -143,7 +143,7 @@ class TripCostService
      * @param Trips $trip
      * @return TripPayments
      */
-    private function retrieveTripCost(Trips $trip)
+    public function retrieveTripCost(Trips $trip)
     {
         // retrieve the fare for the trip
         $fare = $this->faresService->getFare();

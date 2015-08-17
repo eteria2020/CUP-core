@@ -41,14 +41,17 @@ class Fares
      *
      * every key in the json file represents a minutes quantity and its value
      * is the cost of a trip of those minutes in eurocents.
-     * the keys MUST be stored in decreasing order for the trip cost algorithm
-     * to work correctly
-     *
-     * TODO: enforce in the construction the decrescence in this field
      *
      * @ORM\Column(name="cost_steps", type="string", nullable=false)
      */
     private $costSteps;
+
+    public function __construct($motionCostPerMinute, $parkCostPerMinute, $costSteps)
+    {
+        $this->motionCostPerMinute = $motionCostPerMinute;
+        $this->parkCostPerMinute = $parkCostPerMinute;
+        $this->costSteps = $costSteps;
+    }
 
     /**
      * Get id
@@ -82,11 +85,17 @@ class Fares
 
     /**
      * Get cost steps
+     * in order for the algorithm to work correctly we need to return them in
+     * decreasing order
      *
      * @return array
      */
     public function getCostSteps()
     {
-        return json_decode($this->costSteps, true);
+        $costSteps = json_decode($this->costSteps, true);
+
+        krsort($costSteps);
+
+        return $costSteps;
     }
 }

@@ -24,29 +24,13 @@ class TripFaresServiceTest extends \PHPUnit_Framework_TestCase
 
     private function getFare()
     {
-        $fare = new Fares();
-
-        $reflectionClass = new \ReflectionClass('SharengoCore\Entity\Fares');
-
-        $motionCostPerMinuteProperty = $reflectionClass->getProperty('motionCostPerMinute');
-        $motionCostPerMinuteProperty->setAccessible(true);
-        $motionCostPerMinuteProperty->setvalue($fare, 28);
-
-        $parkCostPerMinuteProperty = $reflectionClass->getProperty('parkCostPerMinute');
-        $parkCostPerMinuteProperty->setAccessible(true);
-        $parkCostPerMinuteProperty->setvalue($fare, 10);
-
         $costSteps = [
             1440 => 5000,
             240 => 3000,
             60 => 1200
         ];
 
-        $costStepsProperty = $reflectionClass->getProperty('costSteps');
-        $costStepsProperty->setAccessible(true);
-        $costStepsProperty->setvalue($fare, json_encode($costSteps));
-
-        return $fare;
+        return new Fares(28, 10, json_encode($costSteps));
     }
 
     public function tripsProvider()

@@ -167,7 +167,11 @@ return [
             'SharengoCore\Service\SimpleLoggerService' => 'SharengoCore\Service\SimpleLoggerServiceFactory',
             'SharengoCore\Service\TripPaymentsService' => 'SharengoCore\Service\TripPaymentsServiceFactory',
             'SharengoCore\Service\SimpleLoggerService' => 'SharengoCore\Service\SimpleLoggerServiceFactory',
-            'SharengoCore\Service\EmailService' => 'SharengoCore\Service\EmailServiceFactory'
+            'SharengoCore\Service\EmailService' => 'SharengoCore\Service\EmailServiceFactory',
+            'SharengoCore\Service\TripCostComputerService' => 'SharengoCore\Service\TripCostComputerServiceFactory'
+        ],
+        'shared' => [
+            'SharengoCore\Service\TripCostComputerService' => false
         ]
     ],
     'doctrine'        => [
