@@ -234,9 +234,10 @@ class Invoices
             $trip = $tripPayment->getTrip();
             array_push($body, [
                 $trip->getTimestampBeginning()->format("Y-m-d H:i:s"),
-                $tripPayment->getTripMinutes(),
-                $tripPayment->getParkingMinutes(),
-                $amounts['rows'][$key]['total']
+                $trip->getTimestampEnd()->format("Y-m-d H:i:s"),
+                $tripPayment->getTripMinutes() . ' (min)',
+                $trip->getCar()->getPlate(),
+                $amounts['rows'][$key]
             ]);
         }
 
@@ -244,17 +245,19 @@ class Invoices
             'greeting_message' => '',
             'contents' => [
                 'header' => [
-                    'Ora inizio',
-                    'Durata (min)',
-                    'Tempo in sosta (min)',
-                    'Imponibile'
+                    'Inizio',
+                    'Fine',
+                    'Durata',
+                    'Targa',
+                    'Totale'
                 ],
                 'body' => $body,
                 'body-format' => [
                     'alignment' => [
                         'left',
-                        'right',
-                        'right',
+                        'left',
+                        'left',
+                        'left',
                         'right'
                     ]
                 ]

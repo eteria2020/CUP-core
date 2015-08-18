@@ -144,12 +144,15 @@ class InvoicesService
     public function prepareInvoiceForTrips(Customers $customer, $tripPayments)
     {
         $rowAmounts = [];
+
         $total = 0;
+        // calculate amounts for single rows and add them to total
         foreach ($tripPayments as $tripPayment) {
-            array_push($rowAmounts, $this->calculateAmountsWithTaxesFromTotal($tripPayment->getTotalCost()));
+            array_push($rowAmounts, $this->parseDecimal($tripPayment->getTotalCost()));
             $total += $tripPayment->getTotalCost();
         }
 
+        // create invoice
         return Invoices::createInvoiceForTrips(
             $customer,
             $tripPayments,
