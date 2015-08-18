@@ -735,7 +735,8 @@ class Trips
         $extractedTrip = $hydrator->extract($this);
         $extractedTrip['customer'] = $customer;
         $extractedTrip['car'] = $car;
-        
+        $extractedTrip['timestampBeginningString'] = $this->getTimestampBeginning()->format('Y-m-d H:i:s');
+
         return $extractedTrip;
     }
 
