@@ -12,8 +12,9 @@ class TripsControllerFactory implements FactoryInterface
     {
         $tripsService = $serviceLocator->getServiceLocator()->get('SharengoCore\Service\TripsService');
         $entityManager = $serviceLocator->getServiceLocator()->get('doctrine.entitymanager.orm_default');
+        $authService = $serviceLocator->getServiceLocator()->get('zfcuser_auth_service');
         $hydrator = new DoctrineHydrator($entityManager);
-        
-        return new TripsController($tripsService, $hydrator);
+
+        return new TripsController($tripsService, $hydrator, $authService);
     }
 }

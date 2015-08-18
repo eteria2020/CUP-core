@@ -8,6 +8,9 @@ use Zend\Http\Client;
 use SharengoCore\Service\TripsService;
 use SharengoCore\Service\CustomersService;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+use Zend\Authentication\AuthenticationService;
+
+use SharengoCore\Entity\Customers;
 
 class TripsController extends AbstractRestfulController
 {
@@ -22,12 +25,19 @@ class TripsController extends AbstractRestfulController
      */
     private $hydrator;
 
+    /**
+     * @var AuthenticationService
+     */
+    private $authService;
+
     public function __construct(
         TripsService $tripsService,
-        DoctrineHydrator $hydrator
+        DoctrineHydrator $hydrator,
+        AuthenticationService $authService
     ) {
         $this->tripsService = $tripsService;
         $this->hydrator = $hydrator;
+        $this->authService = $authService;
     }
 
     public function getList()
@@ -38,6 +48,7 @@ class TripsController extends AbstractRestfulController
         // param flags
         $isPlateSet = false;
         $isCustomerSet = false;
+        $isMonthSet = false;
 
         // get limit
         $limit = $this->params()->fromQuery('limit');
@@ -59,6 +70,19 @@ class TripsController extends AbstractRestfulController
             }
         }
 
+        $user = $this->authService->getIdentity();
+        if ($this->params()->fromQuery('month') != null) {
+            $filters['month'] = $this->params()->fromQuery('month');
+            $isMonthSet = true;
+            if ($user instanceof Customers) {
+                $filters['customer'] = $user->getId();
+            }
+        } else {
+            if ($user instanceof Customers) {
+                return new JsonModel($this->buildReturnData(403, '', []));
+            }
+        }
+
         // get trips
         $trips = [];
         if ($this->params()->fromQuery('running') == true) {
@@ -69,6 +93,8 @@ class TripsController extends AbstractRestfulController
             } else {
                 $trips = $this->tripsService->getListTripsFilteredLimited($filters, $limit);
             }
+        } elseif ($isMonthSet) {
+            $trips = $this->tripsService->getListTripsForMonthByCustomer($filters['month'], $filters['customer']);
         } else {
             $trips = $this->tripsService->getListTripsFilteredLimited($filters, $limit);
         }
@@ -81,7 +107,7 @@ class TripsController extends AbstractRestfulController
 
         return new JsonModel($this->buildReturnData(200, '', $returnTrips));
     }
- 
+
     public function get($id)
     {
         $trip = $this->tripsService->getTripById($id);

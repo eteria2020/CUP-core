@@ -201,4 +201,28 @@ class TripsService
     {
         return $this->tripRepository->findTripsForCostComputation();
     }
+
+    /**
+     * @param Customers $customer
+     * @return mixed
+     */
+    public function getDistinctDatesForCustomerByMonth($customer)
+    {
+        $dates = $this->tripRepository->findDistinctDatesForCustomerByMonth($customer);
+        $returnDates = [];
+        foreach ($dates as $date) {
+            $returnDates[$date['timestampBeginning']->format('Y-m')] = $date['timestampBeginning'];
+        }
+        return $returnDates ;
+    }
+
+    /**
+     * @param string $month
+     * @param integer $customer
+     * @return Trips[]
+     */
+    public function getListTripsForMonthByCustomer($month, $customerId)
+    {
+        return $this->tripRepository->findListTripsForMonthByCustomer($month, $customerId);
+    }
 }
