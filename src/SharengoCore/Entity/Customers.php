@@ -1301,7 +1301,7 @@ class Customers
      */
     public function getDiscountRate()
     {
-        return $this->discountRate;
+        return $this->discountRate ?: 0;
     }
 
     /**
