@@ -30,14 +30,14 @@ class TripCostComputerServiceFactory implements FactoryInterface
         $faresService = $serviceLocator->get('SharengoCore\Service\FaresService');
         $tripFaresService = $serviceLocator->get('SharengoCore\Service\TripFaresService');
         $emailService = \Mockery::mock('SharengoCore\Service\EmailService');
-        $cartasiCustomerPayments = \Mockery::mock('Cartasi\Service\CartasiCustomerPayments');
+        $paymentsService = \Mockery::mock('SharengoCore\Service\PaymentsService');
 
         $tripCostService = new TripCostService(
             $faresService,
             $tripFaresService,
             $entityManager,
             $emailService,
-            $cartasiCustomerPayments
+            $paymentsService
         );
 
         return new TripCostComputerService(

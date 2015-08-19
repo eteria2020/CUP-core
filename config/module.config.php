@@ -168,7 +168,8 @@ return [
             'SharengoCore\Service\TripPaymentsService' => 'SharengoCore\Service\TripPaymentsServiceFactory',
             'SharengoCore\Service\SimpleLoggerService' => 'SharengoCore\Service\SimpleLoggerServiceFactory',
             'SharengoCore\Service\EmailService' => 'SharengoCore\Service\EmailServiceFactory',
-            'SharengoCore\Service\TripCostComputerService' => 'SharengoCore\Service\TripCostComputerServiceFactory'
+            'SharengoCore\Service\TripCostComputerService' => 'SharengoCore\Service\TripCostComputerServiceFactory',
+            'SharengoCore\Service\PaymentsService' => 'SharengoCore\Service\PaymentsServiceFactory'
         ],
         'shared' => [
             'SharengoCore\Service\TripCostComputerService' => false

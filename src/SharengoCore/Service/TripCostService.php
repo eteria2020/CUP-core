@@ -6,7 +6,6 @@ use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\TripPaymentTries;
 use SharengoCore\Entity\Customers;
-use Cartasi\Service\CartasiCustomerPayments;
 
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\EntityManager;
@@ -34,9 +33,9 @@ class TripCostService
     private $emailService;
 
     /**
-     * @var CartasiCustomerPayments
+     * @var PaymentsService
      */
-    private $cartasiCustomerPayments;
+    private $paymentsService;
 
     /**
      * @var boolean
@@ -58,13 +57,13 @@ class TripCostService
         TripFaresService $tripFaresService,
         EntityManager $entityManager,
         EmailService $emailService,
-        CartasiCustomerPayments $cartasiCustomerPayments
+        PaymentsService $paymentsService
     ) {
         $this->faresService = $faresService;
         $this->tripFaresService = $tripFaresService;
         $this->entityManager = $entityManager;
         $this->emailService = $emailService;
-        $this->cartasiCustomerPayments = $cartasiCustomerPayments;
+        $this->paymentsService = $paymentsService;
     }
 
     /**
@@ -85,6 +84,7 @@ class TripCostService
     ) {
         $this->avoidEmail = $avoidEmail;
         $this->avoidCartasi = $avoidCartasi;
+        $this->avoidPersistance = $avoidPersistance;
 
         if ($trip->customerIsPaymentAble()) {
             $tripPayment = $this->retrieveTripCost($trip);
@@ -96,7 +96,13 @@ class TripCostService
                     $this->saveTripPayment($tripPayment);
 
                     if ($trip->canBePayed()) {
-                        $this->tryTripPayment($trip->getCustomer(), $tripPayment);
+                        $this->paymentsService->tryTripPayment(
+                            $trip->getCustomer(),
+                            $tripPayment,
+                            $this->avoidEmail,
+                            $this->avoidCartasi,
+                            $this->avoidPersistance
+                        );
                     } else {
                         $this->notifyCustomerHeHasToPay($trip->getCustomer());
                     }
@@ -182,95 +188,6 @@ class TripCostService
     {
         $this->entityManager->persist($tripPayment);
         $this->entityManager->flush();
-    }
-
-    /**
-     * tries to pay the trip amount
-     * writes in database a record in the trip_payment_tries table
-     *
-     * @param Trips $trip
-     */
-    private function tryTripPayment(Customers $customer, TripPayments $tripPayment)
-    {
-        $response = $this->cartasiCustomerPayments->sendPaymentRequest(
-            $customer,
-            $tripPayment->getTotalCost(),
-            $this->avoidCartasi
-        );
-
-        if ($response->completedCorrectly) {
-            $this->markTripAsPayed($tripPayment);
-        } else {
-            $this->unpayableConsequences($customer, $tripPayment);
-        }
-
-        $tripPaymentTry = new TripPaymentTries($tripPayment, $response->outcome, $response->transaction);
-
-        $this->entityManager->persist($tripPaymentTry);
-        $this->entityManager->flush();
-    }
-
-    /**
-     * @param TripsPayments $tripPayment
-     */
-    private function markTripAsPayed(TripPayments $tripPayment)
-    {
-        $tripPayment->setPayedCorrectly();
-
-        $this->entityManager->persist($tripPayment);
-        $this->entityManager->flush();
-    }
-
-    /**
-     * If the payment of a trip does not complete correctly we:
-     * - disable the customer
-     * - trip payment set as not payed
-     * - send mail to notify customer
-     *
-     * @param Customers $customer
-     * @param TripPayments $tripPayment
-     */
-    private function unpayableConsequences(Customers $customer, TripPayments $tripPayment)
-    {
-        // disable the customer
-        $customer->disable();
-
-        $this->entityManager->persist($customer);
-
-        // set the trip payment as wrong payment
-        $tripPayment->setWrongPayment();
-
-        $this->entityManager->persist($tripPayment);
-        $this->entityManager->flush();
-
-        //notify the customer
-        $this->notifyCustomerOfWrongPayment($customer, $tripPayment);
-    }
-
-    /**
-     * @param Customers $customer
-     * @param TripPayment $tripPayment
-     */
-    private function notifyCustomerOfWrongPayment(Customers $customer, TripPayments $tripPayment)
-    {
-        $content = sprintf(
-            file_get_contents(__DIR__.'/../../../view/emails/wrong-payment-it_IT.html'),
-            $customer->getName(),
-            $customer->getSurname()
-        );
-
-        $attachments = [
-            'bannerphono.jpg' => __DIR__.'/../../../../../public/images/bannerphono.jpg'
-        ];
-
-        if (!$this->avoidEmail) {
-            $this->emailService->sendEmail(
-                $customer->getEmail(),
-                'SHARENGO - ERRORE NEL PAGAMENTO',
-                $content,
-                $attachments
-            );
-        }
     }
 
     /**
