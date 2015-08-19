@@ -148,7 +148,8 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
             "JOIN t.customer c ".
             "WHERE t.isAccounted = true ".
             "AND tp.id IS NULL ".
-            "AND c.paymentAble = TRUE";
+            "AND c.paymentAble = TRUE ".
+            "AND t.payable = FALSE";
 
         $query = $this->getEntityManager()->createQuery($dql);
         return $query->getResult();
