@@ -11,7 +11,17 @@ class TripPaymentsServiceFactory implements FactoryInterface
     {
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $tripPaymentsRepository = $entityManager->getRepository('\SharengoCore\Entity\TripPayments');
+        $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
 
-        return new TripPaymentsService($tripPaymentsRepository);
+        $datatableService->setQueryBuilder(
+            new DatatableQueryBuilders\Customers(
+                new DatatableQueryBuilders\Trips(
+                    new DatatableQueryBuilders\Basic()
+                ),
+                't'
+            )
+        );
+
+        return new TripPaymentsService($tripPaymentsRepository, $datatableService);
     }
 }

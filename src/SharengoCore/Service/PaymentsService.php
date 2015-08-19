@@ -55,13 +55,41 @@ class PaymentsService
      * tries to pay the trip amount
      * writes in database a record in the trip_payment_tries table
      *
+     * @param TripPayments $tripPayment
+     * @param boolean $avoidEmail
+     * @param boolean $avoidCartasi
+     * @param boolean $avoidPersistance
+     * @return CartasiResponse
+     */
+    public function tryTripPayment(
+        TripPayments $tripPayment,
+        $avoidEmail = false,
+        $avoidCartasi = false,
+        $avoidPersistance = false
+    ) {
+        $customer = $tripPayment->getCustomer();
+
+        return $this->tryCustomerTripPayment(
+            $customer,
+            $tripPayment,
+            $avoidEmail,
+            $avoidCartasi,
+            $avoidPersistance
+        );
+    }
+
+    /**
+     * tries to pay the trip amount
+     * writes in database a record in the trip_payment_tries table
+     *
      * @param Customers $customer
      * @param TripPayments $tripPayment
      * @param boolean $avoidEmail
      * @param boolean $avoidCartasi
      * @param boolean $avoidPersistance
+     * @return CartasiResponse
      */
-    public function tryTripPayment(
+    public function tryCustomerTripPayment(
         Customers $customer,
         TripPayments $tripPayment,
         $avoidEmail = false,
@@ -81,7 +109,7 @@ class PaymentsService
         $this->entityManager->getConnection()->beginTransaction();
 
         try {
-            if ($response->getCompletedCorrectly) {
+            if ($response->getCompletedCorrectly()) {
                 $this->markTripAsPayed($tripPayment);
             } else {
                 $this->unpayableConsequences($customer, $tripPayment);
@@ -105,6 +133,8 @@ class PaymentsService
             $this->entityManager->getConnection()->rollback();
             throw $e;
         }
+
+        return $response;
     }
 
     /**

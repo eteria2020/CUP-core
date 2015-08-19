@@ -114,6 +114,13 @@ class TripPayments
     private $invoicedAt;
 
     /**
+     * @var TripPaymentTries[]
+     *
+     * @ORM\OneToMany(targetEntity="TripPaymentTries", mappedBy="tripPayment")
+     */
+    private $tripPaymentTries;
+
+    /**
      * @param Trips $trip
      * @param fares $fare
      * @param int $tripMinutes
@@ -357,5 +364,21 @@ class TripPayments
     public function setWrongPayment()
     {
         return $this->setStatus('wrong_payment');
+    }
+
+    /**
+     * @return TripPaymentTries[]
+     */
+    public function getTripPaymentTries()
+    {
+        return $this->tripPaymentTries;
+    }
+
+    /**
+     * @return Customers
+     */
+    public function getCustomer()
+    {
+        return $this->trip->getCustomer();
     }
 }

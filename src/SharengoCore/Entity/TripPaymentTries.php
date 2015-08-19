@@ -75,4 +75,38 @@ class TripPaymentTries
         $this->transaction = $transaction;
         $this->ts = date_create(date('Y-m-d H:i:s'));
     }
+
+    /**
+     * @return DateTime
+     */
+    public function getTs()
+    {
+        return $this->ts;
+    }
+
+    /**
+     * @return Webuser
+     */
+    public function getWebuser()
+    {
+        return $this->webuser;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWebuserName()
+    {
+        if ($this->webuser) {
+            return $this->webuser->getDisplayName();
+        }
+    }
+
+    /**
+     * @var string
+     */
+    public function getOutcome()
+    {
+        return $this->outcome;
+    }
 }

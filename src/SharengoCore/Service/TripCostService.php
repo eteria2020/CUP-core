@@ -96,7 +96,7 @@ class TripCostService
                     $this->saveTripPayment($tripPayment);
 
                     if ($trip->canBePayed()) {
-                        $this->paymentsService->tryTripPayment(
+                        $this->paymentsService->tryCustomerTripPayment(
                             $trip->getCustomer(),
                             $tripPayment,
                             $this->avoidEmail,
