@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Repository\TripPaymentsRepository;
 use SharengoCore\Entity\TripPayments;
+use SharengoCore\Entity\Trips;
 
 class TripPaymentsService
 {
@@ -54,5 +55,14 @@ class TripPaymentsService
         }
 
         return $orderedTripPayments;
+    }
+
+    /**
+     * @param Trips $trip
+     * @return TripPayments || null
+     */
+    public function getTripPaymentByTrip(Trips $trip)
+    {
+        return $this->tripPaymentsRepository->findOneByTrip($trip);
     }
 }

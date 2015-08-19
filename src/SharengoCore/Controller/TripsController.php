@@ -6,19 +6,25 @@ use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 use Zend\Http\Client;
 use SharengoCore\Service\TripsService;
+use SharengoCore\Service\TripPaymentsService;
 use SharengoCore\Service\CustomersService;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use Zend\Authentication\AuthenticationService;
 
 use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\TripPayments;
 
 class TripsController extends AbstractRestfulController
 {
-
     /**
-     * @var ContService
+     * @var TripsService
      */
     private $tripsService;
+
+    /**
+     * @var TripPaymentsService
+     */
+    private $tripPaymentsService;
 
     /**
      * @var DoctrineHydrator
@@ -32,10 +38,12 @@ class TripsController extends AbstractRestfulController
 
     public function __construct(
         TripsService $tripsService,
+        TripPaymentsService $tripPaymentsService,
         DoctrineHydrator $hydrator,
         AuthenticationService $authService
     ) {
         $this->tripsService = $tripsService;
+        $this->tripPaymentsService = $tripPaymentsService;
         $this->hydrator = $hydrator;
         $this->authService = $authService;
     }
@@ -95,6 +103,24 @@ class TripsController extends AbstractRestfulController
             }
         } elseif ($isMonthSet) {
             $trips = $this->tripsService->getListTripsForMonthByCustomer($filters['month'], $filters['customer']);
+            // parse trips with tripPayments
+            foreach ($trips as $key => $trip) {
+                // get tripPayment
+                $tripPayment = $this->tripPaymentsService->getTripPaymentByTrip($trip);
+                if ($tripPayment != null) {
+                    // parse tripPayment and extract trip from it
+                    $tripPayment = $tripPayment->toArray($this->hydrator);
+                    $trip = $tripPayment['trip'];
+                    $tripPayment['trip'] = null;
+                } else {
+                    // if no tripPayment found, parse trip
+                    $trip = $trip->toArray($this->hydrator);
+                }
+                // set tripPayment
+                $trip['tripPayment'] = $tripPayment;
+                array_push($returnTrips, $trip);
+            }
+            return new JsonModel($this->buildReturnData(200, '', $returnTrips));
         } else {
             $trips = $this->tripsService->getListTripsFilteredLimited($filters, $limit);
         }

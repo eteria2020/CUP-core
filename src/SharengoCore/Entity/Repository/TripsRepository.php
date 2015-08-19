@@ -189,7 +189,6 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('monthStart', $date);
 
         $date = date_create($date);
-        //echo 'start: ' . $date->format('Y-m') . '<br>';
         $year = intval($date->format('Y'));
         $month = intval($date->format('m')) + 1;
         if ($month == 13) {
@@ -199,8 +198,6 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $month = ($month < 10) ? '0' . $month : $month;
 
         $query->setParameter('monthEnd', date_create($year . '-' . $month . '-01 0:00:00'));
-
-        //echo 'end: ' . $year . '-' . $month;die;
 
         return $query->getResult();
     }

@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * TripPayments
@@ -138,6 +139,35 @@ class TripPayments
         $this->totalCost = $totalCost;
         $this->status = 'not_payed';
         $this->createdAt = date_create(date('Y-m-d H:i:s'));
+    }
+
+    /**
+     * @param DoctrineHydrator $hydrator
+     * @return mixed
+     */
+    public function toArray(DoctrineHydrator $hydrator)
+    {
+        $trip = $this->getTrip();
+        if ($trip !== null) {
+            $trip = $trip->toArray($hydrator);
+        }
+
+        $fare = $this->getFare();
+        if ($fare !== null) {
+            $fare = $fare->toArray($hydrator);
+        }
+
+        $invoice = $this->getInvoice();
+        if ($invoice !== null) {
+            $invoice = $invoice->toArray($hydrator);
+        }
+
+        $extractedTripPayment = $hydrator->extract($this);
+        $extractedTripPayment['trip'] = $trip;
+        $extractedTripPayment['fare'] = $fare;
+        $extractedTripPayment['invoice'] = $invoice;
+
+        return $extractedTripPayment;
     }
 
     public function getId()
