@@ -5,8 +5,6 @@ namespace SharengoCore\Service;
 use SharengoCore\Entity\Trips;
 use Cartasi\Entity\Transactions;
 
-use Zend\Http\Response;
-
 class TripCostServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -24,19 +22,21 @@ class TripCostServiceTest extends \PHPUnit_Framework_TestCase
         $this->cartasiContractsService = \Mockery::mock('Cartasi\Service\CartasiContractsService');
         $this->transactionsRepository = \Mockery::mock('Cartasi\Entity\Repository\TransactionsRepository');
         $this->emailService = \Mockery::mock('SharengoCore\Service\EmailService');
+        $this->cartasiCustomerPaymentsService = \Mockery::mock('Cartasi\Service\CartasiCustomerPayments');
 
         $this->tripCostService = new TripCostService(
             $this->faresService,
             $this->tripFaresService,
             $this->entityManager,
-            $this->httpClient,
+            /*$this->httpClient,
             $this->url,
             $this->cartasiContractsService,
             $this->transactionsRepository,
             [
                 'uri' => 'my.uri'
-            ],
-            $this->emailService
+            ],*/
+            $this->emailService,
+            $this->cartasiCustomerPaymentsService
         );
     }
 
@@ -68,70 +68,6 @@ class TripCostServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             $parkMinutes,
             $computeMinutesMethod->invoke($this->tripCostService, $trip, $tripMinutes)
-        );
-    }
-
-    public function sendPaymentProvider()
-    {
-        return [
-            [123, 200, false, 'KO', null],
-            [123, 404, false, 'KO', null],
-            [123, 200, true, 'OK', new Transactions()],
-            [null, 200, false, 'KO', null]
-        ];
-    }
-
-    /**
-     * @dataProvider sendPaymentProvider
-     *
-     * @param int
-     * @param int http response status code
-     * @param boolean
-     * @param string 'OK' or 'KO'
-     * @param null|Transactions
-     */
-    public function testSendPaymentRequest(
-        $contractNumber,
-        $statusCode,
-        $completedCorrectly,
-        $outcome,
-        $transaction
-    ) {
-        $sendRequestMethod = new \ReflectionMethod('SharengoCore\Service\TripCostService', 'sendPaymentRequest');
-        $sendRequestMethod->setAccessible(true);
-
-        $customer = \Mockery::mock('SharengoCore\Entity\Customers');
-
-        $this->cartasiContractsService->shouldReceive('getCartasiContractNumber')
-            ->with($customer)->andReturn($contractNumber);
-
-        $url = 'url';
-        $this->url->shouldReceive('__invoke')->andReturn($url);
-
-        $avoidCartasiProperty = new \ReflectionProperty('SharengoCore\Service\TripCostService', 'avoidCartasi');
-        $avoidCartasiProperty->setAccessible(true);
-        $avoidCartasiProperty->setValue($this->tripCostService, false);
-
-        $response = new Response();
-        $response->setStatusCode($statusCode);
-        $body = json_encode([
-            'outcome' => $outcome,
-            'codTrans' => 123
-        ]);
-        $response->setContent($body);
-
-        $this->httpClient->shouldReceive('send')->andReturn($response);
-
-        $this->transactionsRepository->shouldReceive('findOneById')->andReturn($transaction);
-
-        $ret = new \StdClass;
-        $ret->completedCorrectly = $completedCorrectly;
-        $ret->outcome = $outcome;
-        $ret->transaction = $transaction;
-
-        $this->assertEquals(
-            $ret,
-            $sendRequestMethod->invoke($this->tripCostService, $customer, 1234)
         );
     }
 
