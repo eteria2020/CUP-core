@@ -6,16 +6,10 @@ use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\TripPaymentTries;
 use SharengoCore\Entity\Customers;
-use Cartasi\Service\CartasiContractsService;
-use Cartasi\Entity\Repository\TransactionsRepository;
-use Cartasi\Entity\Transactions;
+use Cartasi\Service\CartasiCustomerPayments;
 
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\EntityManager;
-use Zend\Http\Client;
-use Zend\Http\Request;
-use Zend\View\Helper\Url;
-use Zend\Uri\Http as HttpUri;
 
 class TripCostService
 {
@@ -35,34 +29,14 @@ class TripCostService
     private $entityManager;
 
     /**
-     * @var Client
-     */
-    private $httpClient;
-
-    /**
-     * @var Url
-     */
-    private $url;
-
-    /**
-     * @var CartasiContractsService
-     */
-    private $cartasiContractsService;
-
-    /**
-     * @var TransactionsRepository
-     */
-    private $transactionsRepository;
-
-    /**
-     * @var array
-     */
-    private $websiteConfig;
-
-    /**
      * @var EmailService
      */
     private $emailService;
+
+    /**
+     * @var CartasiCustomerPayments
+     */
+    private $cartasiCustomerPayments;
 
     /**
      * @var boolean
@@ -83,22 +57,14 @@ class TripCostService
         FaresService $faresService,
         TripFaresService $tripFaresService,
         EntityManager $entityManager,
-        Client $httpClient,
-        Url $url,
-        CartasiContractsService $cartasiContractsService,
-        TransactionsRepository $transactionsRepository,
-        array $websiteConfig,
-        EmailService $emailService
+        EmailService $emailService,
+        CartasiCustomerPayments $cartasiCustomerPayments
     ) {
         $this->faresService = $faresService;
         $this->tripFaresService = $tripFaresService;
         $this->entityManager = $entityManager;
-        $this->httpClient = $httpClient;
-        $this->url = $url;
-        $this->cartasiContractsService = $cartasiContractsService;
-        $this->transactionsRepository = $transactionsRepository;
-        $this->websiteConfig = $websiteConfig;
         $this->emailService = $emailService;
+        $this->cartasiCustomerPayments = $cartasiCustomerPayments;
     }
 
     /**
@@ -226,7 +192,7 @@ class TripCostService
      */
     private function tryTripPayment(Customers $customer, TripPayments $tripPayment)
     {
-        $response = $this->sendPaymentRequest($customer, $tripPayment->getTotalCost());
+        $response = $this->cartasiCustomerPayments->sendPaymentRequest($customer, $tripPayment->getTotalCost());
 
         if ($response->completedCorrectly) {
             $this->markTripAsPayed($tripPayment);
@@ -238,59 +204,6 @@ class TripCostService
 
         $this->entityManager->persist($tripPaymentTry);
         $this->entityManager->flush();
-    }
-
-    /**
-     * sends a request for the payment of the amount for the given user
-     * returns a boolean indicating if the operation was successful
-     *
-     * @param Customers $customer
-     * @param int $amount
-     * @return boolean
-     */
-    private function sendPaymentRequest(Customers $customer, $amount)
-    {
-        $ret = new \StdClass;
-        $ret->completedCorrectly = false;
-        $ret->outcome = 'KO';
-        $ret->transaction = null;
-
-        $contractNumber = $this->cartasiContractsService->getCartasiContractNumber($customer);
-
-        if (!$contractNumber) {
-            return $ret;
-        }
-
-        $uri = new HttpUri($this->websiteConfig['uri']);
-        $url = $this->url->__invoke(
-            'cartasi/pagamento-ricorrente',
-            [],
-            [
-                'force_canonical' => true,
-                'query' => [
-                    'contract' => $contractNumber,
-                    'amount' => $amount
-                ],
-                'uri' => $uri
-            ]
-        );
-
-        $request = new Request();
-        $request->setUri($url);
-
-        if (!$this->avoidCartasi) {
-            $response = $this->httpClient->send($request);
-
-            if ($response->getstatusCode() === 200) {
-                $parsedBody = json_decode($response->getBody());
-
-                $ret->outcome = $parsedBody->outcome;
-                $ret->completedCorrectly = ($ret->outcome === 'OK');
-                $ret->transaction = $this->transactionsRepository->findOneById($parsedBody->codTrans);
-            }
-        }
-
-        return $ret;
     }
 
     /**
@@ -311,7 +224,7 @@ class TripCostService
      * - send mail to notify customer
      *
      * @param Customers $customer
-     * @param Transactions $transaction
+     * @param TripPayments $tripPayment
      */
     private function unpayableConsequences(Customers $customer, TripPayments $tripPayment)
     {
@@ -332,7 +245,7 @@ class TripCostService
 
     /**
      * @param Customers $customer
-     * @param Transactions $transaction
+     * @param TripPayment $tripPayment
      */
     private function notifyCustomerOfWrongPayment(Customers $customer, TripPayments $tripPayment)
     {
