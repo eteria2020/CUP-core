@@ -192,7 +192,11 @@ class TripCostService
      */
     private function tryTripPayment(Customers $customer, TripPayments $tripPayment)
     {
-        $response = $this->cartasiCustomerPayments->sendPaymentRequest($customer, $tripPayment->getTotalCost());
+        $response = $this->cartasiCustomerPayments->sendPaymentRequest(
+            $customer,
+            $tripPayment->getTotalCost(),
+            $this->avoidCartasi
+        );
 
         if ($response->completedCorrectly) {
             $this->markTripAsPayed($tripPayment);
