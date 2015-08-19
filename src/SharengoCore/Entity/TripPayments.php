@@ -149,7 +149,7 @@ class TripPayments
     {
         $trip = $this->getTrip();
         if ($trip !== null) {
-            $trip = $trip->toArray($hydrator);
+            $trip = $trip->getId();
         }
 
         $fare = $this->getFare();

@@ -5,6 +5,7 @@ namespace SharengoCore\Entity;
 use SharengoCore\Utils\Interval;
 
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * TripBills
@@ -61,6 +62,19 @@ class TripBills
      * @ORM\Column(name="notes", type="text", nullable=true)
      */
     private $notes;
+
+    /**
+     * @param DoctrineHydrator $hydrator
+     * @return mixed
+     */
+    public function toArray(DoctrineHydrator $hydrator)
+    {
+        $tripBill = $hydrator->extract($this);
+        if ($tripBill['trip'] != null) {
+            $tripBill['trip'] = $tripBill['trip']->getId();
+        }
+        return $tripBill;
+    }
 
     public static function createFromTrip(Trips $trip)
     {

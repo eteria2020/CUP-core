@@ -13,6 +13,7 @@ use Zend\Authentication\AuthenticationService;
 
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\TripPayments;
+use SharengoCore\Entity\TripBills;
 
 class TripsController extends AbstractRestfulController
 {
@@ -105,19 +106,8 @@ class TripsController extends AbstractRestfulController
             $trips = $this->tripsService->getListTripsForMonthByCustomer($filters['month'], $filters['customer']);
             // parse trips with tripPayments
             foreach ($trips as $key => $trip) {
-                // get tripPayment
-                $tripPayment = $this->tripPaymentsService->getTripPaymentByTrip($trip);
-                if ($tripPayment != null) {
-                    // parse tripPayment and extract trip from it
-                    $tripPayment = $tripPayment->toArray($this->hydrator);
-                    $trip = $tripPayment['trip'];
-                    $tripPayment['trip'] = null;
-                } else {
-                    // if no tripPayment found, parse trip
-                    $trip = $trip->toArray($this->hydrator);
-                }
-                // set tripPayment
-                $trip['tripPayment'] = $tripPayment;
+                // get all data needed...tripPayments, tripBonuses and tripFreeFares
+                //$trip = $trip->toArray($this->hydrator);
                 array_push($returnTrips, $trip);
             }
             return new JsonModel($this->buildReturnData(200, '', $returnTrips));

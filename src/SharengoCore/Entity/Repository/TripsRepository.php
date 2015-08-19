@@ -180,6 +180,12 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
 
         $dql = "SELECT t
         FROM \SharengoCore\Entity\Trips t
+        LEFT JOIN \SharengoCore\Entity\TripPayments tp
+        WITH t.id = tp.trip
+        LEFT JOIN \SharengoCore\Entity\TripBonuses tb
+        WITH t.id = tb.trip
+        LEFT JOIN \SharengoCore\Entity\TripFreeFares tf
+        WITH t.id = tf.trip
         Where t.customer = :customer
         AND t.timestampEnd >= :monthStart
         AND t.timestampEnd < :monthEnd";
