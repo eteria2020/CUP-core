@@ -67,12 +67,17 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
     public function findTripsToBeAccounted()
     {
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
-            "WHERE t.isAccounted = false ".
-            "AND t.timestampEnd IS NOT NULL ".
-            "AND t.timestampEnd >= t.timestampBeginning ".
-            "AND t.payable = TRUE ".
-            "ORDER BY t.timestampEnd ASC";
+            "WHERE t.isAccounted = false ". // trips that were not already accounted
+            "AND t.timestampEnd IS NOT NULL ". // not trips still running
+            "AND t.timestampEnd >= t.timestampBeginning ". // only trips with positive length
+            "AND t.timestampBeginning >= :firstJanuary2015 ". // only trips begun after 01/01/2015
+            "AND t.timestampEnd - t.timestampBeginning <= :oneDay ".
+            "AND t.payable = TRUE ". //only payable trips
+            "ORDER BY t.timestampEnd ASC"; // old trips first
         $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('firstJanuary2015', date_create('2015-01-01'));
+        $query->setParameter('oneDay', '24:00:00');
+
         return $query->getResult();
     }
 
