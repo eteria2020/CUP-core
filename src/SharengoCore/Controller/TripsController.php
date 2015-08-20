@@ -104,10 +104,13 @@ class TripsController extends AbstractRestfulController
             }
         } elseif ($isMonthSet) {
             $trips = $this->tripsService->getListTripsForMonthByCustomer($filters['month'], $filters['customer']);
+
+            // get all data needed
+            $tripsHydrationOptions = ['tripPayments','tripBonuses','tripFreeFares'];
+
             // parse trips with tripPayments
             foreach ($trips as $key => $trip) {
-                // get all data needed...tripPayments, tripBonuses and tripFreeFares
-                //$trip = $trip->toArray($this->hydrator);
+                $trip = $trip->toArray($this->hydrator, $tripsHydrationOptions);
                 array_push($returnTrips, $trip);
             }
             return new JsonModel($this->buildReturnData(200, '', $returnTrips));

@@ -79,14 +79,16 @@ class TripFreeFares
      */
     public function toArray(DoctrineHydrator $hydrator)
     {
-        $tripFreeFare = $hydrator->extract($this);
-        if ($tripFreeFare['trip'] != null) {
-            $tripFreeFare['trip'] = $tripFreeFare['trip']->getId();
-        }
-        if ($tripFreeFare['freeFare'] != null) {
-            $tripFreeFare['freeFare'] = $tripFreeFare['freeFare']->getId();
-        }
-        return $tripBill;
+        $trip = $this->getTrip();
+
+        $extractedTripFreeFare = $hydrator->extract($this);
+
+        $extractedTripFreeFare['tripId'] = $trip->getId();
+
+        unset($extractedTripFreeFare['freeFare']);
+        unset($extractedTripFreeFare['trip']);
+
+        return $extractedTripFreeFare;
     }
 
     public static function createFromTripAndFreeFare(Trips $trip, FreeFares $freeFare)

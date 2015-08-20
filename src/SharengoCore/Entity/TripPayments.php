@@ -148,25 +148,19 @@ class TripPayments
     public function toArray(DoctrineHydrator $hydrator)
     {
         $trip = $this->getTrip();
-        if ($trip !== null) {
-            $trip = $trip->getId();
-        }
-
-        $fare = $this->getFare();
-        if ($fare !== null) {
-            $fare = $fare->toArray($hydrator);
-        }
-
-        $invoice = $this->getInvoice();
-        if ($invoice !== null) {
-            $invoice = $invoice->toArray($hydrator);
-        }
 
         $extractedTripPayment = $hydrator->extract($this);
-        $extractedTripPayment['trip'] = $trip;
-        $extractedTripPayment['fare'] = $fare;
-        $extractedTripPayment['invoice'] = $invoice;
+        
+        $extractedTripPayment['tripId'] = $trip->getId();
+        
+        $invoice = $this->getInvoice();
+        if ($invoice !== null) {
+            $extractedTripPayment['invoiceId'] = $invoice->getId();
+        }
 
+        unset($extractedTripPayment['fare']);
+        unset($extractedTripPayment['invoice']);
+        
         return $extractedTripPayment;
     }
 
