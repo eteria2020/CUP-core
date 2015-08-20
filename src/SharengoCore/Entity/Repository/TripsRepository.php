@@ -155,4 +155,58 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         return $query->getResult();
     }
+
+    /**
+     * @param Customers $customer
+     * @return mixed
+     */
+    public function findDistinctDatesForCustomerByMonth($customer)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT DISTINCT t.timestampBeginning
+        FROM \SharengoCore\Entity\Trips t
+        WHERE t.customer = :customer
+        AND t.timestampEnd IS NOT NULL
+        ORDER BY t.timestampBeginning DESC";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('customer', $customer);
+
+        return $query->getResult();
+    }
+
+    public function findListTripsForMonthByCustomer($date, $customer)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT t
+        FROM \SharengoCore\Entity\Trips t
+        LEFT JOIN \SharengoCore\Entity\TripPayments tp
+        WITH t.id = tp.trip
+        LEFT JOIN \SharengoCore\Entity\TripBonuses tb
+        WITH t.id = tb.trip
+        LEFT JOIN \SharengoCore\Entity\TripFreeFares tf
+        WITH t.id = tf.trip
+        Where t.customer = :customer
+        AND t.timestampEnd >= :monthStart
+        AND t.timestampEnd < :monthEnd";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('customer', $customer);
+        $query->setParameter('monthStart', $date);
+
+        $date = date_create($date);
+        $year = intval($date->format('Y'));
+        $month = intval($date->format('m')) + 1;
+        if ($month == 13) {
+            $month = 1;
+            $year ++;
+        }
+        $month = ($month < 10) ? '0' . $month : $month;
+
+        $query->setParameter('monthEnd', date_create($year . '-' . $month . '-01 0:00:00'));
+
+        return $query->getResult();
+    }
 }

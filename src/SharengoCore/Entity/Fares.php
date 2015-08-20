@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * Fares
@@ -51,6 +52,15 @@ class Fares
         $this->motionCostPerMinute = $motionCostPerMinute;
         $this->parkCostPerMinute = $parkCostPerMinute;
         $this->costSteps = $costSteps;
+    }
+
+    /**
+     * @param DoctrineHydrator $hydrator
+     * @return mixed
+     */
+    public function toArray(DoctrineHydrator $hydrator)
+    {
+        return $hydrator->extract($this);
     }
 
     /**

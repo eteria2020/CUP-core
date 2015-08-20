@@ -190,6 +190,20 @@ class Trips
      */
     private $tripBills;
 
+    /**
+     * @var TripBonuses
+     *
+     * @ORM\OneToMany(targetEntity="TripBonuses", mappedBy="trip")
+     */
+    private $tripBonuses;
+
+    /**
+     * @var TripFreeFares
+     *
+     * @ORM\OneToMany(targetEntity="TripFreeFares", mappedBy="trip")
+     */
+    private $tripFreeFares;
+
 
 
     /**
@@ -717,25 +731,97 @@ class Trips
     }
 
     /**
+     * Get trip bills
+     *
+     * @return TripBills[]
+     */
+    public function getTripPayments()
+    {
+        return $this->tripPayments;
+    }
+
+    /**
+     * Get trip bonuses
+     *
+     * @return TripBonuses[]
+     */
+    public function getTripBonuses()
+    {
+        return $this->tripBonuses;
+    }
+
+    /**
+     * Get trip free fares
+     *
+     * @return TripFreeFares[]
+     */
+    public function getTripFreeFares()
+    {
+        return $this->tripFreeFares;
+    }
+
+    /**
      * @param DoctrineHydrator
      * @return mixed[]
      */
-    public function toArray(DoctrineHydrator $hydrator)
+    public function toArray(DoctrineHydrator $hydrator, array $tripsHydrationOptions = ['customer','car'])
     {
-        $customer = $this->getCustomer();
-        if ($customer !== null) {
-            $customer = $customer->toArray($hydrator);
-        }
-
-        $car = $this->getCar();
-        if ($car !== null) {
-            $car = $car->toArray($hydrator);
-        }
-
         $extractedTrip = $hydrator->extract($this);
-        $extractedTrip['customer'] = $customer;
-        $extractedTrip['car'] = $car;
-        
+
+        unset($extractedTrip['customer']);
+        if (in_array('customer', $tripsHydrationOptions)) {
+            $customer = $this->getCustomer();
+            if ($customer !== null) {
+                $customer = $customer->toArray($hydrator);
+                $extractedTrip['customer'] = $customer;
+            }
+        } 
+
+        unset($extractedTrip['car']);
+        if (in_array('car', $tripsHydrationOptions)) {
+            $car = $this->getCar();
+            if ($car !== null) {
+                $car = $car->toArray($hydrator);
+                $extractedTrip['car'] = $car;
+            }
+        }
+
+        if (in_array('tripPayments', $tripsHydrationOptions)) {
+            if (count($this->getTripPayments()) > 0) {
+                // we assume there is a single row with payment infos
+                $tripPayments = $this->getTripPayments();
+                $tripPayment = $tripPayments[0];
+                $extractedTrip['tripPayments'] = $tripPayment->toArray($hydrator);
+            } else {
+                unset($extractedTrip['tripPayments']);
+            }
+        } 
+
+        unset($extractedTrip['tripBonuses']);
+        if (in_array('tripBonuses', $tripsHydrationOptions)) {
+            if (count($this->getTripBonuses()) > 0) {
+                $tripBonuses = [];
+                foreach($this->getTripBonuses() as $tripBonus) {
+                    $tripBonuses[] = $tripBonus->toArray($hydrator);
+                }
+                $extractedTrip['tripBonuses'] = $tripBonuses;
+            }
+        }
+
+        unset($extractedTrip['tripFreeFares']);
+        if (in_array('tripFreeFares', $tripsHydrationOptions)) {
+            if (count($this->getTripFreeFares()) > 0) {
+                $tripFreeFares = [];
+                foreach($this->getTripFreeFares() as $tripFreeFare) {
+                    $tripFreeFares[] = $tripFreeFare->toArray($hydrator);
+                }
+                $extractedTrip['tripFreeFares'] = $tripFreeFares;
+            }
+        }
+
+        $extractedTrip['timestampBeginningString'] = $this->getTimestampBeginning()->format('d-m-Y H:i:s');
+        $extractedTrip['timestampEndString'] = $this->getTimestampEnd()->format('d-m-Y H:i:s');
+
         return $extractedTrip;
     }
 

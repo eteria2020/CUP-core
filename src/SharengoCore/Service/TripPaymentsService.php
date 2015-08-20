@@ -5,6 +5,7 @@ namespace SharengoCore\Service;
 use SharengoCore\Entity\Repository\TripPaymentsRepository;
 use SharengoCore\Entity\TripPayments;
 use SharengoCore\Service\DatatableService;
+use SharengoCore\Entity\Trips;
 
 class TripPaymentsService
 {

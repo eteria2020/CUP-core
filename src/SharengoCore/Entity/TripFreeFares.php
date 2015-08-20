@@ -5,6 +5,7 @@ namespace SharengoCore\Entity;
 use SharengoCore\Utils\Interval;
 
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * TripFreeFares
@@ -71,6 +72,24 @@ class TripFreeFares
      * @ORM\Column(name="notes", type="text", nullable=true)
      */
     private $notes;
+
+    /**
+     * @param DoctrineHydrator $hydrator
+     * @return mixed
+     */
+    public function toArray(DoctrineHydrator $hydrator)
+    {
+        $trip = $this->getTrip();
+
+        $extractedTripFreeFare = $hydrator->extract($this);
+
+        $extractedTripFreeFare['tripId'] = $trip->getId();
+
+        unset($extractedTripFreeFare['freeFare']);
+        unset($extractedTripFreeFare['trip']);
+
+        return $extractedTripFreeFare;
+    }
 
     public static function createFromTripAndFreeFare(Trips $trip, FreeFares $freeFare)
     {

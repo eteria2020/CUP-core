@@ -198,7 +198,7 @@ return [
                 array('controller' => 'SharengoCore\Controller\Customers', 'roles' => array('admin', 'callcenter')),
                 array('controller' => 'SharengoCore\Controller\Pois', 'roles' => array()),
                 array('controller' => 'SharengoCore\Controller\Reservations', 'roles' => array('user', 'admin', 'callcenter')),
-                array('controller' => 'SharengoCore\Controller\Trips', 'roles' => array('admin', 'callcenter')),
+                array('controller' => 'SharengoCore\Controller\Trips', 'roles' => array('admin', 'callcenter', 'user')),
                 array('controller' => 'SharengoCore\Controller\Invoices', 'roles' => array('user')),
                 array('controller' => 'SharengoCore\Controller\Pdf', 'roles' => ['user', 'admin']),
             ),
