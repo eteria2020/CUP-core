@@ -70,6 +70,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
             "WHERE t.isAccounted = false ".
             "AND t.timestampEnd IS NOT NULL ".
             "AND t.timestampEnd >= t.timestampBeginning ".
+            "AND t.payable = TRUE ".
             "ORDER BY t.timestampEnd ASC";
         $query = $this->getEntityManager()->createQuery($dql);
         return $query->getResult();
