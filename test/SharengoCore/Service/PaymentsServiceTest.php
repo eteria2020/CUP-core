@@ -24,6 +24,7 @@ class PaymentsServiceTest extends \PHPUnit_Framework_TestCase
 
         $customer = \Mockery::mock('SharengoCore\Entity\Customers');
         $customer->shouldReceive('disable');
+        $customer->shouldReceive('setPaymentAble')->with(false);
 
         $tripPayment = \Mockery::mock('SharengoCore\Entity\TripPayments');
         $tripPayment->shouldReceive('setWrongPayment');

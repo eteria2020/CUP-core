@@ -152,10 +152,9 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
             "LEFT JOIN t.tripPayments tp ".
             "JOIN t.customer c ".
-            "WHERE t.isAccounted = true ".
-            "AND tp.id IS NULL ".
-            "AND c.paymentAble = TRUE ".
-            "AND t.payable = FALSE";
+            "WHERE t.isAccounted = true ". //only trips that were already processed by the accounting trips
+            "AND tp.id IS NULL ". // only trips that do not have a trip payment
+            "AND t.payable = TRUE"; // trip is payable
 
         $query = $this->getEntityManager()->createQuery($dql);
         return $query->getResult();

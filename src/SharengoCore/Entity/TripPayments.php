@@ -379,7 +379,10 @@ class TripPayments
      */
     public function setPayedCorrectly()
     {
-        return $this->setStatus('payed_correctly');
+        $this->setStatus('payed_correctly');
+        $this->payedSuccessfullyAt = date_create();
+
+        return $this;
     }
 
     /**

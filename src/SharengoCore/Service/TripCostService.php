@@ -28,26 +28,6 @@ class TripCostService
     private $entityManager;
 
     /**
-     * @var EmailService
-     */
-    private $emailService;
-
-    /**
-     * @var PaymentsService
-     */
-    private $paymentsService;
-
-    /**
-     * @var boolean
-     */
-    private $avoidEmail = true;
-
-    /**
-     * @var boolean
-     */
-    private $avoidCartasi = true;
-
-    /**
      * @var boolean
      */
     private $avoidPersistance = true;
@@ -55,15 +35,11 @@ class TripCostService
     public function __construct(
         FaresService $faresService,
         TripFaresService $tripFaresService,
-        EntityManager $entityManager,
-        EmailService $emailService,
-        PaymentsService $paymentsService
+        EntityManager $entityManager
     ) {
         $this->faresService = $faresService;
         $this->tripFaresService = $tripFaresService;
         $this->entityManager = $entityManager;
-        $this->emailService = $emailService;
-        $this->paymentsService = $paymentsService;
     }
 
     /**
@@ -73,19 +49,11 @@ class TripCostService
      *
      * @param Trips $trip
      * @param boolean $avoidPersistance
-     * @param boolean $avoidEmail
-     * @param boolean $avoidCartasi
      */
     public function computeTripCost(
         Trips $trip,
-        $avoidCartasi = true,
-        $avoidPersistance = true,
-        $avoidEmail = true
+        $avoidPersistance = true
     ) {
-        $this->avoidEmail = $avoidEmail;
-        $this->avoidCartasi = $avoidCartasi;
-        $this->avoidPersistance = $avoidPersistance;
-
         if ($trip->customerIsPaymentAble()) {
             $tripPayment = $this->retrieveTripCost($trip);
 
@@ -97,18 +65,6 @@ class TripCostService
 
                 try {
                     $this->saveTripPayment($tripPayment);
-
-                    if ($trip->canBePayed()) {
-                        $this->paymentsService->tryCustomerTripPayment(
-                            $trip->getCustomer(),
-                            $tripPayment,
-                            $this->avoidEmail,
-                            $this->avoidCartasi,
-                            $this->avoidPersistance
-                        );
-                    } else {
-                        $this->notifyCustomerHeHasToPay($trip->getCustomer());
-                    }
 
                     if (!$avoidPersistance) {
                         $this->entityManager->getConnection()->commit();
@@ -191,35 +147,5 @@ class TripCostService
     {
         $this->entityManager->persist($tripPayment);
         $this->entityManager->flush();
-    }
-
-    /**
-     * notifies the user requesting him to do the first payment
-     *
-     * @param Customers $customer
-     */
-    private function notifyCustomerHeHasToPay(Customers $customer)
-    {
-        $link = ''; //TODO: retrieve correct link for first payment
-
-        $content = sprintf(
-            file_get_contents(__DIR__.'/../../../view/emails/first-payment-request-it_IT.html'),
-            $customer->getName(),
-            $customer->getSurname(),
-            $link
-        );
-
-        $attachments = [
-            'bannerphono.jpg' => __DIR__.'/../../../../../public/images/bannerphono.jpg'
-        ];
-
-        if (!$this->avoidEmail) {
-            $this->emailService->sendEmail(
-                $customer->getEmail(),
-                'SHARENGO - RICHIESTA DI PRIMO PAGAMENTO',
-                $content,
-                $attachments
-            );
-        }
     }
 }

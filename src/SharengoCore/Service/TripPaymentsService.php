@@ -104,4 +104,12 @@ class TripPaymentsService
     {
         return $this->tripPaymentsRepository->findOneById($id);
     }
+
+    /**
+     * @return PersistentCollection
+     */
+    public function getTripPaymentsForPayment()
+    {
+        return $this->tripPaymentsRepository->findTripPaymentsForPayment();
+    }
 }

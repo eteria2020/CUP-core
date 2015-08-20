@@ -17,19 +17,11 @@ class TripCostServiceTest extends \PHPUnit_Framework_TestCase
         $this->faresService = \Mockery::mock('SharengoCore\Service\FaresService');
         $this->tripFaresService = \Mockery::mock('SharengoCore\Service\TripFaresService');
         $this->entityManager = \Mockery::mock('Doctrine\ORM\EntityManager');
-        $this->httpClient = \Mockery::mock('Zend\Http\Client');
-        $this->url = \Mockery::mock('Zend\View\Helper\Url');
-        $this->cartasiContractsService = \Mockery::mock('Cartasi\Service\CartasiContractsService');
-        $this->transactionsRepository = \Mockery::mock('Cartasi\Entity\Repository\TransactionsRepository');
-        $this->emailService = \Mockery::mock('SharengoCore\Service\EmailService');
-        $this->paymentsService = \Mockery::mock('SharengoCore\Service\PaymentsService');
 
         $this->tripCostService = new TripCostService(
             $this->faresService,
             $this->tripFaresService,
-            $this->entityManager,
-            $this->emailService,
-            $this->paymentsService
+            $this->entityManager
         );
     }
 

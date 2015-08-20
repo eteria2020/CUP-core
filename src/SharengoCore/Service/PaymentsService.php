@@ -52,6 +52,63 @@ class PaymentsService
     }
 
     /**
+     * tries to pay the tripPayment, checking first if the trip ca be payed and
+     * otherwise sending a payment request to the customer
+     *
+     * @param TripPayments $tripPayment
+     */
+    public function tryPayment(
+        TripPayments $tripPayment,
+        $avoidEmail = false,
+        $avoidCartasi = false,
+        $avoidPersistance = false
+    ) {
+        $trip = $tripPayment->getTrip();
+
+        if ($trip->canBePayed()) {
+            $this->tryCustomerTripPayment(
+                $trip->getCustomer(),
+                $tripPayment,
+                $avoidEmail,
+                $avoidCartasi,
+                $avoidPersistance
+            );
+        } else {
+            $this->notifyCustomerHeHasToPay($trip->getCustomer());
+        }
+    }
+
+    /**
+     * notifies the user requesting him to do the first payment
+     *
+     * @param Customers $customer
+     */
+    private function notifyCustomerHeHasToPay(Customers $customer)
+    {
+        $link = ''; //TODO: retrieve correct link for first payment
+
+        $content = sprintf(
+            file_get_contents(__DIR__.'/../../../view/emails/first-payment-request-it_IT.html'),
+            $customer->getName(),
+            $customer->getSurname(),
+            $link
+        );
+
+        $attachments = [
+            'bannerphono.jpg' => __DIR__.'/../../../../../public/images/bannerphono.jpg'
+        ];
+
+        if (!$this->avoidEmail) {
+            $this->emailService->sendEmail(
+                $customer->getEmail(),
+                'SHARENGO - RICHIESTA DI PRIMO PAGAMENTO',
+                $content,
+                $attachments
+            );
+        }
+    }
+
+    /**
      * tries to pay the trip amount
      * writes in database a record in the trip_payment_tries table
      *
@@ -89,7 +146,7 @@ class PaymentsService
      * @param boolean $avoidPersistance
      * @return CartasiResponse
      */
-    public function tryCustomerTripPayment(
+    private function tryCustomerTripPayment(
         Customers $customer,
         TripPayments $tripPayment,
         $avoidEmail = false,
