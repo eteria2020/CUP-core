@@ -89,6 +89,9 @@ class TripCostService
         if ($trip->customerIsPaymentAble()) {
             $tripPayment = $this->retrieveTripCost($trip);
 
+            // in this way all the trips with cost = 0 are retrieved every time by the script
+            // this makes the script slower
+            // in the future consider if and how to fix this
             if ($tripPayment->getTotalCost() > 0) {
                 $this->entityManager->getConnection()->beginTransaction();
 

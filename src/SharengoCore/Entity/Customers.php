@@ -370,7 +370,9 @@ class Customers
     private $privacyCondition = false;
 
     /**
-     * @var boolean false if we know that the user in not able to perform a payment
+     * @var boolean false if a payment failed for the customer
+     * if false we don't try other payments
+     * returns true when the payment has correct outcome from the admin area
      *
      * @ORM\Column(name="payment_able", type="boolean", options={"default" = TRUE})
      */
@@ -1608,6 +1610,17 @@ class Customers
     public function getPaymentAble()
     {
         return $this->paymentAble;
+    }
+
+    /**
+     * @param boolean $paymentAble
+     * @return Customers
+     */
+    public function setPaymentAble($paymentAble)
+    {
+        $this->paymentAble = $paymentAble;
+
+        return $this;
     }
 
     /**

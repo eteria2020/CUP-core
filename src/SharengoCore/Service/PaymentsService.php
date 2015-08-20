@@ -161,6 +161,7 @@ class PaymentsService
     {
         // disable the customer
         $customer->disable();
+        $customer->setPaymentAble(false);
 
         $this->entityManager->persist($customer);
 
