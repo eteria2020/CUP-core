@@ -405,4 +405,47 @@ class CustomersService implements ValidatorServiceInterface
             }
         }
     }
+
+    /**
+     * enables a customer to reserve a car
+     *
+     * @param Customers $customer,
+     * @param boolean $sendEmail
+     */
+    public function enableCustomer(Customers $customer, $sendEmail)
+    {
+        $customer->enable();
+
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
+
+        if ($sendEmail) {
+            $this->sendEnabledNotification($customer);
+        }
+    }
+
+    /**
+     * send to a customer an email telling him that he was re-enabled
+     *
+     * @param Customers $customer
+     */
+    private function sendEnabledNotification(Customers $customer)
+    {
+        $content = sprintf(
+            file_get_contents(__DIR__.'/../../../view/emails/re-enable-customer-it_IT.html'),
+            $customer->getName(),
+            $customer->getSurname()
+        );
+
+        $attachments = [
+            'bannerphono.jpg' => __DIR__.'/../../../../../public/images/bannerphono.jpg'
+        ];
+
+        $this->emailService->sendEmail(
+            $customer->getEmail(),
+            'SHARENGO - RIABILITAZIONE UTENTE',
+            $content,
+            $attachments
+        );
+    }
 }

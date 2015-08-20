@@ -1619,4 +1619,14 @@ class Customers
 
         return $this;
     }
+
+    /**
+     * @return Customers
+     */
+    public function enable()
+    {
+        $this->enabled = true;
+
+        return $this;
+    }
 }

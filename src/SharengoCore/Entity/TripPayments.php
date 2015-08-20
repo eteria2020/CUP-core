@@ -367,6 +367,14 @@ class TripPayments
     }
 
     /**
+     * @return boolean
+     */
+    public function isWrongPayment()
+    {
+        return $this->status === 'wrong_payment';
+    }
+
+    /**
      * @return TripPaymentTries[]
      */
     public function getTripPaymentTries()
