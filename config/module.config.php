@@ -172,7 +172,8 @@ return [
             'SharengoCore\Service\PaymentsService' => 'SharengoCore\Service\PaymentsServiceFactory'
         ],
         'shared' => [
-            'SharengoCore\Service\TripCostComputerService' => false
+            'SharengoCore\Service\TripCostComputerService' => false,
+            'SharengoCore\Service\DatatableService' => false
         ]
     ],
     'doctrine'        => [
