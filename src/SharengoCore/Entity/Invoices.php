@@ -206,6 +206,10 @@ class Invoices
     }
 
     /**
+     * Creates an invoice for a set of trips. 
+     *
+     * It's supposed all of them have been payed on the same day
+     *
      * @param Customers $customer
      * @param TripPayments[] $tripPayments
      * @param integer $version
@@ -222,7 +226,7 @@ class Invoices
             $customer,
             $version,
             self::TYPE_TRIP,
-            intval($tripPayments[0]->getCreatedAt()->format("Ymd")),
+            intval($tripPayments[0]->getCreatedAt()->format("Ymd")),    // it's supposed all trips have been payed on the same day
             $amounts['sum']
         );
 
