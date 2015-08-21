@@ -63,15 +63,16 @@ class PaymentsService
         $avoidCartasi = false,
         $avoidPersistance = false
     ) {
+        $this->avoidEmail = $avoidEmail;
+        $this->avoidCartasi = $avoidCartasi;
+        $this->avoidPersistance = $avoidPersistance;
+
         $trip = $tripPayment->getTrip();
 
         if ($trip->canBePayed()) {
             $this->tryCustomerTripPayment(
                 $trip->getCustomer(),
-                $tripPayment,
-                $avoidEmail,
-                $avoidCartasi,
-                $avoidPersistance
+                $tripPayment
             );
         } else {
             $this->notifyCustomerHeHasToPay($trip->getCustomer());
@@ -124,14 +125,15 @@ class PaymentsService
         $avoidCartasi = false,
         $avoidPersistance = false
     ) {
+        $this->avoidEmail = $avoidEmail;
+        $this->avoidCartasi = $avoidCartasi;
+        $this->avoidPersistance = $avoidPersistance;
+
         $customer = $tripPayment->getCustomer();
 
         return $this->tryCustomerTripPayment(
             $customer,
-            $tripPayment,
-            $avoidEmail,
-            $avoidCartasi,
-            $avoidPersistance
+            $tripPayment
         );
     }
 
@@ -141,22 +143,12 @@ class PaymentsService
      *
      * @param Customers $customer
      * @param TripPayments $tripPayment
-     * @param boolean $avoidEmail
-     * @param boolean $avoidCartasi
-     * @param boolean $avoidPersistance
      * @return CartasiResponse
      */
     private function tryCustomerTripPayment(
         Customers $customer,
-        TripPayments $tripPayment,
-        $avoidEmail = false,
-        $avoidCartasi = false,
-        $avoidPersistance = false
+        TripPayments $tripPayment
     ) {
-        $this->avoidEmail = $avoidEmail;
-        $this->avoidCartasi = $avoidCartasi;
-        $this->avoidPersistance = $avoidPersistance;
-
         $response = $this->cartasiCustomerPayments->sendPaymentRequest(
             $customer,
             $tripPayment->getTotalCost(),
