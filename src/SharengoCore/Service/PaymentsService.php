@@ -93,7 +93,8 @@ class PaymentsService
         );
 
         $attachments = [
-            'bannerphono.jpg' => __DIR__.'/../../../../../public/images/bannerphono.jpg'
+            'bannerphono.jpg' => __DIR__.'/../../../../../public/images/bannerphono.jpg',
+            'barbarabacci.jpg' => __DIR__.'/../../../../../public/images/barbarabacci.jpg'
         ];
 
         if (!$this->avoidEmail) {
@@ -234,7 +235,8 @@ class PaymentsService
         );
 
         $attachments = [
-            'bannerphono.jpg' => __DIR__.'/../../../../../public/images/bannerphono.jpg'
+            'bannerphono.jpg' => __DIR__.'/../../../../../public/images/bannerphono.jpg',
+            'barbarabacci.jpg' => __DIR__.'/../../../../../public/images/barbarabacci.jpg'
         ];
 
         if (!$this->avoidEmail) {
