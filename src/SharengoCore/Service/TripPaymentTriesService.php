@@ -23,6 +23,7 @@ class TripPaymentTriesService
     private $tripPaymentTriesRepository;
 
     /**
+     * @param EntityManager
      * @param TripPaymentTriesRepository
      */
     public function __construct(
