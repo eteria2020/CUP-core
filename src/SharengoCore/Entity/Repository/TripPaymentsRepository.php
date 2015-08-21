@@ -23,7 +23,6 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
-
     public function countTotalFailedPayments()
     {
         $em = $this->getEntityManager();
