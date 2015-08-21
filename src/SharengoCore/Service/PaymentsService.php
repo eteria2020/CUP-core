@@ -86,13 +86,10 @@ class PaymentsService
      */
     private function notifyCustomerHeHasToPay(Customers $customer)
     {
-        $link = ''; //TODO: retrieve correct link for first payment
-
         $content = sprintf(
             file_get_contents(__DIR__.'/../../../view/emails/first-payment-request-it_IT.html'),
             $customer->getName(),
-            $customer->getSurname(),
-            $link
+            $customer->getSurname()
         );
 
         $attachments = [
