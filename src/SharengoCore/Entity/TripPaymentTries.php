@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * TripPaymentTries
  *
  * @ORM\Table(name="trip_payment_tries")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\TripPaymentTriesRepository")
  */
 class TripPaymentTries
 {
@@ -52,7 +52,7 @@ class TripPaymentTries
     private $ts;
 
     /**
-     * @var string can have values "OK" and "KO"
+     * @var string can have values "OK" and "KO" or "pending" if waiting for response
      *
      * @ORM\Column(name="outcome", type="string", nullable=false)
      */
@@ -108,5 +108,15 @@ class TripPaymentTries
     public function getOutcome()
     {
         return $this->outcome;
+    }
+
+    /**
+     * @param string $outcome
+     * @return TripPaymentTries
+     */
+    public function setOutcome($outcome)
+    {
+        $this->outcome = $outcome;
+        return $this;
     }
 }
