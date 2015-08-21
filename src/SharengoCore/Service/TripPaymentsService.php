@@ -116,15 +116,6 @@ class TripPaymentsService
     }
 
     /**
-     * @param int $id
-     * @return TripPayments
-     */
-    public function getTripPaymentById($id)
-    {
-        return $this->tripPaymentsRepository->findOneById($id);
-    }
-
-    /**
      * @return PersistentCollection
      */
     public function getTripPaymentsForPayment()
