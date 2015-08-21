@@ -9,6 +9,9 @@ use SharengoCore\Entity\Repository\CustomersBonusRepository;
 use SharengoCore\Entity\Cards;
 use SharengoCore\Service\DatatableService;
 use SharengoCore\Service\SimpleLoggerService as Logger;
+use SharengoCore\Service\TripPaymentsService;
+
+use Cartasi\Service\CartasiContractsService;
 
 use Zend\Authentication\AuthenticationService as UserService;
 
@@ -46,11 +49,24 @@ class CustomersService implements ValidatorServiceInterface
     private $logger;
 
     /**
+     * @var CartasiContractsService
+     */
+    private $cartasiContractsService;
+
+    /**
+     * @var TripPaymentsService
+     */
+    private $tripPaymentsService;
+
+    /**
      * @param $entityManager
      * @param UserService
      * @param DatatableService
      * @param CardsService
      * @param EmailService
+     * @param Logger
+     * @param CartasiContractsService
+     * @param TripPaymentsService
      */
     public function __construct(
         $entityManager,
@@ -58,7 +74,9 @@ class CustomersService implements ValidatorServiceInterface
         DatatableService $datatableService,
         CardsService $cardsService,
         EmailService $emailService,
-        Logger $logger
+        Logger $logger,
+        CartasiContractsService $cartasiContractsService,
+        TripPaymentsService $tripPaymentsService
     ) {
         $this->entityManager = $entityManager;
         $this->customersRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Customers');
@@ -68,6 +86,8 @@ class CustomersService implements ValidatorServiceInterface
         $this->cardsService = $cardsService;
         $this->emailService = $emailService;
         $this->logger = $logger;
+        $this->cartasiContractsService = $cartasiContractsService;
+        $this->tripPaymentsService = $tripPaymentsService;
     }
 
     /**
@@ -463,5 +483,21 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->entityManager->persist($customer);
         $this->entityManager->flush();
+    }
+
+    /**
+     * @param Customers $customer
+     * @return boolean
+     */
+    public function isFirstTripManualPaymentNeeded(Customers $customer)
+    {
+        $cartasiCompletedFirstPayment = $customer->getFirstPaymentCompleted();
+        if ($cartasiCompletedFirstPayment) {
+            if ($this->cartasiContractsService->getCartasiContractNumber($customer) == null &&
+            $this->tripPaymentsService->getFirstTripPaymentNotPayedByCustomer($customer) != null) {
+                return true;
+            }
+        }
+        return false;
     }
 }

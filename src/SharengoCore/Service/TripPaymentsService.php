@@ -142,4 +142,11 @@ class TripPaymentsService
         $this->entityManager->persist($tripPayment);
         $this->entityManager->flush();
     }
+
+    public function getExpiryDate(TripPayments $tripPayment)
+    {
+        $date = $tripPayment->getCreatedAt();
+        $date->add(new \DateInterval('P7D'));
+        return $date;
+    }
 }

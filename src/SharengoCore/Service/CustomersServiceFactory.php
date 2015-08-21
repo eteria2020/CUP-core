@@ -11,11 +11,8 @@ class CustomersServiceFactory implements FactoryInterface
     {
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
-
         $userService = $serviceLocator->get('zfcuser_auth_service');
-
         $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
-
         $cardsService = $serviceLocator->get('SharengoCore\Service\CardsService');
 
         $datatableService->setQueryBuilder(
@@ -27,6 +24,8 @@ class CustomersServiceFactory implements FactoryInterface
 
         $emailService = $serviceLocator->get('SharengoCore\Service\EmailService');
         $logger = $serviceLocator->get('SharengoCore\Service\SimpleLoggerService');
+        $cartasiContractsService = $serviceLocator->get('Cartasi\Service\CartasiContracts');
+        $tripPaymentsService = $serviceLocator->get('SharengoCore\Service\TripPaymentsService');
 
         return new CustomersService(
             $entityManager,
@@ -34,7 +33,9 @@ class CustomersServiceFactory implements FactoryInterface
             $datatableService,
             $cardsService,
             $emailService,
-            $logger
+            $logger,
+            $cartasiContractsService,
+            $tripPaymentsService
         );
     }
 }
