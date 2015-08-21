@@ -5,6 +5,8 @@ namespace SharengoCore\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use SharengoCore\Entity\Invoices;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\TripPayments;
 
 /**
  * Invoices
@@ -113,21 +115,22 @@ class Invoices
     }
 
     /**
-     * @param \SharengoCore\Entity\Customers $customer
+     * @param Customers $customer
      * @param integer $version
-     * @return Invoice
+     * @param string $type
+     * @param \DateTime $date
+     * @param mixed $amounts
+     * @return Invoices
      */
-    public static function createInvoiceForFirstPayment($customer, $version, $amounts)
+    public static function createBasicInvoice(Customers $customer, $version, $type, $date, $amounts)
     {
         $invoice = new Invoices();
 
         $invoice->setCustomer($customer)
             ->setVersion($version)
-            ->setType(self::TYPE_FIRST_PAYMENT)
-            ->setInvoiceDate(intval(date("Ymd")))
+            ->setType($type)
+            ->setInvoiceDate($date)
             ->setAmount($amounts['grand_total_cents']);
-
-        $invoiceDate = $invoice->getInvoiceDate();
 
         $content = [
             'invoice_date' => $invoice->getInvoiceDate(),
@@ -145,32 +148,124 @@ class Invoices
                 'piva' => $customer->getVat()
             ],
             'type' => $invoice->getType(),
-            'body' => [
-                'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento per l\'iscrizione al servizio<br>' .
-                    'L\'importo totale della fattura è di EUR ' .
-                    $amounts['grand_total'] .
-                    '</p>',
-                'description' => 'Pagamento iscrizione al servizio',
-                'contents' => [
-                    'header' => [
-                        'Descrizione',
-                        'Imponibile'
-                    ],
-                    'body' => [
-                        [
-                            'Pagamento iscrizione al servizio',
-                            $amounts['total'] . ' €'
-                        ]
-                    ],
-                    'body-format' => [
-                        'alignment' => [
-                            'left',
-                            'right'
-                        ]
+            'template_version' => $invoice->getVersion()
+        ];
+
+        return $invoice->setContent($content);
+    }
+
+    /**
+     * @param Customers $customer
+     * @param integer $version
+     * @param mixed $amounts
+     * @return Invoice
+     */
+    public static function createInvoiceForFirstPayment(
+        Customers $customer,
+        $version,
+        $amounts
+    ) {
+        $invoice = Invoices::createBasicInvoice(
+            $customer,
+            $version,
+            self::TYPE_FIRST_PAYMENT,
+            intval(date("Ymd")),
+            $amounts
+        );
+
+        $content = $invoice->getContent();
+
+        $content['body'] = [
+            'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento per l\'iscrizione al servizio<br>' .
+                'L\'importo totale della fattura è di EUR ' .
+                $amounts['grand_total'] .
+                '</p>',
+            'contents' => [
+                'header' => [
+                    'Descrizione',
+                    'Imponibile'
+                ],
+                'body' => [
+                    [
+                        'Pagamento iscrizione al servizio',
+                        $amounts['total'] . ' €'
+                    ]
+                ],
+                'body-format' => [
+                    'alignment' => [
+                        'left',
+                        'right'
                     ]
                 ]
-            ],
-            'template_version' => $invoice->getVersion()
+            ]
+        ];
+
+        $invoice->setContent($content);
+
+        return $invoice;
+    }
+
+    /**
+     * Creates an invoice for a set of trips. 
+     *
+     * It's supposed all of them have been payed on the same day
+     *
+     * @param Customers $customer
+     * @param TripPayments[] $tripPayments
+     * @param integer $version
+     * @param mixed $amounts
+     * @return Invoices
+     */
+    public static function createInvoiceForTrips(
+        Customers $customer,
+        $tripPayments,
+        $version,
+        $amounts
+    ) {
+        $invoice = Invoices::createBasicInvoice(
+            $customer,
+            $version,
+            self::TYPE_TRIP,
+            intval($tripPayments[0]->getCreatedAt()->format("Ymd")),    // it's supposed all trips have been payed on the same day
+            $amounts['sum']
+        );
+
+        $content = $invoice->getContent();
+
+        $body = [];
+
+        foreach ($tripPayments as $key => $tripPayment) {
+            $trip = $tripPayment->getTrip();
+            array_push($body, [
+                $trip->getTimestampBeginning()->format("Y-m-d H:i:s"),
+                $trip->getTimestampEnd()->format("Y-m-d H:i:s"),
+                $tripPayment->getTripMinutes() . ' (min)',
+                $trip->getCar()->getPlate(),
+                $amounts['rows'][$key]
+            ]);
+        }
+
+        $content['body'] = [
+            'greeting_message' => '',
+            'contents' => [
+                'header' => [
+                    'Inizio',
+                    'Fine',
+                    'Durata',
+                    'Targa',
+                    'Totale'
+                ],
+                'body' => $body,
+                'body-format' => [
+                    'alignment' => [
+                        'left',
+                        'left',
+                        'left',
+                        'left',
+                        'right'
+                    ]
+                ]
+            ]
         ];
 
         $invoice->setContent($content);

@@ -9,9 +9,10 @@ class Customers implements DatatableQueryBuilderInterface
      */
     private $queryBuilder;
 
-    public function __construct(DatatableQueryBuilderInterface $queryBuilder)
+    public function __construct(DatatableQueryBuilderInterface $queryBuilder, $alias = 'e')
     {
         $this->queryBuilder = $queryBuilder;
+        $this->alias = $alias;
     }
 
     public function select()
@@ -21,6 +22,6 @@ class Customers implements DatatableQueryBuilderInterface
 
     public function join()
     {
-        return $this->queryBuilder->join().'LEFT JOIN e.customer cu ';
+        return $this->queryBuilder->join().sprintf('LEFT JOIN %s.customer cu ', $this->alias);
     }
 }

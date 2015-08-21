@@ -139,7 +139,8 @@ return [
     'service_manager' => [
         'invokables' => [
             'SharengoCore\Service\DatatableQueryBuilder' => 'SharengoCore\Service\DatatableQueryBuilders\Basic',
-            'SharengoCore\Service\FreeFaresService' => 'SharengoCore\Service\FreeFaresService'
+            'SharengoCore\Service\FreeFaresService' => 'SharengoCore\Service\FreeFaresService',
+            'SharengoCore\Service\TripFaresService' => 'SharengoCore\Service\TripFaresService'
         ],
         'factories' => [
             'SharengoCore\Service\CustomersService'    => 'SharengoCore\Service\CustomersServiceFactory',
@@ -157,7 +158,23 @@ return [
             'SharengoCore\Service\BonusService'        => 'SharengoCore\Service\BonusServiceFactory',
             'SharengoCore\Service\AccountTripsService' => 'SharengoCore\Service\AccountTripsServiceFactory',
             'SharengoCore\Service\CommandsService'     => 'SharengoCore\Service\CommandsServiceFactory',
-            'SharengoCore\Service\Invoices' => 'SharengoCore\Service\InvoicesServiceFactory'
+            'SharengoCore\Service\Invoices' => 'SharengoCore\Service\InvoicesServiceFactory',
+            'SharengoCore\Service\AccountedTripsService' => 'SharengoCore\Service\AccountedTripsServiceFactory',
+            'SharengoCore\Service\TripCostService' => 'SharengoCore\Service\TripCostServiceFactory',
+            'SharengoCore\Service\FaresService' => 'SharengoCore\Service\FaresServiceFactory',
+            'SharengoCore\Service\EmailService' => 'SharengoCore\Service\EmailServiceFactory',
+            'SharengoCore\Service\TripPaymentsService' => 'SharengoCore\Service\TripPaymentsServiceFactory',
+            'SharengoCore\Service\SimpleLoggerService' => 'SharengoCore\Service\SimpleLoggerServiceFactory',
+            'SharengoCore\Service\TripPaymentsService' => 'SharengoCore\Service\TripPaymentsServiceFactory',
+            'SharengoCore\Service\SimpleLoggerService' => 'SharengoCore\Service\SimpleLoggerServiceFactory',
+            'SharengoCore\Service\EmailService' => 'SharengoCore\Service\EmailServiceFactory',
+            'SharengoCore\Service\TripCostComputerService' => 'SharengoCore\Service\TripCostComputerServiceFactory',
+            'SharengoCore\Service\PaymentsService' => 'SharengoCore\Service\PaymentsServiceFactory',
+            'SharengoCore\Service\TripPaymentTriesService' => 'SharengoCore\Service\TripPaymentTriesServiceFactory'
+        ],
+        'shared' => [
+            'SharengoCore\Service\TripCostComputerService' => false,
+            'SharengoCore\Service\DatatableService' => false
         ]
     ],
     'doctrine'        => [
@@ -183,7 +200,7 @@ return [
                 array('controller' => 'SharengoCore\Controller\Customers', 'roles' => array('admin', 'callcenter')),
                 array('controller' => 'SharengoCore\Controller\Pois', 'roles' => array()),
                 array('controller' => 'SharengoCore\Controller\Reservations', 'roles' => array('user', 'admin', 'callcenter')),
-                array('controller' => 'SharengoCore\Controller\Trips', 'roles' => array('admin', 'callcenter')),
+                array('controller' => 'SharengoCore\Controller\Trips', 'roles' => array('admin', 'callcenter', 'user')),
                 array('controller' => 'SharengoCore\Controller\Invoices', 'roles' => array('user')),
                 array('controller' => 'SharengoCore\Controller\Pdf', 'roles' => ['user', 'admin']),
             ),
@@ -200,8 +217,9 @@ return [
     ],
 
     'invoice' => [
-        'template_version' => '1',
-        'subscription_amount' => 1000
+        'template_version' => '2',
+        'subscription_amount' => 1000,
+        'iva_percentage' => 22
     ],
 
     'asset_manager' => [
@@ -214,7 +232,7 @@ return [
 
     'mvlabs-snappy' => [
         'pdf' => [
-           'binary'  => __DIR__ . '/../../../../vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltopdf-amd64',
+           'binary'  => __DIR__ . '/../../../vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltopdf-amd64',
            'options' => [],
         ]
     ]

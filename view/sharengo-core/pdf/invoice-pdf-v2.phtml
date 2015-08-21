@@ -1,0 +1,203 @@
+<?php
+    $invoiceContent = $this->invoiceContent;
+
+    // Customer data
+    $name = ucwords(strtolower($invoiceContent['customer']['name'] . ' ' . $invoiceContent['customer']['surname']));
+    $mail = $invoiceContent['customer']['email'];
+    $address = $invoiceContent['customer']['address'];
+    $zipCode = $invoiceContent['customer']['zip_code'];
+    $town = $invoiceContent['customer']['town'];
+    $province = $invoiceContent['customer']['province'];
+    $country = $invoiceContent['customer']['country'];
+    $cf = $invoiceContent['customer']['cf'];
+    $piva = $invoiceContent['customer']['piva'];
+
+    // Invoice data
+    $docN = $this->invoiceNumber;
+    $invoiceDate = $invoiceContent['invoice_date'];
+    $totalAmount = $invoiceContent['amounts']['grand_total'];
+    $partialAmount = $invoiceContent['amounts']['total'];
+    $iva = $invoiceContent['amounts']['iva'];
+    $type = $invoiceContent['type'];
+
+    // Table formatting
+    $alignmentFormat = $invoiceContent['body']['contents']['body-format']['alignment'];
+
+    // Multipage
+    $maxRowsPerPage = 20;
+    $bodyContents = $invoiceContent['body']['contents'];
+    $pagedContents = [];
+    $row = 0;
+    $page = 0;
+
+    // loop through rows and divide them into arrays, one for each page
+    foreach ($bodyContents['body'] as $value) {
+
+        // if new page, add array for that page
+        if ($row == 0) {
+            array_push($pagedContents, []);
+        }
+
+        // push the row into the page array
+        array_push($pagedContents[$page], $value);
+
+        $row ++;
+
+        // if the max number of rows per page is reached, reset rows and add a page
+        if ($row == $maxRowsPerPage) {
+            $row = 0;
+            $page ++;
+        }
+    }
+?>
+
+<!-- Main container -->
+<div id="container">
+
+    <?php
+        // loop through pages
+        for ($i = 0; $i <= count($pagedContents); $i++) {
+    ?>
+
+    <!-- Page container -->
+    <div class="page-container">
+
+        <!-- Logo -->
+        <img class="logo" src="<?php echo $this->serverUrl()?>/assets-modules/sharengo-core/images/sharengo_logo.jpg" alt="">
+
+        <!-- Invoice data -->
+        <div class="invoice-data data">
+            <p>Fattura N° <?= $docN ?></p>
+            <p>Data fattura: <?= date_format(date_create($invoiceDate), 'd/m/Y') ?></p>
+        </div>
+        <!-- invoice data -->
+
+        <!-- Customer data -->
+        <div class="customer-data data">
+            <p><?= $name ?></p>
+            <p><?= $address ?></p>
+            <p><?= $zipCode . ', ' . $town ?><?php if ($province != null) echo ', ' . $province; if ($country != null) echo ', ' . $country ?></p>
+            <p>CF: <?= $cf ?></p>
+            <?php if ($piva != null) echo '<p>P.IVA: ' . $piva . '</p>'?>
+        </div>
+        <!-- customer data -->
+
+        <!-- Header -->
+        <div class="header font">
+            <p class="header-text">
+                <span class="name">CS Milano SRL</span><br>
+                Sede legale<br>
+                Via dei Pelaghi, 162 – 57121 Livorno (LI)<br>
+                P.IVA: 01808470494<br>
+                Sede operativa<br>
+                Via Casati Felice 1/A – 20124 Milano (MI)<br>
+                Tel: 0586.1975772<br>
+                Email: servizioclienti@sharengo.eu
+            </p>
+        </div>
+        <!-- header -->
+
+        <!-- Content -->
+        <div id="content">
+
+        <?php
+            // if first page
+            if ($i == 0) {
+        ?>
+
+            <!-- Line -->
+            <div class="line"></div>
+
+            <!-- Message -->
+            <div class="message font">
+                <p><br>Gentile <span class="name"><?= $name ?></span></p>
+                <p>La ringraziamo per aver usufruito dei nostri servizi.</p>
+                <?= $invoiceContent['body']['greeting_message'] ?>
+                <p>Potrà trovare tutte le sue fatture nell'Area Riservata insieme alle altre informazioni del suo profilo.</p>
+                <p>Se vuoi ricevere informazioni sul servizio Share’nGo,
+                    puoi contattarci al numero 0586 1975772 oppure all’indirizzo email servizioclienti@sharengo.eu.</p>
+                <p>Cordiali saluti</p>
+            </div>
+            <!-- message -->
+
+        <?php
+            // if not first page
+            } else {
+        ?>
+
+        <!-- Transactions table -->
+        <div>
+            <table class="table table2 font">
+
+                <tr>
+
+                    <?php
+                        // populate transactions table's header
+                        foreach ($invoiceContent['body']['contents']['header'] as $value) { ?>
+                            <th class="table2-031e"><?= $value ?></th>
+                        <?php } ?>
+
+                </tr>
+
+                <?php
+                    // generate transactions table's rows
+                    foreach ($pagedContents[$i - 1] as $row) {
+                ?>
+                    <tr>
+                    <?php
+                        foreach ($row as $key => $value) {
+                    ?>
+                        <td class="table2-031e <?= $alignmentFormat[$key] ?>"><?= $value ?></td>
+                    <?php
+                        }
+                    ?>
+                    </tr>
+                <?php
+                    }
+                ?>
+
+            </table>
+        </div>
+        <!-- transactions table -->
+
+        <!-- Spacing -->
+        <div class="spacing" style="height:<?= 570 - 26 * count($pagedContents[$i - 1]); ?>px;"></div>
+
+        <!-- Summary table -->
+        <table class="table table1 font">
+            <tr>
+                <td class="table1-031e">Totale imponibile</td>
+                <td class="table1-031e right"><?= $partialAmount ?> €</td>
+            </tr>
+            <tr>
+                <td class="table1-031e">IVA 22%</td>
+                <td class="table1-031e right"><?= $iva ?> €</td>
+            </tr>
+            <tr>
+                <td class="table1-031e">Totale</td>
+                <td class="table1-031e right"><?= $totalAmount ?> €</td>
+            </tr>
+        </table>
+        <!-- summary table -->
+
+        <?php
+            // close pages if else
+            }
+        ?>
+
+        </div>
+        <!-- content -->
+
+        <!-- Page end -->
+        <div class="page-break"></div>
+
+    </div>
+    <!-- page container -->
+
+    <?php
+        // end loop through pages
+        }
+    ?>
+
+</div>
+<!-- main container -->

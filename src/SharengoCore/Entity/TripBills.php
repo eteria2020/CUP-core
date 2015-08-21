@@ -5,12 +5,13 @@ namespace SharengoCore\Entity;
 use SharengoCore\Utils\Interval;
 
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * TripBills
  *
  * @ORM\Table(name="trip_bills")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\TripBillsRepository")
  */
 class TripBills
 {
@@ -42,13 +43,6 @@ class TripBills
     private $minutes = 0;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="cost", type="integer", nullable= false)
-     */
-    private $cost = 0;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(name="timestamp_beginning", type="datetimetz", nullable=false)
@@ -69,6 +63,19 @@ class TripBills
      */
     private $notes;
 
+    /**
+     * @param DoctrineHydrator $hydrator
+     * @return mixed
+     */
+    public function toArray(DoctrineHydrator $hydrator)
+    {
+        $tripBill = $hydrator->extract($this);
+        if ($tripBill['trip'] != null) {
+            $tripBill['trip'] = $tripBill['trip']->getId();
+        }
+        return $tripBill;
+    }
+
     public static function createFromTrip(Trips $trip)
     {
         $interval = new Interval($trip->getTimestampBeginning(), $trip->getTimestampEnd());
@@ -76,7 +83,6 @@ class TripBills
         return (new TripBills())
             ->setTrip($trip)
             ->setMinutes($interval->minutes())
-            ->setCost($trip->getPriceCent() + $trip->getVatCent())
             ->setTimestampBeginning($trip->getTimestampBeginning())
             ->setTimestampEnd($trip->getTimestampEnd());
     }
@@ -113,30 +119,6 @@ class TripBills
     public function getMinutes()
     {
         return $this->minutes;
-    }
-
-    /**
-     * Set cost
-     *
-     * @param integer $cost
-     *
-     * @return TripBills
-     */
-    public function setCost($cost)
-    {
-        $this->cost = $cost;
-
-        return $this;
-    }
-
-    /**
-     * Get cost
-     *
-     * @return integer
-     */
-    public function getCost()
-    {
-        return $this->cost;
     }
 
     /**

@@ -79,7 +79,7 @@ class AccountTripsService
 
         try {
             // divides the trip between free fares, bonuses and normal fares
-            $this->processTripAccountingDetails(clone $trip);
+            $tripBills = $this->processTripAccountingDetails(clone $trip);
 
             // flag the trip as accounted
             $trip->setIsAccounted(true);
@@ -88,6 +88,8 @@ class AccountTripsService
             $this->entityManager->flush();
 
             $this->entityManager->getConnection()->commit();
+
+            return $tripBills;
         } catch (\Exception $e) {
             $this->entityManager->getConnection()->rollback();
             throw $e;
@@ -110,7 +112,7 @@ class AccountTripsService
         $trips = $this->applyBonuses($trips, $bonuses);
 
         // eventually consider billable part
-        $this->billTrips($trips);
+        return $this->billTrips($trips);
     }
 
     /**
@@ -206,7 +208,7 @@ class AccountTripsService
      * @param Bonus $bonus
      * 
      */
-    public function applyBonus(array $trips, Bonus $bonus)
+    private function applyBonus(array $trips, Bonus $bonus)
     {
         $newTrips = [];
 
@@ -353,39 +355,35 @@ class AccountTripsService
         return [$trip];
     }
 
-    private function billtrips(array $trips)
+    /**
+     * @param Trips[] $trips
+     * @return TripBills[]
+     */
+    private function billTrips(array $trips)
     {
+        $tripBills = [];
+
         foreach ($trips as $trip) {
-            $this->billTrip($trip);
+            $tripBills[] = $this->billTrip($trip);
         }
+
+        return $tripBills;
     }
 
     /**
      * Bills a trip saving it in persistance layer
      *
      * @param Trips $trip
+     * @return TripBills
      */
     private function billTrip(Trips $trip)
     {
-        list($price, $vat) = $this->computeCost($trip);
-        $trip->setPriceCent($price);
-        $trip->setVatCent($vat);
-
         $billTrip = TripBills::createFromTrip($trip);
         $billTrip->setTrip($this->originalTrip);
 
         $this->entityManager->persist($billTrip);
         $this->entityManager->flush();
-    }
 
-    /**
-     * computes the cost of a trip
-     *
-     * @param Trips $trip
-     * @retun array
-     */
-    private function computeCost(Trips $trip)
-    {
-        return [0, 0]; //TODO: fix this
+        return $billTrip;
     }
 }

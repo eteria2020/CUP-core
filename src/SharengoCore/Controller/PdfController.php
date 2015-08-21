@@ -87,7 +87,8 @@ class PdfController extends AbstractActionController
         $viewModel->setTemplate('sharengo-core/pdf/invoice-pdf-v' . $templateVersion);
 
         $layoutViewModel->setVariables([
-            'content' => $this->viewRenderer->render($viewModel)
+            'content' => $this->viewRenderer->render($viewModel),
+            'templateVersion' => $templateVersion
         ]);
 
         $htmlOutput = $this->viewRenderer->render($layoutViewModel);

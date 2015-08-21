@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity;
 
 use SharengoCore\Utils\Interval;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * TripBonuses
  *
  * @ORM\Table(name="trip_bonuses")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\TripBonusesRepository")
  */
 class TripBonuses
 {
@@ -71,6 +72,25 @@ class TripBonuses
      * @ORM\Column(name="notes", type="text", nullable=true)
      */
     private $notes;
+
+
+    /**
+     * @param DoctrineHydrator $hydrator
+     * @return mixed
+     */
+    public function toArray(DoctrineHydrator $hydrator)
+    {
+        $trip = $this->getTrip();
+
+        $extractedTripBonus = $hydrator->extract($this);
+
+        $extractedTripBonus['tripId'] = $trip->getId();
+
+        unset($extractedTripBonus['bonus']);
+        unset($extractedTripBonus['trip']);
+
+        return $extractedTripBonus;
+    }
 
     public static function createFromTripAndBonus(Trips $trip, CustomersBonus $bonus)
     {

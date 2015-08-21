@@ -121,9 +121,7 @@ class TripsService
                     'code' => is_object($trip->getCustomer()->getCard()) ? $trip->getCustomer()->getCard()->getCode() : '',
 
                 ],
-                'duration' => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd()),
-                'price'    => ($trip->getPriceCent() + $trip->getVatCent()),
-
+                'duration' => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd())
             ];
         }, $trips);
     }
@@ -179,5 +177,52 @@ class TripsService
     public function getLastTrip($plate)
     {
         return $this->tripRepository->findLastTrip($plate);
+    }
+
+    public function getTripsByUsersInGoldList()
+    {
+        return $this->tripRepository->findTripsByUsersInGoldList();
+    }
+
+    public function setTripsAsNotPayable($tripIds)
+    {
+        return $this->tripRepository->updateTripsPayable($tripIds, false);
+    }
+
+    public function setTripAsNotPayable(Trips $trip)
+    {
+        return $this->setTripsAsNotPayable([$trip->getId()]);
+    }
+
+    /**
+     * retrieves all the trips that we need to process to compute the cost
+     */
+    public function getTripsForCostComputation()
+    {
+        return $this->tripRepository->findTripsForCostComputation();
+    }
+
+    /**
+     * @param Customers $customer
+     * @return mixed
+     */
+    public function getDistinctDatesForCustomerByMonth($customer)
+    {
+        $dates = $this->tripRepository->findDistinctDatesForCustomerByMonth($customer);
+        $returnDates = [];
+        foreach ($dates as $date) {
+            $returnDates[$date['timestampBeginning']->format('Y-m')] = $date['timestampBeginning'];
+        }
+        return $returnDates ;
+    }
+
+    /**
+     * @param string $month
+     * @param integer $customer
+     * @return Trips[]
+     */
+    public function getListTripsForMonthByCustomer($month, $customerId)
+    {
+        return $this->tripRepository->findListTripsForMonthByCustomer($month, $customerId);
     }
 }

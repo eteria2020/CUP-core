@@ -150,20 +150,6 @@ class Trips
     private $payable = true;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="price_cent", type="integer", nullable=false)
-     */
-    private $priceCent;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="vat_cent", type="integer", nullable=false)
-     */
-    private $vatCent;
-
-    /**
      * @var \Cars
      *
      * @ORM\ManyToOne(targetEntity="Cars")
@@ -189,6 +175,34 @@ class Trips
      * @ORM\Column(name="is_accounted", type="boolean", nullable=false, options={"default" = FALSE})
      */
     private $isAccounted = false;
+
+    /**
+     * @var TripPayments
+     *
+     * @ORM\OneToMany(targetEntity="TripPayments", mappedBy="trip")
+     */
+    private $tripPayments;
+
+    /**
+     * @var TripBills
+     *
+     * @ORM\OneToMany(targetEntity="TripBills", mappedBy="trip")
+     */
+    private $tripBills;
+
+    /**
+     * @var TripBonuses
+     *
+     * @ORM\OneToMany(targetEntity="TripBonuses", mappedBy="trip")
+     */
+    private $tripBonuses;
+
+    /**
+     * @var TripFreeFares
+     *
+     * @ORM\OneToMany(targetEntity="TripFreeFares", mappedBy="trip")
+     */
+    private $tripFreeFares;
 
 
 
@@ -635,54 +649,6 @@ class Trips
     }
 
     /**
-     * Set priceCent
-     *
-     * @param integer $priceCent
-     *
-     * @return Trips
-     */
-    public function setPriceCent($priceCent)
-    {
-        $this->priceCent = $priceCent;
-
-        return $this;
-    }
-
-    /**
-     * Get priceCent
-     *
-     * @return integer
-     */
-    public function getPriceCent()
-    {
-        return $this->priceCent;
-    }
-
-    /**
-     * Set vatCent
-     *
-     * @param integer $vatCent
-     *
-     * @return Trips
-     */
-    public function setVatCent($vatCent)
-    {
-        $this->vatCent = $vatCent;
-
-        return $this;
-    }
-
-    /**
-     * Get vatCent
-     *
-     * @return integer
-     */
-    public function getVatCent()
-    {
-        return $this->vatCent;
-    }
-
-    /**
      * Set car
      *
      * @param \SharengoCore\Entity\Cars $car
@@ -755,26 +721,150 @@ class Trips
     }
 
     /**
+     * Get trip bills
+     *
+     * @return TripBills[]
+     */
+    public function getTripBills()
+    {
+        return $this->tripBills;
+    }
+
+    /**
+     * Get trip bills
+     *
+     * @return TripBills[]
+     */
+    public function getTripPayments()
+    {
+        return $this->tripPayments;
+    }
+
+    /**
+     * Get trip bonuses
+     *
+     * @return TripBonuses[]
+     */
+    public function getTripBonuses()
+    {
+        return $this->tripBonuses;
+    }
+
+    /**
+     * Get trip free fares
+     *
+     * @return TripFreeFares[]
+     */
+    public function getTripFreeFares()
+    {
+        return $this->tripFreeFares;
+    }
+
+    /**
      * @param DoctrineHydrator
      * @return mixed[]
      */
-    public function toArray(DoctrineHydrator $hydrator)
+    public function toArray(DoctrineHydrator $hydrator, array $tripsHydrationOptions = ['customer','car'])
     {
-        $customer = $this->getCustomer();
-        if ($customer !== null) {
-            $customer = $customer->toArray($hydrator);
-        }
-
-        $car = $this->getCar();
-        if ($car !== null) {
-            $car = $car->toArray($hydrator);
-        }
-
         $extractedTrip = $hydrator->extract($this);
-        $extractedTrip['customer'] = $customer;
-        $extractedTrip['car'] = $car;
-        
+
+        unset($extractedTrip['customer']);
+        if (in_array('customer', $tripsHydrationOptions)) {
+            $customer = $this->getCustomer();
+            if ($customer !== null) {
+                $customer = $customer->toArray($hydrator);
+                $extractedTrip['customer'] = $customer;
+            }
+        } 
+
+        unset($extractedTrip['car']);
+        if (in_array('car', $tripsHydrationOptions)) {
+            $car = $this->getCar();
+            if ($car !== null) {
+                $car = $car->toArray($hydrator);
+                $extractedTrip['car'] = $car;
+            }
+        }
+
+        if (in_array('tripPayments', $tripsHydrationOptions)) {
+            if (count($this->getTripPayments()) > 0) {
+                // we assume there is a single row with payment infos
+                $tripPayments = $this->getTripPayments();
+                $tripPayment = $tripPayments[0];
+                $extractedTrip['tripPayments'] = $tripPayment->toArray($hydrator);
+            } else {
+                unset($extractedTrip['tripPayments']);
+            }
+        } 
+
+        unset($extractedTrip['tripBonuses']);
+        if (in_array('tripBonuses', $tripsHydrationOptions)) {
+            if (count($this->getTripBonuses()) > 0) {
+                $tripBonuses = [];
+                foreach($this->getTripBonuses() as $tripBonus) {
+                    $tripBonuses[] = $tripBonus->toArray($hydrator);
+                }
+                $extractedTrip['tripBonuses'] = $tripBonuses;
+            }
+        }
+
+        unset($extractedTrip['tripFreeFares']);
+        if (in_array('tripFreeFares', $tripsHydrationOptions)) {
+            if (count($this->getTripFreeFares()) > 0) {
+                $tripFreeFares = [];
+                foreach($this->getTripFreeFares() as $tripFreeFare) {
+                    $tripFreeFares[] = $tripFreeFare->toArray($hydrator);
+                }
+                $extractedTrip['tripFreeFares'] = $tripFreeFares;
+            }
+        }
+
+        $extractedTrip['timestampBeginningString'] = $this->getTimestampBeginning()->format('d-m-Y H:i:s');
+        $extractedTrip['timestampEndString'] = $this->getTimestampEnd()->format('d-m-Y H:i:s');
+
         return $extractedTrip;
     }
 
+    /**
+     * checks if a trip should be accounted
+     * For the moment this checks only if the user is in gold list
+     *
+     * @return boolean
+     */
+    public function isAccountable()
+    {
+        return !$this->customer->getGoldList();
+    }
+
+    /**
+     * retrieve the discount percentage applied to the trip. At the moment it
+     * depends uniquely on the customer
+     *
+     * @return int
+     */
+    public function getDiscountPercentage()
+    {
+        return $this->customer->getDiscountRate();
+    }
+
+    /**
+     * determines if we ca try to pay the trip.
+     * At the moment it checks if the customer already copleted the firt payment
+     *
+     * @return boolean
+     */
+    public function canBePayed()
+    {
+        return $this->customer->getFirstPaymentCompleted();
+    }
+
+    /**
+     * checks if a customer is able to perform a payment
+     *
+     * @return boolean
+     */
+    public function customerIsPaymentAble()
+    {
+        return $this->customer->getPaymentAble();
+    }
 }
