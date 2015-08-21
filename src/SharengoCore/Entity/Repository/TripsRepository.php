@@ -71,7 +71,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
             "AND t.timestampEnd IS NOT NULL ". // not trips still running
             "AND t.timestampEnd >= t.timestampBeginning ". // only trips with positive length
             "AND t.timestampBeginning >= :firstJanuary2015 ". // only trips begun after 01/01/2015
-            "AND t.timestampEnd - t.timestampBeginning <= :oneDay ".
+            "AND t.timestampEnd - t.timestampBeginning <= :oneDay ". // length less than one day
             "AND t.payable = TRUE ". //only payable trips
             "ORDER BY t.timestampEnd ASC"; // old trips first
         $query = $this->getEntityManager()->createQuery($dql);
