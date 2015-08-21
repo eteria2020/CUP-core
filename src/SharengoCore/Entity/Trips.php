@@ -820,7 +820,12 @@ class Trips
         }
 
         $extractedTrip['timestampBeginningString'] = $this->getTimestampBeginning()->format('d-m-Y H:i:s');
-        $extractedTrip['timestampEndString'] = $this->getTimestampEnd()->format('d-m-Y H:i:s');
+
+        if ($this->getTimestampEnd() != null) {
+            $extractedTrip['timestampEndString'] = $this->getTimestampEnd()->format('d-m-Y H:i:s');
+        } else {
+            $extractedTrip['timestampEndString'] = '';
+        }
 
         return $extractedTrip;
     }
