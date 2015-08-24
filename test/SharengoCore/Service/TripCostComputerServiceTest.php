@@ -149,6 +149,15 @@ class TripCostComputerServiceTest extends \PHPUnit_Framework_TestCase
                 'male',
                 0,
                 2400
+            ],
+            // 23 hours by a male between two days
+            [
+                date_create('2015-08-11 05:36:09'),
+                date_create('2015-08-12 05:31:44'),
+                58988,
+                'male',
+                0,
+                5000
             ]
         ];
     }
