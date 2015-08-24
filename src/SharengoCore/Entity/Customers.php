@@ -376,7 +376,7 @@ class Customers
      *
      * @ORM\Column(name="payment_able", type="boolean", options={"default" = TRUE})
      */
-    private $paymentAble;
+    private $paymentAble = true;
 
     /**
      * Bidirectional - One-To-Many (INVERSE SIDE)
