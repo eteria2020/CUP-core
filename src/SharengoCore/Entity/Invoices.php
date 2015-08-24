@@ -206,7 +206,7 @@ class Invoices
     }
 
     /**
-     * Creates an invoice for a set of trips. 
+     * Creates an invoice for a set of trips.
      *
      * It's supposed all of them have been payed on the same day
      *
@@ -237,11 +237,13 @@ class Invoices
         foreach ($tripPayments as $key => $tripPayment) {
             $trip = $tripPayment->getTrip();
             array_push($body, [
-                $trip->getTimestampBeginning()->format("Y-m-d H:i:s"),
-                $trip->getTimestampEnd()->format("Y-m-d H:i:s"),
-                $tripPayment->getTripMinutes() . ' (min)',
-                $trip->getCar()->getPlate(),
-                $amounts['rows'][$key]
+                ["Da: " . $trip->getTimestampBeginning()->format("d-m-Y H:i:s"),
+                    "A: " . $trip->getTimestampEnd()->format("d-m-Y H:i:s")],
+                ["Da: " . "C.so Di P.ta Romana Via Rugabella, 20122 Milano, Italy",
+                    "A: " . "Cerchia dei navigli, Milano, Italy"],
+                [$tripPayment->getTripMinutes() . ' (min)'],
+                [$trip->getCar()->getPlate()],
+                [$amounts['rows'][$key]]
             ]);
         }
 
@@ -249,8 +251,8 @@ class Invoices
             'greeting_message' => '',
             'contents' => [
                 'header' => [
-                    'Inizio',
-                    'Fine',
+                    'Data',
+                    'Luogo',
                     'Durata',
                     'Targa',
                     'Totale'
