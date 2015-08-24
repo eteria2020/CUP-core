@@ -230,7 +230,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         AND t.latitudeEnd IS NOT NULL
         AND t.longitudeBeginning != 0
         AND t.latitudeBeginning != 0
-        ORDER BY t.timestampBeginning";
+        ORDER BY t.timestampBeginning ASC";
 
         $query = $em->createQuery($dql);
         if ($limit != 0) {
