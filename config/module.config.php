@@ -140,7 +140,8 @@ return [
         'invokables' => [
             'SharengoCore\Service\DatatableQueryBuilder' => 'SharengoCore\Service\DatatableQueryBuilders\Basic',
             'SharengoCore\Service\FreeFaresService' => 'SharengoCore\Service\FreeFaresService',
-            'SharengoCore\Service\TripFaresService' => 'SharengoCore\Service\TripFaresService'
+            'SharengoCore\Service\TripFaresService' => 'SharengoCore\Service\TripFaresService',
+            'SharengoCore\Service\LocationService' => 'SharengoCore\Service\LocationService'
         ],
         'factories' => [
             'SharengoCore\Service\CustomersService'    => 'SharengoCore\Service\CustomersServiceFactory',
