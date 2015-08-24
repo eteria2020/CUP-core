@@ -213,4 +213,30 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+
+    /**
+     * @param integer $limit
+     * @return Trips[]
+     */
+    public function findTripsNoAddress($limit)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT DISTINCT t
+        FROM \SharengoCore\Entity\Trips t
+        WHERE t.timestampEnd IS NOT NULL
+        AND (t.addressBeginning IS NULL OR t.addressEnd IS NULL)
+        AND t.longitudeEnd IS NOT NULL
+        AND t.latitudeEnd IS NOT NULL
+        AND t.longitudeBeginning != 0
+        AND t.latitudeBeginning != 0
+        ORDER BY t.timestampBeginning";
+
+        $query = $em->createQuery($dql);
+        if ($limit != 0) {
+            $query->setMaxResults($limit);
+        }
+
+        return $query->getResult();
+    }
 }

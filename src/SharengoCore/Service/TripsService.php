@@ -225,4 +225,13 @@ class TripsService
     {
         return $this->tripRepository->findListTripsForMonthByCustomer($month, $customerId);
     }
+
+    /**
+     * @param integer $limit
+     * @return Trips[]
+     */
+    public function getTripsNoAddress($limit = 0)
+    {
+        return $this->tripRepository->findTripsNoAddress($limit);
+    }
 }
