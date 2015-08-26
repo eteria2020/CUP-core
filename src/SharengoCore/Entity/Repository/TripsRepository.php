@@ -163,6 +163,8 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
+     * Exclude trips less than 5 mins long
+     *
      * @param Customers $customer
      * @return mixed
      */
@@ -174,10 +176,12 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         FROM \SharengoCore\Entity\Trips t
         WHERE t.customer = :customer
         AND t.timestampEnd IS NOT NULL
+        AND t.timestampEnd - t.timestampBeginning >= :fiveMinutes
         ORDER BY t.timestampBeginning DESC";
 
         $query = $em->createQuery($dql);
         $query->setParameter('customer', $customer);
+        $query->setParameter('fiveMinutes', '00:05:00');
 
         return $query->getResult();
     }
