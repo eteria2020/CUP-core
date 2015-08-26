@@ -15,17 +15,10 @@ class LocationService
         $data = @file_get_contents($url);
         $jsondata = json_decode($data,true);
 
-        $address = "\n";
-        var_dump($jsondata);die;
-        foreach ($jsondata['address'] as $key => $value) {
-            $address .= $key . "=" . $value . ",\n";
-        }
-        return $address;
-
         return $jsondata['address']['road'] . ', ' .
-            $jsondata['address']['neighbourhood'] . ', ' .
-            $jsondata['address']['suburb'] . ', ' .
-            $jsondata['address']['city'] . ', ' .
-            $jsondata['address']['country'];
+            ((isset($jsondata['address']['town'])) ?
+                $jsondata['address']['town'] :
+                $jsondata['address']['city']) . ', ' .
+            $jsondata['address']['county'];
     }
 }
