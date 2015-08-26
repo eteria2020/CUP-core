@@ -194,7 +194,8 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         WITH t.id = tf.trip
         Where t.customer = :customer
         AND t.timestampEnd >= :monthStart
-        AND t.timestampEnd < :monthEnd";
+        AND t.timestampEnd < :monthEnd
+        ORDER BY t.timestampBeginning";
 
         $query = $em->createQuery($dql);
         $query->setParameter('customer', $customer);
