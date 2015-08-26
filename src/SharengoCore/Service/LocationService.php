@@ -11,12 +11,14 @@ class LocationService
      */
     public function getAddressFromCoordinates($latitude, $longitude)
     {
-        $url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=".$latitude.",".$longitude."&sensor=true";
+        $url = "http://maps.sharengo.it/reverse.php?format=json&zoom=18&addressdetails=1&lon=" . $longitude . "&lat=" . $latitude;
         $data = @file_get_contents($url);
         $jsondata = json_decode($data,true);
-        if(is_array($jsondata) && $jsondata['status'] == "OK")
-        {
-            return $jsondata['results'][0]['formatted_address'];
-        }
+
+        return $jsondata['address']['road'] . ', ' .
+            ((isset($jsondata['address']['town'])) ?
+                $jsondata['address']['town'] :
+                $jsondata['address']['city']) . ', ' .
+            $jsondata['address']['county'];
     }
 }
