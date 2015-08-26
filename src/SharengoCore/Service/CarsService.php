@@ -191,7 +191,7 @@ class CarsService
             if (null != $maintenanceReservation) {
                 $this->entityManager->persist($maintenanceReservation);
             }
-            
+
         }
 
         $this->entityManager->flush();
@@ -235,5 +235,14 @@ class CarsService
     public function getLastCarsMaintenance($plate)
     {
         return $this->carsMaintenanceRepository->findLastCarsMaintenance($plate);
+    }
+
+    /**
+     * @param Cars $car
+     * @return boolean
+     */
+    public function isCarOutOfBounds(Cars $car)
+    {
+        return $this->carsRepository->isCarOutOfBounds($car);
     }
 }
