@@ -4,6 +4,7 @@ namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+use SharengoCore\Utils\Interval;
 
 /**
  * Trips
@@ -838,7 +839,12 @@ class Trips
      */
     public function isAccountable()
     {
-        return !$this->customer->getGoldList();
+
+        $interval = new Interval($this->getTimestampBeginning(), $this->getTimestampEnd());
+        $minutes = $interval->minutes();
+
+        return !$this->customer->getGoldList() &&
+               $minutes >= 5;
     }
 
     /**

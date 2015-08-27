@@ -72,13 +72,11 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
             "AND t.timestampEnd >= t.timestampBeginning ". // only trips with positive length
             "AND t.timestampBeginning >= :firstJanuary2015 ". // only trips begun after 01/01/2015
             "AND t.timestampEnd - t.timestampBeginning <= :oneDay ". // length less than one day
-            "AND t.timestampEnd - t.timestampBeginning >= :fiveMinutes ". // length more than 5 mins
             "AND t.payable = TRUE ". //only payable trips
             "ORDER BY t.timestampEnd ASC"; // old trips first
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('firstJanuary2015', date_create('2015-01-01'));
         $query->setParameter('oneDay', '24:00:00');
-        $query->setParameter('fiveMinutes', '00:05:00');
 
         return $query->getResult();
     }
@@ -91,14 +89,12 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
             "AND t.timestampEnd >= t.timestampBeginning ".
             "AND t.timestampBeginning >= :firstJanuary2015 ". // only trips begun after 01/01/2015
             "AND t.timestampEnd - t.timestampBeginning <= :oneDay ". // length less than one day
-            "AND t.timestampEnd - t.timestampBeginning >= :fiveMinutes ". // length more than 5 mins
             "AND t.payable = TRUE ". //only payable trips
             "AND t.customer = :customer ".
             "ORDER BY t.timestampEnd ASC";
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('firstJanuary2015', date_create('2015-01-01'));
         $query->setParameter('oneDay', '24:00:00');
-        $query->setParameter('fiveMinutes', '00:05:00');
         $query->setParameter('customer', $customer);
         
         return $query->getResult();
