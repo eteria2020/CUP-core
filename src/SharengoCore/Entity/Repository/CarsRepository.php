@@ -57,11 +57,11 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $sql = 'SELECT c.plate
-            FROM cars c, zones z
+        $sql = "SELECT c.plate
+            FROM cars c, zone_alarms z
             WHERE c.plate = ?
-            AND z.name = \'MI\'
-            AND z.geo @> point(c.longitude, c.latitude)';
+            AND z.name = 'MI'
+            AND z.geo @> point(c.longitude, c.latitude)";
 
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('SharengoCore\Entity\Cars', 'c');

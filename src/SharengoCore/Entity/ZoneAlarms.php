@@ -5,12 +5,12 @@ namespace SharengoCore\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Zones
+ * ZoneAlarms
  *
- * @ORM\Table(name="zones")
+ * @ORM\Table(name="zone_alarms")
  * @ORM\Entity
  */
-class Zones
+class ZoneAlarms
 {
     /**
      * @var integer
@@ -18,7 +18,7 @@ class Zones
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="SEQUENCE")
-     * @ORM\SequenceGenerator(sequenceName="zones_id_seq", allocationSize=1, initialValue=1)
+     * @ORM\SequenceGenerator(sequenceName="zone_alarms_id_seq", allocationSize=1, initialValue=1)
      */
     private $id;
 
