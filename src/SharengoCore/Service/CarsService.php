@@ -243,6 +243,6 @@ class CarsService
      */
     public function isCarOutOfBounds(Cars $car)
     {
-        return $this->carsRepository->isCarOutOfBounds($car);
+        return $this->carsRepository->isCarOutOfBounds($car) === null;
     }
 }

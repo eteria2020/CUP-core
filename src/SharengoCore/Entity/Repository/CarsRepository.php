@@ -2,7 +2,7 @@
 
 namespace SharengoCore\Entity\Repository;
 
-use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 /**
  * CarsRepository
@@ -57,23 +57,20 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $sql = 'SELECT c
+        $sql = 'SELECT c.plate
             FROM cars c, zones z
-            WHERE c.plate = :car
+            WHERE c.plate = ?
             AND z.name = \'MI\'
             AND z.geo @> point(c.longitude, c.latitude)';
 
-        $sql = 'SELECT c.plate
-            FROM cars c
-            WHERE c.plate = :car';
-
-        $rsm = new ResultSetMappingBuilder($em);
-        $rsm->addRootEntityFromClassMetadata('SharengoCore\Entity\Cars', 'c');
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('SharengoCore\Entity\Cars', 'c');
+        $rsm->addFieldResult('c', 'plate', 'plate');
 
         $query = $em->createNativeQuery($sql, $rsm);
-        $query->setParameter('car', $car->getPlate());
+        $query->setParameter(1, $car->getPlate());
 
-        $users = $query->getResult();
+        return $query->getOneOrNullResult();
     }
 
 }

@@ -26,7 +26,7 @@ class LocationService
      * @param long $x
      * @param long $y
      */
-    public function IsPointInPolygon($polyX,$polyY,$x,$y) {
+    public function isPointInPolygon($polyX,$polyY,$x,$y) {
         $j = count($polyY) - 1 ;
         $oddNodes = 0;
 
