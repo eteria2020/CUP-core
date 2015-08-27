@@ -239,8 +239,8 @@ class Invoices
             array_push($body, [
                 ["Da: " . $trip->getTimestampBeginning()->format("d-m-Y H:i:s"),
                     "A: " . $trip->getTimestampEnd()->format("d-m-Y H:i:s")],
-                ["Da: " . "C.so Di P.ta Romana Via Rugabella, 20122 Milano, Italy",
-                    "A: " . "Cerchia dei navigli, Milano, Italy"],
+                ["Da: " . $trip->getAddressBeginning(),
+                    "A: " . $trip->getAddressEnd()],
                 [$tripPayment->getTripMinutes() . ' (min)'],
                 [$trip->getCar()->getPlate()],
                 [$amounts['rows'][$key]]
