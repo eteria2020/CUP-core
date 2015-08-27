@@ -239,7 +239,7 @@ return [
     ],
 
     'simple-logger' => [
-        'environment' => 'development'
+        'environment' => 'production'
     ]
 
 ];
