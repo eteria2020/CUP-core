@@ -236,6 +236,10 @@ return [
            'binary'  => __DIR__ . '/../../../vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltopdf-amd64',
            'options' => [],
         ]
+    ],
+
+    'simple-logger' => [
+        'environment' => 'development'
     ]
 
 ];
