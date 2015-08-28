@@ -205,6 +205,13 @@ class Trips
      */
     private $tripFreeFares;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="parent_id", type="integer", nullable=true)
+     */
+    private $parentId;
+
 
 
     /**
@@ -776,7 +783,7 @@ class Trips
                 $customer = $customer->toArray($hydrator);
                 $extractedTrip['customer'] = $customer;
             }
-        } 
+        }
 
         unset($extractedTrip['car']);
         if (in_array('car', $tripsHydrationOptions)) {
@@ -796,7 +803,7 @@ class Trips
             } else {
                 unset($extractedTrip['tripPayments']);
             }
-        } 
+        }
 
         unset($extractedTrip['tripBonuses']);
         if (in_array('tripBonuses', $tripsHydrationOptions)) {
@@ -877,5 +884,19 @@ class Trips
     public function customerIsPaymentAble()
     {
         return $this->customer->getPaymentAble();
+    }
+
+    /**
+     * @return integer
+     */
+    public function getParentId()
+    {
+        return $this->parentId;
+    }
+
+    public function setParentId($parentId)
+    {
+        $this->parentId = $parentId;
+        return $this;
     }
 }

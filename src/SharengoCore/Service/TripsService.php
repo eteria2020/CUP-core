@@ -96,12 +96,24 @@ class TripsService
                 $trip->getCar()->getPlate()
             );
 
+            $parentId = $trip->getParentId();
+            $parentStart = "";
+            if ($parentId !== null) {
+                $parent = $this->getTripById($parentId);
+                $parentId = "<br>(" . $parentId . ")";
+                if ($parent !== null) {
+                    $parentStart = "<br>(" . $parent->getTimestampBeginning()->format('d-m-Y H:i:s') . ")";
+                }
+            } else {
+                $parentId = "";
+            }
+
             return [
                 'e'        => [
-                    'id'                 => $trip->getId(),
+                    'id'                 => $trip->getId() . $parentId,
                     'kmBeginning'        => $trip->getKmBeginning(),
                     'kmEnd'              => $trip->getKmEnd(),
-                    'timestampBeginning' => $trip->getTimestampBeginning()->format('d-m-Y H:i:s'),
+                    'timestampBeginning' => $trip->getTimestampBeginning()->format('d-m-Y H:i:s') . $parentStart,
                     'timestampEnd'       => (null != $trip->getTimestampEnd() ? $trip->getTimestampEnd()->format('d-m-Y H:i:s') : ''),
                     'parkSeconds'        => $trip->getParkSeconds() . ' sec',
                     'payable'            => $trip->getPayable() ? 'Si' : 'No',
