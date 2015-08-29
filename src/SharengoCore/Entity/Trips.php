@@ -828,6 +828,12 @@ class Trips
             $extractedTrip['timestampEndString'] = '';
         }
 
+        // calculate trip duration
+        $extractedTrip['duration'] = $this->getDurationMinutes();
+
+        // expose if trip is accountable
+        $extractedTrip['isAccountable'] = $this->isAccountable();
+
         return $extractedTrip;
     }
 
@@ -840,11 +846,17 @@ class Trips
     public function isAccountable()
     {
 
-        $interval = new Interval($this->getTimestampBeginning(), $this->getTimestampEnd());
-        $minutes = $interval->minutes();
+        $minutes = $this->getDurationMinutes();
 
         return !$this->customer->getGoldList() &&
                $minutes >= 5;
+    }
+
+    public function getDurationMinutes() {
+
+        $interval = new Interval($this->getTimestampBeginning(), $this->getTimestampEnd());
+        return $interval->minutes();
+        
     }
 
     /**
