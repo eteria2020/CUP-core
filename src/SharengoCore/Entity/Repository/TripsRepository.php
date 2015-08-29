@@ -202,8 +202,8 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         LEFT JOIN \SharengoCore\Entity\TripFreeFares tf
         WITH t.id = tf.trip
         Where t.customer = :customer
-        AND t.timestampEnd >= :monthStart
-        AND t.timestampEnd < :monthEnd
+        AND t.timestampBeginning >= :monthStart
+        AND t.timestampBeginning < :monthEnd
         ORDER BY t.timestampBeginning";
 
         $query = $em->createQuery($dql);
