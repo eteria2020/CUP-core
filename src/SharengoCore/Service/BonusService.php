@@ -3,7 +3,9 @@
 namespace SharengoCore\Service;
 
 use SharengoCore\Entity\CustomersBonus as Bonus;
+use SharengoCore\Entity\CustomersBonusInfo as BonusInfo;
 use SharengoCore\Entity\Trips;
+use SharengoCore\Entity\Customers;
 use SharengoCore\Utils\Interval;
 use SharengoCore\Entity\Repository\CustomersBonusRepository as BonusRepository;
 
@@ -12,12 +14,12 @@ use Doctrine\ORM\EntityManager;
 class BonusService
 {
     /**
-     * @var EntityManager $entityManager
+     * @var EntityManager
      */
     private $entityManager;
 
     /**
-     * @var BonusRepository $bonusRepository
+     * @var BonusRepository
      */
     private $bonusRepository;
 
@@ -77,5 +79,20 @@ class BonusService
         }
 
         return $interval;
+    }
+
+    /**
+     * @param Customers $customer
+     * @param BonusInfo $bonusInfo
+     * @return Bonus
+     */
+    public function createBonusForCustomerFromCode(Customers $customer, BonusInfo $bonusInfo)
+    {
+        $bonus = Bonus::createBonusFromInfo($customer, $bonusInfo);
+
+        $this->entityManager->persist($bonus);
+        $this->entityManager->flush();
+
+        return $bonus;
     }
 }

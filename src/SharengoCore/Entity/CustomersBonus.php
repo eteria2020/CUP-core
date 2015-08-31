@@ -150,6 +150,29 @@ class CustomersBonus
     }
 
     /**
+     * @param Customers $customer
+     * @param CustomersBonusInfo $bonusInfo
+     * @return CustomersBonus
+     */
+    public static function createFromBonusInfo(Customers $customer, CustomersBonusInfo $bonusInfo)
+    {
+        $date = new \DateTime();
+        $bonus = new CustomersBonus();
+        $bonus->setCustomer($customer)
+            ->setInsertTs($date)
+            ->setUpdateTs($date)
+            ->setTotal($bonusInfo->getTotal())
+            ->setResidual($bonusInfo->getTotal())
+            ->setType($bonusInfo->getType())
+            ->setValidFrom($bonusInfo->getValidFrom())
+            ->setDurationDays($bonusInfo->getLength())
+            ->setValidTo($bonusInfo->getValidTo())
+            ->setDescription($bonusInfo->getDescription());
+
+        return $bonus;
+    }
+
+    /**
      * Get id
      *
      * @return integer
