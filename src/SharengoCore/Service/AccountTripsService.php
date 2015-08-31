@@ -69,9 +69,10 @@ class AccountTripsService
      * - updates the bounuses according to how much they were used for the trip
      *
      * @param Trips $trip
+     * @param boolean $avoidPersistance
      * @throws \Exception
      */
-    public function accountTrip(Trips $trip)
+    public function accountTrip(Trips $trip, $avoidPersistance = false)
     {
         $this->originalTrip = $trip;
 
@@ -87,7 +88,11 @@ class AccountTripsService
             $this->entityManager->persist($trip);
             $this->entityManager->flush();
 
-            $this->entityManager->getConnection()->commit();
+            if (!$avoidPersistance) {
+                $this->entityManager->getConnection()->commit();
+            } else {
+                $this->entityManager->getConnection()->rollback();
+            }
 
             return $tripBills;
         } catch (\Exception $e) {
