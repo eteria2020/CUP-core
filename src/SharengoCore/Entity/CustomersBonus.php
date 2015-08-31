@@ -157,6 +157,11 @@ class CustomersBonus
     public static function createFromBonusInfo(Customers $customer, CustomersBonusInfo $bonusInfo)
     {
         $date = new \DateTime();
+        $validFrom = $bonusInfo->getValidFrom();
+        if ($date->getTimestamp() > $validFrom->getTimestamp()) {
+            $validFrom = $date;
+        }
+
         $bonus = new CustomersBonus();
         $bonus->setCustomer($customer)
             ->setInsertTs($date)
@@ -164,7 +169,7 @@ class CustomersBonus
             ->setTotal($bonusInfo->getTotal())
             ->setResidual($bonusInfo->getTotal())
             ->setType($bonusInfo->getType())
-            ->setValidFrom($bonusInfo->getValidFrom())
+            ->setValidFrom($validFrom())
             ->setDurationDays($bonusInfo->getLength())
             ->setValidTo($bonusInfo->getValidTo())
             ->setDescription($bonusInfo->getDescription());
