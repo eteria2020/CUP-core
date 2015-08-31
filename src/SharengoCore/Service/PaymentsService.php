@@ -100,7 +100,7 @@ class PaymentsService
         if (!$this->avoidEmail) {
             $this->emailService->sendEmail(
                 $customer->getEmail(),
-                'SHARENGO - RICHIESTA DI PRIMO PAGAMENTO',
+                'Pagamento delle tue corse a debito',
                 $content,
                 $attachments
             );
