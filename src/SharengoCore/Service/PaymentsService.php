@@ -78,13 +78,30 @@ class PaymentsService
         $trip = $tripPayment->getTrip();
         $customer = $trip->getCustomer();
 
-        if ($this->cartasiContractService->hasCartasiContract($customer)) {
-            $this->tryCustomerTripPayment(
-                $customer,
-                $tripPayment
-            );
-        } else {
-            $this->notifyCustomerHeHasToPay($customer);
+        if ($customer->getPaymentAble()) {
+            if ($this->cartasiContractService->hasCartasiContract($customer)) {
+                $this->tryCustomerTripPayment(
+                    $customer,
+                    $tripPayment
+                );
+            } else {
+                $this->disableCustomerForPayment($customer);
+                $this->notifyCustomerHeHasToPay($customer);
+            }
+        }
+    }
+
+    /**
+     * @var Customers $customer
+     */
+    private function disableCustomerForPayment(Customers $customer)
+    {
+        $customer->setPaymentAble(false);
+
+        $this->entityManager->persist($customer);
+
+        if (!$this->avoidPersistance) {
+            $this->entityManager->flush();
         }
     }
 

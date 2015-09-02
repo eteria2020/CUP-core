@@ -446,6 +446,19 @@ class CustomersService implements ValidatorServiceInterface
     }
 
     /**
+     * enables a customer to pay with Cartasi
+     *
+     * @param Customers $customer
+     */
+    public function enableCustomerPayment(Customers $customer)
+    {
+        $customer->setPaymentAble(true);
+
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
+    }
+
+    /**
      * send to a customer an email telling him that he was re-enabled
      *
      * @param Customers $customer
