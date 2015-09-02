@@ -234,4 +234,27 @@ class TripsService
     {
         return $this->tripRepository->findTripsNoAddress($limit);
     }
+
+    /**
+     * NOTICE: DO NOT EXTEND THIS METHOD. IF MORE VARIABLES ARE REQUIRED PLEASE REFACTOR
+     *
+     * Edit a trip:
+     * - modifies the trip fields
+     * - deletes all the trip bills
+     * - deletes all the trip bonuses and reassigns the customer bonuses
+     * - deletes all the trip fares
+     * - deletes all the trip payments (if any)
+     * - reaccount trip and recompute trip payment
+     *
+     * @param Trips $trips
+     * @param boolean $notPayable
+     * @param DateTime $endDate
+     */
+    public function editTrip(
+        Trips $trip,
+        $notPayable,
+        \DateTime $endDate
+    ) {
+
+    }
 }
