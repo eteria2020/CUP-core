@@ -871,17 +871,6 @@ class Trips
     }
 
     /**
-     * determines if we ca try to pay the trip.
-     * At the moment it checks if the customer already copleted the firt payment
-     *
-     * @return boolean
-     */
-    public function canBePayed()
-    {
-        return $this->customer->getFirstPaymentCompleted();
-    }
-
-    /**
      * checks if a customer is able to perform a payment
      *
      * @return boolean

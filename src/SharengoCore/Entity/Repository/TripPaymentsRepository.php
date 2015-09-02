@@ -53,6 +53,23 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    public function findTripPaymentsForUserPayment($customer)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT tp FROM SharengoCore\Entity\TripPayments tp '.
+            'JOIN tp.trip t '.
+            'WHERE tp.status = :status '.
+            'AND t.customer = :customer';
+
+        $query = $em->createQuery($dql);
+
+        $query->setParameter('status', 'not_payed');
+        $query->setParameter('customer', $customer);
+
+        return $query->getResult();
+    }
+
     public function findFirstTripPaymentNotPayedByCustomer($customer)
     {
         $em = $this->getEntityManager();

@@ -123,6 +123,11 @@ class TripPaymentsService
         return $this->tripPaymentsRepository->findTripPaymentsForPayment();
     }
 
+    public function getTripPaymentsForUserPayment(Customers $customer)
+    {
+        return $this->tripPaymentsRepository->findTripPaymentsForUserPayment($customer);
+    }
+
     /*
      * @param Customers $customer
      * @return TripPayments | null

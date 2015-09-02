@@ -3,6 +3,7 @@
 namespace SharengoCore\Service;
 
 use Cartasi\Service\CartasiCustomerPayments;
+use Cartasi\Service\CartasiContractsService;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\TripPaymentTries;
@@ -15,6 +16,11 @@ class PaymentsService
      * @var CartasiCustomerPayments
      */
     private $cartasiCustomerPayments;
+
+    /**
+     * @var CartasiContractService
+     */
+    private $cartasiContractService;
 
     /**
      * @var EntityManager
@@ -43,10 +49,12 @@ class PaymentsService
 
     public function __construct(
         CartasiCustomerPayments $cartasiCustomerPayments,
+        CartasiContractsService $cartasiContractService,
         EntityManager $entityManager,
         EmailService $emailService
     ) {
         $this->cartasiCustomerPayments = $cartasiCustomerPayments;
+        $this->cartasiContractService = $cartasiContractService;
         $this->entityManager = $entityManager;
         $this->emailService = $emailService;
     }
@@ -68,14 +76,15 @@ class PaymentsService
         $this->avoidPersistance = $avoidPersistance;
 
         $trip = $tripPayment->getTrip();
+        $customer = $trip->getCustomer();
 
-        if ($trip->canBePayed()) {
+        if ($this->cartasiContractService->hasCartasiContract($customer)) {
             $this->tryCustomerTripPayment(
-                $trip->getCustomer(),
+                $customer,
                 $tripPayment
             );
         } else {
-            $this->notifyCustomerHeHasToPay($trip->getCustomer());
+            $this->notifyCustomerHeHasToPay($customer);
         }
     }
 
