@@ -389,8 +389,8 @@ class CustomersService implements ValidatorServiceInterface
     {
         // notification email attachments
         $attachments = [
-            'bannerphono.jpg' => __DIR__.'/../../../../../public/images/bannerphono.jpg',
-            'barbarabacci.jpg' => __DIR__.'/../../../../../public/images/barbarabacci.jpg'
+            'bannerphono.jpg' => __DIR__.'/../../../public/assets-modules/sharengo-core/images/bannerphono.jpg',
+            'barbarabacci.jpg' => __DIR__.'/../../../public/assets-modules/sharengo-core/images/barbarabacci.jpg'
         ];
 
         foreach ($customers as $customer) {
@@ -472,8 +472,8 @@ class CustomersService implements ValidatorServiceInterface
         );
 
         $attachments = [
-            'bannerphono.jpg' => __DIR__.'/../../../../../public/images/bannerphono.jpg',
-            'barbarabacci.jpg' => __DIR__.'/../../../../../public/images/barbarabacci.jpg'
+            'bannerphono.jpg' => __DIR__.'/../../../public/assets-modules/sharengo-core/images/bannerphono.jpg',
+            'barbarabacci.jpg' => __DIR__.'/../../../public/assets-modules/sharengo-core/images/barbarabacci.jpg'
         ];
 
         $this->emailService->sendEmail(
