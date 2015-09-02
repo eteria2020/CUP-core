@@ -5,12 +5,12 @@ namespace SharengoCore\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * CustomersBonusInfo
+ * CustomersBonusPackages
  *
- * @ORM\Table(name="customers_bonus_info")
- * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CustomersBonusInfoRepository")
+ * @ORM\Table(name="customers_bonus_packages")
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CustomersBonusPackagesRepository")
  */
-class CustomersBonusInfo
+class CustomersBonusPackages
 {
     /**
      * @var int
@@ -18,7 +18,7 @@ class CustomersBonusInfo
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="SEQUENCE")
-     * @ORM\SequenceGenerator(sequenceName="customers_bonus_info_id_seq", allocationSize=1, initialValue=1)
+     * @ORM\SequenceGenerator(sequenceName="customers_bonus_packages_id_seq", allocationSize=1, initialValue=1)
      */
     private $id;
 
@@ -32,9 +32,9 @@ class CustomersBonusInfo
     /**
      * @var integer
      *
-     * @ORM\Column(name="total", type="integer", nullable=false)
+     * @ORM\Column(name="minutes", type="integer", nullable=false)
      */
-    private $total;
+    private $minutes;
 
     /**
      * @var string
@@ -53,9 +53,9 @@ class CustomersBonusInfo
     /**
      * @var integer
      *
-     * @ORM\Column(name="length", type="integer", nullable=true)
+     * @ORM\Column(name="duration", type="integer", nullable=true)
      */
-    private $length;
+    private $duration;
 
     /**
      * @var \DateTime
@@ -72,8 +72,12 @@ class CustomersBonusInfo
     private $description;
 
     /**
-     * Get id
-     *
+     * @var integer
+     * @ORM\Column(name="cost", type="integer", nullable=false)
+     */
+    private $cost;
+
+    /**
      * @return integer
      */
     public function getId()
@@ -91,7 +95,7 @@ class CustomersBonusInfo
 
     /**
      * @param string $code
-     * @return CustomersBonusInfo
+     * @return CustomersBonusPackages
      */
     public function setCode($code)
     {
@@ -100,32 +104,26 @@ class CustomersBonusInfo
     }
 
     /**
-     * Get total
-     *
      * @return integer
      */
-    public function getTotal()
+    public function getMinutes()
     {
-        return $this->total;
+        return $this->minutes;
     }
 
     /**
-     * Set total
+     * @param integer $minutes
      *
-     * @param integer $total
-     *
-     * @return CustomersBonusInfo
+     * @return CustomersBonusPackages
      */
-    public function setTotal($total)
+    public function setMinutes($minutes)
     {
-        $this->total = $total;
+        $this->minutes = $minutes;
 
         return $this;
     }
 
     /**
-     * Get type
-     *
      * @return string
      */
     public function getType()
@@ -134,11 +132,9 @@ class CustomersBonusInfo
     }
 
     /**
-     * Set type
-     *
      * @param string $type
      *
-     * @return CustomersBonusInfo
+     * @return CustomersBonusPackages
      */
     public function setType($type)
     {
@@ -148,8 +144,6 @@ class CustomersBonusInfo
     }
 
     /**
-     * Get validFrom
-     *
      * @return \DateTime
      */
     public function getValidFrom()
@@ -158,11 +152,9 @@ class CustomersBonusInfo
     }
 
     /**
-     * Set validFrom
-     *
      * @param \DateTime $validFrom
      *
-     * @return CustomersBonusInfo
+     * @return CustomersBonusPackages
      */
     public function setValidFrom($validFrom)
     {
@@ -172,32 +164,26 @@ class CustomersBonusInfo
     }
 
     /**
-     * Get length
-     *
      * @return integer
      */
-    public function getLength()
+    public function getDuration()
     {
-        return $this->length;
+        return $this->duration;
     }
 
     /**
-     * Set length
+     * @param integer $duration
      *
-     * @param integer $length
-     *
-     * @return CustomersBonusInfo
+     * @return CustomersBonusPackages
      */
-    public function setLength($length)
+    public function setDuration($duration)
     {
-        $this->length = $length;
+        $this->duration = $duration;
 
         return $this;
     }
 
     /**
-     * Get validTo
-     *
      * @return \DateTime
      */
     public function getValidTo()
@@ -206,11 +192,9 @@ class CustomersBonusInfo
     }
 
     /**
-     * Set validTo
-     *
      * @param \DateTime $validTo
      *
-     * @return CustomersBonusInfo
+     * @return CustomersBonusPackages
      */
     public function setValidTo($validTo)
     {
@@ -220,8 +204,6 @@ class CustomersBonusInfo
     }
 
     /**
-     * Get description
-     *
      * @return string
      */
     public function getDescription()
@@ -230,15 +212,33 @@ class CustomersBonusInfo
     }
 
     /**
-     * Set description
-     *
      * @param string $description
      *
-     * @return CustomersBonusInfo
+     * @return CustomersBonusPackages
      */
     public function setDescription($description)
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getCost()
+    {
+        return $this->cost;
+    }
+
+    /**
+     * @param integer $cost
+     *
+     * @return CustomersBonusPackages
+     */
+    public function setCost($cost)
+    {
+        $this->cost = $cost;
 
         return $this;
     }
