@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity;
 
+use SharengoCore\Exception\NonPositiveIntegerException;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -70,7 +72,7 @@ class CustomersBonus
      * @ORM\Column(name="operator", type="string", length=100, nullable=true)
      */
     private $operator;
-    
+
     /**
      * @var \DateTime
      *
@@ -108,7 +110,7 @@ class CustomersBonus
      * })
      */
     private $customer;
-    
+
     /**
      * @var \Webuser
      *
@@ -130,8 +132,8 @@ class CustomersBonus
     private $promocode;
 
 
-    public static function createFromPromoCode(PromoCodes $promoCode) {
-
+    public static function createFromPromoCode(PromoCodes $promoCode)
+    {
         $promoCodeDetails = $promoCode->getPromocodesinfo();
 
         $me = new CustomersBonus();
@@ -145,7 +147,6 @@ class CustomersBonus
         $me->setPromoCode($promoCode);
 
         return $me;
-        
     }
 
     /**
@@ -492,5 +493,25 @@ class CustomersBonus
     public function getPromocode()
     {
         return $this->promocode;
+    }
+
+    /**
+     * increments the residual by the given amount of minutes
+     *
+     * @var int $minutes
+     * @return CustomersBonus
+     * @throws NonPositiveIntegerException
+     */
+    public function incrementResidual($minutes)
+    {
+        if (!is_integer($minutes) || $minutes < 0) {
+            throw new NonPositiveIntegerException();
+        }
+
+        $addedMinutes = $this->residual + $minutes;
+
+        $this->residual = min($this->total, $addedMinutes);
+
+        return $this;
     }
 }

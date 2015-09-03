@@ -5,9 +5,9 @@ namespace SharengoCore\Service;
 use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\Customers;
+use SharengoCore\Service\CustomersService;
 
 use Zend\View\Helper\Url;
-use SharengoCore\Service\CustomersService;
 
 class TripsService
 {
@@ -31,6 +31,10 @@ class TripsService
 
     /**
      * @param EntityRepository $tripRepository
+     * @param DatatableService $I_datatableService
+     * @param \\TODO $I_urlHelper
+     * @param CustomersService $customersService
+     * @param EntityManager
      */
     public function __construct(
         $tripRepository,

@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity\Repository;
 
+use SharengoCore\Entity\Trips;
+
 class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
 {
     public function findTripPaymentsNoInvoice()
@@ -89,5 +91,19 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         $query->setMaxResults(1);
 
         return $query->getOneOrNullResult();
+    }
+
+    /**
+     * @param Trips $trip
+     */
+    public function deleteTripPaymentsByTrip(Trips $trip)
+    {
+        $dql = "DELETE FROM \SharengoCore\Entity\TripPayments tb ".
+            "WHERE tb.trip = :trip";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('trip', $trip);
+
+        return $query->execute();
     }
 }
