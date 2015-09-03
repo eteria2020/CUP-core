@@ -90,4 +90,18 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getOneOrNullResult();
     }
+
+    /**
+     * @param Trips $trip
+     */
+    public function deleteTripPaymentsByTrip(Trips $trip)
+    {
+        $dql = "DELETE FROM \SharengoCore\Entity\TripPayments tb ".
+            "WHERE tb.trip = :trip";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('trip', $trip);
+
+        return $query->execute();
+    }
 }
