@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Service;
 
+use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\Repository\TripBillsRepository;
 use SharengoCore\Entity\Repository\TripFreeFaresRepository;
 use SharengoCore\Entity\Repository\TripPaymentsRepository;
@@ -69,9 +70,9 @@ class EditTripsService
      *
      * @param Trips $trip
      * @param boolean $notPayable
-     * @param DateTime $endDate
+     * @param DateTime|null $endDate
      */
-    public function editTrip(Trips $trip, $notPayable, \DateTime $endDate)
+    public function editTrip(Trips $trip, $notPayable, $endDate)
     {
         $this->entityManager->beginTransaction();
 
@@ -86,9 +87,11 @@ class EditTripsService
             $this->deleteTripFreeFares($trip);
             $this->deleteTripPayments($trip);
 
-            // recreate records linked to the trip
-            $this->reAccountTrip($trip);
-            $this->reComputeTrip($trip);
+            if (!$notPayable) {
+                // recreate records linked to the trip
+                $this->reAccountTrip($trip);
+                $this->reComputeTrip($trip);
+            }
 
             $this->entityManager->flush();
             $this->entityManager->commit();
@@ -101,12 +104,17 @@ class EditTripsService
     /**
      * @param Trips $trip
      * @param boolean $notPayable
-     * @param DateTime $endDate
+     * @param DateTime|null $endDate
      */
-    private function doEditTrip(Trips $trip, $notPayable, \DateTime $endDate)
+    private function doEditTrip(Trips $trip, $notPayable, $endDate)
     {
-        $trip->setPayable(!$notPayable);
-        $trip->setEndDate($endDate);
+        if ($notPayable) {
+            $trip->setPayable(false);
+        }
+
+        if ($endDate instanceof \DateTime) {
+            $trip->setTimestampEnd($endDate);
+        }
 
         $this->entityManager->persist($trip);
     }

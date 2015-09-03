@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity\Repository;
 
+use SharengoCore\Entity\Trips;
+
 class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
 {
     public function findTripPaymentsNoInvoice()
