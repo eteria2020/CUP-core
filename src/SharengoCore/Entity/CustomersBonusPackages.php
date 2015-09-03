@@ -30,6 +30,13 @@ class CustomersBonusPackages
     private $code;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="inserted_ts", type="datetime", nullable=false)
+     */
+    private $insertedTs;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="minutes", type="integer", nullable=false)
@@ -63,6 +70,13 @@ class CustomersBonusPackages
      * @ORM\Column(name="valid_to", type="datetime", nullable=true)
      */
     private $validTo;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="buyable_until", type="datetime", nullable=false)
+     */
+    private $buyableUntil;
 
     /**
      * @var string
@@ -100,6 +114,26 @@ class CustomersBonusPackages
     public function setCode($code)
     {
         $this->code = $code;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getInsertedTs()
+    {
+        return $this->insertedTs;
+    }
+
+    /**
+     * @param \DateTime $insertedTs
+     *
+     * @return CustomersBonusPackages
+     */
+    public function setInsertedTs($insertedTs)
+    {
+        $this->insertedTs = $insertedTs;
+
         return $this;
     }
 
@@ -199,6 +233,26 @@ class CustomersBonusPackages
     public function setValidTo($validTo)
     {
         $this->validTo = $validTo;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getBuyableUntil()
+    {
+        return $this->buyableUntil;
+    }
+
+    /**
+     * @param \DateTime $validTo
+     *
+     * @return CustomersBonusPackages
+     */
+    public function setBuyableUntil($buyableUntil)
+    {
+        $this->buyableUntil = $buyableUntil;
 
         return $this;
     }
