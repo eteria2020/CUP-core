@@ -43,12 +43,14 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
             'JOIN tp.trip t '.
             'JOIN t.customer c '.
             'WHERE tp.status = :status '.
-            'AND c.paymentAble = :paymentAble';
+            'AND c.paymentAble = :paymentAble '.
+            'AND t.timestampEnd < :midnight';
 
         $query = $em->createQuery($dql);
 
         $query->setParameter('status', 'not_payed');
         $query->setParameter('paymentAble', true);
+        $query->setParameter('midnight', date_create('midnight'));
 
         return $query->getResult();
     }
