@@ -33,6 +33,11 @@ class PaymentsService
     private $emailService;
 
     /**
+     * @var string
+     */
+    private $url;
+
+    /**
      * @var boolean
      */
     private $avoidCartasi = true;
@@ -47,16 +52,25 @@ class PaymentsService
      */
     private $avoidPersistance = true;
 
+    /**
+     * @param CartasiCustomerPayments $cartasiCustomerPayments
+     * @param CartasiContractsService $cartasiContractService
+     * @param EntityManager $entityManager
+     * @param EmailService $emailService
+     * @param string $url
+     */
     public function __construct(
         CartasiCustomerPayments $cartasiCustomerPayments,
         CartasiContractsService $cartasiContractService,
         EntityManager $entityManager,
-        EmailService $emailService
+        EmailService $emailService,
+        $url
     ) {
         $this->cartasiCustomerPayments = $cartasiCustomerPayments;
         $this->cartasiContractService = $cartasiContractService;
         $this->entityManager = $entityManager;
         $this->emailService = $emailService;
+        $this->url = $url;
     }
 
     /**
@@ -119,8 +133,8 @@ class PaymentsService
         );
 
         $attachments = [
-            'bannerphono.jpg' => __DIR__.'/../../../../../public/images/bannerphono.jpg',
-            'barbarabacci.jpg' => __DIR__.'/../../../../../public/images/barbarabacci.jpg'
+            'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
+            'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
         ];
 
         if (!$this->avoidEmail) {
@@ -261,8 +275,8 @@ class PaymentsService
         );
 
         $attachments = [
-            'bannerphono.jpg' => __DIR__.'/../../../../../public/images/bannerphono.jpg',
-            'barbarabacci.jpg' => __DIR__.'/../../../../../public/images/barbarabacci.jpg'
+            'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
+            'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
         ];
 
         if (!$this->avoidEmail) {

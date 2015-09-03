@@ -26,6 +26,7 @@ class CustomersServiceFactory implements FactoryInterface
         $logger = $serviceLocator->get('SharengoCore\Service\SimpleLoggerService');
         $cartasiContractsService = $serviceLocator->get('Cartasi\Service\CartasiContracts');
         $tripPaymentsService = $serviceLocator->get('SharengoCore\Service\TripPaymentsService');
+        $url = $serviceLocator->get('Configuration')['website']['uri'];
 
         return new CustomersService(
             $entityManager,
@@ -35,7 +36,8 @@ class CustomersServiceFactory implements FactoryInterface
             $emailService,
             $logger,
             $cartasiContractsService,
-            $tripPaymentsService
+            $tripPaymentsService,
+            $url
         );
     }
 }

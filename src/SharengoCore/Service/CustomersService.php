@@ -14,6 +14,7 @@ use SharengoCore\Service\TripPaymentsService;
 use Cartasi\Service\CartasiContractsService;
 
 use Zend\Authentication\AuthenticationService as UserService;
+use Doctrine\ORM\EntityManager;
 
 class CustomersService implements ValidatorServiceInterface
 {
@@ -59,24 +60,31 @@ class CustomersService implements ValidatorServiceInterface
     private $tripPaymentsService;
 
     /**
-     * @param $entityManager
-     * @param UserService
-     * @param DatatableService
-     * @param CardsService
-     * @param EmailService
-     * @param Logger
-     * @param CartasiContractsService
-     * @param TripPaymentsService
+     * @var string
+     */
+    private $url;
+
+    /**
+     * @param EntityManager $entityManager
+     * @param UserService $userService
+     * @param DatatableService $datatableService
+     * @param CardsService $cardsService
+     * @param EmailService $emailService
+     * @param Logger $logger
+     * @param CartasiContractsService $cartasiContractsService
+     * @param TripPaymentsService $tripPaymentsService
+     * @param string $url
      */
     public function __construct(
-        $entityManager,
+        EntityManager $entityManager,
         UserService $userService,
         DatatableService $datatableService,
         CardsService $cardsService,
         EmailService $emailService,
         Logger $logger,
         CartasiContractsService $cartasiContractsService,
-        TripPaymentsService $tripPaymentsService
+        TripPaymentsService $tripPaymentsService,
+        $url
     ) {
         $this->entityManager = $entityManager;
         $this->customersRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Customers');
@@ -88,6 +96,7 @@ class CustomersService implements ValidatorServiceInterface
         $this->logger = $logger;
         $this->cartasiContractsService = $cartasiContractsService;
         $this->tripPaymentsService = $tripPaymentsService;
+        $this->url = $url;
     }
 
     /**
@@ -389,8 +398,8 @@ class CustomersService implements ValidatorServiceInterface
     {
         // notification email attachments
         $attachments = [
-            'bannerphono.jpg' => __DIR__.'/../../../public/assets-modules/sharengo-core/images/bannerphono.jpg',
-            'barbarabacci.jpg' => __DIR__.'/../../../public/assets-modules/sharengo-core/images/barbarabacci.jpg'
+            'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
+            'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
         ];
 
         foreach ($customers as $customer) {
@@ -472,8 +481,8 @@ class CustomersService implements ValidatorServiceInterface
         );
 
         $attachments = [
-            'bannerphono.jpg' => __DIR__.'/../../../public/assets-modules/sharengo-core/images/bannerphono.jpg',
-            'barbarabacci.jpg' => __DIR__.'/../../../public/assets-modules/sharengo-core/images/barbarabacci.jpg'
+            'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
+            'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
         ];
 
         $this->emailService->sendEmail(

@@ -13,12 +13,14 @@ class PaymentsServiceFactory implements FactoryInterface
         $cartasiContractService = $serviceLocator->get('Cartasi\Service\CartasiContracts');
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $emailService = $serviceLocator->get('SharengoCore\Service\EmailService');
+        $url = $serviceLocator->get('Configuration')['website']['uri'];
 
         return new PaymentsService(
             $cartasiCustomerPayments,
             $cartasiContractService,
             $entityManager,
-            $emailService
+            $emailService,
+            $url
         );
     }
 }
