@@ -86,7 +86,7 @@ class PaymentsService
      */
     private function notifyCustomerHeHasToPay(Customers $customer)
     {
-        $date = date_create('+7 days');
+        $date = date_create('midnight +7 days');
         $content = sprintf(
             file_get_contents(__DIR__.'/../../../view/emails/first-payment-request-it_IT.html'),
             $customer->getName(),
