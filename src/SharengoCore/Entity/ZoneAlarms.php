@@ -56,7 +56,7 @@ class ZoneAlarms
     /**
      * @param string $name
      *
-     * @return Zones
+     * @return ZoneAlarms
      */
     public function setName($name)
     {
