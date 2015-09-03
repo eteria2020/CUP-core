@@ -86,10 +86,13 @@ class PaymentsService
      */
     private function notifyCustomerHeHasToPay(Customers $customer)
     {
+        $date = date();
+        $date->add(new \DateInterval('P7D'));
         $content = sprintf(
             file_get_contents(__DIR__.'/../../../view/emails/first-payment-request-it_IT.html'),
             $customer->getName(),
-            $customer->getSurname()
+            $customer->getSurname(),
+            $date->format('d/m/Y')
         );
 
         $attachments = [
