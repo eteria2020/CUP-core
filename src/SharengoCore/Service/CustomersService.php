@@ -60,7 +60,7 @@ class CustomersService implements ValidatorServiceInterface
     private $tripPaymentsService;
 
     /**
-     * @var string
+     * @var string website base url
      */
     private $url;
 
