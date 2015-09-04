@@ -515,8 +515,8 @@ class CustomersService implements ValidatorServiceInterface
     {
         $cartasiCompletedFirstPayment = $customer->getFirstPaymentCompleted();
         if ($cartasiCompletedFirstPayment) {
-            if ($this->cartasiContractsService->getCartasiContractNumber($customer) == null &&
-            $this->tripPaymentsService->getFirstTripPaymentNotPayedByCustomer($customer) != null) {
+            if ($this->cartasiContractsService->getCartasiContract($customer) === null &&
+            $this->tripPaymentsService->getFirstTripPaymentNotPayedByCustomer($customer) !== null) {
                 return true;
             }
         }
