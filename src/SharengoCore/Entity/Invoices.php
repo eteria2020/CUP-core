@@ -226,7 +226,7 @@ class Invoices
             $customer,
             $version,
             self::TYPE_TRIP,
-            intval($tripPayments[0]->getCreatedAt()->format("Ymd")),    // it's supposed all trips have been payed on the same day
+            intval($tripPayments[0]->getPayedSuccessfullyAt()->format("Ymd")),    // it's supposed all trips have been payed on the same day
             $amounts['sum']
         );
 
