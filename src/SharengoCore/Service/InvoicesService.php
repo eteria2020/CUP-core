@@ -68,6 +68,14 @@ class InvoicesService
     }
 
     /**
+     * @return Invoices[]
+     */
+    public function getAllInvoices()
+    {
+        return $this->invoicesRepository->findAll();
+    }
+
+    /**
      * @return integer
      */
     public function getTotalInvoices()
@@ -82,6 +90,14 @@ class InvoicesService
     public function getInvoiceById($id)
     {
         return $this->invoicesRepository->findOneById($id);
+    }
+
+    /**
+     * @return Invoices[]
+     */
+    public function getInvoicesForExport()
+    {
+        return $this->invoicesRepository->findInvoicesForExport();
     }
 
     /**
