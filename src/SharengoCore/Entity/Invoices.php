@@ -237,13 +237,14 @@ class Invoices
         foreach ($tripPayments as $key => $tripPayment) {
             $trip = $tripPayment->getTrip();
             array_push($body, [
-                ["Da: " . $trip->getTimestampBeginning()->format("d-m-Y H:i:s"),
-                    "A: " . $trip->getTimestampEnd()->format("d-m-Y H:i:s")],
+                [$trip->getId()],
+                ["Inizio: " . $trip->getTimestampBeginning()->format("d-m-Y H:i:s"),
+                    "Fine: " . $trip->getTimestampEnd()->format("d-m-Y H:i:s")],
                 ["Da: " . $trip->getAddressBeginning(),
                     "A: " . $trip->getAddressEnd()],
                 [$tripPayment->getTripMinutes() . ' (min)'],
                 [$trip->getCar()->getPlate()],
-                [$amounts['rows'][$key]]
+                [$amounts['rows'][$key] . ' €']
             ]);
         }
 
@@ -251,8 +252,9 @@ class Invoices
             'greeting_message' => '',
             'contents' => [
                 'header' => [
+                    'ID',
                     'Data',
-                    'Luogo',
+                    'Partenza / Arrivo',
                     'Durata',
                     'Targa',
                     'Totale'
@@ -260,6 +262,7 @@ class Invoices
                 'body' => $body,
                 'body-format' => [
                     'alignment' => [
+                        'left',
                         'left',
                         'left',
                         'left',
