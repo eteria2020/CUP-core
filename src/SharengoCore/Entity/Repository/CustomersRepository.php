@@ -124,4 +124,17 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+
+    public function findCustomersForExport()
+    {
+        $dql = "SELECT c
+            FROM \SharengoCore\Entity\Customers c
+            WHERE c.card IS NOT NULL
+            AND c.birthDate IS NOT NULL
+            ORDER BY c.id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+
+        return $query->getResult();
+    }
 }

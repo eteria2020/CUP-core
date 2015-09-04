@@ -27,7 +27,9 @@ class CustomersService implements ValidatorServiceInterface
 
     private $customersRepository;
 
-    /** @var  CustomersBonusRepository */
+    /**
+     * @var CustomersBonusRepository
+     */
     private $customersBonusRepository;
 
     /**
@@ -136,6 +138,11 @@ class CustomersService implements ValidatorServiceInterface
     public function getUserByEmailPassword($s_username, $s_password)
     {
         return $this->customersRepository->getUserByEmailPassword($s_username, $s_password);
+    }
+
+    public function getCustomersForExport()
+    {
+        return $this->customersRepository->findCustomersForExport();
     }
 
     public function findByEmail($email)
