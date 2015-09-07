@@ -1476,7 +1476,6 @@ class Customers
 
         foreach ($this->getBonuses() as $bonus) {
             if ($bonus->getActive() &&
-                $bonus->getResidual() > 0 &&
                 (null == $bonus->getValidFrom() || $bonus->getValidFrom() <= new \DateTime()) &&
                 (null == $bonus->getValidTo() || $bonus->getValidTo() >= new \DateTime())) {
                 $validBonuses[] = $bonus;
