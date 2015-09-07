@@ -34,6 +34,13 @@ class Invoices
     private $id;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="invoice_number", type="string", nullable=false)
+     */
+    private $invoiceNumber;
+
+    /**
      * @var \SharengoCore\Entity\Customers
      *
      * @ORM\ManyToOne(targetEntity="SharengoCore\Entity\Customers")
@@ -86,11 +93,13 @@ class Invoices
     private $amount;
 
     /**
-     * @var string
+     * @var integer
      *
-     * @ORM\Column(name="invoice_number", type="string", nullable=false)
+     * @ORM\Column(name="iva", type="integer", nullable=false)
      */
-    private $invoiceNumber;
+    private $iva;
+
+
 
     /**
      * @param Customers $customer
@@ -396,5 +405,76 @@ class Invoices
     public function getInvoiceNumber()
     {
         return $this->invoiceNumber;
+    }
+
+    /**
+     * @var string $invoiceNumber
+     * @return Invoices
+     */
+    public function setInvoiceNumber($invoiceNumber)
+    {
+        $this->invoiceNumber = $invoiceNumber;
+        return $this;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getIva()
+    {
+        return $this->iva;
+    }
+
+    /**
+     * @param integer $iva
+     * @return Invoices
+     */
+    public function setIva($iva)
+    {
+        $this->iva = $iva;
+
+        return $this;
+    }
+
+    /**
+     * Returns an array with two keys, "start" and "end"
+     * These values represent the period that concearns the invoice
+     * @return \DateTime[]
+     */
+    public function getTimePeriod()
+    {
+        /*
+         * For invoices of type "FIRST_PAYMENT" the period is defined as:
+         * - "start" the date of the invoice
+         * - "end" the date of the invoice
+         */
+        if ($this->getType() == "FIRST_PAYMENT") {
+            $start = $this->getInvoiceDate();
+            $end = $this->getInvoiceDate();
+            // for now the date is stored as an integer so we must convert it
+            $start = ($start % 100) . "/" . (floor(($start % 10000) / 100)) . "/" . floor($start / 10000);
+            $end = ($end % 100) . "/" . (floor(($end % 10000) / 100)) . "/" . floor($end / 10000);
+            return [
+                "start" => date_create_from_format("d/m/Y", $start),
+                "end" => date_create_from_format("d/m/Y", $end)
+            ];
+        /*
+         * For invoices of type "TRIP" the period is defined as:
+         * - "start" the date of the beginning of the trip for
+         *   the first tripPayment of the invoice
+         * - "end" the date of the end of the trip for
+         *   the last tripPayment of the invoice
+         */
+        } elseif ($this->getType() == "TRIP") {
+            $body = $this->getContent()['body']['contents']['body'];
+            $start = $body[0][0][0];
+            $end = $body[count($body) - 1][0][1];
+            return [
+                "start" => date_create_from_format("d-m-Y H:i:s", substr($start, 4)),
+                "end" => date_create_from_format("d-m-Y H:i:s", substr($end, 3))
+            ];
+        }
+
+        return [];
     }
 }

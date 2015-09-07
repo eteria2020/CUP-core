@@ -543,4 +543,44 @@ class CustomersService implements ValidatorServiceInterface
         }
         return false;
     }
+
+    /**
+     * @param Customers $customer
+     * @return string
+     */
+    public function getExportDataForCustomer($customer)
+    {
+        $vat = $customer->getVat();
+
+        $vat = str_replace(";", " ", $vat);
+
+        return "GEN;" . // 10
+            $customer->getId() . ";" . // 41
+            $customer->getCard()->getCode() . ";" . //50
+            $vat . ";" . // 60
+            ($vat != null ? 1 : 0) . ";" . // 61
+            ($vat != null ? 0 : 1) . ";" . // 358
+            str_replace(";", " ", $customer->getTaxCode()) . ";" . // 70
+            ($vat != null ? 2 : 3) . ";" . // 80
+            ";" . // 90
+            ";" . // 95
+            str_replace(";", " ", $customer->getAddress()) . ";" . // 100
+            ";" . // 105
+            str_replace(";", " ", $customer->getPhone()) . ";" . // 160
+            str_replace(";", " ", $customer->getMobile()) . ";" . // 170
+            str_replace(";", " ", $customer->getZipCode()) . ";" . // 110
+            str_replace(";", " ", $customer->getTown()) . ";" . // 120
+            $customer->getProvince() . ";" . // 130
+            str_replace(";", " ", $customer->getCountry()) . ";" . // 140
+            str_replace(";", " ", $customer->getSurname()) . ";" . // 230
+            str_replace(";", " ", $customer->getName()) . ";" . // 231
+            str_replace(";", " ", $customer->getBirthTown()) . ";" . // 232
+            $customer->getBirthProvince() . ";" . // 233
+            $customer->getBirthDate()->format("d/m/Y") . ";" . // 234
+            $customer->getGender() . ";" . // 235
+            $customer->getBirthCountry() . ";" . // 236
+            "C01;" . // 240
+            "200;" . // 330
+            "CC001;"; // 581
+    }
 }

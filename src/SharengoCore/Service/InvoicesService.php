@@ -307,4 +307,52 @@ class InvoicesService
             $amounts
         );
     }
+
+    /**
+     * @param Invoices $invoice
+     * @return string
+     */
+    public function getExportDataForInvoice($invoice)
+    {
+        // get the dates depending on the type of invoice
+        $period = $invoice->getTimePeriod();
+        $startDate = $period['start']->format("d/m/Y H:i:s");
+        $endDate = $period['end']->format("d/m/Y H:i:s");
+
+        // generate the first common part between the two records
+        $partionRecord1 = "110;" .// 11
+            $invoice->getInvoiceDate() . ";" .// 10
+            $invoice->getInvoiceNumber() . ";" .// 20
+            "TC;" .// 30
+            $invoice->getInvoiceDate() . ";" .// 50
+            $invoice->getInvoiceNumber() . ";" .// 61
+            $invoice->getCustomer()->getCard()->getCode() . ";" .// 130
+            $invoice->getCustomer()->getId() . ";" .// 78
+            "CC001;" .// 241
+            $invoice->getAmount(); // 140
+
+        // generate the second common part between the two records
+        $partionRecord2 = $invoice->getAmount() . ";" .// 930
+            $invoice->getIva() .// 1001
+            $startDate . ";" .// 1020
+            $endDate . ";" .// 1030
+            "FR;";// 99999
+
+        // generate the first record
+        $record1 = "TES;" . // 3
+            $partionRecord1 .
+            ";" .// 660
+            ";" .// 681
+            $partionRecord2;
+
+        // generate the second record
+        $record2 = "RIG;" . // 3
+            $partionRecord1 .
+            "40;" .// 660
+            "CORSA;" .// 681
+            $partionRecord2;
+
+        // return the two records combined
+        return $record1 . "\n" . $record2;
+    }
 }
