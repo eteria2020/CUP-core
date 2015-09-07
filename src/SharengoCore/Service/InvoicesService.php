@@ -319,29 +319,31 @@ class InvoicesService
      */
     public function getExportDataForInvoice($invoice)
     {
+        $invoiceDate = $invoice->getInvoiceDate();
+        $invoiceDate = ($invoiceDate % 100) . "/" . (floor(($invoiceDate % 10000) / 100)) . "/" . floor($invoiceDate / 10000);
         // get the dates depending on the type of invoice
         $period = $invoice->getTimePeriod();
-        $startDate = $period['start']->format("d/m/Y H:i:s");
-        $endDate = $period['end']->format("d/m/Y H:i:s");
+        $startDate = $period['start']->format("d/m/Y");
+        $endDate = $period['end']->format("d/m/Y");
 
         // generate the first common part between the two records
         $partionRecord1 = "110;" .// 11
-            $invoice->getInvoiceDate() . ";" .// 10
+            $invoiceDate . ";" .// 10
             $invoice->getInvoiceNumber() . ";" .// 20
             "TC;" .// 30
-            $invoice->getInvoiceDate() . ";" .// 50
+            $invoiceDate . ";" .// 50
             $invoice->getInvoiceNumber() . ";" .// 61
             $invoice->getCustomer()->getCard()->getCode() . ";" .// 130
             $invoice->getCustomer()->getId() . ";" .// 78
             "CC001;" .// 241
-            $invoice->getAmount(); // 140
+            $invoice->getAmount() . ";"; // 140
 
         // generate the second common part between the two records
         $partionRecord2 = $invoice->getAmount() . ";" .// 930
-            $invoice->getIva() .// 1001
+            $invoice->getIva() . ";" .// 1001
             $startDate . ";" .// 1020
             $endDate . ";" .// 1030
-            "FR;";// 99999
+            "FR";// 99999
 
         // generate the first record
         $record1 = "TES;" . // 3

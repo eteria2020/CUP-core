@@ -583,10 +583,10 @@ class CustomersService implements ValidatorServiceInterface
             str_replace(";", " ", $customer->getBirthTown()) . ";" . // 232
             $customer->getBirthProvince() . ";" . // 233
             $customer->getBirthDate()->format("d/m/Y") . ";" . // 234
-            $customer->getGender() . ";" . // 235
+            ($customer->getGender() == 'male' ? 'M' : 'F') . ";" . // 235
             $customer->getBirthCountry() . ";" . // 236
             "C01;" . // 240
             "200;" . // 330
-            "CC001;"; // 581
+            "CC001"; // 581
     }
 }
