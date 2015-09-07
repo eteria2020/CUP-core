@@ -112,16 +112,17 @@ class Invoices
     private function __construct(Customers $customer, $version, $type, $date, $amounts)
     {
         $this->generatedTs = date_create(date('Y-m-d H:i:s'));
+        $invoice->setCustomer($customer)
+            ->setVersion($version)
+            ->setType($type)
+            ->setInvoiceDate($date)
+            ->setAmount($amounts['sum']['grand_total_cents'])
+            ->setIva($amounts['iva']);
 
-        $this->customer = $customer;
-        $this->version = $version;
-        $this->type = $type;
-        $this->invoiceDate = $date;
-        $this->amount = $amounts['grand_total_cents'];
-
-        $this->content = [
-            'invoice_date' => $date,
-            'amounts' => $amounts,
+        $content = [
+            'invoice_date' => $invoice->getInvoiceDate(),
+            'amounts' => $amounts['sum'],
+            'iva' => $amounts['iva'],
             'customer' => [
                 'name' => $customer->getName(),
                 'surname' => $customer->getSurname(),
@@ -180,7 +181,7 @@ class Invoices
         $invoice->setContentBody([
             'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento per l\'iscrizione al servizio<br>' .
                 'L\'importo totale della fattura è di EUR ' .
-                $amounts['grand_total'] .
+                $amounts['sum']['grand_total'] .
                 '</p>',
             'contents' => [
                 'header' => [
@@ -189,8 +190,8 @@ class Invoices
                 ],
                 'body' => [
                     [
-                        ['Pagamento iscrizione al servizio'],
-                        [$amounts['total'] . ' €']
+                        'Pagamento iscrizione al servizio',
+                        $amounts['sum']['total'] . ' €'
                     ]
                 ],
                 'body-format' => [

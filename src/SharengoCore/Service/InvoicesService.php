@@ -106,10 +106,14 @@ class InvoicesService
      */
     public function prepareInvoiceForFirstPayment(Customers $customer)
     {
+        $amounts = [
+            "sum" => $this->calculateAmountsWithTaxesFromTotal($this->subscriptionAmount),
+            "iva" => $this->ivaPercentage
+        ];
         return Invoices::createInvoiceForFirstPayment(
             $customer,
             $this->templateVersion,
-            $this->calculateAmountsWithTaxesFromTotal($customer->getSubscriptionAmount($this->subscriptionAmount))
+            $amounts
         );
     }
 
@@ -175,7 +179,8 @@ class InvoicesService
             $this->templateVersion,
             [
                 'sum' => $this->calculateAmountsWithTaxesFromTotal($total),
-                'rows' => $rowAmounts
+                'rows' => $rowAmounts,
+                'iva' => $this->ivaPercentage
             ]
         );
     }
@@ -265,7 +270,7 @@ class InvoicesService
         $amounts = [];
 
         // calculate amounts
-        $iva = (integer) ($amount / 122 * $this->ivaPercentage);
+        $iva = (integer) ($amount / (100 + $this->ivaPercentage) * $this->ivaPercentage);
         $total = $amount - $iva;
 
         // format amounts
