@@ -358,6 +358,6 @@ class InvoicesService
             $partionRecord2;
 
         // return the two records combined
-        return $record1 . "\n" . $record2;
+        return $record1 . "\r\n" . $record2;
     }
 }
