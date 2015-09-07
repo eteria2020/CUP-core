@@ -157,13 +157,15 @@ class PaymentsService
      * @param boolean $avoidEmail
      * @param boolean $avoidCartasi
      * @param boolean $avoidPersistance
+     * @param boolean $avoidDisableUser
      * @return CartasiResponse
      */
     public function tryTripPayment(
         TripPayments $tripPayment,
         $avoidEmail = false,
         $avoidCartasi = false,
-        $avoidPersistance = false
+        $avoidPersistance = false,
+        $avoidDisableUser = false
     ) {
         $this->avoidEmail = $avoidEmail;
         $this->avoidCartasi = $avoidCartasi;
@@ -173,7 +175,8 @@ class PaymentsService
 
         return $this->tryCustomerTripPayment(
             $customer,
-            $tripPayment
+            $tripPayment,
+            $avoidDisableUser
         );
     }
 
@@ -183,11 +186,13 @@ class PaymentsService
      *
      * @param Customers $customer
      * @param TripPayments $tripPayment
+     * @param boolean $avoidDisableUser
      * @return CartasiResponse
      */
     private function tryCustomerTripPayment(
         Customers $customer,
-        TripPayments $tripPayment
+        TripPayments $tripPayment,
+        $avoidDisableUser = false
     ) {
         $response = $this->cartasiCustomerPayments->sendPaymentRequest(
             $customer,
@@ -201,7 +206,7 @@ class PaymentsService
             if ($response->getCompletedCorrectly()) {
                 $this->markTripAsPayed($tripPayment);
             } else {
-                $this->unpayableConsequences($customer, $tripPayment);
+                $this->unpayableConsequences($customer, $tripPayment, $avoidDisableUser);
             }
 
             $tripPaymentTry = new TripPaymentTries(
@@ -245,11 +250,17 @@ class PaymentsService
      *
      * @param Customers $customer
      * @param TripPayments $tripPayment
+     * @param boolean $avoidDisableUser
      */
-    private function unpayableConsequences(Customers $customer, TripPayments $tripPayment)
-    {
+    private function unpayableConsequences(
+        Customers $customer,
+        TripPayments $tripPayment,
+        $avoidDisableUser
+    ) {
         // disable the customer
-        $customer->disable();
+        if (!$avoidDisableUser) {
+            $customer->disable();
+        }
         $customer->setPaymentAble(false);
 
         $this->entityManager->persist($customer);
