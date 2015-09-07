@@ -178,6 +178,15 @@ class Trips
     private $isAccounted = false;
 
     /**
+     * @var boolean if true the cost was already computed and the trip will be
+     *      exluded from the cost computation script (it could happen that for
+     *      old trips the cost was computed but the flag is still false)
+     *
+     * @ORM\Column(name="cost_computed", type="boolean", nullable=false, options={"default" = FALSE})
+     */
+    private $costComputed = false;
+
+    /**
      * @var TripPayments
      *
      * @ORM\OneToMany(targetEntity="TripPayments", mappedBy="trip")
@@ -878,5 +887,18 @@ class Trips
     public function customerIsPaymentAble()
     {
         return $this->customer->getPaymentAble();
+    }
+
+    /**
+     * sets the trip as cost computed
+     *
+     * @param boolean $costComputed
+     * @return Trips
+     */
+    public function setCostComputed($costComputed)
+    {
+        $this->costComputed = $costComputed;
+
+        return $this;
     }
 }

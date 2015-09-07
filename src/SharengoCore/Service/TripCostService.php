@@ -57,24 +57,23 @@ class TripCostService
         if ($trip->customerIsPaymentAble()) {
             $tripPayment = $this->retrieveTripCost($trip);
 
-            // in this way all the trips with cost = 0 are retrieved every time by the script
-            // this makes the script slower
-            // in the future consider if and how to fix this
-            if ($tripPayment->getTotalCost() > 0) {
+            try {
                 $this->entityManager->getConnection()->beginTransaction();
 
-                try {
-                    $this->saveTripPayment($tripPayment);
+                $this->tripCostComputed($trip);
 
-                    if (!$avoidPersistance) {
-                        $this->entityManager->getConnection()->commit();
-                    } else {
-                        $this->entityManager->getConnection()->rollback();
-                    }
-                } catch (\Exception $e) {
-                    $this->entityManager->getConnection()->rollback();
-                    throw $e;
+                if ($tripPayment->getTotalCost() > 0) {
+                    $this->saveTripPayment($tripPayment);
                 }
+
+                if (!$avoidPersistance) {
+                    $this->entityManager->getConnection()->commit();
+                } else {
+                    $this->entityManager->getConnection()->rollback();
+                }
+            } catch (\Exception $e) {
+                $this->entityManager->getConnection()->rollback();
+                throw $e;
             }
         }
     }
@@ -136,6 +135,14 @@ class TripCostService
         // we don't want to have more parking minutes than the payable length
         // of a trip
         return min($tripMinutes, $tripParkMinutes);
+    }
+
+    private function tripCostComputed(Trips $trip)
+    {
+        $trip->setCostComputed(true);
+
+        $this->entityManager->persist($trip);
+        $this->entityManager->flush();
     }
 
     /**
