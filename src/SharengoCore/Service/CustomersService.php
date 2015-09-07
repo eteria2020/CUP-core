@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Service;
 
+use Application\Exception\MissingCardFromCustomerException;
+
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonus;
 use SharengoCore\Entity\PromoCodes;
@@ -550,8 +552,12 @@ class CustomersService implements ValidatorServiceInterface
      */
     public function getExportDataForCustomer($customer)
     {
-        $vat = $customer->getVat();
+        if (null == $customer->getCard()) {
+            throw new MissingCardFromCustomerException();
+        }
 
+
+        $vat = $customer->getVat();
         $vat = str_replace(";", " ", $vat);
 
         return "GEN;" . // 10

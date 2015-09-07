@@ -129,8 +129,7 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
     {
         $dql = "SELECT c
             FROM \SharengoCore\Entity\Customers c
-            WHERE c.card IS NOT NULL
-            AND c.birthDate IS NOT NULL
+            WHERE c.birthDate IS NOT NULL
             ORDER BY c.id ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);

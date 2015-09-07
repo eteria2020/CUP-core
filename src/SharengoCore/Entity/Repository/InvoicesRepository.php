@@ -87,8 +87,7 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
         $dql = "SELECT i
         FROM \SharengoCore\Entity\Invoices i
         LEFT JOIN i.customer c
-        WHERE  c.card IS NOT NULL
-        AND c.birthDate IS NOT NULL
+        WHERE c.birthDate IS NOT NULL
         ORDER BY i.id ASC";
 
         $query = $em->createQuery($dql);
