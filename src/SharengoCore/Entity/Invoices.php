@@ -438,6 +438,16 @@ class Invoices
     }
 
     /**
+     * @return \DateTime the value of invoiceDate converted to \DateTime
+     */
+    public function getDateTimeDate()
+    {
+        $date = $this->getInvoiceDate();
+        $date = ($date % 100) . "/" . (floor(($date % 10000) / 100)) . "/" . floor($date / 10000);
+        return date_create_from_format("d/m/Y", $date);
+    }
+
+    /**
      * Returns an array with two keys, "start" and "end"
      * These values represent the period that concearns the invoice
      * @return \DateTime[]
@@ -450,14 +460,9 @@ class Invoices
          * - "end" the date of the invoice
          */
         if ($this->getType() == "FIRST_PAYMENT") {
-            $start = $this->getInvoiceDate();
-            $end = $this->getInvoiceDate();
-            // for now the date is stored as an integer so we must convert it
-            $start = ($start % 100) . "/" . (floor(($start % 10000) / 100)) . "/" . floor($start / 10000);
-            $end = ($end % 100) . "/" . (floor(($end % 10000) / 100)) . "/" . floor($end / 10000);
             return [
-                "start" => date_create_from_format("d/m/Y", $start),
-                "end" => date_create_from_format("d/m/Y", $end)
+                "start" => $this->getDateTimeDate(),
+                "end" => $this->getDateTimeDate()
             ];
         /*
          * For invoices of type "TRIP" the period is defined as:
