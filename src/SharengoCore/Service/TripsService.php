@@ -96,16 +96,12 @@ class TripsService
                 $trip->getCar()->getPlate()
             );
 
-            $parentId = $trip->getParentId();
+            $parentId = "";
             $parentStart = "";
-            if ($parentId !== null) {
-                $parent = $this->getTripById($parentId);
-                $parentId = "<br>(" . $parentId . ")";
-                if ($parent !== null) {
-                    $parentStart = "<br>(" . $parent->getTimestampBeginning()->format('d-m-Y H:i:s') . ")";
-                }
-            } else {
-                $parentId = "";
+            $parent = $trip->getParent();
+            if ($parent !== null) {
+                $parentId = "<br>(" . $parent->getId() . ")";
+                $parentStart = "<br>(" . $parent->getTimestampBeginning()->format('d-m-Y H:i:s') . ")";
             }
 
             return [

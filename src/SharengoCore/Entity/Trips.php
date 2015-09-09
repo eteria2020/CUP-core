@@ -206,11 +206,14 @@ class Trips
     private $tripFreeFares;
 
     /**
-     * @var integer
+     * @var Trips
      *
-     * @ORM\Column(name="parent_id", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="Trips")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="parent_id", referencedColumnName="id", nullable=true)
+     * })
      */
-    private $parentId;
+    private $parent;
 
 
 
@@ -887,16 +890,20 @@ class Trips
     }
 
     /**
-     * @return integer
+     * @return Trips
      */
-    public function getParentId()
+    public function getParent()
     {
-        return $this->parentId;
+        return $this->parent;
     }
 
-    public function setParentId($parentId)
+    /**
+     * @param Trips $parent
+     * @return Trips
+     */
+    public function setParent($parent)
     {
-        $this->parentId = $parentId;
+        $this->parent = $parent;
         return $this;
     }
 }
