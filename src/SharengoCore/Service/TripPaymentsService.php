@@ -93,17 +93,22 @@ class TripPaymentsService
         $payments = $this->datatableService->getData('TripPayments', $filters);
 
         return array_map(function (TripPayments $payment) {
+            $customer = $payment->getTrip()->getCustomer();
             return [
                 'e' => [
                     'createdAt' => $payment->getCreatedAt()->format('Y-m-d H:i:s'),
+                    'tripId' => $payment->getTrip()->getId(),
                     'tripMinutes' => $payment->getTripMinutes(),
                     'parkingMinutes' => $payment->getParkingMinutes(),
                     'discountPercentage' => $payment->getDiscountPercentage(),
                     'totalCost' => $payment->getTotalCost()
                 ],
                 'cu' => [
-                    'name' => $payment->getTrip()->getCustomer()->getName(),
-                    'surname' => $payment->getTrip()->getCustomer()->getSurname()
+                    'id' => $customer->getId(),
+                    'name' => $customer->getName(),
+                    'surname' => $customer->getSurname(),
+                    'mobile' => $customer->getMobile(),
+                    'email' => $customer->getEmail()
                 ],
                 'button' => $payment->getId()
             ];
