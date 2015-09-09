@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity\Repository;
 
+use Doctrine\ORM\Query\ResultSetMapping;
+
 /**
  * CarsRepository
  *
@@ -49,6 +51,26 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
         $query = $em->createQuery($dql);
 
         return $query->getResult();
+    }
+
+    public function getCarIfNotOutOfBounds($car)
+    {
+        $em = $this->getEntityManager();
+
+        $sql = "SELECT c.plate
+            FROM cars c, zone_alarms z
+            WHERE c.plate = ?
+            AND z.name = 'MI'
+            AND z.geo @> point(c.longitude, c.latitude)";
+
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('SharengoCore\Entity\Cars', 'c');
+        $rsm->addFieldResult('c', 'plate', 'plate');
+
+        $query = $em->createNativeQuery($sql, $rsm);
+        $query->setParameter(1, $car->getPlate());
+
+        return $query->getOneOrNullResult();
     }
 
 }
