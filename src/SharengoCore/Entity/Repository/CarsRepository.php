@@ -53,7 +53,7 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
-    public function isCarOutOfBounds($car)
+    public function getCarIfNotOutOfBounds($car)
     {
         $em = $this->getEntityManager();
 
