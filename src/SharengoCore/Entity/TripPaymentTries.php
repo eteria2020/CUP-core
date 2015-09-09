@@ -119,4 +119,12 @@ class TripPaymentTries
         $this->outcome = $outcome;
         return $this;
     }
+
+    /**
+     * @return Transactions
+     */
+    public function getTransaction()
+    {
+        return $this->transaction;
+    }
 }
