@@ -96,7 +96,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('firstJanuary2015', date_create('2015-01-01'));
         $query->setParameter('oneDay', '24:00:00');
         $query->setParameter('customer', $customer);
-        
+
         return $query->getResult();
     }
 
@@ -249,5 +249,20 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         }
 
         return $query->getResult();
+    }
+
+    public function findTripPaymentForTrip($trip)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT tp
+            FROM SharengoCore\Entity\TripPayments tp
+            LEFT JOIN tp.trip t
+            WHERE t = :trip';
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('trip', $trip);
+
+        return $query->getOneOrNullResult();
     }
 }

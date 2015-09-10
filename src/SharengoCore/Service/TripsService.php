@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Trips;
+use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Service\CustomersService;
 
@@ -108,6 +109,14 @@ class TripsService
                 $parentStart = "<br>(" . $parent->getTimestampBeginning()->format('d-m-Y H:i:s') . ")";
             }
 
+            $tripCost = '';
+            if ($trip->getPayable()) {
+                $tripPayment = $this->getTripPaymentForTrip($trip);
+                if ($tripPayment instanceof TripPayments) {
+                    $tripCost = $tripPayment->getTotalCost();
+                }
+            }
+
             return [
                 'e' => [
                     'id' => $trip->getId() . $parentId,
@@ -117,6 +126,7 @@ class TripsService
                     'timestampEnd' => (null != $trip->getTimestampEnd() ? $trip->getTimestampEnd()->format('d-m-Y H:i:s') : ''),
                     'parkSeconds' => $trip->getParkSeconds() . ' sec',
                     'payable' => $trip->getPayable() ? 'Si' : 'No',
+                    'totalCost' => $tripCost,
                     'idLink' => $trip->getId()
                 ],
                 'cu'       => [
@@ -236,5 +246,10 @@ class TripsService
     public function getTripsNoAddress($limit = 0)
     {
         return $this->tripRepository->findTripsNoAddress($limit);
+    }
+
+    public function getTripPaymentForTrip($trip)
+    {
+        return $this->tripRepository->findTripPaymentForTrip($trip);
     }
 }
