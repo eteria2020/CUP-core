@@ -180,8 +180,8 @@ class Invoices
                 ],
                 'body' => [
                     [
-                        'Pagamento iscrizione al servizio',
-                        $amounts['total'] . ' €'
+                        ['Pagamento iscrizione al servizio'],
+                        [$amounts['total'] . ' €']
                     ]
                 ],
                 'body-format' => [
