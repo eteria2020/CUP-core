@@ -109,19 +109,20 @@ class TripsService
             }
 
             return [
-                'e'        => [
-                    'id'                 => $trip->getId() . $parentId,
-                    'kmBeginning'        => $trip->getKmBeginning(),
-                    'kmEnd'              => $trip->getKmEnd(),
+                'e' => [
+                    'id' => $trip->getId() . $parentId,
+                    'kmBeginning' => $trip->getKmBeginning(),
+                    'kmEnd' => $trip->getKmEnd(),
                     'timestampBeginning' => $trip->getTimestampBeginning()->format('d-m-Y H:i:s') . $parentStart,
-                    'timestampEnd'       => (null != $trip->getTimestampEnd() ? $trip->getTimestampEnd()->format('d-m-Y H:i:s') : ''),
-                    'parkSeconds'        => $trip->getParkSeconds() . ' sec',
-                    'payable'            => $trip->getPayable() ? 'Si' : 'No',
+                    'timestampEnd' => (null != $trip->getTimestampEnd() ? $trip->getTimestampEnd()->format('d-m-Y H:i:s') : ''),
+                    'parkSeconds' => $trip->getParkSeconds() . ' sec',
+                    'payable' => $trip->getPayable() ? 'Si' : 'No',
+                    'idLink' => $trip->getId()
                 ],
                 'cu'       => [
                     'surname' => $trip->getCustomer()->getSurname(),
                     'name'    => $trip->getCustomer()->getName(),
-                    'mobile'  => $trip->getCustomer()->getMobile(),
+                    'mobile'  => $trip->getCustomer()->getMobile()
                 ],
                 'c'        => [
                     'plate'     => $plate,
@@ -130,7 +131,7 @@ class TripsService
                     'keyStatus' => $trip->getCar()->getKeystatus()
                 ],
                 'cc'       => [
-                    'code' => is_object($trip->getCustomer()->getCard()) ? $trip->getCustomer()->getCard()->getCode() : '',
+                    'code' => is_object($trip->getCustomer()->getCard()) ? $trip->getCustomer()->getCard()->getCode() : ''
 
                 ],
                 'duration' => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd())
