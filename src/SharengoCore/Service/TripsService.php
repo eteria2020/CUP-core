@@ -147,17 +147,7 @@ class TripsService
     public function getDuration($s_from, $s_to)
     {
         if ('' != $s_from && '' != $s_to) {
-
-            $date = $s_from->diff($s_to);
-
-            $days = (int)$date->format('%d');
-
-            if ($days > 0) {
-                return sprintf('%sg %s:%s:%s', $days, $date->format('%H'), $date->format('%I'), $date->format('%S'));
-            } else {
-                return sprintf('0g %s:%s:%s', $date->format('%H'), $date->format('%I'), $date->format('%S'));
-            }
-
+            return $s_from->diff($s_to)->format('%dg %H:%I:%S');
         }
 
         return self::DURATION_NOT_AVAILABLE;
