@@ -51,11 +51,11 @@ class Invoices
     private $generatedTs;
 
     /**
-     * @var mixed
+     * @var array
      *
      * @ORM\Column(name="content", type="json_array", nullable=false)
      */
-    private $content;
+    private $content = [];
 
     /**
      * @var integer
@@ -92,9 +92,44 @@ class Invoices
      */
     private $invoiceNumber;
 
-    public function __construct()
+    /**
+     * @param Customers $customer
+     * @param integer $version
+     * @param string $type
+     * @param integer $date
+     * @param array $amounts needed fields grand_total_cents, grand_total, total, iva
+     * @return Invoices
+     */
+    private function __construct(Customers $customer, $version, $type, $date, $amounts)
     {
         $this->generatedTs = date_create(date('Y-m-d H:i:s'));
+
+        $this->customer = $customer;
+        $this->version = $version;
+        $this->type = $type;
+        $this->invoiceDate = $date;
+        $this->amount = $amounts['grand_total_cents'];
+
+        $this->content = [
+            'invoice_date' => $date,
+            'amounts' => $amounts,
+            'customer' => [
+                'name' => $customer->getName(),
+                'surname' => $customer->getSurname(),
+                'email' => $customer->getEmail(),
+                'address' => $customer->getAddress(),
+                'town' => $customer->getTown(),
+                'province' => $customer->getProvince(),
+                'country' => $customer->getCountry(),
+                'zip_code' => $customer->getZipCode(),
+                'cf' => $customer->getTaxCode(),
+                'piva' => $customer->getVat()
+            ],
+            'type' => $type,
+            'template_version' => $version
+        ];
+
+        return $this;
     }
 
     /**
@@ -117,46 +152,6 @@ class Invoices
     /**
      * @param Customers $customer
      * @param integer $version
-     * @param string $type
-     * @param \DateTime $date
-     * @param mixed $amounts
-     * @return Invoices
-     */
-    public static function createBasicInvoice(Customers $customer, $version, $type, $date, $amounts)
-    {
-        $invoice = new Invoices();
-
-        $invoice->setCustomer($customer)
-            ->setVersion($version)
-            ->setType($type)
-            ->setInvoiceDate($date)
-            ->setAmount($amounts['grand_total_cents']);
-
-        $content = [
-            'invoice_date' => $invoice->getInvoiceDate(),
-            'amounts' => $amounts,
-            'customer' => [
-                'name' => $customer->getName(),
-                'surname' => $customer->getSurname(),
-                'email' => $customer->getEmail(),
-                'address' => $customer->getAddress(),
-                'town' => $customer->getTown(),
-                'province' => $customer->getProvince(),
-                'country' => $customer->getCountry(),
-                'zip_code' => $customer->getZipCode(),
-                'cf' => $customer->getTaxCode(),
-                'piva' => $customer->getVat()
-            ],
-            'type' => $invoice->getType(),
-            'template_version' => $invoice->getVersion()
-        ];
-
-        return $invoice->setContent($content);
-    }
-
-    /**
-     * @param Customers $customer
-     * @param integer $version
      * @param mixed $amounts
      * @return Invoice
      */
@@ -165,7 +160,7 @@ class Invoices
         $version,
         $amounts
     ) {
-        $invoice = Invoices::createBasicInvoice(
+        $invoice = new Invoices(
             $customer,
             $version,
             self::TYPE_FIRST_PAYMENT,
@@ -173,9 +168,7 @@ class Invoices
             $amounts
         );
 
-        $content = $invoice->getContent();
-
-        $content['body'] = [
+        $invoice->setContentBody([
             'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento per l\'iscrizione al servizio<br>' .
                 'L\'importo totale della fattura è di EUR ' .
                 $amounts['grand_total'] .
@@ -198,9 +191,7 @@ class Invoices
                     ]
                 ]
             ]
-        ];
-
-        $invoice->setContent($content);
+        ]);
 
         return $invoice;
     }
@@ -222,15 +213,13 @@ class Invoices
         $version,
         $amounts
     ) {
-        $invoice = Invoices::createBasicInvoice(
+        $invoice = new Invoices(
             $customer,
             $version,
             self::TYPE_TRIP,
-            intval($tripPayments[0]->getPayedSuccessfullyAt()->format("Ymd")),    // it's supposed all trips have been payed on the same day
+            intval($tripPayments[0]->getPayedSuccessfullyAt()->format("Ymd")), // it's supposed all trips have been payed on the same day
             $amounts['sum']
         );
-
-        $content = $invoice->getContent();
 
         $body = [];
 
@@ -248,7 +237,7 @@ class Invoices
             ]);
         }
 
-        $content['body'] = [
+        $body = [
             'greeting_message' => '',
             'contents' => [
                 'header' => [
@@ -273,7 +262,55 @@ class Invoices
             ]
         ];
 
-        $invoice->setContent($content);
+        $invoice->setContentBody($body);
+
+        return $invoice;
+    }
+
+    /**
+     * @param Customers $customer
+     * @param int $version template version
+     * @param string $reason
+     * @param array $amounts with fields grand_total_cents, grand_total, total, iva
+     */
+    public function createInvoiceForExtraOrPenalty(
+        Customers $customer,
+        $version,
+        $reason,
+        $amounts
+    ) {
+        $invoice = new Invoices(
+            $customer,
+            $version,
+            self::TYPE_PENALTY,
+            intval(date("Ymd")),
+            $amounts
+        );
+
+        $invoice->setContentBody([
+            'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento<br>' .
+                'L\'importo totale della fattura è di EUR ' .
+                $amounts['grand_total'] .
+                '</p>',
+            'contents' => [
+                'header' => [
+                    'Descrizione',
+                    'Imponibile'
+                ],
+                'body' => [
+                    [
+                        [$reason],
+                        [$amounts['total'] . ' €']
+                    ]
+                ],
+                'body-format' => [
+                    'alignment' => [
+                        'left',
+                        'right'
+                    ]
+                ]
+            ]
+        ]);
 
         return $invoice;
     }
@@ -295,32 +332,11 @@ class Invoices
     }
 
     /**
-     * @var \SharengoCore\Entity\Customers $customer
-     * @return Invoices
-     */
-    public function setCustomer(Customers $customer)
-    {
-        $this->customer = $customer;
-
-        return $this;
-    }
-
-    /**
      * @return \DateTime
      */
     public function getGeneratedTs()
     {
         return $this->generatedTs;
-    }
-
-    /**
-     * @var \DateTime $generatedTs
-     * @return Invoices
-     */
-    public function setGeneratedTs($generatedTs)
-    {
-        $this->generatedTs = $generatedTs;
-        return $this;
     }
 
     /**
@@ -332,12 +348,13 @@ class Invoices
     }
 
     /**
-     * @var mixed $content
+     * @var array $body
      * @return Invoices
      */
-    public function setContent($content)
+    public function setContentBody($body)
     {
-        $this->content = $content;
+        $this->content['body'] = $body;
+
         return $this;
     }
 
@@ -350,31 +367,11 @@ class Invoices
     }
 
     /**
-     * @var integer $version
-     * @return Invoices
-     */
-    public function setVersion($version)
-    {
-        $this->version = $version;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getType()
     {
         return $this->type;
-    }
-
-    /**
-     * @var string $type
-     * @return Invoices
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-        return $this;
     }
 
     /**
@@ -386,16 +383,6 @@ class Invoices
     }
 
     /**
-     * @var integer $invoiceDate
-     * @return Invoices
-     */
-    public function setInvoiceDate($invoiceDate)
-    {
-        $this->invoiceDate = $invoiceDate;
-        return $this;
-    }
-
-    /**
      * @return integer
      */
     public function getAmount()
@@ -404,30 +391,10 @@ class Invoices
     }
 
     /**
-     * @var integer $amount
-     * @return Invoices
-     */
-    public function setAmount($amount)
-    {
-        $this->amount = $amount;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getInvoiceNumber()
     {
         return $this->invoiceNumber;
-    }
-
-    /**
-     * @var string $invoiceNumber
-     * @return Invoices
-     */
-    public function setInvoiceNumber($invoiceNumber)
-    {
-        $this->invoiceNumber = $invoiceNumber;
-        return $this;
     }
 }

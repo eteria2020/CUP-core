@@ -270,4 +270,25 @@ class InvoicesService
     {
         return number_format((float) $decimal / 100, 2, ',', '');
     }
+
+    /**
+     * @param Customers $customer
+     * @param string $reason
+     * @param amount in eurocents
+     * @return Invoices
+     */
+    public function prepareInvoiceForExtraOrPenalty(
+        Customers $customer,
+        $reason,
+        $amount
+    ) {
+        $amounts = $this->calculateAmountsWithTaxesFromTotal($amount);
+
+        return Invoices::createInvoiceForExtraOrPenalty(
+            $customer,
+            $this->templateVersion,
+            $reason,
+            $amounts
+        );
+    }
 }

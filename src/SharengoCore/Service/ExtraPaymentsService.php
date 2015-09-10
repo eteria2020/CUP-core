@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\ExtraPayment;
 use SharengoCore\Entity\Customers;
+use SharengoCore\Service\InvoicesService;
 
 use Doctrine\ORM\EntityManager;
 
@@ -14,9 +15,17 @@ class ExtraPaymentsService
      */
     private $entityManager;
 
-    public function __construct(EntityManager $entityManager)
-    {
+    /**
+     * @var InvoicesService
+     */
+    private $invoicesService;
+
+    public function __construct(
+        EntityManager $entityManager,
+        InvoicesService $invoicesService
+    ) {
         $this->entityManager = $entityManager;
+        $this->invoicesService = $invoicesService;
     }
 
     /**
@@ -43,5 +52,18 @@ class ExtraPaymentsService
         $this->entityManager->flush();
 
         return $extraPayment;
+    }
+
+    /**
+     * @param Customers $customer
+     * @param string $reason
+     * @param int $amount in eurocents
+     */
+    public function generateInvoice(Customers $customer, $reason, $amount)
+    {
+        $invoice = $this->invoicesService->prepareInvoiceForExtraOrPenalty($customer, $reason, $amount);
+
+        $this->entityManager->persist($invoice);
+        $this->entityManager->flush();
     }
 }
