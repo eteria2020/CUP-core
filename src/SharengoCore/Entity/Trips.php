@@ -205,6 +205,16 @@ class Trips
      */
     private $tripFreeFares;
 
+    /**
+     * @var Trips
+     *
+     * @ORM\ManyToOne(targetEntity="Trips")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="parent_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $parent;
+
 
 
     /**
@@ -776,7 +786,7 @@ class Trips
                 $customer = $customer->toArray($hydrator);
                 $extractedTrip['customer'] = $customer;
             }
-        } 
+        }
 
         unset($extractedTrip['car']);
         if (in_array('car', $tripsHydrationOptions)) {
@@ -796,7 +806,7 @@ class Trips
             } else {
                 unset($extractedTrip['tripPayments']);
             }
-        } 
+        }
 
         unset($extractedTrip['tripBonuses']);
         if (in_array('tripBonuses', $tripsHydrationOptions)) {
@@ -878,5 +888,23 @@ class Trips
     public function customerIsPaymentAble()
     {
         return $this->customer->getPaymentAble();
+    }
+
+    /**
+     * @return Trips
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param Trips $parent
+     * @return Trips
+     */
+    public function setParent($parent)
+    {
+        $this->parent = $parent;
+        return $this;
     }
 }
