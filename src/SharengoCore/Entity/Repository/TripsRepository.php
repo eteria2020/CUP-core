@@ -158,8 +158,10 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
             "LEFT JOIN t.tripPayments tp ".
             "JOIN t.customer c ".
             "WHERE t.isAccounted = true ". //only trips that were already processed by the accounting trips
+            "AND t.costComputed = false ". //only trips that were not already processed by the cost computing script
             "AND tp.id IS NULL ". // only trips that do not have a trip payment
-            "AND t.payable = TRUE"; // trip is payable
+            "AND t.payable = TRUE ". // trip is payable
+            "AND c.paymentAble = TRUE"; // customer is paymentAble
 
         $query = $this->getEntityManager()->createQuery($dql);
         return $query->getResult();
