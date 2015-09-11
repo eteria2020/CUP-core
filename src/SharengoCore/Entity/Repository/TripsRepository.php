@@ -250,19 +250,4 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
-
-    public function findTripPaymentForTrip($trip)
-    {
-        $em = $this->getEntityManager();
-
-        $dql = 'SELECT tp
-            FROM SharengoCore\Entity\TripPayments tp
-            LEFT JOIN tp.trip t
-            WHERE t = :trip';
-
-        $query = $em->createQuery($dql);
-        $query->setParameter('trip', $trip);
-
-        return $query->getOneOrNullResult();
-    }
 }

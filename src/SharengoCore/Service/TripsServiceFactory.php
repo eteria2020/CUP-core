@@ -16,6 +16,7 @@ class TripsServiceFactory implements FactoryInterface
         $tripRepository = $entityManager->getRepository('\SharengoCore\Entity\Trips');
         $I_datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
         $customerService = $serviceLocator->get('SharengoCore\Service\CustomersService');
+        $tripPaymentsService = $serviceLocator->get('SharengoCore\Service\TripPaymentsService');
         $I_urlHelper = $serviceLocator->get('viewhelpermanager')->get('url');
 
         // decorate the query builder with the needed decorators
@@ -30,6 +31,6 @@ class TripsServiceFactory implements FactoryInterface
             )
         );
 
-        return new TripsService($tripRepository, $I_datatableService, $I_urlHelper, $customerService);
+        return new TripsService($tripRepository, $I_datatableService, $I_urlHelper, $customerService, $tripPaymentsService);
     }
 }
