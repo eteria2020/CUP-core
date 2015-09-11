@@ -115,6 +115,8 @@ class TripsService
                 if ($tripPayment instanceof TripPayments) {
                     $tripCost = $tripPayment->getTotalCost();
                 }
+            } else {
+                $tripCost = 'FREE';
             }
 
             return [
@@ -126,7 +128,7 @@ class TripsService
                     'timestampEnd' => (null != $trip->getTimestampEnd() ? $trip->getTimestampEnd()->format('d-m-Y H:i:s') : ''),
                     'parkSeconds' => $trip->getParkSeconds() . ' sec',
                     'payable' => $trip->getPayable() ? 'Si' : 'No',
-                    'totalCost' => $tripCost,
+                    'totalCost' => ['amount' => $tripCost, 'id' => $trip->getId()],
                     'idLink' => $trip->getId()
                 ],
                 'cu'       => [

@@ -30,6 +30,13 @@ class FreeFares
     private $conditions;
 
     /**
+     * @var $string
+     *
+     * @ORM\Column(name="description", type="string", nullable=false)
+     */
+    private $description;
+
+    /**
      * Get id
      *
      * @return integer
@@ -61,5 +68,15 @@ class FreeFares
     public function getConditions()
     {
         return $this->conditions;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }
