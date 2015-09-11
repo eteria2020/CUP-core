@@ -5,13 +5,12 @@ namespace SharengoCore\Service;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class ExtraPaymentsServiceFactory implements FactoryInterface
+class PenaltiesServiceFactory implements FactoryInterface
 {
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
-        $invoicesService = $serviceLocator->get('SharengoCore\Service\Invoices');
 
-        return new ExtraPaymentsService($entityManager, $invoicesService);
+        return new PenaltiesService($entityManager);
     }
 }
