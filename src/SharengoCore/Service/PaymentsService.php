@@ -9,6 +9,7 @@ use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\TripPaymentTries;
 
 use Doctrine\ORM\EntityManager;
+use Zend\EventManager\EventManager;
 
 class PaymentsService
 {
@@ -31,6 +32,11 @@ class PaymentsService
      * @var EmailService
      */
     private $emailService;
+
+    /**
+     * @var EventManager
+     */
+    private $eventManager;
 
     /**
      * @var string
@@ -64,12 +70,14 @@ class PaymentsService
         CartasiContractsService $cartasiContractService,
         EntityManager $entityManager,
         EmailService $emailService,
+        EventManager $eventManager,
         $url
     ) {
         $this->cartasiCustomerPayments = $cartasiCustomerPayments;
         $this->cartasiContractService = $cartasiContractService;
         $this->entityManager = $entityManager;
         $this->emailService = $emailService;
+        $this->eventManager = $eventManager;
         $this->url = $url;
     }
 
@@ -92,16 +100,14 @@ class PaymentsService
         $trip = $tripPayment->getTrip();
         $customer = $trip->getCustomer();
 
-        if ($customer->getPaymentAble()) {
-            if ($this->cartasiContractService->hasCartasiContract($customer)) {
-                $this->tryCustomerTripPayment(
-                    $customer,
-                    $tripPayment
-                );
-            } else {
-                $this->disableCustomerForPayment($customer);
-                $this->notifyCustomerHeHasToPay($customer);
-            }
+        if ($this->cartasiContractService->hasCartasiContract($customer)) {
+            $this->tryCustomerTripPayment(
+                $customer,
+                $tripPayment
+            );
+        } else {
+            $this->disableCustomerForPayment($customer);
+            $this->notifyCustomerHeHasToPay($customer);
         }
     }
 
@@ -271,34 +277,10 @@ class PaymentsService
         $this->entityManager->persist($tripPayment);
         $this->entityManager->flush();
 
-        //notify the customer
-        $this->notifyCustomerOfWrongPayment($customer, $tripPayment);
-    }
-
-    /**
-     * @param Customers $customer
-     * @param TripPayment $tripPayment
-     */
-    private function notifyCustomerOfWrongPayment(Customers $customer, TripPayments $tripPayment)
-    {
-        $content = sprintf(
-            file_get_contents(__DIR__.'/../../../view/emails/wrong-payment-it_IT.html'),
-            $customer->getName(),
-            $customer->getSurname()
-        );
-
-        $attachments = [
-            'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
-            'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
-        ];
-
-        if (!$this->avoidEmail) {
-            $this->emailService->sendEmail(
-                $customer->getEmail(),
-                'SHARENGO - ERRORE NEL PAGAMENTO',
-                $content,
-                $attachments
-            );
-        }
+        // other unpayable consequences not mentionable here for respect of the childrens
+        $this->eventManager->trigger('wrongTripPayment', $this, [
+            'customer' => $customer,
+            'tripPayment' => $tripPayment
+        ]);
     }
 }
