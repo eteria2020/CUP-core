@@ -1641,4 +1641,37 @@ class Customers
 
         return $this;
     }
+
+
+    public function benefitsFromDiscoutedSubscriptionAmount() 
+    {
+        return null != $this->findDiscountedSubscriptionAmount();
+    }
+
+    public function getSubscriptionAmount($defaultAmount)
+    {
+        if ($this->benefitsFromDiscoutedSubscriptionAmount()) {
+            return $this->findDiscountedSubscriptionAmount();
+        }
+        
+        return $defaultAmount;
+    }
+
+    public function findDiscountedSubscriptionAmount() {
+        $bonuses = $this->getBonuses();
+        foreach($bonuses as $bonus) {
+            if (null != $bonus->getPromocode()) {
+                $promoCodeInfo = $bonus->getPromocode()->getPromocodesinfo();
+                $overriddenSubscriptionCost = $promoCodeInfo->getOverriddenSubscriptionCost();
+
+                if (null !=  $overriddenSubscriptionCost &&
+                    is_numeric($overriddenSubscriptionCost)) {
+                    return $overriddenSubscriptionCost;
+                }
+            }
+        }
+
+        return null;
+    }
+
 }

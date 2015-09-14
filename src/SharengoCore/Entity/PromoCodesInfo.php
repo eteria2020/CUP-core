@@ -70,6 +70,13 @@ class PromoCodesInfo
      * @ORM\Column(name="valid_to", type="datetime", nullable=true)
      */
     private $validTo;
+
+    /**
+     * @var interger cost in eurocents
+     *
+     * @ORM\Column(name="overridden_subscription_cost", type="integer", nullable=true)
+     */
+    private $overriddenSubscriptionCost = null;
     
     /**
      * @var \Webuser
@@ -81,8 +88,6 @@ class PromoCodesInfo
      */
     private $webuser;
     
-
-
 
 
     /**
@@ -263,6 +268,30 @@ class PromoCodesInfo
         return $this->validTo;
     }
 
+    /**
+     * Get overriddenSubscriptionCost
+     *
+     * @return integer
+     */
+    public function getOverriddenSubscriptionCost()
+    {
+        return $this->overriddenSubscriptionCost;
+    }
+
+    /**
+     * Set overriddenSubscriptionCost
+     *
+     * @param integer $overriddenSubscriptionCost
+     *
+     * @return PromoCodesInfo
+     */
+    public function setOverriddenSubscriptionCost($overriddenSubscriptionCost)
+    {
+        $this->overriddenSubscriptionCost = $overriddenSubscriptionCost;
+
+        return $this;
+    }
+    
     /**
      * Set webuser
      *

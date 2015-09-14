@@ -93,7 +93,7 @@ class InvoicesService
         return Invoices::createInvoiceForFirstPayment(
             $customer,
             $this->templateVersion,
-            $this->calculateAmountsWithTaxesFromTotal($this->subscriptionAmount)
+            $this->calculateAmountsWithTaxesFromTotal($customer->getSubscriptionAmount($this->subscriptionAmount))
         );
     }
 
