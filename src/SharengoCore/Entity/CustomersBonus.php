@@ -514,4 +514,29 @@ class CustomersBonus
 
         return $this;
     }
+
+    public function impliesSubscriptionDiscount()
+    {
+        return null != $this->findDiscountedSubscriptionAmount();
+    }
+
+    public function findDiscountedSubscriptionAmount()
+    {
+        if (null != $this->getPromocode()) {
+            $promoCodeInfo = $this->getPromocode()->getPromocodesinfo();
+            $overriddenSubscriptionCost = $promoCodeInfo->getOverriddenSubscriptionCost();
+
+            if (null !=  $overriddenSubscriptionCost &&
+                is_numeric($overriddenSubscriptionCost)) {
+                return $overriddenSubscriptionCost;
+            }
+        }
+
+        return null;
+    }
+    
+    public function canBeDeleted() {
+        return $this->getTotal() == $this->getResidual() &&
+               !$this->impliesSubscriptionDiscount();
+    }
 }

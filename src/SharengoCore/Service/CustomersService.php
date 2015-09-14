@@ -370,7 +370,7 @@ class CustomersService implements ValidatorServiceInterface
 
     public function removeBonus(CustomersBonus $customerBonus)
     {
-        if ($customerBonus->getTotal() == $customerBonus->getResidual()) {
+        if ($customerBonus->canBeDeleted()) {
 
             $this->entityManager->remove($customerBonus);
             $this->entityManager->flush();

@@ -1660,15 +1660,11 @@ class Customers
     public function findDiscountedSubscriptionAmount() {
         $bonuses = $this->getBonuses();
         foreach($bonuses as $bonus) {
-            if (null != $bonus->getPromocode()) {
-                $promoCodeInfo = $bonus->getPromocode()->getPromocodesinfo();
-                $overriddenSubscriptionCost = $promoCodeInfo->getOverriddenSubscriptionCost();
 
-                if (null !=  $overriddenSubscriptionCost &&
-                    is_numeric($overriddenSubscriptionCost)) {
-                    return $overriddenSubscriptionCost;
-                }
+            if ($bonus->impliesSubscriptionDiscount()) {
+                return $bonus->findDiscountedSubscriptionAmount();
             }
+
         }
 
         return null;
