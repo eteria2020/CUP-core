@@ -2,9 +2,10 @@
 
 namespace SharengoCore\Service;
 
+use SharengoCore\Entity\CustomersBonusPackages;
 use SharengoCore\Entity\Repository\CustomersBonusPackagesRepository as Repository;
 
-class CountriesService
+class CustomersBonusPackagesService
 {
     /**
      * @var Repository
@@ -23,5 +24,18 @@ class CountriesService
     public function getBonusPackagesByCode($code)
     {
         return $this->repository->findOneByCode($code);
+    }
+
+    /**
+     * @return CustomersBonusPackages[]
+     */
+    public function getAllBonusPackages()
+    {
+        return $this->repository->findAll();
+    }
+
+    public function getAvailableBonusPackges()
+    {
+        return $this->repository->findAvailableBonusPackages();
     }
 }

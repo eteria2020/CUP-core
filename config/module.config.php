@@ -195,8 +195,7 @@ return [
             'SharengoCore\Service\EventsService' => 'SharengoCore\Service\EventsServiceFactory',
             'SharengoCore\Service\FleetService' => 'SharengoCore\Service\FleetServiceFactory',
             'SharengoCore\Service\ExtraPaymentsSearchService' => 'SharengoCore\Service\ExtraPaymentsSearchServiceFactory',
-            'SharengoCore\Service\CustomersBonusInfoService' => 'SharengoCore\Service\CustomersBonusInfoServiceFactory',
-            'SharengoCore\Service\CustomersBonusPackagesService' => 'SharengoCore\Service\CustomersBonusPackagesServiceFactory'
+            'SharengoCore\Service\BonusPackagesService' => 'SharengoCore\Service\CustomersBonusPackagesServiceFactory'
         ],
         'shared' => [
             'SharengoCore\Service\TripCostComputerService' => false,

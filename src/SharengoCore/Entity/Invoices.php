@@ -11,6 +11,7 @@ use SharengoCore\Utils\Interval;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Orm\AbstractQuery;
 use Doctrine\ORM\Query\ResultSetMapping;
+use SharengoCore\Entity\CustomersBonusPackages as BonusPackages;
 
 /**
  * Invoices
@@ -27,6 +28,8 @@ class Invoices
     const TYPE_TRIP = 'TRIP';
 
     const TYPE_PENALTY = 'PENALTY';
+
+    const TYPE_BONUS_PACKAGE = 'BONUS_PACKAGE';
 
     /**
      * @var integer
@@ -421,6 +424,52 @@ class Invoices
                 ]
             ]
         ]);
+
+        return $invoice;
+    }
+
+    public function createInvoiceForBonusPackage(
+        Customers $customer,
+        BonusPackages $bonusPackage,
+        $version,
+        $amounts
+    ) {
+        $invoice = Invoices::createBasicInvoice(
+            $customer,
+            $version,
+            self::TYPE_BONUS_PACKAGE,
+            intval(date("Ymd")),
+            $amounts
+        );
+
+        $content = $invoice->getContent();
+
+        $content['body'] = [
+            'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento per il pacchetto da lei acquistato<br>' .
+                'L\'importo totale della fattura è di EUR ' .
+                $amounts['grand_total'] .
+                '</p>',
+            'contents' => [
+                'header' => [
+                    'Descrizione',
+                    'Imponibile'
+                ],
+                'body' => [
+                    [
+                        $bonusPackage->getDescription(),
+                        $amounts['total'] . ' €'
+                    ]
+                ],
+                'body-format' => [
+                    'alignment' => [
+                        'left',
+                        'right'
+                    ]
+                ]
+            ]
+        ];
+
+        $invoice->setContent($content);
 
         return $invoice;
     }
