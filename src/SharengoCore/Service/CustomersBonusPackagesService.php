@@ -12,16 +12,28 @@ class CustomersBonusPackagesService
      */
     private $repository;
 
+    /**
+     * @param Repository $repository
+     */
     public function __construct(Repository $repository)
     {
         $this->repository = $repository;
     }
 
     /**
-     * @param string $code
-     * @return SharengoCore\Entity\CustomersBonusPackages
+     * @param integer $id
+     * @return CustomersBonusPackages
      */
-    public function getBonusPackagesByCode($code)
+    public function getBonusPackageById($id)
+    {
+        return $this->repository->findOneById($id);
+    }
+
+    /**
+     * @param string $code
+     * @return CustomersBonusPackages
+     */
+    public function getBonusPackageByCode($code)
     {
         return $this->repository->findOneByCode($code);
     }
@@ -34,6 +46,9 @@ class CustomersBonusPackagesService
         return $this->repository->findAll();
     }
 
+    /**
+     * @return CustomersBonusPackages[]
+     */
     public function getAvailableBonusPackges()
     {
         return $this->repository->findAvailableBonusPackages();

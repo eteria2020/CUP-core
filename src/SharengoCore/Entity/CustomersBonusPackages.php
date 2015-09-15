@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * CustomersBonusPackages
@@ -90,6 +91,20 @@ class CustomersBonusPackages
      * @ORM\Column(name="cost", type="integer", nullable=false)
      */
     private $cost;
+
+    /**
+     * @param DoctrineHydrator
+     * @return mixed[]
+     */
+    public function toArray(DoctrineHydrator $hydrator)
+    {
+        $package = $hydrator->extract($this);
+        $package['validFrom'] = $this->validFrom->format("d-m-Y");
+        $package['validTo'] = $this->validTo->format("d-m-Y");
+        $package['buyableUntil'] = $this->buyableUntil->format("d-m-Y");
+
+        return $package;
+    }
 
     /**
      * @return integer

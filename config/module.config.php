@@ -108,6 +108,18 @@ return [
                                 ]
                             ]
                         ],
+                        'packages' => [
+                            'type' => 'Segment',
+                            'options' => [
+                                'route' => '/packages[/:id]',
+                                'constraints' => array(
+                                    'id'     => '[0-9]+',
+                                ),
+                                'defaults' => [
+                                    'controller' => 'CustomersBonusPackages'
+                                ]
+                            ]
+                        ],
                     ],
                 ],
                 'pdf' => [
@@ -146,6 +158,7 @@ return [
             'SharengoCore\Controller\Fleets'           => 'SharengoCore\Controller\FleetsControllerFactory',
             'SharengoCore\Controller\Invoices' => 'SharengoCore\Controller\InvoicesControllerFactory',
             'SharengoCore\Controller\Pdf' => 'SharengoCore\Controller\PdfControllerFactory',
+            'SharengoCore\Controller\CustomersBonusPackages' => 'SharengoCore\Controller\CustomersBonusPackagesControllerFactory',
         ],
     ],
 
@@ -229,6 +242,7 @@ return [
                 array('controller' => 'SharengoCore\Controller\Fleets', 'roles' => array()),
                 array('controller' => 'SharengoCore\Controller\Invoices', 'roles' => array('user')),
                 array('controller' => 'SharengoCore\Controller\Pdf', 'roles' => ['user', 'admin']),
+                ['controller' => 'SharengoCore\Controller\CustomersBonusPackages', 'roles' => ['user', 'admin']],
             ),
         ),
     ),
