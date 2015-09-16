@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Trips;
+use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Service\CustomersService;
 
@@ -34,7 +35,6 @@ class TripsService
      * @param DatatableService $I_datatableService
      * @param \\TODO $I_urlHelper
      * @param CustomersService $customersService
-     * @param EntityManager
      */
     public function __construct(
         $tripRepository,
@@ -108,20 +108,32 @@ class TripsService
                 $parentStart = "<br>(" . $parent->getTimestampBeginning()->format('d-m-Y H:i:s') . ")";
             }
 
+            $tripCost = '';
+            if ($trip->getPayable()) {
+                $tripPayment = $trip->getTripPayments()[0];
+                if ($tripPayment instanceof TripPayments) {
+                    $tripCost = $tripPayment->getTotalCost();
+                }
+            } else {
+                $tripCost = 'FREE';
+            }
+
             return [
-                'e'        => [
-                    'id'                 => $trip->getId() . $parentId,
-                    'kmBeginning'        => $trip->getKmBeginning(),
-                    'kmEnd'              => $trip->getKmEnd(),
+                'e' => [
+                    'id' => $trip->getId() . $parentId,
+                    'kmBeginning' => $trip->getKmBeginning(),
+                    'kmEnd' => $trip->getKmEnd(),
                     'timestampBeginning' => $trip->getTimestampBeginning()->format('d-m-Y H:i:s') . $parentStart,
-                    'timestampEnd'       => (null != $trip->getTimestampEnd() ? $trip->getTimestampEnd()->format('d-m-Y H:i:s') : ''),
-                    'parkSeconds'        => $trip->getParkSeconds() . ' sec',
-                    'payable'            => $trip->getPayable() ? 'Si' : 'No',
+                    'timestampEnd' => (null != $trip->getTimestampEnd() ? $trip->getTimestampEnd()->format('d-m-Y H:i:s') : ''),
+                    'parkSeconds' => $trip->getParkSeconds() . ' sec',
+                    'payable' => $trip->getPayable() ? 'Si' : 'No',
+                    'totalCost' => ['amount' => $tripCost, 'id' => $trip->getId()],
+                    'idLink' => $trip->getId()
                 ],
                 'cu'       => [
                     'surname' => $trip->getCustomer()->getSurname(),
                     'name'    => $trip->getCustomer()->getName(),
-                    'mobile'  => $trip->getCustomer()->getMobile(),
+                    'mobile'  => $trip->getCustomer()->getMobile()
                 ],
                 'c'        => [
                     'plate'     => $plate,
@@ -130,7 +142,7 @@ class TripsService
                     'keyStatus' => $trip->getCar()->getKeystatus()
                 ],
                 'cc'       => [
-                    'code' => is_object($trip->getCustomer()->getCard()) ? $trip->getCustomer()->getCard()->getCode() : '',
+                    'code' => is_object($trip->getCustomer()->getCard()) ? $trip->getCustomer()->getCard()->getCode() : ''
 
                 ],
                 'duration' => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd())
@@ -146,17 +158,7 @@ class TripsService
     public function getDuration($s_from, $s_to)
     {
         if ('' != $s_from && '' != $s_to) {
-
-            $date = $s_from->diff($s_to);
-
-            $days = (int)$date->format('%d');
-
-            if ($days > 0) {
-                return sprintf('%sg %s:%s:%s', $days, $date->format('%H'), $date->format('%I'), $date->format('%S'));
-            } else {
-                return sprintf('0g %s:%s:%s', $date->format('%H'), $date->format('%I'), $date->format('%S'));
-            }
-
+            return $s_from->diff($s_to)->format('%dg %H:%I:%S');
         }
 
         return self::DURATION_NOT_AVAILABLE;

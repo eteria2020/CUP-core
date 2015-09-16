@@ -96,7 +96,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('firstJanuary2015', date_create('2015-01-01'));
         $query->setParameter('oneDay', '24:00:00');
         $query->setParameter('customer', $customer);
-        
+
         return $query->getResult();
     }
 
