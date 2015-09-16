@@ -873,8 +873,13 @@ class Trips
 
     public function getDurationMinutes() {
 
-        $interval = new Interval($this->getTimestampBeginning(), $this->getTimestampEnd());
-        return $interval->minutes();
+        if ($this->getTimestampBeginning() instanceof \DateTime &&
+            $this->getTimestampEnd() instanceof \DateTime) {
+            $interval = new Interval($this->getTimestampBeginning(), $this->getTimestampEnd());
+            return $interval->minutes();
+        } else {
+            return 0;
+        }
         
     }
 
