@@ -159,13 +159,4 @@ class TripPaymentsService
         $date->add(new \DateInterval('P7D'));
         return $date;
     }
-
-    /**
-     * @param Trips  $trip
-     * @return TripPayments
-     */
-    public function getTripPaymentForTrip(Trips $trip)
-    {
-        return $this->tripPaymentsRepository->findOneByTrip($trip);
-    }
 }
