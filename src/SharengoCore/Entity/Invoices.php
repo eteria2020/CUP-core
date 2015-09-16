@@ -235,6 +235,11 @@ class Invoices
 
         foreach ($tripPayments as $key => $tripPayment) {
             $trip = $tripPayment->getTrip();
+            /**
+             * Changing the order, structure or content of the following
+             * may interfere with $this->getTimePeriod() function!
+             * Test by running "export registries -d -c" from console
+             */
             array_push($body, [
                 [$trip->getId()],
                 ["Inizio: " . $trip->getTimestampBeginning()->format("d-m-Y H:i:s"),
@@ -473,11 +478,12 @@ class Invoices
          */
         } elseif ($this->getType() == "TRIP") {
             $body = $this->getContent()['body']['contents']['body'];
-            $start = $body[0][0][0];
-            $end = $body[count($body) - 1][0][1];
+
+            $start = $body[0][1][0];
+            $end = $body[count($body) - 1][1][1];
             return [
-                "start" => date_create_from_format("d-m-Y H:i:s", substr($start, 4)),
-                "end" => date_create_from_format("d-m-Y H:i:s", substr($end, 3))
+                "start" => date_create_from_format("d-m-Y H:i:s", substr($start, 8)),
+                "end" => date_create_from_format("d-m-Y H:i:s", substr($end, 6))
             ];
         }
 
