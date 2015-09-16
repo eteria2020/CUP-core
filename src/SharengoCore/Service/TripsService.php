@@ -7,7 +7,6 @@ use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Service\CustomersService;
-use SharengoCore\Service\TripPaymentsService;
 
 use Zend\View\Helper\Url;
 
@@ -32,29 +31,21 @@ class TripsService
     private $customersService;
 
     /**
-     * @var TripPaymentsService
-     */
-    private $tripPaymentsService;
-
-    /**
      * @param EntityRepository $tripRepository
      * @param DatatableService $I_datatableService
      * @param \\TODO $I_urlHelper
      * @param CustomersService $customersService
-     * @param TripPaymentsService $tripPaymentsService
      */
     public function __construct(
         $tripRepository,
         DatatableService $I_datatableService,
         $I_urlHelper,
-        CustomersService $customersService,
-        TripPaymentsService $tripPaymentsService
+        CustomersService $customersService
     ) {
         $this->tripRepository = $tripRepository;
         $this->I_datatableService = $I_datatableService;
         $this->I_urlHelper = $I_urlHelper;
         $this->customersService = $customersService;
-        $this->tripPaymentsService = $tripPaymentsService;
     }
 
     /**
@@ -119,7 +110,7 @@ class TripsService
 
             $tripCost = '';
             if ($trip->getPayable()) {
-                $tripPayment = $this->tripPaymentsService->getTripPaymentForTrip($trip);
+                $tripPayment = $trip->getTripPayments()[0];
                 if ($tripPayment instanceof TripPayments) {
                     $tripCost = $tripPayment->getTotalCost();
                 }
