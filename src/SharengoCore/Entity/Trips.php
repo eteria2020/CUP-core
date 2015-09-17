@@ -935,4 +935,13 @@ class Trips
         return $this;
     }
 
+    /**
+     * Checks if trip is ended or not
+     *
+     * @return bool
+     */
+    public function isEnded() {
+        return $this->getTimestampEnd() instanceof \DateTime;
+    }
+
 }

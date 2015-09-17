@@ -109,19 +109,21 @@ class TripsService
             }
 
             $tripCost = '';
-            if ($trip->getPayable() && $trip->isAccountable()) {
-                $tripPayment = $trip->getTripPayments()[0];
-                if ($tripPayment instanceof TripPayments) {
-                    $tripCost = $tripPayment->getTotalCost();
-                } else {    // for some reason trip has not beed payed
+            if ($trip->isEnded()) {
+                if ($trip->getPayable() && $trip->isAccountable()) {
+                    $tripPayment = $trip->getTripPayments()[0];
+                    if ($tripPayment instanceof TripPayments) {
+                        $tripCost = $tripPayment->getTotalCost();
+                    } else {    // for some reason trip has not beed payed
 
-                    // show 0 only if not accounted; otherwise price is not yet defined
-                    if ($trip->getIsAccounted()) {
-                        $tripCost = 0;
+                        // show 0 only if not accounted; otherwise price is not yet defined
+                        if ($trip->getIsAccounted()) {
+                            $tripCost = 0;
+                        }
                     }
+                } else {
+                    $tripCost = 'FREE';
                 }
-            } else {
-                $tripCost = 'FREE';
             }
 
             return [
