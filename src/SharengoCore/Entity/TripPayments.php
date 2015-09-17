@@ -157,9 +157,9 @@ class TripPayments
         $trip = $this->getTrip();
 
         $extractedTripPayment = $hydrator->extract($this);
-        
+
         $extractedTripPayment['tripId'] = $trip->getId();
-        
+
         $invoice = $this->getInvoice();
         if ($invoice !== null) {
             $extractedTripPayment['invoiceId'] = $invoice->getId();
@@ -167,7 +167,7 @@ class TripPayments
 
         unset($extractedTripPayment['fare']);
         unset($extractedTripPayment['invoice']);
-        
+
         return $extractedTripPayment;
     }
 
@@ -272,6 +272,18 @@ class TripPayments
     public function getTotalCost()
     {
         return $this->totalCost;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormattedTotalCost()
+    {
+        return floor($this->totalCost / 100) .
+            ',' .
+            ($this->totalCost % 100 < 10 ? '0' : '') .
+            $this->totalCost % 100 .
+            '€';
     }
 
     /**
