@@ -6,6 +6,7 @@ use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\Repository\TripBillsRepository;
 use SharengoCore\Entity\Repository\TripFreeFaresRepository;
 use SharengoCore\Entity\Repository\TripPaymentsRepository;
+use SharengoCore\Exception\EditTripDeniedException;
 
 use Doctrine\ORM\EntityManager;
 
@@ -74,6 +75,8 @@ class EditTripsService
      */
     public function editTrip(Trips $trip, $notPayable, $endDate)
     {
+        $this->checkTripEditable($trip);
+
         $this->entityManager->beginTransaction();
 
         try {
@@ -98,6 +101,28 @@ class EditTripsService
         } catch (\Exception $e) {
             $this->entityManager->rollback();
             throw $e;
+        }
+    }
+
+    /**
+     * Throws exception if a trip is still open or if it has been payed
+     * @param Trips $trip
+     * @throws EditTripDeniedException
+     */
+    private function checkTripEditable(Trips $trip)
+    {
+        $isNotEnded = $trip->getTimestampEnd() === null;
+        $hasBeenPayed = false;
+        $tripPayments = $trip->getTripPayments();
+        if (!count($tripPayments)) {
+            foreach ($tripPayments as $tripPayment) {
+                if (!count($tripPayment->getTripPaymentTries())) {
+                    $hasBeenPayed = true;
+                }
+            }
+        }
+        if ($isNotEnded || $hasBeenPayed) {
+            throw new EditTripDeniedException();
         }
     }
 
