@@ -174,7 +174,8 @@ return [
             'SharengoCore\Service\TripPaymentTriesService' => 'SharengoCore\Service\TripPaymentTriesServiceFactory',
             'SharengoCore\Service\EditTripsService' => 'SharengoCore\Service\EditTripsServiceFactory',
             'SharengoCore\Service\ExtraPaymentsService' => 'SharengoCore\Service\ExtraPaymentsServiceFactory',
-            'SharengoCore\Service\PenaltiesService' => 'SharengoCore\Service\PenaltiesServiceFactory'
+            'SharengoCore\Service\PenaltiesService' => 'SharengoCore\Service\PenaltiesServiceFactory',
+            'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory'
         ],
         'shared' => [
             'SharengoCore\Service\TripCostComputerService' => false,
