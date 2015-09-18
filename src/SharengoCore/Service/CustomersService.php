@@ -558,6 +558,7 @@ class CustomersService implements ValidatorServiceInterface
 
         $vat = $customer->getVat();
         $vat = str_replace(";", " ", $vat);
+        $vat = str_replace("it", "", strtolower($vat));
 
         /**
          * Every element is in a row
