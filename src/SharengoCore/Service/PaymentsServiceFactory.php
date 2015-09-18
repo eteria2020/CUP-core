@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\EventManager\EventManager;
 
 class PaymentsServiceFactory implements FactoryInterface
 {
@@ -13,6 +14,8 @@ class PaymentsServiceFactory implements FactoryInterface
         $cartasiContractService = $serviceLocator->get('Cartasi\Service\CartasiContracts');
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $emailService = $serviceLocator->get('SharengoCore\Service\EmailService');
+        $eventManager = new EventManager();
+        $eventManager->setIdentifiers(['PaymentsService']);
         $url = $serviceLocator->get('Configuration')['website']['uri'];
 
         return new PaymentsService(
@@ -20,6 +23,7 @@ class PaymentsServiceFactory implements FactoryInterface
             $cartasiContractService,
             $entityManager,
             $emailService,
+            $eventManager,
             $url
         );
     }
