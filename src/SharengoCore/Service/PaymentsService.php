@@ -107,7 +107,12 @@ class PaymentsService
             );
         } else {
             $this->disableCustomerForPayment($customer);
-            $this->notifyCustomerHeHasToPay($customer);
+
+            // enable hooks on the event that the customer doesn't have a valid contract
+            $this->eventManager->trigger('notifyCustomerPay', $this, [
+                'customer' => $customer,
+                'tripPayment' => $tripPayment
+            ]);
         }
     }
 
@@ -122,36 +127,6 @@ class PaymentsService
 
         if (!$this->avoidPersistance) {
             $this->entityManager->flush();
-        }
-    }
-
-    /**
-     * notifies the user requesting him to do the first payment
-     *
-     * @param Customers $customer
-     */
-    private function notifyCustomerHeHasToPay(Customers $customer)
-    {
-        $date = date_create('midnight +7 days');
-        $content = sprintf(
-            file_get_contents(__DIR__.'/../../../view/emails/first-payment-request-it_IT.html'),
-            $customer->getName(),
-            $customer->getSurname(),
-            $date->format('d/m/Y')
-        );
-
-        $attachments = [
-            'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
-            'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
-        ];
-
-        if (!$this->avoidEmail) {
-            $this->emailService->sendEmail(
-                $customer->getEmail(),
-                'Pagamento delle tue corse a debito',
-                $content,
-                $attachments
-            );
         }
     }
 
