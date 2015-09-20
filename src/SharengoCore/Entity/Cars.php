@@ -259,6 +259,17 @@ class Cars
      */
     private $trips;
 
+    /**
+     * @var \Fleet
+     *
+     * @ORM\ManyToOne(targetEntity="Fleet")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="fleet_id", referencedColumnName="id", nullable=false)
+     * })
+     */
+    private $fleet;
+    
+
     public function __construct()
     {
         $this->trips = new ArrayCollection();
@@ -1079,6 +1090,30 @@ class Cars
     {
         $this->charging = $charging;
         return $this;
+    }
+
+    /**
+     * Set fleet
+     *
+     * @param \SharengoCore\Entity\Fleet $fleet
+     *
+     * @return Cars
+     */
+    public function setFleet(\SharengoCore\Entity\Fleet $fleet)
+    {
+        $this->fleet = $fleet;
+
+        return $this;
+    }
+
+    /**
+     * Get fleet
+     *
+     * @return \SharengoCore\Entity\Fleet
+     */
+    public function getFleet()
+    {
+        return $this->fleet;
     }
     
 }
