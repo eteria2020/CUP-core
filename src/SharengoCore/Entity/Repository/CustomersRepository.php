@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity\Repository;
 
 use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\TripPayments;
 
 /**
  * CustomersRepository
@@ -118,7 +119,7 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
             "GROUP BY c.id";
 
         $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameter('status', 'not_payed');
+        $query->setParameter('status', TripPayments::STATUS_TO_BE_PAYED);
         $query->setParameter('oneWeekAgo', date_create('-1 week'));
 
         return $query->getResult();

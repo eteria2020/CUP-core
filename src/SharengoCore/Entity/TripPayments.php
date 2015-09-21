@@ -13,6 +13,11 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
  */
 class TripPayments
 {
+    const STATUS_TO_BE_PAYED = 'to_be_payed';
+    const STATUS_PAYED_CORRECTLY = 'payed_correctly';
+    const STATUS_WRONG_PAYMENT = 'wrong_payment';
+    const STATUS_INVOICED = 'invoiced';
+
     /**
      * @var integer
      *
@@ -84,12 +89,12 @@ class TripPayments
 
     /**
      * @var string can have values
-     *      - not_payed (default)
+     *      - to_be_payed (default)
      *      - payed_correctly
      *      - wrong_payment
      *      - invoiced
      *
-     * @ORM\Column(name="status", type="string", nullable=false, options={"default" = "not_payed"})
+     * @ORM\Column(name="status", type="string", nullable=false, options={"default" = "to_be_payed"})
      */
     private $status;
 
@@ -144,7 +149,7 @@ class TripPayments
         $this->parkingMinutes = $parkingMinutes;
         $this->discountPercentage = $discountPercentage;
         $this->totalCost = $totalCost;
-        $this->status = 'not_payed';
+        $this->status = self::STATUS_TO_BE_PAYED;
         $this->createdAt = date_create(date('Y-m-d H:i:s'));
     }
 
@@ -157,9 +162,9 @@ class TripPayments
         $trip = $this->getTrip();
 
         $extractedTripPayment = $hydrator->extract($this);
-        
+
         $extractedTripPayment['tripId'] = $trip->getId();
-        
+
         $invoice = $this->getInvoice();
         if ($invoice !== null) {
             $extractedTripPayment['invoiceId'] = $invoice->getId();
@@ -167,7 +172,9 @@ class TripPayments
 
         unset($extractedTripPayment['fare']);
         unset($extractedTripPayment['invoice']);
-        
+
+        $extractedTripPayment['mustPayValue'] = $this->getCostToBePayed();
+
         return $extractedTripPayment;
     }
 
@@ -379,7 +386,7 @@ class TripPayments
      */
     public function setPayedCorrectly()
     {
-        $this->setStatus('payed_correctly');
+        $this->setStatus(self::STATUS_PAYED_CORRECTLY);
         $this->payedSuccessfullyAt = date_create();
 
         return $this;
@@ -390,7 +397,7 @@ class TripPayments
      */
     public function setWrongPayment()
     {
-        return $this->setStatus('wrong_payment');
+        return $this->setStatus(self::STATUS_WRONG_PAYMENT);
     }
 
     /**
@@ -398,7 +405,7 @@ class TripPayments
      */
     public function isWrongPayment()
     {
-        return $this->status === 'wrong_payment';
+        return $this->status === self::STATUS_WRONG_PAYMENT;
     }
 
     /**
@@ -415,5 +422,17 @@ class TripPayments
     public function getCustomer()
     {
         return $this->trip->getCustomer();
+    }
+
+    /**
+     * @return int eurocents still to be payed
+     */
+    public function getCostToBePayed()
+    {
+        if ($this->status === self::STATUS_PAYED_CORRECTLY || $this->status === self::STATUS_INVOICED) {
+            return 0;
+        }
+
+        return $this->totalCost;
     }
 }
