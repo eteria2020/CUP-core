@@ -167,6 +167,14 @@ class Events
     }
 
     /**
+     * @return integer
+     */
+    public function getEventId()
+    {
+        return $this->eventId;
+    }
+
+    /**
      * @return string
      */
     public function getLabel()
@@ -177,17 +185,17 @@ class Events
     /**
      * @return string
      */
-    public function getTxtVal()
+    public function getTxtval()
     {
-        return $this->txtVal;
+        return $this->txtval;
     }
 
     /**
      * @return integer
      */
-    public function getIntVal()
+    public function getIntval()
     {
-        return $this->intVal;
+        return $this->intval;
     }
 
     /**
