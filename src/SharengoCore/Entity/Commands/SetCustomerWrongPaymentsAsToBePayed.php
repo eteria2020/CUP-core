@@ -26,7 +26,8 @@ class SetCustomerWrongPaymentsAsToBePayed extends Command
     protected function dql()
     {
         return 'UPDATE \SharengoCore\Entity\TripPayments tp '.
-            'SET tp.status = :status '.
+            'SET tp.status = :status, '.
+            'tp.toBePayedFrom = :date '.
             'WHERE tp.trip IN ('.
             'SELECT t FROM \SharengoCore\Entity\Trips t WHERE t.customer = :customer) '.
             'AND tp.status = :actualStatus';
@@ -36,6 +37,7 @@ class SetCustomerWrongPaymentsAsToBePayed extends Command
     {
         return [
             'status' => TripPayments::STATUS_TO_BE_PAYED,
+            'date' => date_create('midnight'),
             'customer' => $this->customer,
             'actualStatus' => TripPayments::STATUS_WRONG_PAYMENT
         ];
