@@ -57,13 +57,13 @@ class DisableContractService
             $this->tripPaymentsService->setWrongPaymentsAsToBePayed($contract->getCustomer());
 
             $this->entityManager->commit();
+            
+             $this->eventManager->trigger('disabledContract', $this, [
+                'contract' => $contract
+            ]);
         } catch (\Exception $e) {
             $this->entityManager->rollback();
             throw $e;
         }
-
-        $this->eventManager->trigger('disabledContract', $this, [
-            'contract' => $contract
-        ]);
     }
 }
