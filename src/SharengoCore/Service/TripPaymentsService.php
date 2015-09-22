@@ -97,7 +97,7 @@ class TripPaymentsService
             return [
                 'e' => [
                     'createdAt' => $payment->getCreatedAt()->format('Y-m-d H:i:s'),
-                    'tripId' => $payment->getTrip()->getId(),
+                    'trip' => $payment->getTrip()->getId(),
                     'tripMinutes' => $payment->getTripMinutes(),
                     'parkingMinutes' => $payment->getParkingMinutes(),
                     'discountPercentage' => $payment->getDiscountPercentage(),
