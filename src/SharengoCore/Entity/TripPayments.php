@@ -120,6 +120,14 @@ class TripPayments
     private $invoicedAt;
 
     /**
+     * @var DateTime date from the 7 days to disabling the user are counted
+     * usually equal to createdAt, but not in some cases
+     *
+     * @ORM\Column(name="to_be_payed_from", type="datetime", nullable=false)
+     */
+    private $toBePayedFrom;
+
+    /**
      * @var TripPaymentTries[]
      *
      * @ORM\OneToMany(targetEntity="TripPaymentTries", mappedBy="tripPayment")
@@ -151,6 +159,7 @@ class TripPayments
         $this->totalCost = $totalCost;
         $this->status = self::STATUS_TO_BE_PAYED;
         $this->createdAt = date_create(date('Y-m-d H:i:s'));
+        $this->toBePayedFrom = $this->createdAt;
     }
 
     /**
@@ -434,5 +443,13 @@ class TripPayments
         }
 
         return $this->totalCost;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getToBePayedFrom()
+    {
+        return $this->toBePayedFrom;
     }
 }

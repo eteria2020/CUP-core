@@ -7,6 +7,7 @@ use SharengoCore\Entity\TripPayments;
 use SharengoCore\Service\DatatableService;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\Commands\SetCustomerWrongPaymentsAsToBePayed;
 
 use Doctrine\ORM\EntityManager;
 
@@ -155,8 +156,15 @@ class TripPaymentsService
 
     public function getExpiryDate(TripPayments $tripPayment)
     {
-        $date = $tripPayment->getCreatedAt();
+        $date = $tripPayment->getToBePayedFrom();
         $date->add(new \DateInterval('P7D'));
         return $date;
+    }
+
+    public function setWrongPaymentsAsToBePayed(Customers $customer)
+    {
+        $command = new SetCustomerWrongPaymentsAsToBePayed($this->entityManager, $customer);
+
+        return $command();
     }
 }

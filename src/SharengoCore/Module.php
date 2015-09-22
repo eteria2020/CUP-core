@@ -3,6 +3,8 @@
 namespace SharengoCore;
 
 use Zend\Mvc\MvcEvent;
+use Zend\EventManager\EventManagerInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 class Module
 {
@@ -27,6 +29,25 @@ class Module
         $platform->registerDoctrineTypeMapping('invoice_type', 'string');
         $platform->registerDoctrineTypeMapping('trip_payment_status', 'string');
         $platform->registerDoctrineTypeMapping('polygon', 'string');
+
+        $this->registerEventListeners(
+            $e->getApplication()->getEventManager(),
+            $e->getApplication()->getServiceManager()
+        );
+    }
+
+    /**
+     * attaches the event listeners of the module
+     *
+     * @param EventManagerInterface $events
+     */
+    private function registerEventListeners(
+        EventManagerInterface $events,
+        ServiceLocatorInterface $serviceLocator
+    ) {
+        $disableContractsListener = $serviceLocator->get('SharengoCore\Listener\DisableContractListener');
+
+        $events->getSharedManager()->attachAggregate($disableContractsListener);
     }
 
     /**

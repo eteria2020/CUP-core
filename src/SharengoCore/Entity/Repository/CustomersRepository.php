@@ -115,7 +115,7 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
             "JOIN t.tripPayments tp ".
             "WHERE c.enabled = TRUE ".
             "AND tp.status = :status ".
-            "AND tp.createdAt <= :oneWeekAgo ".
+            "AND tp.toBePayedFrom <= :oneWeekAgo ".
             "GROUP BY c.id";
 
         $query = $this->getEntityManager()->createQuery($dql);
