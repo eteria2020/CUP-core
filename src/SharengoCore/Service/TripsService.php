@@ -103,6 +103,16 @@ class TripsService
             $parentId = "";
             $parentStart = "";
             $parent = $trip->getParent();
+
+            // bad hack to check if the parent really exists
+            if ($parent instanceof \DoctrineORMModule\Proxy\__CG__\SharengoCore\Entity\Trips) {
+                try {
+                    $parent = $parent->__load();
+                } catch (\Exception $e) {
+                    $parent = null;
+                }
+            }
+
             if ($parent !== null) {
                 $parentId = "<br>(" . $parent->getId() . ")";
                 $parentStart = "<br>(" . $parent->getTimestampBeginning()->format('d-m-Y H:i:s') . ")";
