@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity\Repository;
 
 use SharengoCore\Entity\Trips;
+use SharengoCore\Entity\TripPayments;
 
 class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
 {
@@ -20,7 +21,7 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
 
         $query = $em->createQuery($dql);
 
-        $query->setParameter('status', 'payed_correctly');
+        $query->setParameter('status', TripPayments::STATUS_PAYED_CORRECTLY);
 
         return $query->getResult();
     }
@@ -30,9 +31,11 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         $em = $this->getEntityManager();
 
         $dql = 'SELECT COUNT(tp) FROM SharengoCore\Entity\TripPayments tp '.
-            'WHERE tp.status = \'wrong_payment\'';
+            'WHERE tp.status = :status';
 
         $query = $em->createQuery($dql);
+
+        $query->setParameter('status', TripPayments::STATUS_WRONG_PAYMENT);
 
         return $query->getSingleScalarResult();
     }
@@ -50,7 +53,7 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
 
         $query = $em->createQuery($dql);
 
-        $query->setParameter('status', 'not_payed');
+        $query->setParameter('status', TripPayments::STATUS_TO_BE_PAYED);
         $query->setParameter('paymentAble', true);
         $query->setParameter('midnight', date_create('midnight'));
 
@@ -68,7 +71,7 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
 
         $query = $em->createQuery($dql);
 
-        $query->setParameter('status', 'not_payed');
+        $query->setParameter('status', TripPayments::STATUS_TO_BE_PAYED);
         $query->setParameter('customer', $customer);
 
         return $query->getResult();
@@ -82,14 +85,14 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
             FROM SharengoCore\Entity\TripPayments tp
             JOIN tp.trip t
             WHERE t.customer = :customer
-            AND (tp.status = :not_payed
+            AND (tp.status = :to_be_payed
             OR tp.status = :wrong_payment)
             ORDER BY t.timestampBeginning ASC';
 
         $query = $em->createQuery($dql);
         $query->setParameter('customer', $customer);
-        $query->setParameter('not_payed', 'not_payed');
-        $query->setParameter('wrong_payment', 'wrong_payment');
+        $query->setParameter('to_be_payed', TripPayments::STATUS_TO_BE_PAYED);
+        $query->setParameter('wrong_payment', TripPayments::STATUS_WRONG_PAYMENT);
         $query->setMaxResults(1);
 
         return $query->getOneOrNullResult();
