@@ -17,7 +17,7 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
             WHERE tp.status = :status
             AND tp.invoice IS NULL
             AND tp.totalCost != 0
-            ORDER BY tp.payedSuccessfullyAt ASC';
+            ORDER BY t.timestampBeginning ASC';
 
         $query = $em->createQuery($dql);
 

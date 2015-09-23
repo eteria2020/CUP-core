@@ -477,13 +477,28 @@ class Invoices
          *   the last tripPayment of the invoice
          */
         } elseif ($this->getType() == "TRIP") {
+            // Get the body with all the invoice rows
             $body = $this->getContent()['body']['contents']['body'];
+            // Generate two starting dates to start comparing against
+            $startDate = date_create_from_format("d-m-Y H:i:s", substr($body[0][1][0], 8));
+            $endDate = date_create_from_format("d-m-Y H:i:s", substr($body[0][1][1], 6));
+            // Compare all dates to find highest and lowest
+            foreach ($body as $times) {
+                $start = date_create_from_format("d-m-Y H:i:s", substr($times[1][0], 8));
+                $end = date_create_from_format("d-m-Y H:i:s", substr($times[1][1], 6));
+                // Compare start dates
+                if ($start < $startDate) {
+                    $startDate = $start;
+                }
+                // Compare end dates
+                if ($end > $endDate) {
+                    $endDate = $end;
+                }
+            }
 
-            $start = $body[0][1][0];
-            $end = $body[count($body) - 1][1][1];
             return [
-                "start" => date_create_from_format("d-m-Y H:i:s", substr($start, 8)),
-                "end" => date_create_from_format("d-m-Y H:i:s", substr($end, 6))
+                "start" => $startDate,
+                "end" => $endDate
             ];
         }
 
