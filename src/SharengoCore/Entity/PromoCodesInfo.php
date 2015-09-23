@@ -315,4 +315,15 @@ class PromoCodesInfo
     {
         return $this->webuser;
     }
+
+    /**
+     * Check if this promo code updates subscription cost
+     *
+     * @return bool
+     */
+    public function changesSubscriptionCost() {
+        return null != $this->overriddenSubscriptionCost &&
+               $this->overriddenSubscriptionCost > 0;
+    }
+    
 }

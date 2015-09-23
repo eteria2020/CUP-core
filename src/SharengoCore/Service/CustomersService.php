@@ -10,6 +10,7 @@ use SharengoCore\Entity\Cards;
 use SharengoCore\Service\DatatableService;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 use SharengoCore\Service\TripPaymentsService;
+use SharengoCore\Exception\BonusAssignmentException;
 
 use Cartasi\Service\CartasiContractsService;
 
@@ -350,11 +351,24 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersBonusRepository->checkUsedPromoCode($customers, $promoCode);
     }
 
-    public function addBonusFromPromoCode(Customers $customers, PromoCodes $promoCode)
+    public function addBonusFromPromoCode(Customers $customer, PromoCodes $promoCode = null)
     {
+
+        if (is_null($promoCode)) {
+            throw new BonusAssignmentException('Codice promo non valido.');
+        }
+
+        if ($this->checkUsedPromoCode($customer, $promoCode)) {
+            throw new BonusAssignmentException('Codice promo già associato a questo account.');
+        }
+
+        if ($promoCode->getPromocodesinfo()->changesSubscriptionCost()) {
+            throw new BonusAssignmentException('Codice promo non valido.');
+        }
+
         $customerBonus = CustomersBonus::createFromPromoCode($promoCode);
 
-        $this->addBonus($customers, $customerBonus);
+        $this->addBonus($customer, $customerBonus);
     }
 
     public function addBonusFromWebUser(Customers $customer, CustomersBonus $bonus)
