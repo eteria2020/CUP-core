@@ -1,6 +1,6 @@
 <?php
 
-namespace Application\Exception;
+namespace SharengoCore\Exception;
 
 class EditTripDeniedException extends \DomainException
 {
