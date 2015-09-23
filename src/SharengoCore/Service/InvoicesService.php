@@ -327,10 +327,10 @@ class InvoicesService
         // generate the first common part between the two records
         $partionRecord1 = "110;" .// 11
             $invoice->getDateTimeDate()->format("d/m/Y") . ";" .// 10
-            str_replace("/", "", $invoice->getInvoiceNumber()) . ";" .// 20
+            substr($invoice->getInvoiceNumber(), 5) . ";" .// 20
             "TC;" .// 30
             $invoice->getDateTimeDate()->format("d/m/Y") . ";" .// 50
-            str_replace("/", "", $invoice->getInvoiceNumber()) . ";" .// 61
+            substr($invoice->getInvoiceNumber(), 5) . ";" .// 61
             $invoice->getCustomer()->getCard()->getCode() . ";" .// 130
             $invoice->getCustomer()->getId() . ";" .// 78
             "CC001;" .// 241
