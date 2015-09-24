@@ -224,6 +224,16 @@ class Trips
      */
     private $parent;
 
+    /**
+     * @var \Fleet
+     *
+     * @ORM\ManyToOne(targetEntity="Fleet")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="fleet_id", referencedColumnName="id")
+     * })
+     */
+    private $fleet;
+
 
 
     /**
@@ -933,6 +943,30 @@ class Trips
         $this->costComputed = $costComputed;
 
         return $this;
+    }
+
+    /**
+     * Set fleet
+     *
+     * @param \SharengoCore\Entity\Fleet $fleet
+     *
+     * @return Trips
+     */
+    public function setFleet(\SharengoCore\Entity\Fleet $fleet)
+    {
+        $this->fleet = $fleet;
+
+        return $this;
+    }
+
+    /**
+     * Get fleet
+     *
+     * @return \SharengoCore\Entity\Fleet
+     */
+    public function getFleet()
+    {
+        return $this->fleet;
     }
 
     /**
