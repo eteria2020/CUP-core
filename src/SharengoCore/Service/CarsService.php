@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManager;
 use SharengoCore\Entity\Cars;
 use SharengoCore\Entity\CarsMaintenance;
 use SharengoCore\Entity\Repository\CarsRepository;
+use SharengoCore\Entity\Repository\FleetRepository;
 use SharengoCore\Entity\Repository\CarsMaintenanceRepository;
 use SharengoCore\Service\DatatableService;
 use SharengoCore\Service\ReservationsService;
@@ -24,6 +25,9 @@ class CarsService
     /** @var  CarsMaintenance */
     private $carsMaintenanceRepository;
 
+    /** @var  FleetsRepository */
+    private $fleetsRepository;
+
     /** @var DatatableService */
     private $datatableService;
 
@@ -37,6 +41,7 @@ class CarsService
      * @param EntityManager    $entityManager
      * @param CarsRepository   $carsRepository
      * @param CarsMaintenance  $carsMaintenanceRepository
+     * @param FleetsRepository $fleetsRepository
      * @param DatatableService $datatableService
      * @param UserService      $userService
      */
@@ -44,6 +49,7 @@ class CarsService
         EntityManager $entityManager,
         CarsRepository $carsRepository,
         CarsMaintenanceRepository $carsMaintenanceRepository,
+        FleetRepository $fleetsRepository,
         DatatableService $datatableService,
         UserService $userService,
         ReservationsService $reservationsService
@@ -51,6 +57,7 @@ class CarsService
         $this->entityManager = $entityManager;
         $this->carsRepository = $carsRepository;
         $this->carsMaintenanceRepository = $carsMaintenanceRepository;
+        $this->fleetsRepository = $fleetsRepository;
         $this->datatableService = $datatableService;
         $this->userService = $userService;
         $this->reservationsService = $reservationsService;
@@ -63,6 +70,10 @@ class CarsService
     public function getListCars()
     {
         return $this->carsRepository->findAll();
+    }
+
+    public function getFleets() {
+        return $this->fleetsRepository->findAll();
     }
 
     public function getTotalCars()
@@ -97,7 +108,7 @@ class CarsService
 
         return array_map(function (Cars $cars) {
 
-            $clean = sprintf('Interna: %s Esterna: %s', $cars->getIntCleanliness(), $cars->getExtCleanliness());
+            $clean = sprintf('Interna: %s<br />Esterna: %s', $cars->getIntCleanliness(), $cars->getExtCleanliness());
 
             $positionLink = sprintf('<a href="http://maps.google.com/?q=%s,%s" target="_blank">Mappa</a>',
                 $cars->getLatitude(), $cars->getLongitude());
@@ -110,10 +121,12 @@ class CarsService
                     'lastContact' => is_object($cars->getLastContact()) ? $cars->getLastContact()->format('d-m-Y H:i:s') : '',
                     'km'          => $cars->getKm(),
                     'status'      => $cars->getStatus(),
-
+                ],
+                'f'            => [
+                    'name'        => $cars->getFleet()->getName(),
                 ],
                 'clean'        => $clean,
-                'position'     => sprintf('Lat: %s Lon: %s ', $cars->getLatitude(), $cars->getLongitude()),
+                'position'     => sprintf('Lat: %s<br />Lon: %s ', $cars->getLatitude(), $cars->getLongitude()),
                 'positionLink' => $positionLink,
                 'button'       => $cars->getPlate(),
             ];
