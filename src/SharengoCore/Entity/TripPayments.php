@@ -291,6 +291,18 @@ class TripPayments
     }
 
     /**
+     * @return string
+     */
+    public function getFormattedTotalCost()
+    {
+        return floor($this->totalCost / 100) .
+            ',' .
+            ($this->totalCost % 100 < 10 ? '0' : '') .
+            $this->totalCost % 100 .
+            '€';
+    }
+
+    /**
      * @param integer $totalCost
      * @return TripPayments
      */
