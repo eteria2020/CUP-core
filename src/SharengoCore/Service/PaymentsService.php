@@ -4,7 +4,7 @@ namespace SharengoCore\Service;
 
 use Cartasi\Service\CartasiCustomerPayments;
 use Cartasi\Service\CartasiContractsService;
-use Cartasi\Service\TripPaymentTriesService;
+use SharengoCore\Service\TripPaymentTriesService;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\TripPaymentTries;
