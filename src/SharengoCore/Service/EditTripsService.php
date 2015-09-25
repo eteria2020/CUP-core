@@ -141,6 +141,7 @@ class EditTripsService
 
             //delete trip bonus
             $this->entityManager->remove($tripBonus);
+            $this->entityManager->flush();
         }
     }
 
