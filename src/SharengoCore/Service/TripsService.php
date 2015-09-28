@@ -22,7 +22,9 @@ class TripsService
      */
     private $I_datatableService;
 
-    /** @var */
+    /**
+     * @var Url
+     */
     private $I_urlHelper;
 
     /**

@@ -72,8 +72,10 @@ class EditTripsService
      * @param boolean $notPayable
      * @param DateTime|null $endDate
      */
-    public function editTrip(Trips $trip, $notPayable, $endDate)
+    public function editTrip(Trips $trip, $notPayable, $endDate = null)
     {
+        $trip->checkIfEditable($endDate);
+
         $this->entityManager->beginTransaction();
 
         try {

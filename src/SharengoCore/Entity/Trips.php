@@ -2,9 +2,13 @@
 
 namespace SharengoCore\Entity;
 
+use SharengoCore\Utils\Interval;
+use SharengoCore\Exception\EditTripDeniedException;
+use SharengoCore\Exception\EditTripWrongDateException;
+use SharengoCore\Exception\EditTripNotDateTimeException;
+
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
-use SharengoCore\Utils\Interval;
 
 /**
  * Trips
@@ -890,7 +894,7 @@ class Trips
         } else {
             return 0;
         }
-        
+
     }
 
     /**
@@ -974,8 +978,50 @@ class Trips
      *
      * @return bool
      */
-    public function isEnded() {
+    public function isEnded()
+    {
         return $this->getTimestampEnd() instanceof \DateTime;
     }
 
+    /**
+     * @return boolean true if at least one tripPaymentTry has been created
+     * for this trip
+     */
+    public function isPaymentTried()
+    {
+        $isAttempted = false;
+        if(count($this->getTripPayments()) != 0) {
+            foreach ($this->getTripPayments() as $tripPayment) {
+                $isAttempted = $isAttempted ||
+                    count($tripPayment->getTripPaymentTries()) != 0;
+            }
+        }
+        return $isAttempted;
+    }
+
+    /**
+     * Throws exception if:
+     * - $endDate is not null and not of type \DateTime
+     * - $endDate is prior to current timestampEnd of $trip
+     * - $trip is not ended or payment has already been tried
+     * @param \DateTime $endDate
+     * @throws EditTripNotDateTimeException
+     * @throws EditTripWrongDateException
+     * @throws EditTripDeniedException
+     */
+    public function checkIfEditable($endDate)
+    {
+        if (!$this->isEnded() || $this->isPaymentTried()) {
+            throw new EditTripDeniedException();
+        }
+        if ($endDate !== null) {
+            if ($endDate instanceof \DateTime) {
+                if ($endDate < $this->getTimestampBeginning()) {
+                    throw new EditTripWrongDateException();
+                }
+            } else {
+                throw new EditTripNotDateTimeException();
+            }
+        }
+    }
 }
