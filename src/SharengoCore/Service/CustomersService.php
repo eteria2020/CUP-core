@@ -2,8 +2,6 @@
 
 namespace SharengoCore\Service;
 
-use Application\Exception\MissingCardFromCustomerException;
-
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonus;
 use SharengoCore\Entity\PromoCodes;
@@ -140,11 +138,6 @@ class CustomersService implements ValidatorServiceInterface
     public function getUserByEmailPassword($s_username, $s_password)
     {
         return $this->customersRepository->getUserByEmailPassword($s_username, $s_password);
-    }
-
-    public function getCustomersForExport()
-    {
-        return $this->customersRepository->findCustomersForExport();
     }
 
     public function findByEmail($email)
