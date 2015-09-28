@@ -6,9 +6,6 @@ use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\Repository\TripBillsRepository;
 use SharengoCore\Entity\Repository\TripFreeFaresRepository;
 use SharengoCore\Entity\Repository\TripPaymentsRepository;
-use SharengoCore\Exception\EditTripDeniedException;
-use SharengoCore\Exception\EditTripWrongDateException;
-use SharengoCore\Exception\EditTripNotDateTimeException;
 
 use Doctrine\ORM\EntityManager;
 
@@ -77,7 +74,7 @@ class EditTripsService
      */
     public function editTrip(Trips $trip, $notPayable, $endDate = null)
     {
-        $this->checkEditable($trip, $endDate);
+        $trip->checkIfEditable($endDate);
 
         $this->entityManager->beginTransaction();
 
@@ -100,52 +97,9 @@ class EditTripsService
 
             $this->entityManager->flush();
             $this->entityManager->commit();
-            echo "<br>Trip id: " . $trip->getId() . "<br>";
-            var_dump($notPayable); echo "<br>";
-            var_dump($endDate);
         } catch (\Exception $e) {
             $this->entityManager->rollback();
             throw $e;
-        }
-    }
-
-    /**
-     * Throws exception if:
-     * - $endDate is not null and not of type \DateTime
-     * - $endDate is prior to current timestampEnd of $trip
-     * - $trip is not ended or payment has already been tried
-     * @param Trips $trip
-     * @param \DateTime $endDate
-     * @throws EditTripNotDateTimeException
-     * @throws EditTripWrongDateException
-     * @throws EditTripDeniedException
-     */
-    private function checkEditable(Trips $trip, $endDate)
-    {
-        $isNotEnded = $trip->getTimestampEnd() === null;
-        $hasBeenPayed = false;
-        $tripPayments = $trip->getTripPayments();
-        if (!count($tripPayments)) {
-            foreach ($tripPayments as $tripPayment) {
-                if (!count($tripPayment->getTripPaymentTries())) {
-                    $hasBeenPayed = true;
-                }
-            }
-        }
-        if ($isNotEnded || $hasBeenPayed) {
-            throw new EditTripDeniedException();
-        }
-        $isDateValid = $endDate === null;
-        if (!$isDateValid) {
-            if ($endDate instanceof \DateTime) {
-                if ($endDate >= $trip->getTimestampBeginning()) {
-                    $isDateValid = true;
-                } else {
-                    throw new EditTripWrongDateException();
-                }
-            } else {
-                throw new EditTripNotDateTimeException();
-            }
         }
     }
 
