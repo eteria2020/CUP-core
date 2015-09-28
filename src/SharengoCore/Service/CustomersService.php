@@ -552,13 +552,13 @@ class CustomersService implements ValidatorServiceInterface
      */
     public function getExportDataForCustomer($customer)
     {
-        if (null == $customer->getCard()) {
-            throw new MissingCardFromCustomerException();
-        }
-
         $vat = $customer->getVat();
         $vat = str_replace(";", " ", $vat);
         $vat = str_replace("it", "", strtolower($vat));
+
+        $cardCode = $customer->getCard() instanceOf Cards ?
+            $customer->getCard()->getCode() :
+            '';
 
         /**
          * Every element is in a row
@@ -568,7 +568,7 @@ class CustomersService implements ValidatorServiceInterface
         return
             "GEN;" . // 10 - max 3
             $customer->getId() . ";" . // 41 - max 25
-            $customer->getCard()->getCode() . ";" . //50 - max 15
+            $cardCode . ";" . //50 - max 15
             $vat . ";" . // 60 - max 25
             ($vat != null ? 1 : 0) . ";" . // 61 - max 1
             ($vat != null ? 0 : 1) . ";" . // 358 - max 1

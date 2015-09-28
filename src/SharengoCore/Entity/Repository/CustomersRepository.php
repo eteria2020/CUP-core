@@ -129,10 +129,16 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
     {
         $dql = "SELECT c
             FROM \SharengoCore\Entity\Customers c
-            WHERE EXISTS(SELECT 1 FROM \SharengoCore\Entity\Invoices i WHERE i.customer = c.id)
+            WHERE EXISTS(
+                SELECT 1
+                FROM \SharengoCore\Entity\Invoices i
+                WHERE i.customer = c.id
+                AND i.type = :type
+            )
             ORDER BY c.id ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('type', Invoices::TYPE_FIRST_PAYMENT);
 
         return $query->getResult();
     }

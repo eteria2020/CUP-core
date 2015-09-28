@@ -464,7 +464,7 @@ class Invoices
          * - "start" the date of the invoice
          * - "end" the date of the invoice
          */
-        if ($this->getType() == "FIRST_PAYMENT") {
+        if ($this->getType() == $this::TYPE_FIRST_PAYMENT || $this->getType() == $this::TYPE_PENALTY) {
             return [
                 "start" => $this->getDateTimeDate(),
                 "end" => $this->getDateTimeDate()

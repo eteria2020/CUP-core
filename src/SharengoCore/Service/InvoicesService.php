@@ -93,11 +93,30 @@ class InvoicesService
     }
 
     /**
-     * @return Invoices[]
+     * @return array[Invoices[]]
      */
     public function getInvoicesForExport()
     {
-        return $this->invoicesRepository->findInvoicesForExport();
+        return $this->groupByInvoiceDate(
+            $this->invoicesRepository->findInvoicesForExport()
+        );
+    }
+
+    /**
+     * @param Invoices[] $invoices
+     * @return array[Invoices[]]
+     */
+    private function groupByInvoiceDate($invoices)
+    {
+        $groupedInvoices = [];
+        foreach ($invoices as $invoice) {
+            if (array_key_exists($invoice->getInvoiceDate(), $groupedInvoices)) {
+                array_push($groupedInvoices[$invoice->getInvoiceDate()], $invoice);
+            } else {
+                $groupedInvoices[$invoice->getInvoiceDate()] = [$invoice];
+            }
+        }
+        return $groupedInvoices;
     }
 
     /**
@@ -324,6 +343,11 @@ class InvoicesService
         $startDate = $period['start']->format("d/m/Y");
         $endDate = $period['end']->format("d/m/Y");
 
+        $customer = $invoice->getCustomer();
+        $cardCode = $customer->getCard() instanceOf Cards ?
+            $customer->getCard()->getCode() :
+            '';
+
         // generate the first common part between the two records
         $partionRecord1 = "110;" .// 11
             $invoice->getDateTimeDate()->format("d/m/Y") . ";" .// 10
@@ -331,8 +355,8 @@ class InvoicesService
             "TC;" .// 30
             $invoice->getDateTimeDate()->format("d/m/Y") . ";" .// 50
             substr($invoice->getInvoiceNumber(), 5) . ";" .// 61
-            $invoice->getCustomer()->getCard()->getCode() . ";" .// 130
-            $invoice->getCustomer()->getId() . ";" .// 78
+            $cardCode . ";" .// 130
+            $customer->getId() . ";" .// 78
             "CC001;" .// 241
             $invoice->getAmount() . ";"; // 140
 
