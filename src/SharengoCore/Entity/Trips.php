@@ -984,6 +984,22 @@ class Trips
     }
 
     /**
+     * @return boolean true if at least one tripPaymentTry has been created
+     * for this trip
+     */
+    public function isPaymentTried()
+    {
+        $isAttempted = false;
+        if(count($this->getTripPayments()) != 0) {
+            foreach ($this->getTripPayments() as $tripPayment) {
+                $isAttempted = $isAttempted ||
+                    count($tripPayment->getTripPaymentTries()) != 0;
+            }
+        }
+        return $isAttempted;
+    }
+
+    /**
      * Throws exception if:
      * - $endDate is not null and not of type \DateTime
      * - $endDate is prior to current timestampEnd of $trip
@@ -995,25 +1011,12 @@ class Trips
      */
     public function checkIfEditable($endDate)
     {
-        $isNotEnded = !$this->isEnded();
-        $hasBeenPayed = false;
-        $tripPayments = $this->getTripPayments();
-        if (!count($tripPayments)) {
-            foreach ($tripPayments as $tripPayment) {
-                if (!count($tripPayment->getTripPaymentTries())) {
-                    $hasBeenPayed = true;
-                }
-            }
-        }
-        if ($isNotEnded || $hasBeenPayed) {
+        if (!$this->isEnded() || $this->isPaymentTried()) {
             throw new EditTripDeniedException();
         }
-        $isDateValid = $endDate === null;
-        if (!$isDateValid) {
+        if ($endDate !== null) {
             if ($endDate instanceof \DateTime) {
-                if ($endDate >= $this->getTimestampBeginning()) {
-                    $isDateValid = true;
-                } else {
+                if ($endDate < $this->getTimestampBeginning()) {
                     throw new EditTripWrongDateException();
                 }
             } else {
