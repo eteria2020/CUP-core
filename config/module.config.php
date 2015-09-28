@@ -96,6 +96,18 @@ return [
                                 ]
                             ]
                         ],
+                        'fleets' => [
+                            'type' => 'Segment',
+                            'options' => [
+                                'route' => '/fleets[/:id]',
+                                'constraints' => array(
+                                    'id'     => '[0-9]+',
+                                ),
+                                'defaults' => [
+                                    'controller' => 'Fleets'
+                                ]
+                            ]
+                        ],
                     ],
                 ],
                 'pdf' => [
@@ -131,6 +143,7 @@ return [
             'SharengoCore\Controller\Reservations'     => 'SharengoCore\Controller\ReservationsControllerFactory',
             'SharengoCore\Controller\Trips'            => 'SharengoCore\Controller\TripsControllerFactory',
             'SharengoCore\Controller\PublicCars'       => 'SharengoCore\Controller\PublicCarsControllerFactory',
+            'SharengoCore\Controller\Fleets'           => 'SharengoCore\Controller\FleetsControllerFactory',
             'SharengoCore\Controller\Invoices' => 'SharengoCore\Controller\InvoicesControllerFactory',
             'SharengoCore\Controller\Pdf' => 'SharengoCore\Controller\PdfControllerFactory',
         ],
@@ -209,6 +222,7 @@ return [
                 array('controller' => 'SharengoCore\Controller\Pois', 'roles' => array()),
                 array('controller' => 'SharengoCore\Controller\Reservations', 'roles' => array('user', 'admin', 'callcenter')),
                 array('controller' => 'SharengoCore\Controller\Trips', 'roles' => array('admin', 'callcenter', 'user')),
+                array('controller' => 'SharengoCore\Controller\Fleets', 'roles' => array()),
                 array('controller' => 'SharengoCore\Controller\Invoices', 'roles' => array('user')),
                 array('controller' => 'SharengoCore\Controller\Pdf', 'roles' => ['user', 'admin']),
             ),

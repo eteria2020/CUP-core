@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * Countries
@@ -37,13 +38,54 @@ class Fleet
      */
     private $name;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="longitude", type="decimal", nullable=false)
+     */
+    private $longitude;
 
-    public function __construct($code, $name) {
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="latitude", type="decimal", nullable=false)
+     */
+    private $latitude;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="zoom_level", type="integer", nullable=false)
+     */
+    private $zoomLevel;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_default", type="boolean", nullable=true)
+     */
+    private $isDefault = false;
+
+
+    public function __construct($code, $name, $latitude, $longitude, $zoomLevel, $isDefault = false) {
         $this->code = $code;
         $this->name = $name;
+        $this->latitude = $latitude;
+        $this->longitude = $longitude;
+        $this->zoomLevel = $zoomLevel;
+        $this->isDefault = $isDefault;
     }
     
 
+    /**
+     * @param DoctrineHydrator
+     * @return mixed[]
+     */
+    public function toArray(DoctrineHydrator $hydrator)
+    {
+        return $hydrator->extract($this);
+    }
+    
     /**
      * Get id
      *
@@ -72,5 +114,45 @@ class Fleet
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Get latitude
+     *
+     * @return string
+     */
+    public function getLatitude()
+    {
+        return $this->latitude;
+    }
+
+    /**
+     * Get longitude
+     *
+     * @return string
+     */
+    public function getLongitude()
+    {
+        return $this->longitude;
+    }
+
+    /**
+     * Get zoomLevel
+     *
+     * @return integer
+     */
+    public function getZoomLevel()
+    {
+        return $this->zoomLevel;
+    }
+
+    /**
+     * Get isDefault
+     *
+     * @return bool
+     */
+    public function getIsDefault()
+    {
+        return $this->isDefault;
     }
 }

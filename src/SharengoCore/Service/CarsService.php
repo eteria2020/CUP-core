@@ -76,6 +76,10 @@ class CarsService
         return $this->fleetsRepository->findAll();
     }
 
+    public function getFleet($fleetId) {
+        return $this->fleetsRepository->find($fleetId);
+    }
+
     public function getTotalCars()
     {
         return $this->carsRepository->getTotalCars();

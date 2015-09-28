@@ -1071,7 +1071,11 @@ class Cars
      */
     public function toArray(DoctrineHydrator $hydrator)
     {
-        return $hydrator->extract($this);
+        $extractedCar = $hydrator->extract($this);
+
+        $extractedCar['fleet'] = $this->getFleet()->toArray($hydrator);
+
+        return $extractedCar;
     }
 
     /**
