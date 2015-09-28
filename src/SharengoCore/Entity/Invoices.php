@@ -7,6 +7,7 @@ use SharengoCore\Entity\Invoices;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\TripPayments;
+use SharengoCore\Utils\Interval;
 
 /**
  * Invoices
@@ -459,16 +460,9 @@ class Invoices
      */
     public function getTimePeriod()
     {
-        /*
-         * For invoices of type "FIRST_PAYMENT" the period is defined as:
-         * - "start" the date of the invoice
-         * - "end" the date of the invoice
-         */
-        if ($this->getType() == $this::TYPE_FIRST_PAYMENT || $this->getType() == $this::TYPE_PENALTY) {
-            return [
-                "start" => $this->getDateTimeDate(),
-                "end" => $this->getDateTimeDate()
-            ];
+
+
+
         /*
          * For invoices of type "TRIP" the period is defined as:
          * - "start" the date of the beginning of the trip for
@@ -476,7 +470,7 @@ class Invoices
          * - "end" the date of the end of the trip for
          *   the last tripPayment of the invoice
          */
-        } elseif ($this->getType() == "TRIP") {
+        if ($this->getType() == $this::TYPE_TRIP) {
             // Get the body with all the invoice rows
             $body = $this->getContent()['body']['contents']['body'];
             // Generate two starting dates to start comparing against
@@ -499,6 +493,17 @@ class Invoices
             return [
                 "start" => $startDate,
                 "end" => $endDate
+            ];
+            return new Interval($startDate, $endDate);
+        /*
+         * For invoices of type "FIRST_PAYMENT" the period is defined as:
+         * - "start" the date of the invoice
+         * - "end" the date of the invoice
+         */
+        } else {
+            return [
+                "start" => $this->getDateTimeDate(),
+                "end" => $this->getDateTimeDate()
             ];
         }
 
