@@ -14,6 +14,7 @@ class PaymentsServiceFactory implements FactoryInterface
         $cartasiContractService = $serviceLocator->get('Cartasi\Service\CartasiContracts');
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $emailService = $serviceLocator->get('SharengoCore\Service\EmailService');
+        $tripPaymentTriesService = $serviceLocator->get('SharengoCore\Service\TripPaymentTriesService');
         $eventManager = new EventManager();
         $eventManager->setIdentifiers(['PaymentsService']);
         $url = $serviceLocator->get('Configuration')['website']['uri'];
@@ -24,6 +25,7 @@ class PaymentsServiceFactory implements FactoryInterface
             $entityManager,
             $emailService,
             $eventManager,
+            $tripPaymentTriesService,
             $url
         );
     }

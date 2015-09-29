@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use Cartasi\Service\CartasiCustomerPayments;
 use Cartasi\Service\CartasiContractsService;
+use SharengoCore\Service\TripPaymentTriesService;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\TripPaymentTries;
@@ -39,6 +40,11 @@ class PaymentsService
     private $eventManager;
 
     /**
+     * @var TripPaymentTriesService
+     */
+    private $tripPaymentTriesService;
+
+    /**
      * @var string
      */
     private $url;
@@ -71,6 +77,7 @@ class PaymentsService
         EntityManager $entityManager,
         EmailService $emailService,
         EventManager $eventManager,
+        TripPaymentTriesService $tripPaymentTriesService,
         $url
     ) {
         $this->cartasiCustomerPayments = $cartasiCustomerPayments;
@@ -78,6 +85,7 @@ class PaymentsService
         $this->entityManager = $entityManager;
         $this->emailService = $emailService;
         $this->eventManager = $eventManager;
+        $this->tripPaymentTriesService = $tripPaymentTriesService;
         $this->url = $url;
     }
 
@@ -190,7 +198,7 @@ class PaymentsService
                 $this->unpayableConsequences($customer, $tripPayment, $avoidDisableUser);
             }
 
-            $tripPaymentTry = new TripPaymentTries(
+            $tripPaymentTry = $this->tripPaymentTriesService->generateTripPaymentTry(
                 $tripPayment,
                 $response->getOutcome(),
                 $response->getTransaction()

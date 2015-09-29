@@ -4,6 +4,7 @@ namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+use SharengoCore\Exception\AlreadySetFirstPaymentTryTsException;
 
 /**
  * TripPayments
@@ -120,12 +121,26 @@ class TripPayments
     private $invoicedAt;
 
     /**
-     * @var DateTime date from the 7 days to disabling the user are counted
-     * usually equal to createdAt, but not in some cases
+     * Date from the 7 days to disabling the user are usually
+     * counted equal to createdAt, but not in some cases
+     *
+     * @var DateTime
      *
      * @ORM\Column(name="to_be_payed_from", type="datetime", nullable=false)
      */
     private $toBePayedFrom;
+
+    /**
+     * Holds the timestamp of the first tripPaymentTries associated with this
+     * tripPayments. If a user's credit card is removed and the tripPayments's
+     * status is set to to_be_payed, this value shall be set to NULL untill a
+     * new tripPaymentTries is created
+     *
+     * @var DateTime
+     *
+     * @ORM\Column(name="first_payment_try_ts", type="datetime", nullable=true)
+     */
+    private $firstPaymentTryTs;
 
     /**
      * @var TripPaymentTries[]
@@ -463,5 +478,39 @@ class TripPayments
     public function getToBePayedFrom()
     {
         return $this->toBePayedFrom;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getFirstPaymentTryTs()
+    {
+        return $this->firstPaymentTryTs;
+    }
+
+    /**
+     * Sets the value of firstPaymentTryTs. If the value of firstPaymentTryTs
+     * is already set, throws exception AlreadySetFirstPaymentTryTsException.
+     * To prevent this, use method isFirstPaymentTryTsSet()
+     *
+     * @param DateTime $firstPaymentTryTs
+     * @return TripPayments
+     * @throws AlreadySetFirstPaymentTryTsException
+     */
+    public function setFirstPaymentTryTs($firstPaymentTryTs)
+    {
+        if ($this->isFirstPaymentTryTsSet()) {
+            throw new AlreadySetFirstPaymentTryTsException();
+        }
+        $this->firstPaymentTryTs = $firstPaymentTryTs;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isFirstPaymentTryTsSet()
+    {
+        return $this->firstPaymentTryTs !== null;
     }
 }

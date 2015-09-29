@@ -97,7 +97,7 @@ class TripPaymentsService
             $customer = $payment->getTrip()->getCustomer();
             return [
                 'e' => [
-                    'createdAt' => $payment->getCreatedAt()->format('Y-m-d H:i:s'),
+                    'firstPaymentTryTs' => $payment->getFirstPaymentTryTs()->format('Y-m-d H:i:s'),
                     'trip' => $payment->getTrip()->getId(),
                     'tripMinutes' => $payment->getTripMinutes(),
                     'parkingMinutes' => $payment->getParkingMinutes(),
