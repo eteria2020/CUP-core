@@ -388,6 +388,18 @@ class Invoices
         return $this->type;
     }
 
+    public function getTypeItalianTranslation() {
+        switch ($this->getType()) {
+            case 'FIRST_PAYMENT':
+                return 'Iscrizione';
+            case 'TRIP':
+                return 'Corse';
+            case 'PENALTY':
+                return 'Sanzione';
+        }
+        return '';
+    }
+
     /**
      * @return integer
      */

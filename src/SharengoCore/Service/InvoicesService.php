@@ -384,7 +384,7 @@ class InvoicesService
             ["RIG"], // 3
             $partionRecord1,
             ["40"],// 660
-            ["CORSA"], // 681
+            [strtoupper($invoice->getTypeItalianTranslation())], // 681
             $partionRecord2
         );
 
