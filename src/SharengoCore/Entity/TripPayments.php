@@ -138,7 +138,7 @@ class TripPayments
      *
      * @var DateTime
      *
-     * @ORM\Column(name="first_payment_try_ts", type="datetime")
+     * @ORM\Column(name="first_payment_try_ts", type="datetime", nullable=true)
      */
     private $firstPaymentTryTs;
 
@@ -478,9 +478,8 @@ class TripPayments
 
     /**
      * Sets the value of firstPaymentTryTs. If the value of firstPaymentTryTs
-     * is already set, throws exception.
-     * To set the value of firstPaymentTryTs to null, call function
-     * TripPayments::clearFirstPaymentTryTs()
+     * is already set, throws exception AlreadySetFirstPaymentTryTsException.
+     * To prevent this, use method isFirstPaymentTryTsSet()
      *
      * @param DateTime $firstPaymentTryTs
      * @return TripPayments
@@ -488,7 +487,7 @@ class TripPayments
      */
     public function setFirstPaymentTryTs($firstPaymentTryTs)
     {
-        if ($this->firstPaymentTryTs !== null) {
+        if ($this->isFirstPaymentTryTsSet()) {
             throw new AlreadySetFirstPaymentTryTsException();
         }
         $this->firstPaymentTryTs = $firstPaymentTryTs;
@@ -496,13 +495,10 @@ class TripPayments
     }
 
     /**
-     * Sets the value of firstPaymentTryTs to null
-     *
-     * @return [type] [description]
+     * @return boolean
      */
-    public function clearFirstPaymentTryTs()
+    public function isFirstPaymentTryTsSet()
     {
-        $this->firstPaymentTryTs = null;
-        return $this;
+        return $this->firstPaymentTryTs !== null;
     }
 }
