@@ -28,7 +28,7 @@ class SetCustomerWrongPaymentsAsToBePayed extends Command
         return 'UPDATE \SharengoCore\Entity\TripPayments tp '.
             'SET tp.status = :status, '.
             'tp.toBePayedFrom = :date, '.
-            'tp.firstPaymentTryTs = NULL'.
+            'tp.firstPaymentTryTs IS NULL '.
             'WHERE tp.trip IN ('.
             'SELECT t FROM \SharengoCore\Entity\Trips t WHERE t.customer = :customer) '.
             'AND tp.status = :actualStatus';
