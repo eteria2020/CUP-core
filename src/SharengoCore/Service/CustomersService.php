@@ -558,35 +558,37 @@ class CustomersService implements ValidatorServiceInterface
          * The first value in the comments for each row is the code number
          * The second value is the maximum length of that element
          */
-        return
-            "GEN;" . // 10 - max 3
-            $customer->getId() . ";" . // 41 - max 25
-            $cardCode . ";" . //50 - max 15
-            $vat . ";" . // 60 - max 25
-            ($vat != null ? 1 : 0) . ";" . // 61 - max 1
-            ($vat != null ? 0 : 1) . ";" . // 358 - max 1
-            str_replace(";", " ", $customer->getTaxCode()) . ";" . // 70 - max 25
-            ($vat != null ? 2 : 3) . ";" . // 80 - max 1
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getSurname()), 30) . ";" . // 90 - max 30
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getName()), 30) . ";" . // 95 - max 30
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getAddress()), 35) . ";" . // 100 - max 35
-            ";" . // 105 - max 35
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getPhone()), 20) . ";" . // 160 - max 20
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getMobile()), 20) . ";" . // 170 - max 20
-            str_replace(";", " ", $customer->getZipCode()) . ";" . // 110 - max 7
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getTown()), 25) . ";" . // 120 - max 25
-            $customer->getProvince() . ";" . // 130 - max 2
-            str_replace(";", " ", $customer->getCountry()) . ";" . // 140 - max 3
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getSurname()), 25) . ";" . // 230 - max 25
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getName()), 20) . ";" . // 231 - max 20
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getBirthTown()), 25) . ";" . // 232 - max 25
-            $customer->getBirthProvince() . ";" . // 233 - max 2
-            $customer->getBirthDate()->format("d/m/Y") . ";" . // 234 - max 10
-            ($customer->getGender() == 'male' ? 'M' : 'F') . ";" . // 235 - max 1
-            $customer->getBirthCountry() . ";" . // 236 - max 3
-            "C01;" . // 240 - max 6
-            "200;" . // 330 - max 6
-            "CC001"; // 581 - max 25
+        $registry = [
+            "GEN", // 10 - max 3
+            $customer->getId(), // 41 - max 25
+            $cardCode, //50 - max 15
+            $vat, // 60 - max 25
+            empty($vat) ? 0 : 1, // 61 - max 1
+            empty($vat) ? 1 : 0, // 358 - max 1
+            str_replace(";", " ", $customer->getTaxCode()), // 70 - max 25
+            empty($vat) ? 3 : 2, // 80 - max 1
+            $this->truncateIfLonger(str_replace(";", " ", $customer->getSurname()), 30), // 90 - max 30
+            $this->truncateIfLonger(str_replace(";", " ", $customer->getName()), 30), // 95 - max 30
+            $this->truncateIfLonger(str_replace(";", " ", $customer->getAddress()), 35), // 100 - max 35
+            "", // 105 - max 35
+            $this->truncateIfLonger(str_replace(";", " ", $customer->getPhone()), 20), // 160 - max 20
+            $this->truncateIfLonger(str_replace(";", " ", $customer->getMobile()), 20), // 170 - max 20
+            str_replace(";", " ", $customer->getZipCode()), // 110 - max 7
+            $this->truncateIfLonger(str_replace(";", " ", $customer->getTown()), 25), // 120 - max 25
+            $customer->getProvince(), // 130 - max 2
+            str_replace(";", " ", $customer->getCountry()), // 140 - max 3
+            $this->truncateIfLonger(str_replace(";", " ", $customer->getSurname()), 25), // 230 - max 25
+            $this->truncateIfLonger(str_replace(";", " ", $customer->getName()), 20), // 231 - max 20
+            $this->truncateIfLonger(str_replace(";", " ", $customer->getBirthTown()), 25), // 232 - max 25
+            $customer->getBirthProvince(), // 233 - max 2
+            $customer->getBirthDate()->format("d/m/Y"), // 234 - max 10
+            $customer->getGender() == 'male' ? 'M' : 'F', // 235 - max 1
+            $customer->getBirthCountry(), // 236 - max 3
+            "C01", // 240 - max 6
+            "200", // 330 - max 6
+            "CC001" // 581 - max 25
+        ];
+        return implode(";", $registry);
     }
 
     /**
@@ -598,11 +600,9 @@ class CustomersService implements ValidatorServiceInterface
      */
     private function truncateIfLonger($string, $length)
     {
-        // Comparison "== null" instead of "=== null" is voluntary
-        if ($string == null) {
+        if (empty($string)) {
             return '';
         }
-        preg_match('/^.{0,' . $length. '}(?:.*?)\b/iu', $string, $matches);
-        return $matches[0];
+        return substr($string, 0, $length);
     }
 }

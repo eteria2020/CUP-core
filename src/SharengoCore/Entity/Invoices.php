@@ -113,7 +113,7 @@ class Invoices
     private function __construct(Customers $customer, $version, $type, $date, $amounts)
     {
         $this->generatedTs = date_create(date('Y-m-d H:i:s'));
-        $invoice->setCustomer($customer)
+        $this->setCustomer($customer)
             ->setVersion($version)
             ->setType($type)
             ->setInvoiceDate($date)
@@ -121,7 +121,7 @@ class Invoices
             ->setIva($amounts['iva']);
 
         $content = [
-            'invoice_date' => $invoice->getInvoiceDate(),
+            'invoice_date' => $this->getInvoiceDate(),
             'amounts' => $amounts['sum'],
             'iva' => $amounts['iva'],
             'customer' => [
@@ -140,24 +140,9 @@ class Invoices
             'template_version' => $version
         ];
 
+        $this->setContent($content);
+
         return $this;
-    }
-
-    /**
-     * @param DoctrineHydrator
-     * @return mixed[]
-     */
-    public function toArray(DoctrineHydrator $hydrator)
-    {
-        $customer = $this->getCustomer();
-        if ($customer != null) {
-            $customer = $customer->toArray($hydrator);
-        }
-
-        $extractedInvoice = $hydrator->extract($this);
-        $extractedInvoice['customer'] = $customer;
-
-        return $extractedInvoice;
     }
 
     /**
@@ -191,8 +176,8 @@ class Invoices
                 ],
                 'body' => [
                     [
-                        'Pagamento iscrizione al servizio',
-                        $amounts['sum']['total'] . ' €'
+                        ['Pagamento iscrizione al servizio'],
+                        [$amounts['sum']['total'] . ' €']
                     ]
                 ],
                 'body-format' => [
@@ -332,6 +317,23 @@ class Invoices
     }
 
     /**
+     * @param DoctrineHydrator
+     * @return mixed[]
+     */
+    public function toArray(DoctrineHydrator $hydrator)
+    {
+        $customer = $this->getCustomer();
+        if ($customer != null) {
+            $customer = $customer->toArray($hydrator);
+        }
+
+        $extractedInvoice = $hydrator->extract($this);
+        $extractedInvoice['customer'] = $customer;
+
+        return $extractedInvoice;
+    }
+
+    /**
      * @return int
      */
     public function getId()
@@ -348,6 +350,16 @@ class Invoices
     }
 
     /**
+     * @param Customers $customer
+     * @return Invoices
+     */
+    public function setCustomer(Customers $customer)
+    {
+        $this->customer = $customer;
+        return $this;
+    }
+
+    /**
      * @return \DateTime
      */
     public function getGeneratedTs()
@@ -361,6 +373,16 @@ class Invoices
     public function getContent()
     {
         return $this->content;
+    }
+
+    /**
+     * @param mixed[] $content
+     * @return Invoices
+     */
+    public function setContent($content)
+    {
+        $this->content = $content;
+        return $this;
     }
 
     /**
@@ -383,11 +405,30 @@ class Invoices
     }
 
     /**
+     * @param integer $version
+     * @return Invoices
+     */
+    public function setVersion($version)
+    {
+        $this->version = $version;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+        return $this;
     }
 
     /**
@@ -399,6 +440,16 @@ class Invoices
     }
 
     /**
+     * @param integer $invoiceDate
+     * @return Invoices
+     */
+    public function setInvoiceDate($invoiceDate)
+    {
+        $this->invoiceDate = $invoiceDate;
+        return $this;
+    }
+
+    /**
      * @return integer
      */
     public function getAmount()
@@ -407,21 +458,20 @@ class Invoices
     }
 
     /**
+     * @param integer $amount
+     */
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getInvoiceNumber()
     {
         return $this->invoiceNumber;
-    }
-
-    /**
-     * @var string $invoiceNumber
-     * @return Invoices
-     */
-    public function setInvoiceNumber($invoiceNumber)
-    {
-        $this->invoiceNumber = $invoiceNumber;
-        return $this;
     }
 
     /**
@@ -456,13 +506,10 @@ class Invoices
     /**
      * Returns an array with two keys, "start" and "end"
      * These values represent the period that concearns the invoice
-     * @return \DateTime[]
+     * @return Interval
      */
-    public function getTimePeriod()
+    public function getInterval()
     {
-
-
-
         /*
          * For invoices of type "TRIP" the period is defined as:
          * - "start" the date of the beginning of the trip for
@@ -489,24 +536,16 @@ class Invoices
                     $endDate = $end;
                 }
             }
-
-            return [
-                "start" => $startDate,
-                "end" => $endDate
-            ];
             return new Interval($startDate, $endDate);
+
         /*
-         * For invoices of type "FIRST_PAYMENT" the period is defined as:
+         * For invoices of type "FIRST_PAYMENT" and "PENALTY",
+         * the period is defined as:
          * - "start" the date of the invoice
          * - "end" the date of the invoice
          */
         } else {
-            return [
-                "start" => $this->getDateTimeDate(),
-                "end" => $this->getDateTimeDate()
-            ];
+            return new Interval($this->getDateTimeDate(), $this->getDateTimeDate());
         }
-
-        return [];
     }
 }

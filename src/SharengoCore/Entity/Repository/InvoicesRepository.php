@@ -84,7 +84,7 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $dql = "SELECT i
+        $dql = "SELECT i, c
         FROM \SharengoCore\Entity\Invoices i
         LEFT JOIN i.customer c
         ORDER BY i.id ASC";

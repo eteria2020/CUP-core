@@ -6,6 +6,7 @@ use SharengoCore\Entity\Repository\InvoicesRepository;
 use SharengoCore\Entity\Invoices;
 use SharengoCore\Service\DatatableService;
 use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\Cards;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 
 use Doctrine\ORM\EntityManager;
@@ -339,9 +340,7 @@ class InvoicesService
     public function getExportDataForInvoice($invoice)
     {
         // get the dates depending on the type of invoice
-        $period = $invoice->getTimePeriod();
-        $startDate = $period['start']->format("d/m/Y");
-        $endDate = $period['end']->format("d/m/Y");
+        $period = $invoice->getInterval();
 
         $customer = $invoice->getCustomer();
         $cardCode = $customer->getCard() instanceOf Cards ?
@@ -349,39 +348,47 @@ class InvoicesService
             '';
 
         // generate the first common part between the two records
-        $partionRecord1 = "110;" .// 11
-            $invoice->getDateTimeDate()->format("d/m/Y") . ";" .// 10
-            substr($invoice->getInvoiceNumber(), 5) . ";" .// 20
-            "TC;" .// 30
-            $invoice->getDateTimeDate()->format("d/m/Y") . ";" .// 50
-            substr($invoice->getInvoiceNumber(), 5) . ";" .// 61
-            $cardCode . ";" .// 130
-            $customer->getId() . ";" .// 78
-            "CC001;" .// 241
-            $invoice->getAmount() . ";"; // 140
+        $partionRecord1 = [
+            "110",// 11
+            $invoice->getDateTimeDate()->format("d/m/Y"), // 10
+            substr($invoice->getInvoiceNumber(), 5), // 20
+            "TC",// 30
+            $invoice->getDateTimeDate()->format("d/m/Y"), // 50
+            substr($invoice->getInvoiceNumber(), 5), // 61
+            $cardCode, // 130
+            $customer->getId(), // 78
+            "CC001", // 241
+            $invoice->getAmount(), // 140
+        ];
 
         // generate the second common part between the two records
-        $partionRecord2 = $invoice->getAmount() . ";" .// 930
-            $invoice->getIva() . ";" .// 1001
-            $startDate . ";" .// 1020
-            $endDate . ";" .// 1030
-            "FR";// 99999
+        $partionRecord2 = [
+            $invoice->getAmount(), // 930
+            $invoice->getIva(), // 1001
+            $period->start()->format("d/m/Y"), // 1020
+            $period->end()->format("d/m/Y"), // 1030
+            "FR" // 99999
+        ];
 
         // generate the first record
-        $record1 = "TES;" . // 3
-            $partionRecord1 .
-            ";" .// 660
-            ";" .// 681
-            $partionRecord2;
+        $record1 = array_merge(
+            ["TES"], // 3
+            $partionRecord1,
+            [""], // 660
+            [""], // 681
+            $partionRecord2
+        );
 
         // generate the second record
-        $record2 = "RIG;" . // 3
-            $partionRecord1 .
-            "40;" .// 660
-            "CORSA;" .// 681
-            $partionRecord2;
+        $record2 = array_merge(
+            ["RIG"], // 3
+            $partionRecord1,
+            ["40"],// 660
+            ["CORSA"], // 681
+            $partionRecord2
+        );
 
         // return the two records combined
-        return $record1 . "\r\n" . $record2;
+        return implode(";", $record1) . "\r\n" . implode(";", $record2);
     }
 }
