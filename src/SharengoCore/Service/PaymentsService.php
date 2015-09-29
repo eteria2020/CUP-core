@@ -200,8 +200,8 @@ class PaymentsService
 
             $tripPaymentTry = $this->tripPaymentTriesService->generateTripPaymentTry(
                 $tripPayment,
-                $response->getTransaction(),
-                $response->getOutcome()
+                $response->getOutcome(),
+                $response->getTransaction()
             );
 
             $this->entityManager->persist($tripPaymentTry);

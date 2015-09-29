@@ -47,7 +47,7 @@ class TripPaymentTriesService
         if ($tripPaymentTry !== null) {
             $tripPaymentTry->setOutcome($outcome);
         } else {
-            $tripPaymentTry = $this->generateTripPaymentTry($tripPayment, $transaction, $outcome);
+            $tripPaymentTry = $this->generateTripPaymentTry($tripPayment, $outcome, $transaction);
         }
 
         $this->entityManager->persist($tripPaymentTry);
@@ -56,11 +56,11 @@ class TripPaymentTriesService
 
     /**
      * @param TripPayments $tripPayment
-     * @param Transactions $transaction
      * @param string $outcome
+     * @param Transactions|null $transaction
      * @return TripPaymentTries
      */
-    public function generateTripPaymentTry(TripPayments $tripPayment, Transactions $transaction, $outcome)
+    public function generateTripPaymentTry(TripPayments $tripPayment, $outcome, Transactions $transaction = null)
     {
         $tripPaymentTry = new TripPaymentTries($tripPayment, $outcome, $transaction);
         if (!$tripPayment->isFirstPaymentTryTsSet()) {
