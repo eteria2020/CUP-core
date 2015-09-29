@@ -223,7 +223,7 @@ class Invoices
             $trip = $tripPayment->getTrip();
             /**
              * Changing the order, structure or content of the following
-             * may interfere with $this->getTimePeriod() function!
+             * may interfere with $this->getInterval() function!
              * Test by running "export registries -d -c" from console
              */
             array_push($body, [
@@ -504,14 +504,12 @@ class Invoices
     }
 
     /**
-     * Returns an array with two keys, "start" and "end"
-     * These values represent the period that concearns the invoice
      * @return Interval
      */
     public function getInterval()
     {
         /*
-         * For invoices of type "TRIP" the period is defined as:
+         * For invoices of type "TRIP" the interval is defined as:
          * - "start" the date of the beginning of the trip for
          *   the first tripPayment of the invoice
          * - "end" the date of the end of the trip for
@@ -540,7 +538,7 @@ class Invoices
 
         /*
          * For invoices of type "FIRST_PAYMENT" and "PENALTY",
-         * the period is defined as:
+         * the interval is defined as:
          * - "start" the date of the invoice
          * - "end" the date of the invoice
          */
