@@ -113,14 +113,14 @@ class Invoices
     private function __construct(Customers $customer, $version, $type, $date, $amounts)
     {
         $this->generatedTs = date_create(date('Y-m-d H:i:s'));
-        $this->setCustomer($customer)
-            ->setVersion($version)
-            ->setType($type)
-            ->setInvoiceDate($date)
-            ->setAmount($amounts['sum']['grand_total_cents'])
-            ->setIva($amounts['iva']);
+        $this->$customer = $customer;
+        $this->$version = $version;
+        $this->$type = $type;
+        $this->$invoiceDate = $date;
+        $this->amount = $amounts['sum']['grand_total_cents'];
+        $this->iva = $amounts['iva'];
 
-        $content = [
+        $this->content = [
             'invoice_date' => $this->getInvoiceDate(),
             'amounts' => $amounts['sum'],
             'iva' => $amounts['iva'],
@@ -139,8 +139,6 @@ class Invoices
             'type' => $type,
             'template_version' => $version
         ];
-
-        $this->setContent($content);
 
         return $this;
     }
@@ -238,7 +236,7 @@ class Invoices
             ]);
         }
 
-        $body = [
+        $invoice->setContentBody([
             'greeting_message' => '',
             'contents' => [
                 'header' => [
@@ -261,9 +259,7 @@ class Invoices
                     ]
                 ]
             ]
-        ];
-
-        $invoice->setContentBody($body);
+        ]);
 
         return $invoice;
     }
@@ -350,16 +346,6 @@ class Invoices
     }
 
     /**
-     * @param Customers $customer
-     * @return Invoices
-     */
-    public function setCustomer(Customers $customer)
-    {
-        $this->customer = $customer;
-        return $this;
-    }
-
-    /**
      * @return \DateTime
      */
     public function getGeneratedTs()
@@ -373,16 +359,6 @@ class Invoices
     public function getContent()
     {
         return $this->content;
-    }
-
-    /**
-     * @param mixed[] $content
-     * @return Invoices
-     */
-    public function setContent($content)
-    {
-        $this->content = $content;
-        return $this;
     }
 
     /**
@@ -405,30 +381,11 @@ class Invoices
     }
 
     /**
-     * @param integer $version
-     * @return Invoices
-     */
-    public function setVersion($version)
-    {
-        $this->version = $version;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getType()
     {
         return $this->type;
-    }
-
-    /**
-     * @param string $type
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-        return $this;
     }
 
     /**
@@ -440,30 +397,11 @@ class Invoices
     }
 
     /**
-     * @param integer $invoiceDate
-     * @return Invoices
-     */
-    public function setInvoiceDate($invoiceDate)
-    {
-        $this->invoiceDate = $invoiceDate;
-        return $this;
-    }
-
-    /**
      * @return integer
      */
     public function getAmount()
     {
         return $this->amount;
-    }
-
-    /**
-     * @param integer $amount
-     */
-    public function setAmount($amount)
-    {
-        $this->amount = $amount;
-        return $this;
     }
 
     /**
@@ -480,17 +418,6 @@ class Invoices
     public function getIva()
     {
         return $this->iva;
-    }
-
-    /**
-     * @param integer $iva
-     * @return Invoices
-     */
-    public function setIva($iva)
-    {
-        $this->iva = $iva;
-
-        return $this;
     }
 
     /**
