@@ -96,10 +96,10 @@ class InvoicesService
     /**
      * @return array[Invoices[]]
      */
-    public function getInvoicesForExport()
+    public function getInvoicesGroupedByDate()
     {
         return $this->groupByInvoiceDate(
-            $this->invoicesRepository->findInvoicesForExport()
+            $this->invoicesRepository->findInvoicesWithCustomerOrdered()
         );
     }
 

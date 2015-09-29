@@ -80,7 +80,11 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
         return $query->getSingleScalarResult();
     }
 
-    public function findInvoicesForExport()
+    /**
+     * This method could be substituted by a findBy([], ["id" => "ASC"])
+     * but by making the LEFT JOIN with Customers it improves speed noticeably
+     */
+    public function findInvoicesWithCustomerOrdered()
     {
         $em = $this->getEntityManager();
 
