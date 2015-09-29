@@ -113,10 +113,10 @@ class Invoices
     private function __construct(Customers $customer, $version, $type, $date, $amounts)
     {
         $this->generatedTs = date_create(date('Y-m-d H:i:s'));
-        $this->$customer = $customer;
-        $this->$version = $version;
-        $this->$type = $type;
-        $this->$invoiceDate = $date;
+        $this->customer = $customer;
+        $this->version = $version;
+        $this->type = $type;
+        $this->invoiceDate = $date;
         $this->amount = $amounts['sum']['grand_total_cents'];
         $this->iva = $amounts['iva'];
 
