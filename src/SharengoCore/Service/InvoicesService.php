@@ -96,7 +96,7 @@ class InvoicesService
     /**
      * @return Invoices[]
      */
-    public function getInvoicesGroupedByDate()
+    public function getInvoicesWithCustomer()
     {
         return $this->invoicesRepository->findInvoicesWithCustomerOrdered();
     }
