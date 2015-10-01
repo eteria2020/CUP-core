@@ -75,7 +75,7 @@ class Fleet
         $this->zoomLevel = $zoomLevel;
         $this->isDefault = $isDefault;
     }
-    
+
 
     /**
      * @param DoctrineHydrator
@@ -85,7 +85,7 @@ class Fleet
     {
         return $hydrator->extract($this);
     }
-    
+
     /**
      * Get id
      *

@@ -7,6 +7,7 @@ use SharengoCore\Entity\Invoices;
 use SharengoCore\Service\DatatableService;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Cards;
+use SharengoCore\Entity\Fleet;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 
 use Doctrine\ORM\EntityManager;
@@ -390,5 +391,22 @@ class InvoicesService
 
         // return the two records combined
         return implode(";", $record1) . "\r\n" . implode(";", $record2);
+    }
+
+    public function getLatestInvoiceNumberForFleet(Fleet $fleet)
+    {
+        return $this->invoicesRepository->findLatestInvoiceNumberForFleet($fleet);
+    }
+
+    public function generateNewInvoiceNumber(Fleet $fleet)
+    {
+        // lock
+
+        // get latest invoice number based on fleet - TODO add field in invoices
+        // check if year has changed
+
+        // generate new one
+
+        // return number
     }
 }
