@@ -94,20 +94,28 @@ class InvoicesService
     }
 
     /**
-     * @return array[Invoices[]]
+     * @return Invoices[]
      */
     public function getInvoicesGroupedByDate()
     {
-        return $this->groupByInvoiceDate(
-            $this->invoicesRepository->findInvoicesWithCustomerOrdered()
-        );
+        return $this->invoicesRepository->findInvoicesWithCustomerOrdered();
+    }
+
+    /**
+     * @param \DateTime $date
+     * @return Invoices[]
+     */
+    public function getInvoicesByDate(\DateTime $date)
+    {
+        $date = $date->format('Ymd');
+        return $this->invoicesRepository->findByInvoiceDate($date);
     }
 
     /**
      * @param Invoices[] $invoices
      * @return array[Invoices[]]
      */
-    private function groupByInvoiceDate($invoices)
+    public function groupByInvoiceDate($invoices)
     {
         $groupedInvoices = [];
         foreach ($invoices as $invoice) {
