@@ -97,4 +97,9 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+
+    public function findLatestInvoiceNumberForFleet($fleet)
+    {
+
+    }
 }
