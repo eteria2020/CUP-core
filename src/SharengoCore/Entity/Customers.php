@@ -381,7 +381,7 @@ class Customers
     /**
      * @var Fleet
      *
-     * @ORM\OneToOne(targetEntity="Fleet")
+     * @ORM\ManyToOne(targetEntity="Fleet")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="fleet_id", referencedColumnName="id", nullable=false)
      * })
@@ -411,6 +411,7 @@ class Customers
         if ($card !== null) {
             $card = $card->toArray($hydrator);
         }
+
         $extractedCustomer = $hydrator->extract($this);
         $extractedCustomer['card'] = $card;
 
@@ -1628,6 +1629,21 @@ class Customers
     public function setPaymentAble($paymentAble)
     {
         $this->paymentAble = $paymentAble;
+
+        return $this;
+    }
+
+    /**
+     * @return Fleet
+     */
+    public function getFleet()
+    {
+        return $this->fleet;
+    }
+
+    public function setFleet($fleet)
+    {
+        $this->fleet = $fleet;
 
         return $this;
     }
