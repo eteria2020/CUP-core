@@ -100,9 +100,18 @@ class Invoices
      */
     private $iva;
 
-
+    /**
+     * @var \SharengoCore\Entity\Fleet
+     *
+     * @ORM\ManyToOne(targetEntity="SharengoCore\Entity\Fleet")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="fleet_id", referencedColumnName="id")
+     * })
+     */
+    private $fleet;
 
     /**
+     * @param string $invoiceNumber
      * @param Customers $customer
      * @param integer $version
      * @param string $type
@@ -110,8 +119,15 @@ class Invoices
      * @param array $amounts needed fields grand_total_cents, grand_total, total, iva
      * @return Invoices
      */
-    private function __construct(Customers $customer, $version, $type, $date, $amounts)
-    {
+    private function __construct(
+        $invoiceNumber,
+        Customers $customer,
+        $version,
+        $type,
+        $date,
+        $amounts
+    ) {
+        $this->invoiceNumber = $invoiceNumber;
         $this->generatedTs = date_create(date('Y-m-d H:i:s'));
         $this->customer = $customer;
         $this->version = $version;
@@ -144,17 +160,20 @@ class Invoices
     }
 
     /**
+     * @param string $invoiceNumber
      * @param Customers $customer
      * @param integer $version
      * @param mixed $amounts
      * @return Invoice
      */
     public static function createInvoiceForFirstPayment(
+        $invoiceNumber,
         Customers $customer,
         $version,
         $amounts
     ) {
         $invoice = new Invoices(
+            $invoiceNumber,
             $customer,
             $version,
             self::TYPE_FIRST_PAYMENT,
@@ -195,6 +214,7 @@ class Invoices
      *
      * It's supposed all of them have been payed on the same day
      *
+     * @param string $invoiceNumber
      * @param Customers $customer
      * @param TripPayments[] $tripPayments
      * @param integer $version
@@ -202,12 +222,14 @@ class Invoices
      * @return Invoices
      */
     public static function createInvoiceForTrips(
+        $invoiceNumber,
         Customers $customer,
         $tripPayments,
         $version,
         $amounts
     ) {
         $invoice = new Invoices(
+            $invoiceNumber,
             $customer,
             $version,
             self::TYPE_TRIP,
@@ -265,18 +287,21 @@ class Invoices
     }
 
     /**
+     * @param string $invoiceNumber
      * @param Customers $customer
      * @param int $version template version
      * @param string $reason
      * @param array $amounts with fields grand_total_cents, grand_total, total, iva
      */
     public function createInvoiceForExtraOrPenalty(
+        $invoiceNumber,
         Customers $customer,
         $version,
         $reason,
         $amounts
     ) {
         $invoice = new Invoices(
+            $invoiceNumber,
             $customer,
             $version,
             self::TYPE_PENALTY,

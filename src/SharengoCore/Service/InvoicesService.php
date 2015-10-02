@@ -140,6 +140,7 @@ class InvoicesService
             "iva" => $this->ivaPercentage
         ];
         return Invoices::createInvoiceForFirstPayment(
+            $this->generateNewInvoiceNumber($customer->getFleet()),
             $customer,
             $this->templateVersion,
             $amounts
@@ -203,6 +204,7 @@ class InvoicesService
 
         // create invoice
         return Invoices::createInvoiceForTrips(
+            $this->generateNewInvoiceNumber($customer->getFleet()),
             $customer,
             $tripPayments,
             $this->templateVersion,
@@ -338,6 +340,7 @@ class InvoicesService
         ];
 
         return Invoices::createInvoiceForExtraOrPenalty(
+            $this->generateNewInvoiceNumber($customer->getFleet()),
             $customer,
             $this->templateVersion,
             $reason,
@@ -404,20 +407,31 @@ class InvoicesService
         return implode(";", $record1) . "\r\n" . implode(";", $record2);
     }
 
-    public function getLatestInvoiceNumberForFleet(Fleet $fleet)
-    {
-        return $this->invoicesRepository->findLatestInvoiceNumberForFleet($fleet);
-    }
-
+    /**
+     * @param Fleet $fleet
+     * @return string
+     */
     public function generateNewInvoiceNumber(Fleet $fleet)
     {
-        // lock
+        $invoice = $this->getLatestInvoiceForFleet($fleet);
 
-        // get latest invoice number based on fleet - TODO add field in invoices
-        // check if year has changed
+        $year = $invoice->getDateTimeDate()->format('Y');
+        $number = (intval(str_replace('/', '', $invoice->getInvoiceNumber())) % 100000000) + 1;
+        if (date_create()->format('Y') !== $year) {
+            $year = date_create()->format('Y');
+            $number = 1;
+        }
+        $nextNumber = $year . '/' . $fleet->getIntCode() . sprintf("%8d", $number);
 
-        // generate new one
+        return $nextNumber;
+    }
 
-        // return number
+    /**
+     * @param Fleet $fleet
+     * @return Invoices
+     */
+    private function getLatestInvoiceForFleet(Fleet $fleet)
+    {
+        return $this->invoicesRepository->findLatestInvoiceForFleet($fleet);
     }
 }

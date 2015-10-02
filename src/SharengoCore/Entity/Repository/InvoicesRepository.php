@@ -98,8 +98,19 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
-    public function findLatestInvoiceNumberForFleet($fleet)
+    public function findLatestInvoiceForFleet($fleet)
     {
+        $em = $this->getEntityManager();
 
+        $dql = "SELECT i
+        FROM \SharengoCore\Entity\Invoices i
+        WHERE i.fleet = :fleet
+        ORDER BY i.id DESC
+        LIMIT 1";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('fleet', $fleet);
+
+        return $query->getResult();
     }
 }
