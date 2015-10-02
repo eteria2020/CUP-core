@@ -379,6 +379,16 @@ class Customers
     private $paymentAble = true;
 
     /**
+     * @var Fleet
+     *
+     * @ORM\OneToOne(targetEntity="Fleet")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="fleet_id", referencedColumnName="id", nullable=false)
+     * })
+     */
+    private $fleet;
+
+    /**
      * Bidirectional - One-To-Many (INVERSE SIDE)
      *
      * @ORM\OneToMany(targetEntity="Trips", mappedBy="customer")
