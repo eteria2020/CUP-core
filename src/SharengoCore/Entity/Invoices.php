@@ -105,7 +105,7 @@ class Invoices
      *
      * @ORM\ManyToOne(targetEntity="SharengoCore\Entity\Fleet")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="fleet_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="fleet_id", referencedColumnName="id", nullable=false)
      * })
      */
     private $fleet;
@@ -135,6 +135,7 @@ class Invoices
         $this->invoiceDate = $date;
         $this->amount = $amounts['sum']['grand_total_cents'];
         $this->iva = $amounts['iva'];
+        $this->fleet = $customer->getFleet();
 
         $this->content = [
             'invoice_date' => $this->getInvoiceDate(),

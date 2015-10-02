@@ -1669,7 +1669,7 @@ class Customers
     }
 
 
-    public function benefitsFromDiscoutedSubscriptionAmount() 
+    public function benefitsFromDiscoutedSubscriptionAmount()
     {
         return null != $this->findDiscountedSubscriptionAmount();
     }
@@ -1679,7 +1679,7 @@ class Customers
         if ($this->benefitsFromDiscoutedSubscriptionAmount()) {
             return $this->findDiscountedSubscriptionAmount();
         }
-        
+
         return $defaultAmount;
     }
 
@@ -1694,6 +1694,14 @@ class Customers
         }
 
         return null;
+    }
+
+    /**
+     * @return Fleet
+     */
+    public function getFleet()
+    {
+        return $this->fleet;
     }
 
 }

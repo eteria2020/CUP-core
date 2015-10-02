@@ -172,15 +172,14 @@ class InvoicesService
                     $tripPayment->setInvoice($invoice)
                         ->setInvoicedAt(date_create());
                     $this->entityManager->persist($tripPayment);
+                    // save invoices to db
+                    if ($writeToDb) {
+                        $this->logger->log("EntityManager: about to flush\n");
+                        $this->entityManager->flush();
+                        $this->logger->log("EntityManager: flushed\n");
+                    }
                 }
             }
-        }
-
-        // save invoices to db
-        if ($writeToDb) {
-            $this->logger->log("EntityManager: about to flush\n");
-            $this->entityManager->flush();
-            $this->logger->log("EntityManager: flushed\n");
         }
 
         return $invoices;
@@ -413,7 +412,7 @@ class InvoicesService
      */
     public function generateNewInvoiceNumber(Fleet $fleet)
     {
-        $invoice = $this->getLatestInvoiceForFleet($fleet);
+        $invoice = $this->getLastInvoiceForFleet($fleet);
 
         $year = $invoice->getDateTimeDate()->format('Y');
         $number = (intval(str_replace('/', '', $invoice->getInvoiceNumber())) % 100000000) + 1;
@@ -421,7 +420,7 @@ class InvoicesService
             $year = date_create()->format('Y');
             $number = 1;
         }
-        $nextNumber = $year . '/' . $fleet->getIntCode() . sprintf("%8d", $number);
+        $nextNumber = $year . '/' . $fleet->getIntCode() . sprintf("%'.08d", $number);
 
         return $nextNumber;
     }
@@ -430,8 +429,8 @@ class InvoicesService
      * @param Fleet $fleet
      * @return Invoices
      */
-    private function getLatestInvoiceForFleet(Fleet $fleet)
+    private function getLastInvoiceForFleet(Fleet $fleet)
     {
-        return $this->invoicesRepository->findLatestInvoiceForFleet($fleet);
+        return $this->invoicesRepository->findLastInvoiceForFleet($fleet);
     }
 }

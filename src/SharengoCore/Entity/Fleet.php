@@ -66,6 +66,13 @@ class Fleet
      */
     private $isDefault = false;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="int_code", type="string", nullable=false)
+     */
+    private $intCode;
+
 
     public function __construct($code, $name, $latitude, $longitude, $zoomLevel, $isDefault = false) {
         $this->code = $code;
@@ -154,5 +161,13 @@ class Fleet
     public function getIsDefault()
     {
         return $this->isDefault;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIntCode()
+    {
+        return $this->intCode;
     }
 }
