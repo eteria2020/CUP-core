@@ -331,7 +331,10 @@ class InvoicesService
         $reason,
         $amount
     ) {
-        $amounts = $this->calculateAmountsWithTaxesFromTotal($amount);
+        $amounts = [
+            'sum' => $this->calculateAmountsWithTaxesFromTotal($amount),
+            'iva' => $this->ivaPercentage
+        ];
 
         return Invoices::createInvoiceForExtraOrPenalty(
             $customer,

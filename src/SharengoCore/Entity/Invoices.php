@@ -287,7 +287,7 @@ class Invoices
         $invoice->setContentBody([
             'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento<br>' .
                 'L\'importo totale della fattura è di EUR ' .
-                $amounts['grand_total'] .
+                $amounts['sum']['grand_total'] .
                 '</p>',
             'contents' => [
                 'header' => [
@@ -297,7 +297,7 @@ class Invoices
                 'body' => [
                     [
                         [$reason],
-                        [$amounts['total'] . ' €']
+                        [$amounts['sum']['total'] . ' €']
                     ]
                 ],
                 'body-format' => [

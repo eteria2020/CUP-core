@@ -6,11 +6,26 @@ use Doctrine\ORM\EntityManagerInterface;
 
 abstract class Query
 {
+    /**
+     * @var EntityManagerInterface
+     */
     private $em;
 
-    public function __construct(EntityManagerInterface $em)
+    /**
+     * @var string
+     */
+    private $resultMethod;
+
+    public function __construct(EntityManagerInterface $em, $resultMethod = null)
     {
         $this->em = $em;
+
+        // by default we use getResult as resultMethod
+        if (is_null($resultMethod)) {
+            $this->resultMethod = 'getResult';
+        } else {
+            $this->resultMethod = $resultMethod;
+        }
     }
 
     public function __invoke()
@@ -21,7 +36,9 @@ abstract class Query
             $query->setParameter($param, $value);
         }
 
-        return $query->getResult();
+        $resultCallable = [$query, $this->resultMethod];
+
+        return $resultCallable();
     }
 
     /**

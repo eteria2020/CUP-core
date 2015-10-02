@@ -5,6 +5,7 @@ namespace SharengoCore\Service;
 use SharengoCore\Entity\ExtraPayment;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Service\InvoicesService;
+use SharengoCore\Entity\Fleet;
 
 use Doctrine\ORM\EntityManager;
 
@@ -37,12 +38,14 @@ class ExtraPaymentsService
      */
     public function registerExtraPayment(
         Customers $customer,
+        Fleet $fleet,
         $amount,
         $paymentType,
         $reason
     ) {
         $extraPayment = new ExtraPayment(
             $customer,
+            $fleet,
             $amount,
             $paymentType,
             $reason
