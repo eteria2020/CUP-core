@@ -192,7 +192,8 @@ return [
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
             'SharengoCore\Service\DisableContractService' => 'SharengoCore\Service\DisableContractServiceFactory',
             'SharengoCore\Listener\DisableContractListener' => 'SharengoCore\Listener\DisableContractListenerFactory',
-            'SharengoCore\Service\EventsService' => 'SharengoCore\Service\EventsServiceFactory'
+            'SharengoCore\Service\EventsService' => 'SharengoCore\Service\EventsServiceFactory',
+            'SharengoCore\Service\FleetService' => 'SharengoCore\Service\FleetServiceFactory'
         ],
         'shared' => [
             'SharengoCore\Service\TripCostComputerService' => false,
