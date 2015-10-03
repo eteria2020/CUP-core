@@ -59,12 +59,22 @@ class ExtraPaymentsService
 
     /**
      * @param Customers $customer
+     * @param Fleet $fleet
      * @param string $reason
      * @param int $amount in eurocents
      */
-    public function generateInvoice(Customers $customer, $reason, $amount)
-    {
-        $invoice = $this->invoicesService->prepareInvoiceForExtraOrPenalty($customer, $reason, $amount);
+    public function generateInvoice(
+        Customers $customer,
+        Fleet $fleet,
+        $reason,
+        $amount
+    ) {
+        $invoice = $this->invoicesService->prepareInvoiceForExtraOrPenalty(
+            $customer,
+            $fleet,
+            $reason,
+            $amount
+        );
 
         $this->entityManager->persist($invoice);
         $this->entityManager->flush();

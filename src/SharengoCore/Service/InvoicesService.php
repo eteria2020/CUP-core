@@ -140,7 +140,7 @@ class InvoicesService
             "iva" => $this->ivaPercentage
         ];
         return Invoices::createInvoiceForFirstPayment(
-            $this->generateNewInvoiceNumber($customer->getFleet()),
+            //$this->generateNewInvoiceNumber($customer->getFleet()),
             $customer,
             $this->templateVersion,
             $amounts
@@ -173,13 +173,20 @@ class InvoicesService
                         ->setInvoicedAt(date_create());
                     $this->entityManager->persist($tripPayment);
                     // save invoices to db
-                    if ($writeToDb) {
+                    /*if ($writeToDb) {
                         $this->logger->log("EntityManager: about to flush\n");
                         $this->entityManager->flush();
                         $this->logger->log("EntityManager: flushed\n");
-                    }
+                    }*/
                 }
             }
+        }
+
+        // save invoices to db
+        if ($writeToDb) {
+            $this->logger->log("EntityManager: about to flush\n");
+            $this->entityManager->flush();
+            $this->logger->log("EntityManager: flushed\n");
         }
 
         return $invoices;
@@ -203,7 +210,7 @@ class InvoicesService
 
         // create invoice
         return Invoices::createInvoiceForTrips(
-            $this->generateNewInvoiceNumber($customer->getFleet()),
+            //$this->generateNewInvoiceNumber($customer->getFleet()),
             $customer,
             $tripPayments,
             $this->templateVersion,
@@ -330,6 +337,7 @@ class InvoicesService
      */
     public function prepareInvoiceForExtraOrPenalty(
         Customers $customer,
+        Fleet $fleet,
         $reason,
         $amount
     ) {
@@ -339,8 +347,9 @@ class InvoicesService
         ];
 
         return Invoices::createInvoiceForExtraOrPenalty(
-            $this->generateNewInvoiceNumber($customer->getFleet()),
+            //$this->generateNewInvoiceNumber($customer->getFleet()),
             $customer,
+            $fleet,
             $this->templateVersion,
             $reason,
             $amounts
@@ -357,7 +366,7 @@ class InvoicesService
         $period = $invoice->getInterval();
 
         $customer = $invoice->getCustomer();
-        $cardCode = $customer->getCard() instanceOf Cards ?
+        $cardCode = $customer->getCard() instanceof Cards ?
             $customer->getCard()->getCode() :
             '';
 
@@ -397,7 +406,7 @@ class InvoicesService
         $record2 = array_merge(
             ["RIG"], // 3
             $partionRecord1,
-            ["40"],// 660
+            ["40"], // 660
             [strtoupper($invoice->getTypeItalianTranslation())], // 681
             $partionRecord2
         );
@@ -410,7 +419,7 @@ class InvoicesService
      * @param Fleet $fleet
      * @return string
      */
-    public function generateNewInvoiceNumber(Fleet $fleet)
+    /*public function generateNewInvoiceNumber(Fleet $fleet)
     {
         $invoice = $this->getLastInvoiceForFleet($fleet);
 
@@ -423,14 +432,14 @@ class InvoicesService
         $nextNumber = $year . '/' . $fleet->getIntCode() . sprintf("%'.08d", $number);
 
         return $nextNumber;
-    }
+    }*/
 
     /**
      * @param Fleet $fleet
      * @return Invoices
      */
-    private function getLastInvoiceForFleet(Fleet $fleet)
+    /*private function getLastInvoiceForFleet(Fleet $fleet)
     {
         return $this->invoicesRepository->findLastInvoiceForFleet($fleet);
-    }
+    }*/
 }
