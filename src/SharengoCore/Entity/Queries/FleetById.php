@@ -17,7 +17,7 @@ class FleetById extends Query
     ) {
         $this->fleetId = $fleetId;
 
-        parent::__construct($em, 'getOneOrNullResult');
+        parent::__construct($em);
     }
 
     protected function dql()
@@ -31,5 +31,10 @@ class FleetById extends Query
         return [
             'fleetId' => $this->fleetId
         ];
+    }
+
+    protected function resultMethod()
+    {
+        return 'getOneOrNullResult';
     }
 }

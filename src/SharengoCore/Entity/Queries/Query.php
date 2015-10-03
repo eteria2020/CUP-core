@@ -16,16 +16,9 @@ abstract class Query
      */
     private $resultMethod;
 
-    public function __construct(EntityManagerInterface $em, $resultMethod = null)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
-
-        // by default we use getResult as resultMethod
-        if (is_null($resultMethod)) {
-            $this->resultMethod = 'getResult';
-        } else {
-            $this->resultMethod = $resultMethod;
-        }
     }
 
     public function __invoke()
@@ -36,7 +29,7 @@ abstract class Query
             $query->setParameter($param, $value);
         }
 
-        $resultCallable = [$query, $this->resultMethod];
+        $resultCallable = [$query, $this->resultMethod()];
 
         return $resultCallable();
     }
@@ -55,5 +48,10 @@ abstract class Query
     protected function params()
     {
         return [];
+    }
+
+    protected function resultMethod()
+    {
+        return 'getResult';
     }
 }
