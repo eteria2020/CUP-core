@@ -2,10 +2,12 @@
 
 namespace SharengoCore\Service;
 
-use SharengoCore\Entity\Queries\AllFleets;
 use SharengoCore\Entity\Fleet;
 use SharengoCore\Exception\FleetNotFoundException;
+use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\Queries\AllFleets;
 use SharengoCore\Entity\Queries\FleetById;
+use SharengoCore\Entity\Queries\DefaultFleet;
 
 use Doctrine\ORM\EntityManager;
 
@@ -62,5 +64,28 @@ class FleetService
         }
 
         return $fleet;
+    }
+
+    /**
+     * @param Customers|null $customer
+     * @return Fleet
+     */
+    public function getCustomerOrDefaultFleet(Customers $customer = null)
+    {
+        if ($customer instanceof Customers) {
+            return $customer->getFleet();
+        }
+
+        return $this->getDefaultFleet();
+    }
+
+    /**
+     * @return Fleet
+     */
+    private function getDefaultFleet()
+    {
+        $query = new DefaultFleet($this->entityManager);
+
+        return $query();
     }
 }
