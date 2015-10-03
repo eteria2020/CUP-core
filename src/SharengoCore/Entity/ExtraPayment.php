@@ -33,6 +33,16 @@ class ExtraPayment
     private $customer;
 
     /**
+     * @var Fleet
+     *
+     * @ORM\ManyToOne(targetEntity="Fleet")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="fleet_id", referencedColumnName="id", nullable=false)
+     * })
+     */
+    private $fleet;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="amount", type="integer", nullable=false)
@@ -79,11 +89,13 @@ class ExtraPayment
      */
     public function __construct(
         Customers $customer,
+        Fleet $fleet,
         $amount,
         $paymentType,
         $reason
     ) {
         $this->customer = $customer;
+        $this->fleet = $fleet;
         $this->amount = $amount;
         $this->paymentType = $paymentType;
         $this->reason = $reason;

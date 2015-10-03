@@ -379,6 +379,16 @@ class Customers
     private $paymentAble = true;
 
     /**
+     * @var Fleet
+     *
+     * @ORM\ManyToOne(targetEntity="Fleet")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="fleet_id", referencedColumnName="id", nullable=false)
+     * })
+     */
+    private $fleet;
+
+    /**
      * Bidirectional - One-To-Many (INVERSE SIDE)
      *
      * @ORM\OneToMany(targetEntity="Trips", mappedBy="customer")
@@ -401,6 +411,7 @@ class Customers
         if ($card !== null) {
             $card = $card->toArray($hydrator);
         }
+
         $extractedCustomer = $hydrator->extract($this);
         $extractedCustomer['card'] = $card;
 
@@ -1623,6 +1634,21 @@ class Customers
     }
 
     /**
+     * @return Fleet
+     */
+    public function getFleet()
+    {
+        return $this->fleet;
+    }
+
+    public function setFleet($fleet)
+    {
+        $this->fleet = $fleet;
+
+        return $this;
+    }
+
+    /**
      * @return Customers
      */
     public function disable()
@@ -1643,7 +1669,7 @@ class Customers
     }
 
 
-    public function benefitsFromDiscoutedSubscriptionAmount() 
+    public function benefitsFromDiscoutedSubscriptionAmount()
     {
         return null != $this->findDiscountedSubscriptionAmount();
     }
@@ -1653,7 +1679,7 @@ class Customers
         if ($this->benefitsFromDiscoutedSubscriptionAmount()) {
             return $this->findDiscountedSubscriptionAmount();
         }
-        
+
         return $defaultAmount;
     }
 
@@ -1668,6 +1694,14 @@ class Customers
         }
 
         return null;
+    }
+
+    /**
+     * @return Fleet
+     */
+    public function getFleet()
+    {
+        return $this->fleet;
     }
 
 }

@@ -95,20 +95,28 @@ class InvoicesService
     }
 
     /**
-     * @return array[Invoices[]]
+     * @return Invoices[]
      */
-    public function getInvoicesGroupedByDate()
+    public function getInvoicesWithCustomer()
     {
-        return $this->groupByInvoiceDate(
-            $this->invoicesRepository->findInvoicesWithCustomerOrdered()
-        );
+        return $this->invoicesRepository->findInvoicesWithCustomerOrdered();
+    }
+
+    /**
+     * @param \DateTime $date
+     * @return Invoices[]
+     */
+    public function getInvoicesByDate(\DateTime $date)
+    {
+        $date = $date->format('Ymd');
+        return $this->invoicesRepository->findByInvoiceDate($date);
     }
 
     /**
      * @param Invoices[] $invoices
      * @return array[Invoices[]]
      */
-    private function groupByInvoiceDate($invoices)
+    public function groupByInvoiceDate($invoices)
     {
         $groupedInvoices = [];
         foreach ($invoices as $invoice) {
@@ -132,6 +140,7 @@ class InvoicesService
             "iva" => $this->ivaPercentage
         ];
         return Invoices::createInvoiceForFirstPayment(
+            //$this->generateNewInvoiceNumber($customer->getFleet()),
             $customer,
             $this->templateVersion,
             $amounts
@@ -163,6 +172,12 @@ class InvoicesService
                     $tripPayment->setInvoice($invoice)
                         ->setInvoicedAt(date_create());
                     $this->entityManager->persist($tripPayment);
+                    // save invoices to db
+                    /*if ($writeToDb) {
+                        $this->logger->log("EntityManager: about to flush\n");
+                        $this->entityManager->flush();
+                        $this->logger->log("EntityManager: flushed\n");
+                    }*/
                 }
             }
         }
@@ -195,6 +210,7 @@ class InvoicesService
 
         // create invoice
         return Invoices::createInvoiceForTrips(
+            //$this->generateNewInvoiceNumber($customer->getFleet()),
             $customer,
             $tripPayments,
             $this->templateVersion,
@@ -321,13 +337,19 @@ class InvoicesService
      */
     public function prepareInvoiceForExtraOrPenalty(
         Customers $customer,
+        Fleet $fleet,
         $reason,
         $amount
     ) {
-        $amounts = $this->calculateAmountsWithTaxesFromTotal($amount);
+        $amounts = [
+            'sum' => $this->calculateAmountsWithTaxesFromTotal($amount),
+            'iva' => $this->ivaPercentage
+        ];
 
         return Invoices::createInvoiceForExtraOrPenalty(
+            //$this->generateNewInvoiceNumber($customer->getFleet()),
             $customer,
+            $fleet,
             $this->templateVersion,
             $reason,
             $amounts
@@ -344,7 +366,7 @@ class InvoicesService
         $period = $invoice->getInterval();
 
         $customer = $invoice->getCustomer();
-        $cardCode = $customer->getCard() instanceOf Cards ?
+        $cardCode = $customer->getCard() instanceof Cards ?
             $customer->getCard()->getCode() :
             '';
 
@@ -384,7 +406,7 @@ class InvoicesService
         $record2 = array_merge(
             ["RIG"], // 3
             $partionRecord1,
-            ["40"],// 660
+            ["40"], // 660
             [strtoupper($invoice->getTypeItalianTranslation())], // 681
             $partionRecord2
         );
@@ -393,20 +415,31 @@ class InvoicesService
         return implode(";", $record1) . "\r\n" . implode(";", $record2);
     }
 
-    public function getLatestInvoiceNumberForFleet(Fleet $fleet)
+    /**
+     * @param Fleet $fleet
+     * @return string
+     */
+    /*public function generateNewInvoiceNumber(Fleet $fleet)
     {
-        return $this->invoicesRepository->findLatestInvoiceNumberForFleet($fleet);
-    }
+        $invoice = $this->getLastInvoiceForFleet($fleet);
 
-    public function generateNewInvoiceNumber(Fleet $fleet)
+        $year = $invoice->getDateTimeDate()->format('Y');
+        $number = (intval(str_replace('/', '', $invoice->getInvoiceNumber())) % 100000000) + 1;
+        if (date_create()->format('Y') !== $year) {
+            $year = date_create()->format('Y');
+            $number = 1;
+        }
+        $nextNumber = $year . '/' . $fleet->getIntCode() . sprintf("%'.08d", $number);
+
+        return $nextNumber;
+    }*/
+
+    /**
+     * @param Fleet $fleet
+     * @return Invoices
+     */
+    /*private function getLastInvoiceForFleet(Fleet $fleet)
     {
-        // lock
-
-        // get latest invoice number based on fleet - TODO add field in invoices
-        // check if year has changed
-
-        // generate new one
-
-        // return number
-    }
+        return $this->invoicesRepository->findLastInvoiceForFleet($fleet);
+    }*/
 }

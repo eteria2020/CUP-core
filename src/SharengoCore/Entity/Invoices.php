@@ -100,18 +100,36 @@ class Invoices
      */
     private $iva;
 
-
+    /**
+     * @var \SharengoCore\Entity\Fleet
+     *
+     * @ORM\ManyToOne(targetEntity="SharengoCore\Entity\Fleet")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="fleet_id", referencedColumnName="id", nullable=false)
+     * })
+     */
+    private $fleet;
 
     /**
+     * //@param string $invoiceNumber
      * @param Customers $customer
      * @param integer $version
      * @param string $type
      * @param integer $date
-     * @param array $amounts needed fields grand_total_cents, grand_total, total, iva
+     * @param array $amounts
+     * @param Fleet|null $fleet
      * @return Invoices
      */
-    private function __construct(Customers $customer, $version, $type, $date, $amounts)
-    {
+    private function __construct(
+        //$invoiceNumber,
+        Customers $customer,
+        $version,
+        $type,
+        $date,
+        $amounts,
+        $fleet = null
+    ) {
+        //$this->invoiceNumber = $invoiceNumber;
         $this->generatedTs = date_create(date('Y-m-d H:i:s'));
         $this->customer = $customer;
         $this->version = $version;
@@ -119,6 +137,12 @@ class Invoices
         $this->invoiceDate = $date;
         $this->amount = $amounts['sum']['grand_total_cents'];
         $this->iva = $amounts['iva'];
+
+        if ($fleet instanceof Fleet) {
+            $this->fleet = $fleet;
+        } else {
+            $this->fleet = $customer->getFleet();
+        }
 
         $this->content = [
             'invoice_date' => $this->getInvoiceDate(),
@@ -144,17 +168,20 @@ class Invoices
     }
 
     /**
+     * //@param string $invoiceNumber
      * @param Customers $customer
      * @param integer $version
      * @param mixed $amounts
      * @return Invoice
      */
     public static function createInvoiceForFirstPayment(
+        //$invoiceNumber,
         Customers $customer,
         $version,
         $amounts
     ) {
         $invoice = new Invoices(
+            //$invoiceNumber,
             $customer,
             $version,
             self::TYPE_FIRST_PAYMENT,
@@ -195,6 +222,7 @@ class Invoices
      *
      * It's supposed all of them have been payed on the same day
      *
+     * //@param string $invoiceNumber
      * @param Customers $customer
      * @param TripPayments[] $tripPayments
      * @param integer $version
@@ -202,12 +230,14 @@ class Invoices
      * @return Invoices
      */
     public static function createInvoiceForTrips(
+        //$invoiceNumber,
         Customers $customer,
         $tripPayments,
         $version,
         $amounts
     ) {
         $invoice = new Invoices(
+            //$invoiceNumber,
             $customer,
             $version,
             self::TYPE_TRIP,
@@ -265,29 +295,35 @@ class Invoices
     }
 
     /**
+     * //@param string $invoiceNumber
      * @param Customers $customer
+     * @param Fleet $fleet
      * @param int $version template version
      * @param string $reason
      * @param array $amounts with fields grand_total_cents, grand_total, total, iva
      */
     public function createInvoiceForExtraOrPenalty(
+        //$invoiceNumber,
         Customers $customer,
+        Fleet $fleet,
         $version,
         $reason,
         $amounts
     ) {
         $invoice = new Invoices(
+            //$invoiceNumber,
             $customer,
             $version,
             self::TYPE_PENALTY,
             intval(date("Ymd")),
-            $amounts
+            $amounts,
+            $fleet
         );
 
         $invoice->setContentBody([
             'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento<br>' .
                 'L\'importo totale della fattura è di EUR ' .
-                $amounts['grand_total'] .
+                $amounts['sum']['grand_total'] .
                 '</p>',
             'contents' => [
                 'header' => [
@@ -297,7 +333,7 @@ class Invoices
                 'body' => [
                     [
                         [$reason],
-                        [$amounts['total'] . ' €']
+                        [$amounts['sum']['total'] . ' €']
                     ]
                 ],
                 'body-format' => [
@@ -388,7 +424,8 @@ class Invoices
         return $this->type;
     }
 
-    public function getTypeItalianTranslation() {
+    public function getTypeItalianTranslation()
+    {
         switch ($this->getType()) {
             case 'FIRST_PAYMENT':
                 return 'Iscrizione';
