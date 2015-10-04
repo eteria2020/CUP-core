@@ -1676,32 +1676,19 @@ class Customers
 
     public function getSubscriptionAmount($defaultAmount)
     {
-        if ($this->benefitsFromDiscoutedSubscriptionAmount()) {
-            return $this->findDiscountedSubscriptionAmount();
-        }
-
-        return $defaultAmount;
+        return $this->findDiscountedSubscriptionAmount() ?: $defaultAmount;
     }
 
-    public function findDiscountedSubscriptionAmount() {
+    public function findDiscountedSubscriptionAmount()
+    {
         $bonuses = $this->getBonuses();
-        foreach($bonuses as $bonus) {
+        foreach ($bonuses as $bonus) {
 
             if ($bonus->impliesSubscriptionDiscount()) {
                 return $bonus->findDiscountedSubscriptionAmount();
             }
-
         }
 
         return null;
     }
-
-    /**
-     * @return Fleet
-     */
-    public function getFleet()
-    {
-        return $this->fleet;
-    }
-
 }
