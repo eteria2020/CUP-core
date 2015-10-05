@@ -8,12 +8,16 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\TripPayments;
 use SharengoCore\Utils\Interval;
+use Doctrine\ORM\EntityManager;
+use Doctrine\Orm\AbstractQuery;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 /**
  * Invoices
  *
  * @ORM\Table(name="invoices")
  * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\InvoicesRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class Invoices
 {
@@ -111,7 +115,6 @@ class Invoices
     private $fleet;
 
     /**
-     * //@param string $invoiceNumber
      * @param Customers $customer
      * @param integer $version
      * @param string $type
@@ -121,7 +124,6 @@ class Invoices
      * @return Invoices
      */
     private function __construct(
-        //$invoiceNumber,
         Customers $customer,
         $version,
         $type,
@@ -129,7 +131,6 @@ class Invoices
         $amounts,
         $fleet = null
     ) {
-        //$this->invoiceNumber = $invoiceNumber;
         $this->generatedTs = date_create(date('Y-m-d H:i:s'));
         $this->customer = $customer;
         $this->version = $version;
@@ -168,20 +169,101 @@ class Invoices
     }
 
     /**
-     * //@param string $invoiceNumber
+     * @ORM\PrePersist
+     */
+    public function prePersist($e)
+    {
+        $entityManager = $e->getEntityManager();
+        $entityManager->beginTransaction();
+        $this->invoiceNumber = $this->retrieveNewInvoiceNumber($entityManager, $e->getEntity());
+    }
+
+    private function retrieveNewInvoiceNumber(EntityManager $entityManager, Invoices $invoice)
+    {
+        $newInvoiceNumber = $this->getNewInvoiceNumber($entityManager, $invoice);
+
+        return $this->formatNewInvoiceNumber($invoice, $newInvoiceNumber);
+    }
+
+    /**
+     * we use the invoice_number table in the database to keep track of the
+     * sequence of the invoice numbers
+     *
+     * @param EntityManager $entityManager
+     * @param Invoices $invoice
+     * @return string|null
+     */
+    private function getNewInvoiceNumber(EntityManager $entityManager, Invoices $invoice)
+    {
+        // we look if there is already an invoice number for the same year and fleet
+        // if that is the case we increment the counter and return the new value
+        $resultSetMapping = new ResultSetMapping();
+        $resultSetMapping->addScalarResult('number', 'number');
+        $newInvoiceNumberQuery = $entityManager->createNativeQuery(
+            'UPDATE invoice_number SET number = number + 1 '.
+            'WHERE year = :year '.
+            'AND fleet_id = :fleet_id '.
+            'RETURNING number;',
+            $resultSetMapping
+        );
+
+        $invoiceYear = $invoice->getDateTimeDate()->format('Y');
+        $fleetId = $invoice->getFleetId();
+        $newInvoiceNumberQuery->setParameter('year', $invoiceYear);
+        $newInvoiceNumberQuery->setParameter('fleet_id', $fleetId);
+
+        $newInvoiceNumber =  $newInvoiceNumberQuery->getOneOrNullResult(AbstractQuery::HYDRATE_SINGLE_SCALAR);
+
+        if (is_null($newInvoiceNumber)) {
+            // if no invoice was generated before for the same year and fleet
+            // we insert a new line starting from 1
+            $newInvoiceNumberQuery = $entityManager->createNativeQuery(
+                'INSERT INTO invoice_number (year, fleet_id, number) VALUES '.
+                '(:year, :fleet_id, 1) '.
+                'RETURNING number;',
+                $resultSetMapping
+            );
+            $newInvoiceNumberQuery->setParameter('year', $invoiceYear);
+            $newInvoiceNumberQuery->setParameter('fleet_id', $fleetId);
+            $newInvoiceNumber =  $newInvoiceNumberQuery->getSingleScalarResult();
+        }
+
+        return $newInvoiceNumber;
+    }
+
+    /**
+     * @param Invoices $invoice
+     * @param int $newInvoiceNumber
+     */
+    private function formatNewInvoiceNumber(Invoices $invoice, $newInvoiceNumber)
+    {
+        return date_create()->format('Y').
+            '/'.
+            $invoice->getFleetIntCode().
+            sprintf("%'.08d", $newInvoiceNumber);
+    }
+
+    /**
+     * @ORM\PostPersist
+     */
+    public function postPersist($e)
+    {
+        $em = $e->getEntityManager();
+        $em->commit();
+    }
+
+    /**
      * @param Customers $customer
      * @param integer $version
      * @param mixed $amounts
      * @return Invoice
      */
     public static function createInvoiceForFirstPayment(
-        //$invoiceNumber,
         Customers $customer,
         $version,
         $amounts
     ) {
         $invoice = new Invoices(
-            //$invoiceNumber,
             $customer,
             $version,
             self::TYPE_FIRST_PAYMENT,
@@ -222,7 +304,6 @@ class Invoices
      *
      * It's supposed all of them have been payed on the same day
      *
-     * //@param string $invoiceNumber
      * @param Customers $customer
      * @param TripPayments[] $tripPayments
      * @param integer $version
@@ -230,14 +311,12 @@ class Invoices
      * @return Invoices
      */
     public static function createInvoiceForTrips(
-        //$invoiceNumber,
         Customers $customer,
         $tripPayments,
         $version,
         $amounts
     ) {
         $invoice = new Invoices(
-            //$invoiceNumber,
             $customer,
             $version,
             self::TYPE_TRIP,
@@ -295,7 +374,6 @@ class Invoices
     }
 
     /**
-     * //@param string $invoiceNumber
      * @param Customers $customer
      * @param Fleet $fleet
      * @param int $version template version
@@ -303,7 +381,6 @@ class Invoices
      * @param array $amounts with fields grand_total_cents, grand_total, total, iva
      */
     public function createInvoiceForExtraOrPenalty(
-        //$invoiceNumber,
         Customers $customer,
         Fleet $fleet,
         $version,
@@ -311,7 +388,6 @@ class Invoices
         $amounts
     ) {
         $invoice = new Invoices(
-            //$invoiceNumber,
             $customer,
             $version,
             self::TYPE_PENALTY,
@@ -477,6 +553,30 @@ class Invoices
         $date = $this->getInvoiceDate();
         $date = ($date % 100) . "/" . (floor(($date % 10000) / 100)) . "/" . floor($date / 10000);
         return date_create_from_format("d/m/Y", $date);
+    }
+
+    /**
+     * @return Fleet
+     */
+    public function getFleet()
+    {
+        return $this->fleet;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFleetIntCode()
+    {
+        return $this->fleet->getIntCode();
+    }
+
+    /**
+     * @return int
+     */
+    public function getFleetId()
+    {
+        return $this->fleet->getId();
     }
 
     /**
