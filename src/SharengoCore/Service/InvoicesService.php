@@ -171,12 +171,6 @@ class InvoicesService
                     $tripPayment->setInvoice($invoice)
                         ->setInvoicedAt(date_create());
                     $this->entityManager->persist($tripPayment);
-                    // save invoices to db
-                    /*if ($writeToDb) {
-                        $this->logger->log("EntityManager: about to flush\n");
-                        $this->entityManager->flush();
-                        $this->logger->log("EntityManager: flushed\n");
-                    }*/
                 }
             }
         }
