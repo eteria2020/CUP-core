@@ -835,7 +835,7 @@ class Trips
         if (in_array('tripBonuses', $tripsHydrationOptions)) {
             if (count($this->getTripBonuses()) > 0) {
                 $tripBonuses = [];
-                foreach($this->getTripBonuses() as $tripBonus) {
+                foreach ($this->getTripBonuses() as $tripBonus) {
                     $tripBonuses[] = $tripBonus->toArray($hydrator);
                 }
                 $extractedTrip['tripBonuses'] = $tripBonuses;
@@ -846,7 +846,7 @@ class Trips
         if (in_array('tripFreeFares', $tripsHydrationOptions)) {
             if (count($this->getTripFreeFares()) > 0) {
                 $tripFreeFares = [];
-                foreach($this->getTripFreeFares() as $tripFreeFare) {
+                foreach ($this->getTripFreeFares() as $tripFreeFare) {
                     $tripFreeFares[] = $tripFreeFare->toArray($hydrator);
                 }
                 $extractedTrip['tripFreeFares'] = $tripFreeFares;
@@ -885,8 +885,8 @@ class Trips
                $minutes >= 5;
     }
 
-    public function getDurationMinutes() {
-
+    public function getDurationMinutes()
+    {
         if ($this->getTimestampBeginning() instanceof \DateTime &&
             $this->getTimestampEnd() instanceof \DateTime) {
             $interval = new Interval($this->getTimestampBeginning(), $this->getTimestampEnd());
@@ -950,20 +950,6 @@ class Trips
     }
 
     /**
-     * Set fleet
-     *
-     * @param \SharengoCore\Entity\Fleet $fleet
-     *
-     * @return Trips
-     */
-    public function setFleet(\SharengoCore\Entity\Fleet $fleet)
-    {
-        $this->fleet = $fleet;
-
-        return $this;
-    }
-
-    /**
      * Get fleet
      *
      * @return \SharengoCore\Entity\Fleet
@@ -990,7 +976,7 @@ class Trips
     public function isPaymentTried()
     {
         $isAttempted = false;
-        if(count($this->getTripPayments()) != 0) {
+        if (count($this->getTripPayments()) != 0) {
             foreach ($this->getTripPayments() as $tripPayment) {
                 $isAttempted = $isAttempted ||
                     count($tripPayment->getTripPaymentTries()) != 0;

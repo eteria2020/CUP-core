@@ -1641,13 +1641,6 @@ class Customers
         return $this->fleet;
     }
 
-    public function setFleet($fleet)
-    {
-        $this->fleet = $fleet;
-
-        return $this;
-    }
-
     /**
      * @return Customers
      */
