@@ -162,7 +162,8 @@ class Invoices
                 'piva' => $customer->getVat()
             ],
             'type' => $type,
-            'template_version' => $version
+            'template_version' => $version,
+            'header' => $fleet->getInvoiceHeader()
         ];
 
         return $this;

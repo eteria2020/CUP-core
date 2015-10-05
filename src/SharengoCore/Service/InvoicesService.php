@@ -140,7 +140,6 @@ class InvoicesService
             "iva" => $this->ivaPercentage
         ];
         return Invoices::createInvoiceForFirstPayment(
-            //$this->generateNewInvoiceNumber($customer->getFleet()),
             $customer,
             $this->templateVersion,
             $amounts
@@ -210,7 +209,6 @@ class InvoicesService
 
         // create invoice
         return Invoices::createInvoiceForTrips(
-            //$this->generateNewInvoiceNumber($customer->getFleet()),
             $customer,
             $tripPayments,
             $this->templateVersion,
@@ -347,7 +345,6 @@ class InvoicesService
         ];
 
         return Invoices::createInvoiceForExtraOrPenalty(
-            //$this->generateNewInvoiceNumber($customer->getFleet()),
             $customer,
             $fleet,
             $this->templateVersion,

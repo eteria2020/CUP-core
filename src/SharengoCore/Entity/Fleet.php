@@ -73,8 +73,16 @@ class Fleet
      */
     private $intCode;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="invoice_header", type="text", nullable=false)
+     */
+    private $invoiceHeader;
 
-    public function __construct($code, $name, $latitude, $longitude, $zoomLevel, $isDefault = false) {
+
+    public function __construct($code, $name, $latitude, $longitude, $zoomLevel, $isDefault = false)
+    {
         $this->code = $code;
         $this->name = $name;
         $this->latitude = $latitude;
@@ -169,5 +177,13 @@ class Fleet
     public function getIntCode()
     {
         return $this->intCode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInvoiceHeader()
+    {
+        return $this->invoiceHeader;
     }
 }

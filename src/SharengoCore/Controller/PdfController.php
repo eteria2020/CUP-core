@@ -98,8 +98,10 @@ class PdfController extends AbstractActionController
         $response = $this->getResponse();
         $headers  = $response->getHeaders();
         $headers->addHeaderLine('Content-Type', 'application/pdf');
-        $headers->addHeaderLine('Content-Disposition',
-            "attachment; filename=\"Fattura-" . $invoice->getInvoiceNumber() . ".pdf\"");
+        $headers->addHeaderLine(
+            'Content-Disposition',
+            "attachment; filename=\"Fattura-" . $invoice->getInvoiceNumber() . ".pdf\""
+        );
         $headers->addHeaderLine('Content-Length', strlen($output));
 
         $response->setContent($output);
