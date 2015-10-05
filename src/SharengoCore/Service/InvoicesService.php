@@ -411,32 +411,4 @@ class InvoicesService
         // return the two records combined
         return implode(";", $record1) . "\r\n" . implode(";", $record2);
     }
-
-    /**
-     * @param Fleet $fleet
-     * @return string
-     */
-    /*public function generateNewInvoiceNumber(Fleet $fleet)
-    {
-        $invoice = $this->getLastInvoiceForFleet($fleet);
-
-        $year = $invoice->getDateTimeDate()->format('Y');
-        $number = (intval(str_replace('/', '', $invoice->getInvoiceNumber())) % 100000000) + 1;
-        if (date_create()->format('Y') !== $year) {
-            $year = date_create()->format('Y');
-            $number = 1;
-        }
-        $nextNumber = $year . '/' . $fleet->getIntCode() . sprintf("%'.08d", $number);
-
-        return $nextNumber;
-    }*/
-
-    /**
-     * @param Fleet $fleet
-     * @return Invoices
-     */
-    /*private function getLastInvoiceForFleet(Fleet $fleet)
-    {
-        return $this->invoicesRepository->findLastInvoiceForFleet($fleet);
-    }*/
 }
