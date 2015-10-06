@@ -1642,6 +1642,17 @@ class Customers
     }
 
     /**
+     * @param Fleet $fleet
+     * @return Customers
+     */
+    public function setFleet(Fleet $fleet)
+    {
+        $this->fleet = $fleet;
+
+        return $this;
+    }
+
+    /**
      * @return Customers
      */
     public function disable()
