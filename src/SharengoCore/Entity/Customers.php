@@ -415,6 +415,10 @@ class Customers
         $extractedCustomer = $hydrator->extract($this);
         $extractedCustomer['card'] = $card;
 
+        if ($extractedCustomer['fleet'] instanceof Fleet) {
+            $extractedCustomer['fleet'] = $extractedCustomer['fleet']->getId();
+        }
+
         return $extractedCustomer;
     }
 
