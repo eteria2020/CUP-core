@@ -25,16 +25,19 @@ class ZoneAlarms
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="text", nullable=false)
-     */
-    private $name;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="geo", type="string", nullable=false)
      */
     private $geo;
+
+    /**
+     * @var \SharengoCore\Entity\Fleet
+     *
+     * @ORM\OneToOne(targetEntity="SharengoCore\Entity\Fleet")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="fleet_id", referencedColumnName="id")
+     * })
+     */
+    private $fleet;
 
 
     /**
@@ -46,21 +49,21 @@ class ZoneAlarms
     }
 
     /**
-     * @return string
+     * @return \SharengoCore\Entity\Fleet
      */
-    public function getName()
+    public function getFleet()
     {
-        return $this->name;
+        return $this->fleet;
     }
 
     /**
-     * @param string $name
+     * @param \SharengoCore\Entity\Fleet $fleet
      *
      * @return ZoneAlarms
      */
-    public function setName($name)
+    public function setFleet($fleet)
     {
-        $this->name = $name;
+        $this->fleet = $fleet;
 
         return $this;
     }

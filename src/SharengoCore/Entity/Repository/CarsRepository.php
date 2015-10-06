@@ -60,7 +60,7 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
         $sql = "SELECT c.plate
             FROM cars c, zone_alarms z
             WHERE c.plate = ?
-            AND z.name = 'MI'
+            AND z.fleet_id = ?
             AND z.geo @> point(c.longitude, c.latitude)";
 
         $rsm = new ResultSetMapping;
@@ -69,6 +69,7 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
 
         $query = $em->createNativeQuery($sql, $rsm);
         $query->setParameter(1, $car->getPlate());
+        $query->setParameter(2, $car->getFleet()->getId());
 
         return $query->getOneOrNullResult();
     }
