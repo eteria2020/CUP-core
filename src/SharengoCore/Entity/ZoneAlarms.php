@@ -39,6 +39,13 @@ class ZoneAlarms
      */
     private $fleet;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="active", type="boolean", nullable=false)
+     */
+    private $active;
+
 
     /**
      * @return string

@@ -61,6 +61,7 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
             FROM cars c, zone_alarms z
             WHERE c.plate = ?
             AND z.fleet_id = ?
+            AND z.active = true
             AND z.geo @> point(c.longitude, c.latitude)";
 
         $rsm = new ResultSetMapping;
