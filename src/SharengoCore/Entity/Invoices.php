@@ -163,7 +163,7 @@ class Invoices
             ],
             'type' => $type,
             'template_version' => $version,
-            'header' => $fleet->getInvoiceHeader()
+            'header' => $this->fleet->getInvoiceHeader()
         ];
 
         return $this;
