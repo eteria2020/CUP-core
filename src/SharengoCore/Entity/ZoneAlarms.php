@@ -32,7 +32,7 @@ class ZoneAlarms
     /**
      * @var \SharengoCore\Entity\Fleet
      *
-     * @ORM\OneToOne(targetEntity="SharengoCore\Entity\Fleet")
+     * @ORM\ManyToOne(targetEntity="SharengoCore\Entity\Fleet")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="fleet_id", referencedColumnName="id")
      * })
