@@ -1105,4 +1105,19 @@ class Cars
     {
         return $this->fleet;
     }
+
+    /**
+     * Set fleet
+     *
+     * @param \SharengoCore\Entity\Fleet $fleet
+     *
+     * @return Cars
+     */
+    public function setFleet(\SharengoCore\Entity\Fleet $fleet)
+    {
+        $this->fleet = $fleet;
+
+        return $this;
+    }
+
 }
