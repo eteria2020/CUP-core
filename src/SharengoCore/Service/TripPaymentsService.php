@@ -83,6 +83,9 @@ class TripPaymentsService
             array_push($orderedTripPayments[$date][$customerId], $tripPayment);
         }
 
+        // sort payments according to their date
+        ksort($orderedTripPayments);
+
         return $orderedTripPayments;
     }
 
