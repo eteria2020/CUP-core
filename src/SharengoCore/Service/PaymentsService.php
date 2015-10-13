@@ -69,6 +69,8 @@ class PaymentsService
      * @param CartasiContractsService $cartasiContractService
      * @param EntityManager $entityManager
      * @param EmailService $emailService
+     * @param EventManager $eventManager
+     * @param TripPaymentTriesService $tripPaymentTriesService
      * @param string $url
      */
     public function __construct(

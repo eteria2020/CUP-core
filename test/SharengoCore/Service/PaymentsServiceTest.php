@@ -10,12 +10,16 @@ class PaymentsServiceTest extends \PHPUnit_Framework_TestCase
         $this->cartasiContractsService = \Mockery::mock('Cartasi\Service\CartasiContractsService');
         $this->entityManager = \Mockery::mock('Doctrine\ORM\EntityManager');
         $this->emailService = \Mockery::mock('SharengoCore\Service\EmailService');
+        $this->eventManager = \Mockery::mock('Zend\EventManager\EventManager');
+        $this->tripPaymentTriesService = \Mockery::mock('SharengoCore\Service\TripPaymentTriesService');
 
         $this->paymentsService = new PaymentsService(
             $this->cartasiCustomerPayments,
             $this->cartasiContractsService,
             $this->entityManager,
             $this->emailService,
+            $this->eventManager,
+            $this->tripPaymentTriesService,
             ''
         );
     }
@@ -36,9 +40,18 @@ class PaymentsServiceTest extends \PHPUnit_Framework_TestCase
         $this->entityManager->shouldReceive('persist')->with($tripPayment);
         $this->entityManager->shouldReceive('flush');
 
+        $this->eventManager->shouldReceive('trigger')->with(
+            'wrongTripPayment',
+            $this->paymentsService,
+            [
+                'customer' => $customer,
+                'tripPayment' => $tripPayment
+            ]
+        );
+
         $customer->shouldReceive('getName');
         $customer->shouldReceive('getSurname');
 
-        $consequencesMethod->invoke($this->paymentsService, $customer, $tripPayment);
+        $consequencesMethod->invoke($this->paymentsService, $customer, $tripPayment, true);
     }
 }
