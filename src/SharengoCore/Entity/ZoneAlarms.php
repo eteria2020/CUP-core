@@ -37,7 +37,7 @@ class ZoneAlarms
     private $active;
 
     /**
-     * @var Fleet[]
+     * @var SharengoCore\Entity\Fleet[]
      *
      * @ORM\ManyToMany(targetEntity="Fleet", mappedBy="zoneAlarms")
      */
@@ -45,7 +45,7 @@ class ZoneAlarms
 
 
     /**
-     * @return string
+     * @return integer
      */
     public function getId()
     {
