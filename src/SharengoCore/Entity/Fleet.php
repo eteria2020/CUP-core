@@ -80,6 +80,22 @@ class Fleet
      */
     private $invoiceHeader;
 
+    /**
+     * @var ZoneAlarms[]
+     *
+     * @ORM\ManyToMany(targetEntity="ZoneAlarms", inversedBy="fleets")
+     * @ORM\JoinTable(
+     *  name="zone_alarms_fleets",
+     *  joinColumns={
+     *      @ORM\JoinColumn(name="zone_alarm_id", referencedColumnName="id")
+     *  },
+     *  inverseJoinColumns={
+     *      @ORM\JoinColumn(name="fleet_id", referencedColumnName="id")
+     *  }
+     * )
+     */
+    private $zoneAlarms;
+
 
     public function __construct($code, $name, $latitude, $longitude, $zoomLevel, $isDefault = false)
     {
@@ -185,5 +201,13 @@ class Fleet
     public function getInvoiceHeader()
     {
         return $this->invoiceHeader;
+    }
+
+    /**
+     * @return \SharengoCore\Entity\ZoneAlarms[]
+     */
+    public function getZoneAlarms()
+    {
+        return $this->zoneAlarms;
     }
 }

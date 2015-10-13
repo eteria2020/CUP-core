@@ -25,20 +25,27 @@ class ZoneAlarms
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="text", nullable=false)
-     */
-    private $name;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="geo", type="string", nullable=false)
      */
     private $geo;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="active", type="boolean", nullable=false)
+     */
+    private $active;
 
     /**
-     * @return string
+     * @var SharengoCore\Entity\Fleet[]
+     *
+     * @ORM\ManyToMany(targetEntity="Fleet", mappedBy="zoneAlarms")
+     */
+    private $fleets;
+
+
+    /**
+     * @return integer
      */
     public function getId()
     {
@@ -46,22 +53,10 @@ class ZoneAlarms
     }
 
     /**
-     * @return string
+     * @return \SharengoCore\Entity\Fleet[]
      */
-    public function getName()
+    public function getFleets()
     {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return ZoneAlarms
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
+        return $this->fleets;
     }
 }

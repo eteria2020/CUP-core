@@ -53,24 +53,27 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
-    public function getCarIfNotOutOfBounds($car)
+    /**
+     * @param Cars
+     * @return bool whether the car is or not inside the zones associated to its fleet
+     */
+    public function checkCarInFleetZones($car)
     {
         $em = $this->getEntityManager();
 
-        $sql = "SELECT c.plate
-            FROM cars c, zone_alarms z
-            WHERE c.plate = ?
-            AND z.name = 'MI'
-            AND z.geo @> point(c.longitude, c.latitude)";
+        $sql = 'SELECT coalesce(bool_and(za.geo @> point(c.longitude, c.latitude)), false) AS is_in '.
+            'FROM cars c '.
+            'JOIN fleets f ON f.id = c.fleet_id '.
+            'JOIN zone_alarms_fleets zaf ON zaf.fleet_id = f.id '.
+            'JOIN zone_alarms za ON za.id = zaf.zone_alarm_id AND za.active = TRUE '.
+            'WHERE c.plate = :plate';
 
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('SharengoCore\Entity\Cars', 'c');
-        $rsm->addFieldResult('c', 'plate', 'plate');
+        $rsm->addScalarResult('is_in', 'isIn', 'boolean');
 
         $query = $em->createNativeQuery($sql, $rsm);
-        $query->setParameter(1, $car->getPlate());
+        $query->setParameter('plate', $car->getPlate());
 
-        return $query->getOneOrNullResult();
+        return $query->getSingleScalarResult();
     }
-
 }

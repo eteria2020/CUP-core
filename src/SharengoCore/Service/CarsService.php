@@ -72,11 +72,13 @@ class CarsService
         return $this->carsRepository->findAll();
     }
 
-    public function getFleets() {
+    public function getFleets()
+    {
         return $this->fleetsRepository->findAll();
     }
 
-    public function getFleet($fleetId) {
+    public function getFleet($fleetId)
+    {
         return $this->fleetsRepository->find($fleetId);
     }
 
@@ -114,8 +116,11 @@ class CarsService
 
             $clean = sprintf('Interna: %s<br />Esterna: %s', $cars->getIntCleanliness(), $cars->getExtCleanliness());
 
-            $positionLink = sprintf('<a href="http://maps.google.com/?q=%s,%s" target="_blank">Mappa</a>',
-                $cars->getLatitude(), $cars->getLongitude());
+            $positionLink = sprintf(
+                '<a href="http://maps.google.com/?q=%s,%s" target="_blank">Mappa</a>',
+                $cars->getLatitude(),
+                $cars->getLongitude()
+            );
 
             return [
                 'e'            => [
@@ -156,7 +161,7 @@ class CarsService
     {
         $location = !empty($postData['location']) ? $postData['location'] : null;
 
-        if($car->getStatus() == CarStatus::MAINTENANCE &&
+        if ($car->getStatus() == CarStatus::MAINTENANCE &&
             !is_null($location)) {
             $carsMaintenance = new CarsMaintenance();
             $carsMaintenance->setCarPlate($car);
@@ -260,6 +265,6 @@ class CarsService
      */
     public function isCarOutOfBounds(Cars $car)
     {
-        return $this->carsRepository->getCarIfNotOutOfBounds($car) === null;
+        return !$this->carsRepository->checkCarInFleetZones($car);
     }
 }
