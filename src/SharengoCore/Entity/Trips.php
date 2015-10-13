@@ -950,6 +950,14 @@ class Trips
     }
 
     /**
+     * @return boolean
+     */
+    public function getCostComputed()
+    {
+        return $this->costComputed;
+    }
+
+    /**
      * Get fleet
      *
      * @return \SharengoCore\Entity\Fleet
