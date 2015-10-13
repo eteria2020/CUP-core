@@ -72,6 +72,20 @@ class PromoCodesInfo
     private $validTo;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="bonus_valid_from", type="datetime", nullable=false)
+     */
+    private $bonusValidFrom;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="bonus_valid_to", type="datetime", nullable=false)
+     */
+    private $bonusValidTo;
+
+    /**
      * @var interger cost in eurocents
      *
      * @ORM\Column(name="overridden_subscription_cost", type="integer", nullable=true)
@@ -269,6 +283,26 @@ class PromoCodesInfo
     }
 
     /**
+     * Get bonusValidFrom
+     *
+     * @return DateTime
+     */
+    public function getBonusValidFrom()
+    {
+        return $this->bonusValidFrom;
+    }
+
+    /**
+     * Get bonusValidTo
+     *
+     * @return DateTime
+     */
+    public function getBonusValidTo()
+    {
+        return $this->bonusValidTo;
+    }
+
+    /**
      * Get overriddenSubscriptionCost
      *
      * @return integer
@@ -321,9 +355,9 @@ class PromoCodesInfo
      *
      * @return bool
      */
-    public function changesSubscriptionCost() {
+    public function changesSubscriptionCost()
+    {
         return null != $this->overriddenSubscriptionCost &&
                $this->overriddenSubscriptionCost > 0;
     }
-    
 }

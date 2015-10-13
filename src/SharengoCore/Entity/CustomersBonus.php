@@ -141,8 +141,8 @@ class CustomersBonus
         $me->setUpdateTs($me->getInsertTs());
         $me->setTotal($promoCodeDetails->getMinutes());
         $me->setResidual($me->getTotal());
-        $me->setValidFrom($me->getInsertTs());
-        $me->setValidTo($promoCodeDetails->getValidTo());
+        $me->setValidFrom($promoCodeDetails->getBonusValidFrom());
+        $me->setValidTo($promoCodeDetails->getBonusValidTo());
         $me->setDescription($promoCode->getDescription());
         $me->setPromoCode($promoCode);
 
@@ -534,8 +534,9 @@ class CustomersBonus
 
         return null;
     }
-    
-    public function canBeDeleted() {
+
+    public function canBeDeleted()
+    {
         return $this->getTotal() == $this->getResidual() &&
                !$this->impliesSubscriptionDiscount();
     }
