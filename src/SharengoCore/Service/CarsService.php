@@ -260,6 +260,13 @@ class CarsService
      */
     public function isCarOutOfBounds(Cars $car)
     {
-        return $this->carsRepository->getCarIfNotOutOfBounds($car) === null;
+        $isCarOutOfBounds = false;
+        foreach ($car->getFleet()->getZoneAlarms() as $zone) {
+            $isCarOutOfBounds =
+                $isCarOutOfBounds ||
+                $this->carsRepository->getCarIfInAlarmZone($car, $zone) === null;
+        }
+        return $isCarOutOfBounds;
+
     }
 }

@@ -30,21 +30,18 @@ class ZoneAlarms
     private $geo;
 
     /**
-     * @var \SharengoCore\Entity\Fleet
-     *
-     * @ORM\ManyToOne(targetEntity="SharengoCore\Entity\Fleet")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="fleet_id", referencedColumnName="id")
-     * })
-     */
-    private $fleet;
-
-    /**
      * @var boolean
      *
      * @ORM\Column(name="active", type="boolean", nullable=false)
      */
     private $active;
+
+    /**
+     * @var Fleet[]
+     *
+     * @ORM\ManyToMany(targetEntity="Fleet", mappedBy="zoneAlarms")
+     */
+    private $fleets;
 
 
     /**
@@ -56,22 +53,10 @@ class ZoneAlarms
     }
 
     /**
-     * @return \SharengoCore\Entity\Fleet
+     * @return \SharengoCore\Entity\Fleet[]
      */
-    public function getFleet()
+    public function getFleets()
     {
-        return $this->fleet;
-    }
-
-    /**
-     * @param \SharengoCore\Entity\Fleet $fleet
-     *
-     * @return ZoneAlarms
-     */
-    public function setFleet($fleet)
-    {
-        $this->fleet = $fleet;
-
-        return $this;
+        return $this->fleets;
     }
 }

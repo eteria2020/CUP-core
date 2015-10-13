@@ -53,14 +53,14 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
-    public function getCarIfNotOutOfBounds($car)
+    public function getCarIfInAlarmZone($car, $zone)
     {
         $em = $this->getEntityManager();
 
         $sql = "SELECT c.plate
             FROM cars c, zone_alarms z
             WHERE c.plate = ?
-            AND z.fleet_id = ?
+            AND z.id = ?
             AND z.active = true
             AND z.geo @> point(c.longitude, c.latitude)";
 
@@ -70,7 +70,7 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
 
         $query = $em->createNativeQuery($sql, $rsm);
         $query->setParameter(1, $car->getPlate());
-        $query->setParameter(2, $car->getFleet()->getId());
+        $query->setParameter(2, $zone->getId());
 
         return $query->getOneOrNullResult();
     }
