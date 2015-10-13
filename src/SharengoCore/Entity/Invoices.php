@@ -381,7 +381,7 @@ class Invoices
      * @param string $reason
      * @param array $amounts with fields grand_total_cents, grand_total, total, iva
      */
-    public function createInvoiceForExtraOrPenalty(
+    public static function createInvoiceForExtraOrPenalty(
         Customers $customer,
         Fleet $fleet,
         $version,

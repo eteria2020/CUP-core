@@ -81,7 +81,22 @@ class ExtraPayment
     private $invoicedAt;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="invoice_able", type="boolean", nullable=false, options={"default" = TRUE})
+     */
+    private $invoiceAble;
+
+    /**
+     * @var DateTime
+     *
+     * @ORM\Column(name="generated_ts", type="datetime", nullable = false)
+     */
+    private $generatedTs;
+
+    /**
      * @param Customer $customer
+     * @param Fleet $fleet
      * @param integer $amount
      * @param string $paymentType
      * @param string $reason
@@ -99,5 +114,67 @@ class ExtraPayment
         $this->amount = $amount;
         $this->paymentType = $paymentType;
         $this->reason = $reason;
+        $this->invoiceAble = true;
+        $this->generatedTs = date_create();
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return Customers
+     */
+    public function getCustomer()
+    {
+        return $this->customer;
+    }
+
+    /**
+     * @return Fleet
+     */
+    public function getFleet()
+    {
+        return $this->fleet;
+    }
+
+    /**
+     * @return string
+     */
+    public function getReason()
+    {
+        return $this->reason;
+    }
+
+    /**
+     * @param int
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * @param Invoices $invoice
+     * @return self
+     */
+    public function associateInvoice(Invoices $invoice)
+    {
+        $this->invoice = $invoice;
+        $this->invoicedAt = date_create();
+
+        return $invoice;
+    }
+
+    /**
+     * @return Invoices
+     */
+    public function getInvoice()
+    {
+        return $this->invoice;
     }
 }

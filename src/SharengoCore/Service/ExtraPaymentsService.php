@@ -58,25 +58,37 @@ class ExtraPaymentsService
     }
 
     /**
-     * @param Customers $customer
-     * @param Fleet $fleet
-     * @param string $reason
-     * @param int $amount in eurocents
+     * @param ExtraPayment $extraPayment
+     * @param bool $doFlush
      */
     public function generateInvoice(
-        Customers $customer,
-        Fleet $fleet,
-        $reason,
-        $amount
+        ExtraPayment $extraPayment,
+        $doCommit = true
     ) {
-        $invoice = $this->invoicesService->prepareInvoiceForExtraOrPenalty(
-            $customer,
-            $fleet,
-            $reason,
-            $amount
-        );
+        $this->entityManager->beginTransaction();
 
-        $this->entityManager->persist($invoice);
-        $this->entityManager->flush();
+        try {
+            // create the invoice
+            $invoice = $this->invoicesService->prepareInvoiceForExtraOrPenalty(
+                $extraPayment->getCustomer(),
+                $extraPayment->getFleet(),
+                $extraPayment->getReason(),
+                $extraPayment->GetAmount()
+            );
+
+            $this->entityManager->persist($invoice);
+
+            // associate the invoice with the extra payment
+            $extraPayment->associateInvoice($invoice);
+
+            $this->entityManager->persist($extraPayment);
+
+            if ($doCommit) {
+                $this->entityManager->flush();
+                $this->entityManager->commit();
+            }
+        } catch (\Exception $e) {
+            $this->entityManager->rollback();
+        }
     }
 }
