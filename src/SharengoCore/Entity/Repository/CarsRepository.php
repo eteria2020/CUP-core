@@ -61,7 +61,7 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $sql = 'SELECT coalesce(bool_and(za.geo @> point(c.longitude, c.latitude)), false) AS is_in '.
+        $sql = 'SELECT coalesce(bool_or(za.geo @> point(c.longitude, c.latitude)), false) AS is_in '.
             'FROM cars c '.
             'JOIN fleets f ON f.id = c.fleet_id '.
             'JOIN zone_alarms_fleets zaf ON zaf.fleet_id = f.id '.
