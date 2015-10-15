@@ -170,4 +170,26 @@ class TripPaymentsService
 
         return $command();
     }
+
+    /**
+     * returns an array with day => income as mapping where income is the total
+     * amount cashed for that day
+     * @param \DateTime $date
+     * @return string[]
+     */
+    public function getDailyIncomeForMonth(\DateTime $date)
+    {
+        $payments = $this->tripPaymentsRepository->findPayedBetween(
+            date_create('first day of last month midnight'),
+            date_create('first day of midnight'),
+            'YYYY-MM'
+        );
+
+        foreach ($payments as $payment) {
+            echo $payment['tp_date'] . '<br>';
+            echo $payment['f_name'] . '<br>';
+            echo $payment['tp_amount'] . '<br><br>';
+        }
+        die;
+    }
 }
