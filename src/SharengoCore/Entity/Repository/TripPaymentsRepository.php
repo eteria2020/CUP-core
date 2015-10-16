@@ -114,6 +114,24 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->execute();
     }
 
+    public function findAvailableMonths()
+    {
+        $em = $this->getEntityManager();
+
+        $sql = 'SELECT to_char(tp.payed_successfully_at, :format) AS tp_date
+            FROM trip_payments tp
+            WHERE tp.payed_successfully_at IS NOT NULL
+            GROUP BY tp_date
+            ORDER BY tp_date DESC';
+
+        $rsm = new ResultSetMapping;
+        $rsm->addScalarResult('tp_date', 'tp_date', 'string');
+        $query = $em->createNativeQuery($sql, $rsm);
+        $query->setParameter('format', 'MM-YYYY');
+
+        return $query->getResult();
+    }
+
     /**
      * @param \DateTime $start
      * @param \DateTime $end
@@ -124,11 +142,14 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
      *         to group by month use 'YYYY-MM'
      * @return array[]
      */
-    public function findPayedBetween(\DateTime $start, \DateTime $end, $dateGroupingFormat = 'YYYY-MM-DD')
-    {
+    public function findPayedBetween(
+        \DateTime $start,
+        \DateTime $end,
+        $dateGroupingFormat = 'YYYY-MM-DD'
+    ) {
         $em = $this->getEntityManager();
 
-        $sql = 'SELECT to_char(tp.payed_successfully_at, :groupingFormat) AS tp_date,
+        $sql = 'SELECT to_char(tp.payed_successfully_at, :format) AS tp_date,
                 f.name AS f_name,
                 sum(tp.total_cost) AS tp_amount
             FROM trip_payments tp
@@ -136,18 +157,16 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
             LEFT JOIN fleets f ON t.fleet_id = f.id
             WHERE tp.payed_successfully_at >= :start
             AND tp.payed_successfully_at < :end
-            GROUP BY 1, 2
-            ORDER BY 1, 2';
+            GROUP BY tp_date, f_name
+            ORDER BY tp_date, f_name ASC';
 
         $rsm = new ResultSetMapping;
         $rsm->addScalarResult('tp_date', 'tp_date', 'string');
-        //$rsm->addEntityResult('\SharengoCore\Entity\Fleet', 'f');
-        //$rsm->addFieldResult('f', 'id', 'id');
         $rsm->addScalarResult('f_name', 'f_name', 'string');
         $rsm->addScalarResult('tp_amount', 'tp_amount', 'integer');
 
         $query = $em->createNativeQuery($sql, $rsm);
-        $query->setParameter('groupingFormat', $dateGroupingFormat);
+        $query->setParameter('format', $dateGroupingFormat);
         $query->setParameter('start', $start->format('Y-m-d H:i:s'));
         $query->setParameter('end', $end->format('Y-m-d H:i:s'));
 

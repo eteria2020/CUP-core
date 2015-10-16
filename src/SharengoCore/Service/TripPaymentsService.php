@@ -172,24 +172,52 @@ class TripPaymentsService
     }
 
     /**
-     * returns an array with day => income as mapping where income is the total
-     * amount cashed for that day
-     * @param \DateTime $date
      * @return string[]
      */
-    public function getDailyIncomeForMonth(\DateTime $date)
+    public function getAvailableMonths()
     {
-        $payments = $this->tripPaymentsRepository->findPayedBetween(
-            date_create('first day of last month midnight'),
-            date_create('first day of midnight'),
-            'YYYY-MM'
-        );
+        return $this->tripPaymentsRepository->findAvailableMonths();
+    }
 
-        foreach ($payments as $payment) {
-            echo $payment['tp_date'] . '<br>';
-            echo $payment['f_name'] . '<br>';
-            echo $payment['tp_amount'] . '<br><br>';
+    /**
+     * returns an array with day => income as mapping where income is the total
+     * amount cashed for that day
+     * @param string $dateString
+     * @return array[]
+     */
+    public function getDailyIncomeForMonth($dateString)
+    {
+        // Create an interval to represent a month
+        $interval = new \DateInterval('P1M');
+        /*
+        $start = date_create_from_format('m-Y-d H:i:s', $dateString . '-01 00:00:00');
+        $end = $start->add($interval);
+        */
+        $start = date_create_from_format('m-Y-d H:i:s', $dateString . '-01 00:00:00');
+        $end = clone($start);
+        $end->add($interval);
+        $incomes = $this->tripPaymentsRepository->findPayedBetween(
+            $start,
+            $end,
+            'DD-MM-YYYY'
+        );
+        return $this->groupIncomesByDate($incomes);
+    }
+
+    /**
+     * @param array[] $incomes
+     * @return array[]
+     */
+    private function groupIncomesByDate($incomes)
+    {
+        $groupedIncomes = [];
+        foreach ($incomes as $income) {
+            $tpDate = $income['tp_date'];
+            if (!array_key_exists($tpDate, $groupedIncomes)) {
+                $groupedIncomes[$tpDate] = [];
+            }
+            $groupedIncomes[$tpDate][$income['f_name']] = $income['tp_amount'];
         }
-        die;
+        return $groupedIncomes;
     }
 }
