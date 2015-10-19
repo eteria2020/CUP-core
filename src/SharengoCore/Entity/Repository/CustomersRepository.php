@@ -24,11 +24,11 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
 
     public function getUserByEmailPassword($s_username, $s_password)
     {
-        $s_query =  'SELECT c ' .
-            'FROM \SharengoCore\Entity\Customers c ' .
-            'WHERE c.email = :user ' .
-            'AND c.password = :password ' .
-            'AND c.registrationCompleted = true';
+        $s_query =  'SELECT c
+            FROM \SharengoCore\Entity\Customers c
+            WHERE lower(c.email) = lower(:user)
+            AND c.password = :password
+            AND c.registrationCompleted = true';
 
         $I_query = $this->getEntityManager()->createQuery($s_query);
         $I_query->setParameter('user', $s_username);
