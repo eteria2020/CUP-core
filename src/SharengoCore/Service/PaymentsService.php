@@ -2,7 +2,7 @@
 
 namespace SharengoCore\Service;
 
-use Cartasi\Service\CartasiCustomerPayments;
+use Cartasi\Service\CartasiCustomerPaymentsInterface;
 use Cartasi\Service\CartasiContractsService;
 use SharengoCore\Service\TripPaymentTriesService;
 use SharengoCore\Entity\Customers;
@@ -15,7 +15,7 @@ use Zend\EventManager\EventManager;
 class PaymentsService
 {
     /**
-     * @var CartasiCustomerPayments
+     * @var CartasiCustomerPaymentsInterface
      */
     private $cartasiCustomerPayments;
 
@@ -65,7 +65,7 @@ class PaymentsService
     private $avoidPersistance = true;
 
     /**
-     * @param CartasiCustomerPayments $cartasiCustomerPayments
+     * @param CartasiCustomerPaymentsInterface $cartasiCustomerPayments
      * @param CartasiContractsService $cartasiContractService
      * @param EntityManager $entityManager
      * @param EmailService $emailService
@@ -74,7 +74,7 @@ class PaymentsService
      * @param string $url
      */
     public function __construct(
-        CartasiCustomerPayments $cartasiCustomerPayments,
+        CartasiCustomerPaymentsInterface $cartasiCustomerPayments,
         CartasiContractsService $cartasiContractService,
         EntityManager $entityManager,
         EmailService $emailService,

@@ -6,7 +6,7 @@ class PaymentsServiceTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->cartasiCustomerPayments = \Mockery::mock('Cartasi\Service\CartasiCustomerPayments');
+        $this->cartasiCustomerPayments = \Mockery::mock('Cartasi\Service\CartasiCustomerPaymentsInterface');
         $this->cartasiContractsService = \Mockery::mock('Cartasi\Service\CartasiContractsService');
         $this->entityManager = \Mockery::mock('Doctrine\ORM\EntityManager');
         $this->emailService = \Mockery::mock('SharengoCore\Service\EmailService');

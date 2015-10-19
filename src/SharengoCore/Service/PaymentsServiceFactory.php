@@ -10,7 +10,7 @@ class PaymentsServiceFactory implements FactoryInterface
 {
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $cartasiCustomerPayments = $serviceLocator->get('Cartasi\Service\CartasiCustomerPayments');
+        $cartasiCustomerPayments = $serviceLocator->get('Cartasi\Service\CartasiCustomerPaymentsRetry');
         $cartasiContractService = $serviceLocator->get('Cartasi\Service\CartasiContracts');
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $emailService = $serviceLocator->get('SharengoCore\Service\EmailService');
