@@ -3,7 +3,6 @@
 namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * CustomersBonusPackages
@@ -93,20 +92,6 @@ class CustomersBonusPackages
     private $cost;
 
     /**
-     * @param DoctrineHydrator
-     * @return mixed[]
-     */
-    public function toArray(DoctrineHydrator $hydrator)
-    {
-        $package = $hydrator->extract($this);
-        $package['validFrom'] = $this->validFrom->format("d-m-Y");
-        $package['validTo'] = $this->validTo->format("d-m-Y");
-        $package['buyableUntil'] = $this->buyableUntil->format("d-m-Y");
-
-        return $package;
-    }
-
-    /**
      * @return integer
      */
     public function getId()
@@ -123,33 +108,11 @@ class CustomersBonusPackages
     }
 
     /**
-     * @param string $code
-     * @return CustomersBonusPackages
-     */
-    public function setCode($code)
-    {
-        $this->code = $code;
-        return $this;
-    }
-
-    /**
      * @return \DateTime
      */
     public function getInsertedTs()
     {
         return $this->insertedTs;
-    }
-
-    /**
-     * @param \DateTime $insertedTs
-     *
-     * @return CustomersBonusPackages
-     */
-    public function setInsertedTs($insertedTs)
-    {
-        $this->insertedTs = $insertedTs;
-
-        return $this;
     }
 
     /**
@@ -161,35 +124,11 @@ class CustomersBonusPackages
     }
 
     /**
-     * @param integer $minutes
-     *
-     * @return CustomersBonusPackages
-     */
-    public function setMinutes($minutes)
-    {
-        $this->minutes = $minutes;
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getType()
     {
         return $this->type;
-    }
-
-    /**
-     * @param string $type
-     *
-     * @return CustomersBonusPackages
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-
-        return $this;
     }
 
     /**
@@ -201,35 +140,11 @@ class CustomersBonusPackages
     }
 
     /**
-     * @param \DateTime $validFrom
-     *
-     * @return CustomersBonusPackages
-     */
-    public function setValidFrom($validFrom)
-    {
-        $this->validFrom = $validFrom;
-
-        return $this;
-    }
-
-    /**
      * @return integer
      */
     public function getDuration()
     {
         return $this->duration;
-    }
-
-    /**
-     * @param integer $duration
-     *
-     * @return CustomersBonusPackages
-     */
-    public function setDuration($duration)
-    {
-        $this->duration = $duration;
-
-        return $this;
     }
 
     /**
@@ -241,35 +156,11 @@ class CustomersBonusPackages
     }
 
     /**
-     * @param \DateTime $validTo
-     *
-     * @return CustomersBonusPackages
-     */
-    public function setValidTo($validTo)
-    {
-        $this->validTo = $validTo;
-
-        return $this;
-    }
-
-    /**
      * @return \DateTime
      */
     public function getBuyableUntil()
     {
         return $this->buyableUntil;
-    }
-
-    /**
-     * @param \DateTime $validTo
-     *
-     * @return CustomersBonusPackages
-     */
-    public function setBuyableUntil($buyableUntil)
-    {
-        $this->buyableUntil = $buyableUntil;
-
-        return $this;
     }
 
     /**
@@ -281,34 +172,10 @@ class CustomersBonusPackages
     }
 
     /**
-     * @param string $description
-     *
-     * @return CustomersBonusPackages
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
      * @return integer
      */
     public function getCost()
     {
         return $this->cost;
-    }
-
-    /**
-     * @param integer $cost
-     *
-     * @return CustomersBonusPackages
-     */
-    public function setCost($cost)
-    {
-        $this->cost = $cost;
-
-        return $this;
     }
 }

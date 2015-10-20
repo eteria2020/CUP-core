@@ -108,18 +108,6 @@ return [
                                 ]
                             ]
                         ],
-                        'packages' => [
-                            'type' => 'Segment',
-                            'options' => [
-                                'route' => '/packages[/:id]',
-                                'constraints' => array(
-                                    'id'     => '[0-9]+',
-                                ),
-                                'defaults' => [
-                                    'controller' => 'CustomersBonusPackages'
-                                ]
-                            ]
-                        ],
                     ],
                 ],
                 'pdf' => [

@@ -30,23 +30,6 @@ class CustomersBonusPackagesService
     }
 
     /**
-     * @param string $code
-     * @return CustomersBonusPackages
-     */
-    public function getBonusPackageByCode($code)
-    {
-        return $this->repository->findOneByCode($code);
-    }
-
-    /**
-     * @return CustomersBonusPackages[]
-     */
-    public function getAllBonusPackages()
-    {
-        return $this->repository->findAll();
-    }
-
-    /**
      * @return CustomersBonusPackages[]
      */
     public function getAvailableBonusPackges()
