@@ -108,8 +108,7 @@ class InvoicesService
      */
     public function getInvoicesByDate(\DateTime $date)
     {
-        $date = $date->format('Ymd');
-        return $this->invoicesRepository->findByInvoiceDate($date);
+        return $this->invoicesRepository->findInvoicesByDateWithCustomer($date);
     }
 
     /**

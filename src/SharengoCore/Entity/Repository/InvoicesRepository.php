@@ -97,4 +97,24 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+
+    /**
+     * @param \DateTime $date
+     * @return Invoices[]
+     */
+    public function findInvoicesByDateWithCustomer(\DateTime $date)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT i, c
+        FROM \SharengoCore\Entity\Invoices i
+        LEFT JOIN i.customer c
+        WHERE i.invoiceDate = :invDate
+        ORDER BY i.id ASC";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('invDate', $date->format('Ymd'));
+
+        return $query->getResult();
+    }
 }
