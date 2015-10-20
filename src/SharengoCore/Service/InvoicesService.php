@@ -97,18 +97,18 @@ class InvoicesService
     /**
      * @return Invoices[]
      */
-    public function getInvoicesWithCustomer()
+    public function getInvoicesJoinCustomers()
     {
-        return $this->invoicesRepository->findInvoicesWithCustomerOrdered();
+        return $this->invoicesRepository->findInvoicesJoinCustomers();
     }
 
     /**
      * @param \DateTime $date
      * @return Invoices[]
      */
-    public function getInvoicesByDate(\DateTime $date)
+    public function getInvoicesByDateJoinCustomers(\DateTime $date)
     {
-        return $this->invoicesRepository->findInvoicesByDateWithCustomer($date);
+        return $this->invoicesRepository->findInvoicesByDateJoinCustomers($date);
     }
 
     /**

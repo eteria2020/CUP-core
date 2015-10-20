@@ -84,7 +84,7 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
      * This method could be substituted by a findBy([], ["id" => "ASC"])
      * but by making the LEFT JOIN with Customers it improves speed noticeably
      */
-    public function findInvoicesWithCustomerOrdered()
+    public function findInvoicesJoinCustomers()
     {
         $em = $this->getEntityManager();
 
@@ -102,7 +102,7 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
      * @param \DateTime $date
      * @return Invoices[]
      */
-    public function findInvoicesByDateWithCustomer(\DateTime $date)
+    public function findInvoicesByDateJoinCustomers(\DateTime $date)
     {
         $em = $this->getEntityManager();
 
