@@ -81,19 +81,52 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * This method could be substituted by a findBy([], ["id" => "ASC"])
-     * but by making the LEFT JOIN with Customers it improves speed noticeably
+     * @param Fleet | null $fleet
+     * @return Invoices[]
      */
-    public function findInvoicesWithCustomerOrdered()
+    public function findInvoicesByFleetJoinCustomers($fleet = null)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT i, c
+        FROM \SharengoCore\Entity\Invoices i
+        LEFT JOIN i.customer c";
+        if ($fleet != null) {
+            $dql .= " WHERE i.fleet = :fleet";
+        }
+        $dql .= " ORDER BY i.id ASC";
+
+        $query = $em->createQuery($dql);
+        if ($fleet != null) {
+            $query->setParameter('fleet', $fleet);
+        }
+
+        return $query->getResult();
+    }
+
+    /**
+     * @param \DateTime $date
+     * @param Fleet | null $fleet
+     * @return Invoices[]
+     */
+    public function findInvoicesByDateAndFleetJoinCustomers(\DateTime $date, $fleet=null)
     {
         $em = $this->getEntityManager();
 
         $dql = "SELECT i, c
         FROM \SharengoCore\Entity\Invoices i
         LEFT JOIN i.customer c
-        ORDER BY i.id ASC";
+        WHERE i.invoiceDate = :invDate";
+        if ($fleet != null) {
+            $dql .= " AND i.fleet = :fleet";
+        }
+        $dql .= " ORDER BY i.id ASC";
 
         $query = $em->createQuery($dql);
+        $query->setParameter('invDate', $date->format('Ymd'));
+        if ($fleet != null) {
+            $query->setParameter('fleet', $fleet);
+        }
 
         return $query->getResult();
     }

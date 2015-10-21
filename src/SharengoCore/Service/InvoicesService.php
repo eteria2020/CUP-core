@@ -95,21 +95,22 @@ class InvoicesService
     }
 
     /**
+     * @param Fleet | null $fleet
      * @return Invoices[]
      */
-    public function getInvoicesWithCustomer()
+    public function getInvoicesByFleetJoinCustomers($fleet = null)
     {
-        return $this->invoicesRepository->findInvoicesWithCustomerOrdered();
+        return $this->invoicesRepository->findInvoicesByFleetJoinCustomers($fleet);
     }
 
     /**
      * @param \DateTime $date
+     * @param Fleet | null $fleet
      * @return Invoices[]
      */
-    public function getInvoicesByDate(\DateTime $date)
+    public function getInvoicesByDateAndFleetJoinCustomers(\DateTime $date, $fleet = null)
     {
-        $date = $date->format('Ymd');
-        return $this->invoicesRepository->findByInvoiceDate($date);
+        return $this->invoicesRepository->findInvoicesByDateAndFleetJoinCustomers($date, $fleet);
     }
 
     /**
