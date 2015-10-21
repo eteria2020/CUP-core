@@ -216,6 +216,14 @@ class TripPayments
     }
 
     /**
+     * @return int
+     */
+    public function getTripId()
+    {
+        return $this->trip->getId();
+    }
+
+    /**
      * @param Trip $trip
      * @return TripPayments
      */
