@@ -7,6 +7,7 @@ use SharengoCore\Exception\FleetNotFoundException;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Queries\AllFleets;
 use SharengoCore\Entity\Queries\FleetById;
+use SharengoCore\Entity\Queries\FleetByCode;
 use SharengoCore\Entity\Queries\DefaultFleet;
 
 use Doctrine\ORM\EntityManager;
@@ -87,5 +88,22 @@ class FleetService
         $query = new DefaultFleet($this->entityManager);
 
         return $query();
+    }
+
+    /**
+     * @param string $fleetCode
+     * @return Fleet
+     */
+    public function getFleetByCode($fleetCode)
+    {
+        $query = new FleetByCode($fleetCode, $this->entityManager);
+
+        $fleet = $query();
+
+        if (! $fleet instanceof Fleet) {
+            throw new FleetNotFoundException();
+        }
+
+        return $fleet;
     }
 }
