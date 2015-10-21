@@ -180,19 +180,14 @@ class TripPaymentsService
     }
 
     /**
-     * returns an array with day => income as mapping where income is the total
-     * amount cashed for that day
+     * Returns incomes for last month's days
      * @param string $dateString
-     * @return array[]
+     * @return array[] in format day => [fleet => income]
      */
     public function getDailyIncomeForMonth($dateString)
     {
         // Create an interval to represent a month
         $interval = new \DateInterval('P1M');
-        /*
-        $start = date_create_from_format('m-Y-d H:i:s', $dateString . '-01 00:00:00');
-        $end = $start->add($interval);
-        */
         $start = date_create_from_format('m-Y-d H:i:s', $dateString . '-01 00:00:00');
         $end = clone($start);
         $end->add($interval);
@@ -200,6 +195,44 @@ class TripPaymentsService
             $start,
             $end,
             'DD-MM-YYYY'
+        );
+        return $this->groupIncomesByDate($incomes);
+    }
+
+    /**
+     * Returns incomes for last month's weeks
+     * @return array[] in format week => [fleet => income]
+     */
+    public function getWeeklyIncome()
+    {
+        // Create an interval to represent a month
+        $interval = new \DateInterval('P28D');
+        $end = date_create('next monday midnight');
+        $start = clone($end);
+        $start->sub($interval);
+        $incomes = $this->tripPaymentsRepository->findPayedBetween(
+            $start,
+            $end,
+            'YYYY-IW'
+        );
+        return $this->groupIncomesByDate($incomes);
+    }
+
+    /**
+     * Returns incomes for last year's months
+     * @return array[] in format month => [fleet => income]
+     */
+    public function getMonthlyIncome()
+    {
+        // Create an interval to represent a month
+        $interval = new \DateInterval('P12M');
+        $end = date_create('first day of next month midnight');
+        $start = clone($end);
+        $start->sub($interval);
+        $incomes = $this->tripPaymentsRepository->findPayedBetween(
+            $start,
+            $end,
+            'YYYY-MM'
         );
         return $this->groupIncomesByDate($incomes);
     }
