@@ -131,6 +131,16 @@ class CustomersBonus
      */
     private $promocode;
 
+    /**
+     * @var CustomersBonusPackages
+     *
+     * @ORM\ManyToOne(targetEntity="CustomersBonusPackages")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="package_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $package;
+
 
     public static function createFromPromoCode(PromoCodes $promoCode)
     {
@@ -166,7 +176,8 @@ class CustomersBonus
             ->setValidFrom(max(date_create(), $bonusPackage->getValidFrom()))
             ->setDurationDays($bonusPackage->getDuration())
             ->setValidTo($bonusPackage->getValidTo())
-            ->setDescription($bonusPackage->getDescription());
+            ->setDescription($bonusPackage->getDescription())
+            ->setPackage($bonusPackage);
 
         return $bonus;
     }
@@ -515,6 +526,27 @@ class CustomersBonus
     public function getPromocode()
     {
         return $this->promocode;
+    }
+
+    /**
+     * Set package
+     *
+     * @param CustomersBonusPackages
+     * @return self
+     */
+    public function setPackage(CustomersBonusPackages $package)
+    {
+        $this->package = $package;
+
+        return $this;
+    }
+
+    /**
+     * @return CustomersBonusPackages
+     */
+    public function getPackage()
+    {
+        return $this->package;
     }
 
     /**
