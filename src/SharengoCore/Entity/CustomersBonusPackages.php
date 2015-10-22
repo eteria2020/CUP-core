@@ -178,4 +178,9 @@ class CustomersBonusPackages
     {
         return $this->cost;
     }
+
+    public function generateCustomerBonus(Customers $customer)
+    {
+        return CustomersBonus::createFromBonusPackage($customer, $this);
+    }
 }

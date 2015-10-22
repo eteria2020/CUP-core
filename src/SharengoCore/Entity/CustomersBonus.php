@@ -156,21 +156,15 @@ class CustomersBonus
      */
     public static function createFromBonusPackage(Customers $customer, CustomersBonusPackages $bonusPackage)
     {
-        $date = new \DateTime();
-        $validFrom = $bonusPackage->getValidFrom();
-        if ($date->getTimestamp() > $validFrom->getTimestamp()) {
-            $validFrom = $date;
-        }
-
         $bonus = new CustomersBonus();
         $bonus->setCustomer($customer)
-            ->setInsertTs($date)
-            ->setUpdateTs($date)
-            ->setTotal($bonusPackage->getTotal())
-            ->setResidual($bonusPackage->getTotal())
+            ->setInsertTs(date_create())
+            ->setUpdateTs(date_create())
+            ->setTotal($bonusPackage->getMinutes())
+            ->setResidual($bonusPackage->getMinutes())
             ->setType($bonusPackage->getType())
-            ->setValidFrom($validFrom())
-            ->setDurationDays($bonusPackage->getLength())
+            ->setValidFrom(max(date_create(), $bonusPackage->getValidFrom()))
+            ->setDurationDays($bonusPackage->getDuration())
             ->setValidTo($bonusPackage->getValidTo())
             ->setDescription($bonusPackage->getDescription());
 
