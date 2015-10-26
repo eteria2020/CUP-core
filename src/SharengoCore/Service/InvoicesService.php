@@ -263,6 +263,7 @@ class InvoicesService
                     'invoiceDate' => $invoice->getInvoiceDate(),
                     'type' => $invoice->getType(),
                     'amount' => $invoice->getAmount(),
+                    'customerId' => $invoice->getCustomer()->getId(),
                     'customerName' => $invoice->getCustomer()->getName(),
                     'customerSurname' => $invoice->getCustomer()->getSurname()
                 ],
