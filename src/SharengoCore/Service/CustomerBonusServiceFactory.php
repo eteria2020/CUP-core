@@ -10,7 +10,8 @@ class CustomerBonusServiceFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
+        $invoicesService = $serviceLocator->get('SharengoCore\Service\Invoices');
 
-        return new CustomerBonusService($entityManager);
+        return new CustomerBonusService($entityManager, $invoicesService);
     }
 }

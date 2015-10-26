@@ -220,11 +220,16 @@ class InvoicesService
         Customers $customer,
         BonusPackages $bonusPackage
     ) {
+        $amounts = [
+            'sum' => $this->calculateAmountsWithTaxesFromTotal($bonusPackage->getCost()),
+            'iva' => $this->ivaPercentage
+        ];
+
         return Invoices::createInvoiceForBonusPackage(
             $customer,
             $bonusPackage,
             $this->templateVersion,
-            $this->calculateAmountsWithTaxesFromTotal($bonusPackage->getCost())
+            $amounts
         );
     }
 

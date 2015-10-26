@@ -4,6 +4,7 @@ namespace SharengoCore\Entity;
 
 use SharengoCore\Exception\NonPositiveIntegerException;
 use Cartasi\Entity\Transactions;
+use SharengoCore\Entity\Invoices;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -151,6 +152,23 @@ class CustomersBonus
      * })
      */
     private $transaction;
+
+    /**
+     * @var Invoices
+     *
+     * @ORM\ManyToOne(targetEntity="\SharengoCore\Entity\Invoices")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="invoice_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $invoice;
+
+    /**
+     * @var DateTime
+     *
+     * @ORM\Column(name="invoiced_at", type="datetime", nullable=true)
+     */
+    private $invoicedAt;
 
 
     public static function createFromPromoCode(PromoCodes $promoCode)
@@ -628,5 +646,14 @@ class CustomersBonus
     {
         return $this->getTotal() == $this->getResidual() &&
                !$this->impliesSubscriptionDiscount();
+    }
+
+    /**
+     * @param Invoices $invoice
+     */
+    public function associateInvoice(Invoices $invoice)
+    {
+        $this->invoice = $invoice;
+        $this->invoicedAt = date_create();
     }
 }

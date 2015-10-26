@@ -434,20 +434,19 @@ class Invoices
         $version,
         $amounts
     ) {
-        $invoice = Invoices::createBasicInvoice(
+        $invoice = new Invoices(
             $customer,
             $version,
             self::TYPE_BONUS_PACKAGE,
             intval(date("Ymd")),
-            $amounts
+            $amounts,
+            $customer->getFleet()
         );
 
-        $content = $invoice->getContent();
-
-        $content['body'] = [
+        $invoice->setContentBody([
             'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento per il pacchetto da lei acquistato<br>' .
                 'L\'importo totale della fattura è di EUR ' .
-                $amounts['grand_total'] .
+                $amounts['sum']['grand_total'] .
                 '</p>',
             'contents' => [
                 'header' => [
@@ -456,8 +455,8 @@ class Invoices
                 ],
                 'body' => [
                     [
-                        $bonusPackage->getDescription(),
-                        $amounts['total'] . ' €'
+                        [$bonusPackage->getDescription()],
+                        [$amounts['sum']['total'] . ' €']
                     ]
                 ],
                 'body-format' => [
@@ -467,9 +466,7 @@ class Invoices
                     ]
                 ]
             ]
-        ];
-
-        $invoice->setContent($content);
+        ]);
 
         return $invoice;
     }
@@ -553,12 +550,14 @@ class Invoices
     public function getTypeItalianTranslation()
     {
         switch ($this->getType()) {
-            case 'FIRST_PAYMENT':
+            case TYPE_FIRST_PAYMENT:
                 return 'Iscrizione';
-            case 'TRIP':
+            case TYPE_TRIP:
                 return 'Corse';
-            case 'PENALTY':
+            case TYPE_PENALTY:
                 return 'Sanzione';
+            case TYPE_BONUS_PACKAGE:
+                return 'Pacchetto bonus';
         }
         return '';
     }
