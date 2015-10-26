@@ -43,7 +43,7 @@ class BuyCustomerBonusPackage
             $cartasiResponse = $this->payments->sendPaymentRequest($customer, $package->getCost());
 
             if ($cartasiResponse->getCompletedCorrectly()) {
-                $bonus = $package->generateCustomerBonus($customer);
+                $bonus = $package->generateCustomerBonus($customer, $cartasiResponse->getTransaction());
 
                 $this->entityManager->persist($bonus);
                 $this->entityManager->flush();

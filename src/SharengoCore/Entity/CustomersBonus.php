@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity;
 
 use SharengoCore\Exception\NonPositiveIntegerException;
+use Cartasi\Entity\Transactions;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -141,6 +142,16 @@ class CustomersBonus
      */
     private $package;
 
+    /**
+     * @var Transaction
+     *
+     * @ORM\OneToOne(targetEntity="\Cartasi\Entity\Transactions")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $transaction;
+
 
     public static function createFromPromoCode(PromoCodes $promoCode)
     {
@@ -164,8 +175,11 @@ class CustomersBonus
      * @param CustomersBonusPackages $bonusPackage
      * @return CustomersBonus
      */
-    public static function createFromBonusPackage(Customers $customer, CustomersBonusPackages $bonusPackage)
-    {
+    public static function createFromBonusPackage(
+        Customers $customer,
+        CustomersBonusPackages $bonusPackage,
+        Transactions $transaction
+    ) {
         $bonus = new CustomersBonus();
         $bonus->setCustomer($customer)
             ->setInsertTs(date_create())
@@ -177,7 +191,8 @@ class CustomersBonus
             ->setDurationDays($bonusPackage->getDuration())
             ->setValidTo($bonusPackage->getValidTo())
             ->setDescription($bonusPackage->getDescription())
-            ->setPackage($bonusPackage);
+            ->setPackage($bonusPackage)
+            ->setTransaction($transaction);
 
         return $bonus;
     }
@@ -547,6 +562,26 @@ class CustomersBonus
     public function getPackage()
     {
         return $this->package;
+    }
+
+    /**
+     *
+     * @param Transactions $transaction
+     * @return self
+     */
+    public function setTransaction(Transactions $transaction)
+    {
+        $this->transaction = $transaction;
+
+        return $this;
+    }
+
+    /**
+     * @return Transactions
+     */
+    public function getTransaction()
+    {
+        return $this->transaction;
     }
 
     /**

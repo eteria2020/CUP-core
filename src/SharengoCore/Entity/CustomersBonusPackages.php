@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity;
 
+use Cartasi\Entity\Transactions;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -179,8 +181,10 @@ class CustomersBonusPackages
         return $this->cost;
     }
 
-    public function generateCustomerBonus(Customers $customer)
-    {
-        return CustomersBonus::createFromBonusPackage($customer, $this);
+    public function generateCustomerBonus(
+        Customers $customer,
+        Transactions $transaction
+    ) {
+        return CustomersBonus::createFromBonusPackage($customer, $this, $transaction);
     }
 }
