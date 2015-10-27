@@ -5,7 +5,7 @@ namespace SharengoCore\Service;
 use SharengoCore\Entity\Events;
 use SharengoCore\Entity\Trips;
 
-use SharengoCore\Entity\Repository\EventsRepository;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 
 class EventsService
 {
@@ -14,7 +14,7 @@ class EventsService
      */
     private $eventsRepository;
 
-    public function __construct(EventsRepository $eventsRepository)
+    public function __construct(DocumentRepository $eventsRepository)
     {
         $this->eventsRepository = $eventsRepository;
     }
@@ -34,6 +34,6 @@ class EventsService
      */
     public function getEventsByTrip(Trips $trip)
     {
-        return $this->eventsRepository->findByTrip($trip);
+        return $this->eventsRepository->findBy([ "trip" =>  $trip->getId()]);
     }
 }

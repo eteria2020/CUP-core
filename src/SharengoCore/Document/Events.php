@@ -1,150 +1,135 @@
 <?php
 
-namespace SharengoCore\Entity;
+namespace SharengoCore\Document;
 
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
  * Events
  *
- * @ORM\Table(name="events")
- * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\EventsRepository")
+ * @ODM\Document(collection="events", repositoryClass="SharengoCore\Document\Repository\EventsRepository")
  */
 class Events
 {
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="SEQUENCE")
-     * @ORM\SequenceGenerator(sequenceName="events_id_seq", allocationSize=1, initialValue=1)
-     */
+    /** @ODM\Id */
     private $id;
 
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="event_time", type="datetime", nullable=true)
+     * @ODM\Field(type="date", name="event_time");
      */
     private $eventTime;
 
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="server_time", type="datetime", nullable=true)
+     * @ODM\Field(type="date", name="server_time");
      */
     private $serverTime;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="car_plate", type="string", nullable=true)
+     * @ODM\Field(type="string", name="car_plate");
      */
     private $carPlate;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="event_id", type="integer", nullable=true)
-     */
-    private $eventId;
-
-    /**
      * @var string
      *
-     * @ORM\Column(name="label", type="string", nullable=true)
+     * @ODM\Field(type="string", name="label");
      */
     private $label;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="level", type="integer", nullable=true)
+     * MAYBE TO BE MAPPED
      */
     private $level;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="customer_id", type="integer", nullable=true)
+     * @ODM\Field(type="integer", name="customer_id");
      */
     private $customer;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="trip_id", type="integer", nullable=true)
+     * @ODM\Field(type="integer", name="trip_id");
      */
     private $trip;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="txtval", type="string", nullable=true)
+     * MAYBE TO BE MAPPED
      */
     private $txtval;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="intval", type="integer", nullable=true)
+     * MAYBE TO BE MAPPED
      */
     private $intval;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="geo", type="string", nullable=true)
+     * MAYBE TO BE MAPPED
      */
     private $geo;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="lon", type="decimal", precision=10, scale=0, nullable=true)
+     * MAYBE TO BE MAPPED
      */
     private $lon;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="lat", type="decimal", precision=10, scale=0, nullable=true)
+     * MAYBE TO BE MAPPED
      */
     private $lat;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="km", type="integer", nullable=true)
+     * MAYBE TO BE MAPPED
      */
     private $km;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="battery", type="integer", nullable=true)
+     * MAYBE TO BE MAPPED
      */
     private $battery;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="mac", type="string", nullable=true)
+     * MAYBE TO BE MAPPED
      */
     private $mac;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="imei", type="string", nullable=true)
+     * MAYBE TO BE MAPPED
      */
     private $imei;
 
     /**
      * @var array
      *
-     * @ORM\Column(name="data", type="json_array", nullable=true)
+     * MAYBE TO BE MAPPED
      */
     private $data;
 

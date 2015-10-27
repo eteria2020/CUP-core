@@ -214,6 +214,16 @@ return [
                     __NAMESPACE__ . '\Entity' => __NAMESPACE__ . '_driver'
                 ]
             ],
+            __NAMESPACE__ . '_driver_odm' => array(
+                'class' => 'Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver',
+                'cache' => 'array',
+                'paths' => array(__DIR__ . '/../src/' . __NAMESPACE__ . '/Document')
+            ),
+            'odm_default' => [
+                'drivers' => [
+                    __NAMESPACE__ . '\Document' => __NAMESPACE__ . '_driver_odm'
+                ]
+            ],
         ],
     ],
     'bjyauthorize' => array(
