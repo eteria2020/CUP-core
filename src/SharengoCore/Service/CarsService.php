@@ -220,6 +220,13 @@ class CarsService
 
     }
 
+    public function updateDamages(Cars $car, $damages) {
+        $car->setDamages($damages);
+        $this->entityManager->persist($car);
+        $this->entityManager->flush();
+        return $car;
+    }
+
     public function deleteCar(Cars $car)
     {
         $this->entityManager->remove($car);
