@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity;
 
+use Cartasi\Entity\Transactions;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -95,6 +97,16 @@ class ExtraPayment
     private $generatedTs;
 
     /**
+     * @var Transactions
+     *
+     * @ORM\OneToOne(targetEntity="\Cartasi\Entity\Transactions")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $transaction;
+
+    /**
      * @param Customer $customer
      * @param Fleet $fleet
      * @param integer $amount
@@ -105,12 +117,14 @@ class ExtraPayment
     public function __construct(
         Customers $customer,
         Fleet $fleet,
+        Transactions $transaction,
         $amount,
         $paymentType,
         $reason
     ) {
         $this->customer = $customer;
         $this->fleet = $fleet;
+        $this->transaction = $transaction;
         $this->amount = $amount;
         $this->paymentType = $paymentType;
         $this->reason = $reason;
