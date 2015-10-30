@@ -95,6 +95,7 @@ class ReservationsService
                     'id'       => $reservation->getId(),
                     'carPlate' => $reservation->getCar()->getPlate(),
                     'customer' => null != $reservation->getCustomer() ? $reservation->getCustomer()->getName() . ' ' . $reservation->getCustomer()->getSurname() : '',
+                    'customerId' => null != $reservation->getCustomer() ? $reservation->getCustomer()->getId() : '',
                     'cards'    => $reservation->getCards(),
                     'active'   => $reservation->getActive() ? 'Si' : 'No',
                 ]

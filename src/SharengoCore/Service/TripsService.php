@@ -151,6 +151,7 @@ class TripsService
                     'idLink' => $trip->getId()
                 ],
                 'cu'       => [
+                    'id' => $trip->getCustomer()->getId(),
                     'surname' => $trip->getCustomer()->getSurname(),
                     'name'    => $trip->getCustomer()->getName(),
                     'mobile'  => $trip->getCustomer()->getMobile()
