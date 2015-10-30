@@ -7,6 +7,7 @@ use Cartasi\Service\CartasiContractsService;
 use SharengoCore\Service\TripPaymentTriesService;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\TripPayments;
+use SharengoCore\Entity\Webuser;
 use SharengoCore\Entity\TripPaymentTries;
 
 use Doctrine\ORM\EntityManager;
@@ -145,6 +146,7 @@ class PaymentsService
      * writes in database a record in the trip_payment_tries table
      *
      * @param TripPayments $tripPayment
+     * @param Webuser $webuser
      * @param boolean $avoidEmail
      * @param boolean $avoidCartasi
      * @param boolean $avoidPersistance
@@ -153,6 +155,7 @@ class PaymentsService
      */
     public function tryTripPayment(
         TripPayments $tripPayment,
+        Webuser $webuser,
         $avoidEmail = false,
         $avoidCartasi = false,
         $avoidPersistance = false,
@@ -167,6 +170,7 @@ class PaymentsService
         return $this->tryCustomerTripPayment(
             $customer,
             $tripPayment,
+            $webuser,
             $avoidDisableUser
         );
     }
@@ -177,12 +181,14 @@ class PaymentsService
      *
      * @param Customers $customer
      * @param TripPayments $tripPayment
+     * @param Webuser $webuser
      * @param boolean $avoidDisableUser
      * @return CartasiResponse
      */
     private function tryCustomerTripPayment(
         Customers $customer,
         TripPayments $tripPayment,
+        Webuser $webuser,
         $avoidDisableUser = false
     ) {
         $response = $this->cartasiCustomerPayments->sendPaymentRequest(
@@ -203,7 +209,8 @@ class PaymentsService
             $tripPaymentTry = $this->tripPaymentTriesService->generateTripPaymentTry(
                 $tripPayment,
                 $response->getOutcome(),
-                $response->getTransaction()
+                $response->getTransaction(),
+                $webuser
             );
 
             $this->entityManager->persist($tripPaymentTry);

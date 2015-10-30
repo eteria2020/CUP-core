@@ -68,11 +68,18 @@ class TripPaymentTries
      */
     private $transaction;
 
-    public function __construct(TripPayments $tripPayment, $outcome, Transactions $transaction = null)
+    /**
+     * @param TripPayments $tripPayment
+     * @param string $outcome
+     * @param Transactions|null $transaction
+     * @param Webuser|null $webuser
+     */
+    public function __construct(TripPayments $tripPayment, $outcome, Transactions $transaction = null, Webuser $webuser = null)
     {
         $this->tripPayment = $tripPayment;
         $this->outcome = $outcome;
         $this->transaction = $transaction;
+        $this->webuser = $webuser;
         $this->ts = date_create(date('Y-m-d H:i:s'));
     }
 
