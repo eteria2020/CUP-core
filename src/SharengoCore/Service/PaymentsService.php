@@ -170,6 +170,7 @@ class PaymentsService
         return $this->tryCustomerTripPayment(
             $customer,
             $tripPayment,
+            $webuser,
             $avoidDisableUser
         );
     }
