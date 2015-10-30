@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManager;
 use SharengoCore\Entity\Cars;
 use SharengoCore\Entity\CarsMaintenance;
 use SharengoCore\Entity\Repository\CarsRepository;
+use SharengoCore\Entity\Repository\CarsDamagesRepository;
 use SharengoCore\Entity\Repository\FleetRepository;
 use SharengoCore\Entity\Repository\CarsMaintenanceRepository;
 use SharengoCore\Service\DatatableService;
@@ -49,6 +50,7 @@ class CarsService
         EntityManager $entityManager,
         CarsRepository $carsRepository,
         CarsMaintenanceRepository $carsMaintenanceRepository,
+        CarsDamagesRepository $carsDamagesRepository,
         FleetRepository $fleetsRepository,
         DatatableService $datatableService,
         UserService $userService,
@@ -57,6 +59,7 @@ class CarsService
         $this->entityManager = $entityManager;
         $this->carsRepository = $carsRepository;
         $this->carsMaintenanceRepository = $carsMaintenanceRepository;
+        $this->carsDamagesRepository = $carsDamagesRepository;
         $this->fleetsRepository = $fleetsRepository;
         $this->datatableService = $datatableService;
         $this->userService = $userService;
@@ -220,7 +223,7 @@ class CarsService
 
     }
 
-    public function updateDamages(Cars $car, $damages) {
+    public function updateDamages(Cars $car, array $damages = null) {
         $car->setDamages($damages);
         $this->entityManager->persist($car);
         $this->entityManager->flush();
@@ -273,5 +276,10 @@ class CarsService
     public function isCarOutOfBounds(Cars $car)
     {
         return !$this->carsRepository->checkCarInFleetZones($car);
+    }
+
+    public function getDamagesList()
+    {
+        return $this->carsDamagesRepository->findAll();
     }
 }

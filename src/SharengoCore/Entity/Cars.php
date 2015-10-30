@@ -515,13 +515,18 @@ class Cars
     /**
      * Set damages
      *
-     * @param string $damages
+     * @param array $damages
      *
      * @return Cars
      */
-    public function setDamages($damages)
+    public function setDamages(array $damages = null)
     {
-        $this->damages = $damages;
+        if (count($damages) > 0 &&
+            null != $damages) {
+            $this->damages = json_encode($damages);
+        } else {
+            $this->damages = null;
+        }
 
         return $this;
     }

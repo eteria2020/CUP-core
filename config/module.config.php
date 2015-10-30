@@ -195,7 +195,6 @@ return [
             'SharengoCore\Service\EventsService' => 'SharengoCore\Service\EventsServiceFactory',
             'SharengoCore\Service\FleetService' => 'SharengoCore\Service\FleetServiceFactory',
             'SharengoCore\Service\ExtraPaymentsSearchService' => 'SharengoCore\Service\ExtraPaymentsSearchServiceFactory',
-            'SharengoCore\Service\CarsDamagesService' => 'SharengoCore\Service\CarsDamagesServiceFactory'
         ],
         'shared' => [
             'SharengoCore\Service\TripCostComputerService' => false,
