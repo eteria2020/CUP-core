@@ -5,6 +5,7 @@ namespace SharengoCore\Service;
 use SharengoCore\Entity\Repository\TripPaymentTriesRepository;
 use SharengoCore\Entity\TripPaymentTries;
 use SharengoCore\Entity\TripPayments;
+use SharengoCore\Entity\Webuser;
 use SharengoCore\Entity\AlreadySetFirstPaymentTryTsException;
 
 use Cartasi\Entity\Transactions;
@@ -58,9 +59,10 @@ class TripPaymentTriesService
      * @param TripPayments $tripPayment
      * @param string $outcome
      * @param Transactions|null $transaction
+     * @param Webuser|null $webuser
      * @return TripPaymentTries
      */
-    public function generateTripPaymentTry(TripPayments $tripPayment, $outcome, Transactions $transaction = null)
+    public function generateTripPaymentTry(TripPayments $tripPayment, $outcome, Transactions $transaction = null, Webuser $webuser = null)
     {
         $tripPaymentTry = new TripPaymentTries($tripPayment, $outcome, $transaction);
         if (!$tripPayment->isFirstPaymentTryTsSet()) {
