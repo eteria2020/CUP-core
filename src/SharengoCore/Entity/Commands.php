@@ -137,7 +137,7 @@ class Commands
             $command->$methodName($value);
         }
 
-        if ($commandIndex == 0) {
+        if ($command->getCommand() == 'END_CHARGE') {
             $command->setTxtarg2($webuser->getId());
         }
 
