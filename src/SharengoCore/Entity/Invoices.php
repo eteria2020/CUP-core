@@ -550,13 +550,13 @@ class Invoices
     public function getTypeItalianTranslation()
     {
         switch ($this->getType()) {
-            case TYPE_FIRST_PAYMENT:
+            case self::TYPE_FIRST_PAYMENT:
                 return 'Iscrizione';
-            case TYPE_TRIP:
+            case self::TYPE_TRIP:
                 return 'Corse';
-            case TYPE_PENALTY:
+            case self::TYPE_PENALTY:
                 return 'Sanzione';
-            case TYPE_BONUS_PACKAGE:
+            case self::TYPE_BONUS_PACKAGE:
                 return 'Pacchetto bonus';
         }
         return '';
