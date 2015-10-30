@@ -5,6 +5,7 @@ namespace SharengoCore\Service;
 use Doctrine\ORM\EntityManager;
 use SharengoCore\Entity\Commands;
 use SharengoCore\Entity\Cars;
+use SharengoCore\Entity\Webuser;
 use SharengoCore\Entity\Repository\CommandsRepository;
 
 class CommandsService
@@ -27,13 +28,15 @@ class CommandsService
         $this->commandsRepository = $commandsRepository;
     }
 
-    public function sendCommand(Cars $car, $commandIndex) {
-
-        $command = Commands::createCommand($car, $commandIndex);
+    /**
+     * @param Cars $car
+     * @param integer $commandIndex
+     * @param Webuser $webuser
+     */
+    public function sendCommand(Cars $car, $commandIndex, Webuser $webuser = null) {
+        $command = Commands::createCommand($car, $commandIndex, $webuser);
 
         $this->entityManager->persist($command);
         $this->entityManager->flush();
-
     }
-    
 }
