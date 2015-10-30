@@ -146,7 +146,11 @@ class CustomersBonusPackages
      */
     public function getDuration()
     {
-        return $this->duration;
+        if (!is_null($this->duration)) {
+            return $this->duration;
+        }
+
+        return $this->validTo->diff($this->validFrom)->format('%a');
     }
 
     /**
@@ -154,7 +158,13 @@ class CustomersBonusPackages
      */
     public function getValidTo()
     {
-        return $this->validTo;
+        if (!is_null($this->validTo)) {
+            return $this->validTo;
+        }
+
+        $durationInterval = new \DateInterval('P' . $this->duration . 'D');
+        $from = max(date_create(), $this->validFrom);
+        return $from->add($durationInterval);
     }
 
     /**
