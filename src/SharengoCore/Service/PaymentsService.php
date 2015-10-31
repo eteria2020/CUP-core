@@ -181,14 +181,14 @@ class PaymentsService
      *
      * @param Customers $customer
      * @param TripPayments $tripPayment
-     * @param Webuser $webuser
+     * @param Webuser|null $webuser
      * @param boolean $avoidDisableUser
      * @return CartasiResponse
      */
     private function tryCustomerTripPayment(
         Customers $customer,
         TripPayments $tripPayment,
-        Webuser $webuser,
+        Webuser $webuser = null,
         $avoidDisableUser = false
     ) {
         $response = $this->cartasiCustomerPayments->sendPaymentRequest(
