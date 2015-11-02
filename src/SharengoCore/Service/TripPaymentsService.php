@@ -51,7 +51,7 @@ class TripPaymentsService
     }
 
     /**
-     * @return [[[TripPayments]]]
+     * @return [[[[TripPayments]]]]
      */
     public function getTripPaymentsNoInvoiceGrouped()
     {
@@ -59,8 +59,9 @@ class TripPaymentsService
     }
 
     /**
+     * Groups the tripPayments first by date, then by customer and finally by fleet
      * @param [TripPayments] $tripPayments
-     * @return [[[TripPayments]]]
+     * @return [[[[TripPayments]]]]
      */
     private function groupTripPayments($tripPayments)
     {
@@ -70,17 +71,21 @@ class TripPaymentsService
             // retrieve date and customerId from tripPayment
             $date = $tripPayment->getPayedSuccessfullyAt()->format('Y-m-d');
             $customerId = $tripPayment->getTrip()->getCustomer()->getId();
+            $fleetId = $tripPayment->getTrip()->getFleet()->getId();
             // if first tripPayment for that day, create the entry
             if (isset($orderedTripPayments[$date])) {
                 // if first tripPayment for that customer, create the entry
                 if (!isset($orderedTripPayments[$date][$customerId])) {
-                    $orderedTripPayments[$date][$customerId] = [];
+                    $orderedTripPayments[$date][$customerId] = [$fleetId => []];
+                // if first tripPayment for that fleet, create the entry
+                } elseif (!isset($orderedTripPayments[$date][$customerId][$fleetId])) {
+                    $orderedTripPayments[$date][$customerId][$fleetId] = [];
                 }
             } else {
-                $orderedTripPayments[$date] = [$customerId => []];
+                $orderedTripPayments[$date] = [$customerId => [$fleetId => []]];
             }
             // add the tripPayment in the correct group
-            array_push($orderedTripPayments[$date][$customerId], $tripPayment);
+            array_push($orderedTripPayments[$date][$customerId][$fleetId], $tripPayment);
         }
 
         // sort payments according to their date

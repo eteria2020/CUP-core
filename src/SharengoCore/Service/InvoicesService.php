@@ -157,22 +157,28 @@ class InvoicesService
             // generate date for invoices
             $date = date_create_from_format('Y-m-d', $dateKey);
             $this->logger->log("Generating invoices for date: " . $dateKey . "\n\n");
+
             // loop through each customer in day
             foreach ($tripPaymentsForDate as $customerId => $tripPaymentsForCustomer) {
                 $this->logger->log("Generating invoice for customer: " . $customerId . "\n");
-                // get customer for group of tripPayments
-                $customer = $tripPaymentsForCustomer[0]->getTrip()->getCustomer();
-                // generate invoice from group of tripPayments
-                $invoice = $this->prepareInvoiceForTrips($customer, $tripPaymentsForCustomer);
-                $this->logger->log("Invoice created: " . $invoice->getId() . "\n");
-                $this->entityManager->persist($invoice);
-                $this->logger->log("EntityManager: invoice persisted\n");
-                array_push($invoices, $invoice);
-                $this->logger->log("Updating tripPayments with invoice...\n\n");
-                foreach ($tripPaymentsForCustomer as $tripPayment) {
-                    $tripPayment->setInvoice($invoice)
-                        ->setInvoicedAt(date_create());
-                    $this->entityManager->persist($tripPayment);
+
+                // loop through each fleet for customer
+                foreach ($tripPaymentsForCustomer as $fleetId => $tripPaymentsForFleet) {
+                    $this->logger->log("Generating invoice for fleet: " . $fleetId . "\n");
+                    // get customer for group of tripPayments
+                    $customer = $tripPaymentsForFleet[0]->getTrip()->getCustomer();
+                    // generate invoice from group of tripPayments
+                    $invoice = $this->prepareInvoiceForTrips($customer, $tripPaymentsForFleet);
+                    $this->logger->log("Invoice created: " . $invoice->getId() . "\n");
+                    $this->entityManager->persist($invoice);
+                    $this->logger->log("EntityManager: invoice persisted\n");
+                    array_push($invoices, $invoice);
+                    $this->logger->log("Updating tripPayments with invoice...\n\n");
+                    foreach ($tripPaymentsForFleet as $tripPayment) {
+                        $tripPayment->setInvoice($invoice)
+                            ->setInvoicedAt($invoice->getGeneratedTs());
+                        $this->entityManager->persist($tripPayment);
+                    }
                 }
             }
         }
