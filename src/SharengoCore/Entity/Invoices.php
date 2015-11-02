@@ -325,7 +325,8 @@ class Invoices
             $version,
             self::TYPE_TRIP,
             intval($tripPayments[0]->getPayedSuccessfullyAt()->format("Ymd")), // it's supposed all trips have been payed on the same day
-            $amounts
+            $amounts,
+            $tripPayments[0]->getTrip()->getFleet()
         );
 
         $body = [];
