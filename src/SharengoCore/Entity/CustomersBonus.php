@@ -170,13 +170,34 @@ class CustomersBonus
      */
     private $invoicedAt;
 
+    /**
+     * @param Customers $customer
+     * @param int $total
+     * @param string $description
+     * @param string $validTo
+     * @return CustomersBonus
+     */
+    public static function createBonus($customer, $total, $description, $validTo)
+    {
+        $bonus = new CustomersBonus();
+        $bonus->setCustomer($customer);
+        $bonus->setInsertTs(date_create());
+        $bonus->setUpdateTs(date_create());
+        $bonus->setTotal($total);
+        $bonus->setResidual($total);
+        $bonus->setValidFrom(date_create());
+        $bonus->setValidTo(date_create($validTo));
+        $bonus->setDescription($description);
+
+        return $bonus;
+    }
 
     public static function createFromPromoCode(PromoCodes $promoCode)
     {
         $promoCodeDetails = $promoCode->getPromocodesinfo();
 
         $me = new CustomersBonus();
-        $me->setInsertTs(new \DateTime());
+        $me->setInsertTs(date_create());
         $me->setUpdateTs($me->getInsertTs());
         $me->setTotal($promoCodeDetails->getMinutes());
         $me->setResidual($me->getTotal());
