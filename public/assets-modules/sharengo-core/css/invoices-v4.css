@@ -59,8 +59,12 @@
     width: 1px;
 }
 .bottom-note {
-    font-size: 12px;
-    margin-top: 20px;
+    font-size: 11px;
+}
+.bottom-note-line {
+    width: 100%;
+    height: 2px;
+    background-color: #aaa;
 }
 
 /* Table styles */

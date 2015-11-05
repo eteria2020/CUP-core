@@ -215,7 +215,10 @@
         <!-- summary table -->
 
         <?php if (array_key_exists('bottom_note', $invoiceContent['body'])): ?>
-            <p class="bottom-note"><?= $invoiceContent['body']['bottom_note'] ?></p>
+            <div class="bottom-note">
+                <div class="bottom-note-line"></div>
+                <p><?= $invoiceContent['body']['bottom_note'] ?></p>
+            </div>
         <?php endif; ?>
 
         <?php
