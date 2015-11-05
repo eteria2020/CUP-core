@@ -248,7 +248,7 @@ return [
     ],
 
     'invoice' => [
-        'template_version' => '3',
+        'template_version' => '4',
         'subscription_amount' => 1000,
         'iva_percentage' => 22
     ],
