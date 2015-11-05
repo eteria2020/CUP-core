@@ -282,4 +282,9 @@ class CarsService
     {
         return $this->carsDamagesRepository->findAll();
     }
+
+    public function getOutOfBounds()
+    {
+        return $this->carsRepository->findOutOfBounds();
+    }
 }
