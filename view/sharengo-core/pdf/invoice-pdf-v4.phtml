@@ -19,7 +19,6 @@
     $partialAmount = $invoiceContent['amounts']['total'];
     $iva = $invoiceContent['amounts']['iva'];
     $ivaPercentage = $invoiceContent['iva'];
-    $type = $invoiceContent['type'];
 
     // Invoice header
     $header = $invoiceContent['header'];
@@ -205,14 +204,7 @@
                 <td class="table1-031e right"><?= $partialAmount ?> €</td>
             </tr>
             <tr>
-                <td class="table1-031e">
-                    IVA <?= $ivaPercentage ?>%
-                    <?php
-                        if ($type === SharengoCore\Entity\Invoices::TYPE_PENALTY) {
-                            echo '<br>Escluso da IVA ai sensi dell’articolo 15 del D.P.R. 633/1972';
-                        }
-                    ?>
-                </td>
+                <td class="table1-031e">IVA <?= $ivaPercentage ?>%</td>
                 <td class="table1-031e right"><?= $iva ?> €</td>
             </tr>
             <tr>
@@ -221,6 +213,10 @@
             </tr>
         </table>
         <!-- summary table -->
+
+        <?php if (array_key_exists('bottom_note', $invoiceContent['body'])): ?>
+            <p class="bottom-note"><?= $invoiceContent['body']['bottom_note'] ?></p>
+        <?php endif; ?>
 
         <?php
             // close pages if else
