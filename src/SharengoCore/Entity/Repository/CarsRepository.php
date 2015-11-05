@@ -90,6 +90,19 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    public function findBusy()
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT c
+            FROM \SharengoCore\Entity\Cars c
+            JOIN \SharengoCore\Entity\Trips t WITH t.car = c AND t.timestampEnd IS NOT NULL";
+
+        $query = $em->createQuery($dql);
+
+        return $query->getResult();
+    }
+
     public function findOutOfBounds()
     {
         $em = $this->getEntityManager();

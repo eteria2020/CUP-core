@@ -293,6 +293,15 @@ class CarsService
     }
 
     /**
+     * Returns array of Cars that have an active trip
+     * @return Cars[]
+     */
+    public function getBusy()
+    {
+        return $this->carsRepository->findBusy();
+    }
+
+    /**
      * Returns an array of Cars that are out of permitted Zones
      * @return Cars[]
      */

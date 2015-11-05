@@ -121,8 +121,14 @@ class CarsController extends AbstractRestfulController
      */
     private function setCarBusy($car)
     {
-        $trips = $this->tripsService->getTripsByPlateNotEnded($car['plate']);
-        $car['busy'] = !empty($trips);
+        if (is_null($this->busyCarsPlates)) {
+            $this->busyCarsPlates = [];
+            $busyCars = $this->carsService->getBusy();
+            foreach ($busyCars as $busyCar) {
+                array_push($this->busyCarsPlates, $busyCar->getPlate());
+            }
+        }
+        $car['busy'] = in_array($car['plate'], $this->busyCarsPlates);
         return $car;
     }
 
@@ -147,7 +153,6 @@ class CarsController extends AbstractRestfulController
      */
     private function setCarGps($car)
     {
-        // if noGpsCarsPlates has not yet been filled, proceed with that
         if (is_null($this->noGpsCarsPlates)) {
             $this->noGpsCarsPlates = [];
             $carsOutOfBounds = $this->carsService->getOutOfBounds();
