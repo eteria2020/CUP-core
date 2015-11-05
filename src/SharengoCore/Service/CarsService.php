@@ -283,6 +283,19 @@ class CarsService
         return $this->carsDamagesRepository->findAll();
     }
 
+    /**
+     * Returns array of Cars that have an active reservation
+     * @return Cars[]
+     */
+    public function getReserved()
+    {
+        return $this->carsRepository->findReserved();
+    }
+
+    /**
+     * Returns an array of Cars that are out of permitted Zones
+     * @return Cars[]
+     */
     public function getOutOfBounds()
     {
         return $this->carsRepository->findOutOfBounds();

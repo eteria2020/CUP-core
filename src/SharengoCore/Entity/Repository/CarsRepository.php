@@ -61,12 +61,12 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $sql = 'SELECT coalesce(bool_or(za.geo @> point(c.longitude, c.latitude)), false) AS is_in
+        $sql = "SELECT coalesce(bool_or(za.geo @> point(c.longitude, c.latitude)), false) AS is_in
             FROM cars c
             JOIN fleets f ON f.id = c.fleet_id
             JOIN zone_alarms_fleets zaf ON zaf.fleet_id = f.id
             JOIN zone_alarms za ON za.id = zaf.zone_alarm_id AND za.active = TRUE
-            WHERE c.plate = :plate';
+            WHERE c.plate = :plate";
 
         $rsm = new ResultSetMapping;
         $rsm->addScalarResult('is_in', 'isIn', 'boolean');
@@ -77,16 +77,29 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getSingleScalarResult();
     }
 
+    public function findReserved()
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT c
+            FROM \SharengoCore\Entity\Cars c
+            JOIN \SharengoCore\Entity\Reservations r WITH r.car = c AND r.active = true";
+
+        $query = $em->createQuery($dql);
+
+        return $query->getResult();
+    }
+
     public function findOutOfBounds()
     {
         $em = $this->getEntityManager();
 
-        $sql = 'SELECT c
+        $sql = "SELECT c
             FROM cars c
             JOIN fleets f ON f.id = c.fleet_id
             JOIN zone_alarms_fleets zaf ON zaf.fleet_id = f.id
             JOIN zone_alarms za ON za.id = zaf.zone_alarm_id AND za.active = TRUE
-            WHERE za.geo !@> point(c.longitude, c.latitude)';
+            WHERE NOT (za.geo @> point(c.longitude, c.latitude))";
 
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('\SharengoCore\Entity\Cars', 'c');

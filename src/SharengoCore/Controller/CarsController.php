@@ -38,7 +38,13 @@ class CarsController extends AbstractRestfulController
      * Array of ids of Cars out of permitted poligon
      * @var integer[]|null
      */
-    private $noGpsCarsIds = null;
+    private $noGpsCarsPlates = null;
+
+    /**
+     * Array of ids of Cars with active reservation
+     * @var integer[]|null
+     */
+    private $reservedCarsPlates = null;
 
     /**
      * @param CarsService $carsService
@@ -73,9 +79,9 @@ class CarsController extends AbstractRestfulController
             $car = $this->setCarReservation($car);
             $car = $this->setCarBusy($car);
             $car = $this->setCarMinutesSinceLastTrip($car);
+            $car = $this->setCarGps($car);
             array_push($returnCars, $car);
         }
-        $returnCars = $this->setCarsGPS($returnCars);
 
         return new JsonModel($this->buildReturnData(200, '', $returnCars));
     }
@@ -93,19 +99,25 @@ class CarsController extends AbstractRestfulController
     }
 
     /**
-     * @param Cars $car
-     * @return Cars
+     * @param mixed[] $car
+     * @return mixed[]
      */
     private function setCarReservation($car)
     {
-        $reservations = $this->reservationsService->getActiveReservationsByCar($car['plate']);
-        $car['reservation'] = !empty($reservations);
+        if (is_null($this->reservedCarsPlates)) {
+            $this->reservedCarsPlates = [];
+            $reservedCars = $this->carsService->getReserved();
+            foreach ($reservedCars as $reservedCar) {
+                array_push($this->reservedCarsPlates, $reservedCar->getPlate());
+            }
+        }
+        $car['reservation'] = in_array($car['plate'], $this->reservedCarsPlates);
         return $car;
     }
 
     /**
-     * @param Cars $car
-     * @return Cars
+     * @param mixed[] $car
+     * @return mixed[]
      */
     private function setCarBusy($car)
     {
@@ -115,8 +127,8 @@ class CarsController extends AbstractRestfulController
     }
 
     /**
-     * @param Cars $car
-     * @return Cars
+     * @param mixed[] $car
+     * @return mixed[]
      */
     private function setCarMinutesSinceLastTrip($car)
     {
@@ -135,14 +147,16 @@ class CarsController extends AbstractRestfulController
      */
     private function setCarGps($car)
     {
-        // if noGpsCarsIds has not yet been filled, proceed with that
-        if (is_null($this->noGpsCarsIds)) {
-            $carsOutOfBounds = $this->carsService->getCarsOutOfBounds();
+        // if noGpsCarsPlates has not yet been filled, proceed with that
+        if (is_null($this->noGpsCarsPlates)) {
+            $this->noGpsCarsPlates = [];
+            $carsOutOfBounds = $this->carsService->getOutOfBounds();
             foreach ($carsOutOfBounds as $carOutOfBounds) {
-                array_push($this->noGpsCarsIds, $carOutOfBounds->getId());
+                array_push($this->noGpsCarsPlates, $carOutOfBounds->getPlate());
             }
         }
-        $car['gps_ok'] = !in_array($car['id'], $this->noGpsCarsIds);
+        $car['gps_ok'] = !in_array($car['plate'], $this->noGpsCarsPlates);
+        return $car;
     }
 
     /**
