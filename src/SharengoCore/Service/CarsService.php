@@ -318,6 +318,6 @@ class CarsService
      */
     public function getOutOfBoundsPlates()
     {
-        return $this->carsRepository->findOutOfBoundsPlates()[0]['plates'];
+        return $this->carsRepository->findOutOfBoundsPlates()[0]['value'];
     }
 }
