@@ -7,8 +7,6 @@ use Zend\View\Model\JsonModel;
 use Zend\Http\Client;
 use SharengoCore\Entity\Cars;
 use SharengoCore\Service\CarsService;
-use SharengoCore\Service\ReservationsService;
-use SharengoCore\Service\TripsService;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 class CarsController extends AbstractRestfulController
@@ -20,47 +18,43 @@ class CarsController extends AbstractRestfulController
     private $carsService;
 
     /**
-     * @var ReservationsService
-     */
-    private $reservationsService;
-
-    /**
-     * @var TripsService
-     */
-    private $tripsService;
-
-    /**
      * @var DoctrineHydrator
      */
     private $hydrator;
 
     /**
      * Array of ids of Cars out of permitted poligon
-     * @var integer[]|null
+     * @var string[]|null
      */
     private $noGpsCarsPlates = null;
 
     /**
      * Array of ids of Cars with active reservation
-     * @var integer[]|null
+     * @var string[]|null
      */
     private $reservedCarsPlates = null;
 
     /**
+     * Array of ids of Cars that are being used
+     * @var string[]|null
+     */
+    private $busyCarsPlates = null;
+
+    /**
+     * Array of ids of Cars that are being used
+     * @var [string => integer]|null
+     */
+    private $minutesSinceLastTrips = null;
+
+    /**
      * @param CarsService $carsService
-     * @param ReservationsService $reservationsService
-     * @param TripsService $tripsService
      * @param DoctrineHydrator $hydrator
      */
     public function __construct(
         CarsService $carsService,
-        ReservationsService $reservationsService,
-        TripsService $tripsService,
         DoctrineHydrator $hydrator
     ) {
         $this->carsService = $carsService;
-        $this->reservationsService = $reservationsService;
-        $this->tripsService = $tripsService;
         $this->hydrator = $hydrator;
     }
 
@@ -138,12 +132,12 @@ class CarsController extends AbstractRestfulController
      */
     private function setCarMinutesSinceLastTrip($car)
     {
-        $lastTrip = $this->tripsService->getLastTrip($car['plate']);
-        $minutesSinceLastTrip = null;
-        if ($lastTrip != null) {
-            $minutesSinceLastTrip = (integer) ((time() - $lastTrip->getTimestampEnd()->getTimestamp()) / 60);
+        if (is_null($this->minutesSinceLastTrips)) {
+            $this->minutesSinceLastTrips = $this->carsService->getSinceLastTrip();
         }
-        $car['sinceLastTrip'] = $minutesSinceLastTrip;
+        $car['sinceLastTrip'] = array_key_exists($car['plate'], $this->minutesSinceLastTrips) ?
+            $this->minutesSinceLastTrips[$car['plate']] :
+            null;
         return $car;
     }
 

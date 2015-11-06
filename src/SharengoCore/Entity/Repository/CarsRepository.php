@@ -103,6 +103,41 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    /**
+     * Returns an array of key => value pairs where the key is the plate of the
+     * car and the value is the amount of minutes since the last trip it has made.
+     *
+     * The outer query aggregates the results of the subquery generating json.
+     * The subquery selects the plate of the car and the highest timestamp of
+     * the relative trips. It then subtracts that timestamp from the current
+     * time and extracts the seconds from the result. It then converts the
+     * result to minutes and rounds it up.
+     */
+    public function findSinceLastTrip()
+    {
+        $em = $this->getEntityManager();
+
+        $sql = "SELECT json_object_agg(plate, ts_end) as value
+            FROM (
+                SELECT
+                    c.plate as plate,
+                    round(extract('epoch' from (now() - MAX(t.timestamp_end))) / 60) as ts_end
+                FROM trips t
+                LEFT JOIN cars c ON t.car_plate = c.plate
+                WHERE t.timestamp_end IS NOT NULL
+                AND c.hidden = false
+                GROUP BY c.plate
+                ORDER BY c.plate ASC
+            ) sub_q";
+
+        $rsm = new ResultSetMapping;
+        $rsm->addScalarResult('value', 'value', 'json_array');
+
+        $query = $em->createNativeQuery($sql, $rsm);
+
+        return $query->getResult();
+    }
+
     public function findOutOfBounds()
     {
         $em = $this->getEntityManager();

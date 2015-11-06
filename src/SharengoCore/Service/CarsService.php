@@ -302,6 +302,17 @@ class CarsService
     }
 
     /**
+     * Returns an array of key => value pairs where the key is the plate of the
+     * car and the value is the amount of minutes since the last trip it has made.
+     *
+     * @return [string => integer]
+     */
+    public function getSinceLastTrip()
+    {
+        return $this->carsRepository->findSinceLastTrip()[0]['value'];
+    }
+
+    /**
      * Returns an array of Cars that are out of permitted Zones
      * @return Cars[]
      */
