@@ -81,9 +81,11 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $dql = "SELECT c
+        $dql = "SELECT c.plate
             FROM \SharengoCore\Entity\Cars c
-            JOIN \SharengoCore\Entity\Reservations r WITH r.car = c AND r.active = true";
+            JOIN \SharengoCore\Entity\Reservations r WITH r.car = c AND r.active = true
+            WHERE c.hidden = false
+            ORDER BY c.plate ASC";
 
         $query = $em->createQuery($dql);
 
@@ -94,9 +96,11 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $dql = "SELECT c
+        $dql = "SELECT c.plate
             FROM \SharengoCore\Entity\Cars c
-            JOIN \SharengoCore\Entity\Trips t WITH t.car = c AND t.timestampEnd IS NOT NULL";
+            JOIN \SharengoCore\Entity\Trips t WITH t.car = c AND t.timestampEnd IS NOT NULL
+            WHERE c.hidden = false
+            ORDER BY c.plate ASC";
 
         $query = $em->createQuery($dql);
 
@@ -142,12 +146,14 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $sql = "SELECT c
+        $sql = "SELECT c.plate
             FROM cars c
             JOIN fleets f ON f.id = c.fleet_id
             JOIN zone_alarms_fleets zaf ON zaf.fleet_id = f.id
             JOIN zone_alarms za ON za.id = zaf.zone_alarm_id AND za.active = TRUE
-            WHERE NOT (za.geo @> point(c.longitude, c.latitude))";
+            WHERE NOT (za.geo @> point(c.longitude, c.latitude))
+            AND c.hidden = false
+            ORDER BY c.plate ASC";
 
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('\SharengoCore\Entity\Cars', 'c');

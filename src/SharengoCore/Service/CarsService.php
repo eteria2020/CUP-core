@@ -284,8 +284,8 @@ class CarsService
     }
 
     /**
-     * Returns array of Cars that have an active reservation
-     * @return Cars[]
+     * Returns array of plates of cars that have an active reservation
+     * @return string[]
      */
     public function getReserved()
     {
@@ -293,8 +293,8 @@ class CarsService
     }
 
     /**
-     * Returns array of Cars that have an active trip
-     * @return Cars[]
+     * Returns array of plates of cars that have an active trip
+     * @return string[]
      */
     public function getBusy()
     {
@@ -313,8 +313,8 @@ class CarsService
     }
 
     /**
-     * Returns an array of Cars that are out of permitted Zones
-     * @return Cars[]
+     * Returns an array of plates of cars that are out of permitted Zones
+     * @return string[]
      */
     public function getOutOfBounds()
     {
