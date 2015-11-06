@@ -106,7 +106,7 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
             FROM (
                 SELECT DISTINCT c.plate as plate
                 FROM cars c
-                JOIN trips t ON t.car_plate = c.plate AND t.timestamp_end IS NOT NULL
+                JOIN trips t ON t.car_plate = c.plate AND t.timestamp_end IS NULL
                 WHERE c.hidden = false
                 ORDER BY c.plate ASC
             ) sub_q";
