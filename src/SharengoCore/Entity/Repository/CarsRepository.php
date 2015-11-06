@@ -81,13 +81,19 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $dql = "SELECT c.plate
-            FROM \SharengoCore\Entity\Cars c
-            JOIN \SharengoCore\Entity\Reservations r WITH r.car = c AND r.active = true
-            WHERE c.hidden = false
-            ORDER BY c.plate ASC";
+        $sql = "SELECT json_agg(plate) as value
+            FROM (
+                SELECT DISTINCT c.plate as plate
+                FROM cars c
+                JOIN reservations r ON r.car_plate = c.plate AND r.active = true
+                WHERE c.hidden = false
+                ORDER BY c.plate ASC
+            ) sub_q";
 
-        $query = $em->createQuery($dql);
+        $rsm = new ResultSetMapping;
+        $rsm->addScalarResult('value', 'value', 'json_array');
+
+        $query = $em->createNativeQuery($sql, $rsm);
 
         return $query->getResult();
     }
@@ -96,13 +102,19 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $dql = "SELECT c.plate
-            FROM \SharengoCore\Entity\Cars c
-            JOIN \SharengoCore\Entity\Trips t WITH t.car = c AND t.timestampEnd IS NOT NULL
-            WHERE c.hidden = false
-            ORDER BY c.plate ASC";
+        $sql = "SELECT json_agg(plate) as value
+            FROM (
+                SELECT DISTINCT c.plate as plate
+                FROM cars c
+                JOIN trips t ON t.car_plate = c.plate AND t.timestamp_end IS NOT NULL
+                WHERE c.hidden = false
+                ORDER BY c.plate ASC
+            ) sub_q";
 
-        $query = $em->createQuery($dql);
+        $rsm = new ResultSetMapping;
+        $rsm->addScalarResult('value', 'value', 'json_array');
+
+        $query = $em->createNativeQuery($sql, $rsm);
 
         return $query->getResult();
     }

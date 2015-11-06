@@ -289,7 +289,7 @@ class CarsService
      */
     public function getReservedPlates()
     {
-        return $this->carsRepository->findReservedPlates();
+        return $this->carsRepository->findReservedPlates()[0]['value'];
     }
 
     /**
@@ -298,7 +298,7 @@ class CarsService
      */
     public function getBusyPlates()
     {
-        return $this->carsRepository->findBusyPlates();
+        return $this->carsRepository->findBusyPlates()[0]['value'];
     }
 
     /**
