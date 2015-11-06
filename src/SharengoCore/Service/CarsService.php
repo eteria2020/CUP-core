@@ -287,18 +287,18 @@ class CarsService
      * Returns array of plates of cars that have an active reservation
      * @return string[]
      */
-    public function getReserved()
+    public function getReservedPlates()
     {
-        return $this->carsRepository->findReserved();
+        return $this->carsRepository->findReservedPlates();
     }
 
     /**
      * Returns array of plates of cars that have an active trip
      * @return string[]
      */
-    public function getBusy()
+    public function getBusyPlates()
     {
-        return $this->carsRepository->findBusy();
+        return $this->carsRepository->findBusyPlates();
     }
 
     /**
@@ -307,17 +307,17 @@ class CarsService
      *
      * @return [string => integer]
      */
-    public function getSinceLastTrip()
+    public function getMinutesSinceLastTrip()
     {
-        return $this->carsRepository->findSinceLastTrip()[0]['value'];
+        return $this->carsRepository->findMinutesSinceLastTrip()[0]['value'];
     }
 
     /**
      * Returns an array of plates of cars that are out of permitted Zones
      * @return string[]
      */
-    public function getOutOfBounds()
+    public function getOutOfBoundsPlates()
     {
-        return $this->carsRepository->findOutOfBounds();
+        return $this->carsRepository->findOutOfBoundsPlates()[0]['plates'];
     }
 }

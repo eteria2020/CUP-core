@@ -99,7 +99,7 @@ class CarsController extends AbstractRestfulController
     private function setCarReservation($car)
     {
         if (is_null($this->reservedCarsPlates)) {
-            $this->reservedCarsPlates = $this->carsService->getReserved();
+            $this->reservedCarsPlates = $this->carsService->getReservedPlates();
         }
         $car['reservation'] = in_array($car['plate'], $this->reservedCarsPlates);
         return $car;
@@ -112,7 +112,7 @@ class CarsController extends AbstractRestfulController
     private function setCarBusy($car)
     {
         if (is_null($this->busyCarsPlates)) {
-            $this->busyCarsPlates = $this->carsService->getBusy();
+            $this->busyCarsPlates = $this->carsService->getBusyPlates();
         }
         $car['busy'] = in_array($car['plate'], $this->busyCarsPlates);
         return $car;
@@ -125,7 +125,7 @@ class CarsController extends AbstractRestfulController
     private function setCarMinutesSinceLastTrip($car)
     {
         if (is_null($this->minutesSinceLastTrips)) {
-            $this->minutesSinceLastTrips = $this->carsService->getSinceLastTrip();
+            $this->minutesSinceLastTrips = $this->carsService->getMinutesSinceLastTrip();
         }
         $car['sinceLastTrip'] = array_key_exists($car['plate'], $this->minutesSinceLastTrips) ?
             $this->minutesSinceLastTrips[$car['plate']] :
@@ -140,7 +140,7 @@ class CarsController extends AbstractRestfulController
     private function setCarGps($car)
     {
         if (is_null($this->noGpsCarsPlates)) {
-            $this->noGpsCarsPlates = $this->carsService->getOutOfBounds();
+            $this->noGpsCarsPlates = $this->carsService->getOutOfBoundsPlates();
         }
         $car['gps_ok'] = !in_array($car['plate'], $this->noGpsCarsPlates);
         return $car;

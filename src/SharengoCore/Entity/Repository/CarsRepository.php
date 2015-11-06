@@ -77,7 +77,7 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getSingleScalarResult();
     }
 
-    public function findReserved()
+    public function findReservedPlates()
     {
         $em = $this->getEntityManager();
 
@@ -92,7 +92,7 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
-    public function findBusy()
+    public function findBusyPlates()
     {
         $em = $this->getEntityManager();
 
@@ -117,7 +117,7 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
      * time and extracts the seconds from the result. It then converts the
      * result to minutes and rounds it up.
      */
-    public function findSinceLastTrip()
+    public function findMinutesSinceLastTrip()
     {
         $em = $this->getEntityManager();
 
@@ -142,21 +142,20 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
-    public function findOutOfBounds()
+    public function findOutOfBoundsPlates()
     {
         $em = $this->getEntityManager();
 
-        $sql = "SELECT c.plate
+        $sql = "SELECT json_agg(c.plate) as plates
             FROM cars c
             JOIN fleets f ON f.id = c.fleet_id
             JOIN zone_alarms_fleets zaf ON zaf.fleet_id = f.id
             JOIN zone_alarms za ON za.id = zaf.zone_alarm_id AND za.active = TRUE
             WHERE NOT (za.geo @> point(c.longitude, c.latitude))
-            AND c.hidden = false
-            ORDER BY c.plate ASC";
+            AND c.hidden = false";
 
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('\SharengoCore\Entity\Cars', 'c');
+        $rsm->addScalarResult('plates', 'plates', 'json_array');
 
         $query = $em->createNativeQuery($sql, $rsm);
 
