@@ -222,9 +222,16 @@ class InvoicesService
         );
     }
 
+    /**
+     * @param Customers $customer
+     * @param BonusPackages $bonusPackage
+     * @param Fleet $fleet
+     * @return Invoices
+     */
     public function prepareInvoiceForBonusPackage(
         Customers $customer,
-        BonusPackages $bonusPackage
+        BonusPackages $bonusPackage,
+        Fleet $fleet
     ) {
         $amounts = [
             'sum' => $this->calculateAmountsWithTaxesFromTotal($bonusPackage->getCost()),
@@ -234,6 +241,7 @@ class InvoicesService
         return Invoices::createInvoiceForBonusPackage(
             $customer,
             $bonusPackage,
+            $fleet,
             $this->templateVersion,
             $amounts
         );

@@ -171,6 +171,16 @@ class CustomersBonus
     private $invoicedAt;
 
     /**
+     * @var \Fleet
+     *
+     * @ORM\ManyToOne(targetEntity="Fleet")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="payment_fleet_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $paymentFleet;
+
+    /**
      * @param Customers $customer
      * @param int $total
      * @param string $description
@@ -231,7 +241,8 @@ class CustomersBonus
             ->setValidTo($bonusPackage->getValidTo())
             ->setDescription($bonusPackage->getDescription())
             ->setPackage($bonusPackage)
-            ->setTransaction($transaction);
+            ->setTransaction($transaction)
+            ->setPaymentFleet($customer->getFleet());
 
         return $bonus;
     }
@@ -621,6 +632,17 @@ class CustomersBonus
     public function getTransaction()
     {
         return $this->transaction;
+    }
+
+    /**
+     * @param Fleet $fleet
+     * @return self
+     */
+    public function setPaymentFleet(Fleet $fleet)
+    {
+        $this->paymentFleet = $fleet;
+
+        return $this;
     }
 
     /**

@@ -9,7 +9,7 @@ class CustomerBonusForInvoice extends Query
     protected function dql()
     {
         return 'SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb '.
-            'JOIN cb.package p '. // customer bonus come from a package
-            'WHERE cb.invoice IS NULL'; // customer bonus does not have an invoice yet
+            'WHERE cb.package IS NOT NULL '. // bonus comes from a package
+            'AND cb.invoice IS NULL'; // bonus does not have an invoice yet
     }
 }

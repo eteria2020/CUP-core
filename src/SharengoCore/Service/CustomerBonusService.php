@@ -70,7 +70,8 @@ class CustomerBonusService
 
             $invoice = $this->invoiceService->prepareInvoiceForBonusPackage(
                 $bonus->getCustomer(),
-                $bonus->getPackage()
+                $bonus->getPackage(),
+                $bonus->getFleet()
             );
 
             $this->entityManager->persist($invoice);

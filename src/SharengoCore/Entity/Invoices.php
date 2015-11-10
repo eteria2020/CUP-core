@@ -429,9 +429,18 @@ class Invoices
         return $invoice;
     }
 
-    public function createInvoiceForBonusPackage(
+    /**
+     * @param Customers $customer
+     * @param BonusPackages $bonusPackage
+     * @param Fleet $fleet
+     * @param integer $version
+     * @param array $amounts
+     * @return self
+     */
+    public static function createInvoiceForBonusPackage(
         Customers $customer,
         BonusPackages $bonusPackage,
+        Fleet $fleet,
         $version,
         $amounts
     ) {
@@ -441,7 +450,7 @@ class Invoices
             self::TYPE_BONUS_PACKAGE,
             intval(date("Ymd")),
             $amounts,
-            $customer->getFleet()
+            $fleet
         );
 
         $invoice->setContentBody([
