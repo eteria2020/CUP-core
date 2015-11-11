@@ -28,6 +28,30 @@ class PayedBetween extends NativeQuery
         ];
     }
 
+    /**
+     * This query is divided in one main query and 4 "subqueries".
+     * Each of the 4 subqueries collects data for a specific kind of payment.
+     * The data is organized in three fields, one for the date, one for the
+     * fleet and one for the amount.
+     *
+     * - tp_data referres to trip_payments
+     * - sp_data referres to subscription_payments
+     * - ep_data referres to extra_payments
+     * - cb_data referres to customers_bonus
+     *
+     * The last query combines the data from the 4 subqueries creating one or
+     * two rows per distinct date-fleet couple that appears in any of the four
+     * groups. Each row contains the date, the fleet and the sum of all four
+     * amounts (it considers null values as zero).
+     *
+     * The result is that the data returned by the query corresponds to the
+     * total income for each fleet, divided by date.
+     *
+     * The params passed specify the format for the date that groups results,
+     * the beginning date and the end date.
+     *
+     * @return string
+     */
     protected function sql()
     {
         return "WITH tp_data AS (
@@ -85,6 +109,9 @@ class PayedBetween extends NativeQuery
             FULL JOIN cb_data ON tp_data.tp_date = cb_data.cb_date AND tp_data.tp_fleet = cb_data.cb_fleet";
     }
 
+    /**
+     * @return array
+     */
     protected function scalarResults()
     {
         return [
@@ -94,6 +121,9 @@ class PayedBetween extends NativeQuery
         ];
     }
 
+    /**
+     * @return array
+     */
     protected function params()
     {
         return $this->params;
