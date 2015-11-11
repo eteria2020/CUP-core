@@ -36,7 +36,7 @@ class RecapAvailableMonths extends NativeQuery
             SELECT COALESCE(tp.date, sp.date) AS date
             FROM tp
             FULL JOIN sp ON tp.date = sp.date
-            ORDER BY date ASC;
+            ORDER BY date DESC;
             ";
     }
 
