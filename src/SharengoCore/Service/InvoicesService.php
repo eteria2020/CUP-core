@@ -8,7 +8,7 @@ use SharengoCore\Service\DatatableService;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Cards;
 use SharengoCore\Entity\Fleet;
-use SharengoCore\Entity\CustomersBonusPackages as BonusPackages;
+use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 
 use Doctrine\ORM\EntityManager;
@@ -228,20 +228,17 @@ class InvoicesService
      * @param Fleet $fleet
      * @return Invoices
      */
-    public function prepareInvoiceForBonusPackage(
-        Customers $customer,
-        BonusPackages $bonusPackage,
-        Fleet $fleet
-    ) {
+    public function prepareInvoiceForBonusPackagePayment(BonusPackagePayment $bonusPayment)
+    {
         $amounts = [
-            'sum' => $this->calculateAmountsWithTaxesFromTotal($bonusPackage->getCost()),
+            'sum' => $this->calculateAmountsWithTaxesFromTotal($bonusPayment->getAmount()),
             'iva' => $this->ivaPercentage
         ];
 
         return Invoices::createInvoiceForBonusPackage(
-            $customer,
-            $bonusPackage,
-            $fleet,
+            $bonusPayment->getCustomer(),
+            $bonusPayment->getPackage(),
+            $bonusPayment->getFleet(),
             $this->templateVersion,
             $amounts
         );
