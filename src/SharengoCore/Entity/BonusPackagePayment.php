@@ -207,7 +207,7 @@ class BonusPackagePayment
      */
     public function setFleet(Fleet $fleet)
     {
-        $this->paymentFleet = $fleet;
+        $this->fleet = $fleet;
 
         return $this;
     }
