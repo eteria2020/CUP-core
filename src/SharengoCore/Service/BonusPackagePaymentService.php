@@ -79,9 +79,7 @@ class BonusPackagePaymentService
                 $this->entityManager->commit();
             }
         } catch (\Exception $e) {
-            echo $e->getMessage();
             $this->entityManager->rollback();
-            echo "\n\n";
         }
     }
 }
