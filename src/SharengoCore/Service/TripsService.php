@@ -106,7 +106,7 @@ class TripsService
             $parentStart = "";
             $parent = $trip->getParent();
 
-            if ($parent !== null && $parent instanceof Trips) {
+            if ($parent !== null && $parent instanceof Trips && $parent->getId() != -1) {
                 $parentId = "<br>(" . $parent->getId() . ")";
                 $parentStart = "<br>(" . $parent->getTimestampBeginning()->format('d-m-Y H:i:s') . ")";
             }
