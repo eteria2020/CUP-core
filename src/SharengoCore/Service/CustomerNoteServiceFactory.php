@@ -5,13 +5,13 @@ namespace SharengoCore\Service;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class CustomersNoteServiceFactory implements FactoryInterface
+class CustomerNoteServiceFactory implements FactoryInterface
 {
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
-        $repository = $entityManager->getRepository('\SharengoCore\Entity\CustomersNote');
+        $repository = $entityManager->getRepository('\SharengoCore\Entity\CustomerNote');
 
-        return new CustomersNoteService($repository);
+        return new CustomerNoteService($repository, $entityManager);
     }
 }

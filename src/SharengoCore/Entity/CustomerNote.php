@@ -5,12 +5,12 @@ namespace SharengoCore\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * CustomersNote
+ * CustomerNote
  *
- * @ORM\Table(name="customers_notes")
- * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CustomersNoteRepository")
+ * @ORM\Table(name="customer_notes")
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CustomerNoteRepository")
  */
-class CustomersNote
+class CustomerNote
 {
     /**
      * @var integer
@@ -18,7 +18,7 @@ class CustomersNote
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="SEQUENCE")
-     * @ORM\SequenceGenerator(sequenceName="customers_notes_id_seq", allocationSize=1, initialValue=1)
+     * @ORM\SequenceGenerator(sequenceName="customer_notes_id_seq", allocationSize=1, initialValue=1)
      */
     private $id;
 
@@ -56,6 +56,17 @@ class CustomersNote
      */
     private $note;
 
+    public function __construct(
+        Customers $customer,
+        Webuser $webuser,
+        $note
+    ) {
+        $this->customer = $customer;
+        $this->webuser = $webuser;
+        $this->insertedTs = date_create();
+        $this->note = $note;
+    }
+
     /**
      * @return integer
      */
@@ -77,7 +88,7 @@ class CustomersNote
      */
     public function getInsertedTs()
     {
-        return $this->insertesTs;
+        return $this->insertedTs;
     }
 
     /**

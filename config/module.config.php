@@ -4,137 +4,138 @@ namespace SharengoCore;
 
 return [
 
-    'router' => array(
-            'routes' => array(
-                'core' => [
-                'type' => 'Segment',
-                'options' => [
-                    'route' => '/core',
-                    'defaults' => [
-                        '__NAMESPACE__' => 'SharengoCore\Controller',
-                        'controller' => 'Cars',
-                        ]
-                    ],
-                    'may_terminate' => true,
-                    'child_routes' => [
-
-                        'cars' => [
-                            'type' => 'Segment',
-                            'options' => [
-                                'route' => '/cars[/:id]',
-                                'constraints' => array(
-                                    'id'     => '[a-zA-Z0-9_-]+',
-                                ),
-                                'defaults' => [
-                                    'controller' => 'Cars'
-                                ]
-                            ]
-                        ],
-                        'publiccars' => [
-                            'type' => 'Segment',
-                            'options' => [
-                                'route' => '/publiccars[/:id]',
-                                'constraints' => array(
-                                    'id'     => '[a-zA-Z0-9_-]+',
-                                ),
-                                'defaults' => [
-                                    'controller' => 'PublicCars'
-                                ]
-                            ]
-                        ],
-                        'pois' => [
-                            'type' => 'Literal',
-                            'options' => [
-                                'route' => '/pois',
-                                'defaults' => [
-                                    'controller' => 'Pois'
-                                ]
-                            ]
-                        ],
-                        'users' => [
-                            'type' => 'Literal',
-                            'options' => [
-                                'route' => '/users',
-                                'defaults' => [
-                                    'controller' => 'Customers'
-                                ]
-                            ]
-                        ],
-                        'reservations' => [
-                            'type' => 'Segment',
-                            'options' => [
-                                'route' => '/reservations[/:id]',
-                                'constraints' => array(
-                                    'id'     => '[0-9]+',
-                                ),
-                                'defaults' => [
-                                    'controller' => 'Reservations'
-                                ]
-                            ]
-                        ],
-                        'trips' => [
-                            'type' => 'Segment',
-                            'options' => [
-                                'route' => '/trips[/:id]',
-                                'constraints' => array(
-                                    'id'     => '[0-9]+',
-                                ),
-                                'defaults' => [
-                                    'controller' => 'Trips'
-                                ]
-                            ]
-                        ],
-                        'invoices' => [
-                            'type' => 'Segment',
-                            'options' => [
-                                'route' => '/invoices[/:id]',
-                                'constraints' => array(
-                                    'id'     => '[0-9]+',
-                                ),
-                                'defaults' => [
-                                    'controller' => 'Invoices'
-                                ]
-                            ]
-                        ],
-                        'fleets' => [
-                            'type' => 'Segment',
-                            'options' => [
-                                'route' => '/fleets[/:id]',
-                                'constraints' => array(
-                                    'id'     => '[0-9]+',
-                                ),
-                                'defaults' => [
-                                    'controller' => 'Fleets'
-                                ]
-                            ]
-                        ],
-                    ],
-                ],
-                'pdf' => [
-                    'type' => 'Segment',
-                    'options' => [
-                        'route' => '/pdf',
-                        'defaults' => [
-                            '__NAMESPACE__' => 'SharengoCore\Controller',
-                            'controller' => 'Pdf',
-                            'action'     => 'index',
-                        ]
-                    ],
-                    'may_terminate' => true,
-                    'child_routes' => [
-                        'invoices' => [
-                            'type' => 'Segment',
-                            'options' => [
-                                'route' => '/invoices[/:id]',
-                                'defaults' => [
-                                    'action' => 'index',
-                                ]
-                            ]
-                        ],
+    'router' => [
+        'routes' => [
+            'core' => [
+            'type' => 'Segment',
+            'options' => [
+                'route' => '/core',
+                'defaults' => [
+                    '__NAMESPACE__' => 'SharengoCore\Controller',
+                    'controller' => 'Cars',
                     ]
                 ],
-            ),
-        ),
+                'may_terminate' => true,
+                'child_routes' => [
+
+                    'cars' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => '/cars[/:id]',
+                            'constraints' => [
+                                'id'     => '[a-zA-Z0-9_-]+',
+                            ],
+                            'defaults' => [
+                                'controller' => 'Cars'
+                            ]
+                        ]
+                    ],
+                    'publiccars' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => '/publiccars[/:id]',
+                            'constraints' => [
+                                'id'     => '[a-zA-Z0-9_-]+',
+                            ],
+                            'defaults' => [
+                                'controller' => 'PublicCars'
+                            ]
+                        ]
+                    ],
+                    'pois' => [
+                        'type' => 'Literal',
+                        'options' => [
+                            'route' => '/pois',
+                            'defaults' => [
+                                'controller' => 'Pois'
+                            ]
+                        ]
+                    ],
+                    'users' => [
+                        'type' => 'Literal',
+                        'options' => [
+                            'route' => '/users',
+                            'defaults' => [
+                                'controller' => 'Customers'
+                            ]
+                        ]
+                    ],
+                    'reservations' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => '/reservations[/:id]',
+                            'constraints' => [
+                                'id'     => '[0-9]+',
+                            ],
+                            'defaults' => [
+                                'controller' => 'Reservations'
+                            ]
+                        ]
+                    ],
+                    'trips' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => '/trips[/:id]',
+                            'constraints' => [
+                                'id'     => '[0-9]+',
+                            ],
+                            'defaults' => [
+                                'controller' => 'Trips'
+                            ]
+                        ]
+                    ],
+                    'invoices' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => '/invoices[/:id]',
+                            'constraints' => [
+                                'id'     => '[0-9]+',
+                            ],
+                            'defaults' => [
+                                'controller' => 'Invoices'
+                            ]
+                        ]
+                    ],
+                    'fleets' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => '/fleets[/:id]',
+                            'constraints' => [
+                                'id'     => '[0-9]+',
+                            ],
+                            'defaults' => [
+                                'controller' => 'Fleets'
+                            ]
+                        ]
+                    ],
+                ],
+            ],
+            'pdf' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/pdf',
+                    'defaults' => [
+                        '__NAMESPACE__' => 'SharengoCore\Controller',
+                        'controller' => 'Pdf',
+                        'action'     => 'index',
+                    ]
+                ],
+                'may_terminate' => true,
+                'child_routes' => [
+                    'invoices' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => '/invoices[/:id]',
+                            'defaults' => [
+                                'action' => 'index',
+                            ]
+                        ]
+                    ],
+                ]
+            ],
+        ],
+    ],
+
     'controllers' => [
         'factories' => [
             'SharengoCore\Controller\Cars'             => 'SharengoCore\Controller\CarsControllerFactory',
@@ -200,19 +201,20 @@ return [
             'SharengoCore\Service\BuyCustomerBonusPackage' => 'SharengoCore\Service\BuyCustomerBonusPackageFactory',
             'SharengoCore\Service\BonusPackagePaymentService' => 'SharengoCore\Service\BonusPackagePaymentServiceFactory',
             'SharengoCore\Service\RecapService' => 'SharengoCore\Service\RecapServiceFactory',
-            'SharengoCore\Service\CustomersNoteService' => 'SharengoCore\Service\CustomersNoteServiceFactory'
+            'SharengoCore\Service\CustomerNoteService' => 'SharengoCore\Service\CustomerNoteServiceFactory'
         ],
         'shared' => [
             'SharengoCore\Service\TripCostComputerService' => false,
             'SharengoCore\Service\DatatableService' => false
         ]
     ],
+
     'doctrine'        => [
         'driver' => [
             __NAMESPACE__ . '_driver' => [
                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
                 'cache' => 'array',
-                'paths' => array(__DIR__ . '/../src/' . __NAMESPACE__ . '/Entity')
+                'paths' => [__DIR__ . '/../src/' . __NAMESPACE__ . '/Entity']
             ],
             'orm_default'             => [
                 'class'   => 'Doctrine\ORM\Mapping\Driver\DriverChain',
@@ -222,22 +224,23 @@ return [
             ],
         ],
     ],
-    'bjyauthorize' => array(
-        'guards' => array(
-            'BjyAuthorize\Guard\Controller' => array(
-                array('controller' => 'SharengoCore\Controller\Cars', 'roles' => array('admin', 'callcenter')),
-                array('controller' => 'SharengoCore\Controller\PublicCars', 'roles' => array()),
-                array('controller' => 'SharengoCore\Controller\Customers', 'roles' => array('admin', 'callcenter')),
-                array('controller' => 'SharengoCore\Controller\Pois', 'roles' => array()),
-                array('controller' => 'SharengoCore\Controller\Reservations', 'roles' => array('user', 'admin', 'callcenter')),
-                array('controller' => 'SharengoCore\Controller\Trips', 'roles' => array('admin', 'callcenter', 'user')),
-                array('controller' => 'SharengoCore\Controller\Fleets', 'roles' => array()),
-                array('controller' => 'SharengoCore\Controller\Invoices', 'roles' => array('user')),
-                array('controller' => 'SharengoCore\Controller\Pdf', 'roles' => ['user', 'admin']),
+
+    'bjyauthorize' => [
+        'guards' => [
+            'BjyAuthorize\Guard\Controller' => [
+                ['controller' => 'SharengoCore\Controller\Cars', 'roles' => ['admin', 'callcenter']],
+                ['controller' => 'SharengoCore\Controller\PublicCars', 'roles' => []],
+                ['controller' => 'SharengoCore\Controller\Customers', 'roles' => ['admin', 'callcenter']],
+                ['controller' => 'SharengoCore\Controller\Pois', 'roles' => []],
+                ['controller' => 'SharengoCore\Controller\Reservations', 'roles' => ['user', 'admin', 'callcenter']],
+                ['controller' => 'SharengoCore\Controller\Trips', 'roles' => ['admin', 'callcenter', 'user']],
+                ['controller' => 'SharengoCore\Controller\Fleets', 'roles' => []],
+                ['controller' => 'SharengoCore\Controller\Invoices', 'roles' => ['user']],
+                ['controller' => 'SharengoCore\Controller\Pdf', 'roles' => ['user', 'admin']],
                 ['controller' => 'SharengoCore\Controller\CustomersBonusPackages', 'roles' => ['user', 'admin']],
-            ),
-        ),
-    ),
+            ],
+        ],
+    ],
 
     'view_manager' => [
         'template_map' => [
