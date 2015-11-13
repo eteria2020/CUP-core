@@ -61,12 +61,12 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $sql = 'SELECT coalesce(bool_or(za.geo @> point(c.longitude, c.latitude)), false) AS is_in '.
-            'FROM cars c '.
-            'JOIN fleets f ON f.id = c.fleet_id '.
-            'JOIN zone_alarms_fleets zaf ON zaf.fleet_id = f.id '.
-            'JOIN zone_alarms za ON za.id = zaf.zone_alarm_id AND za.active = TRUE '.
-            'WHERE c.plate = :plate';
+        $sql = "SELECT coalesce(bool_or(za.geo @> point(c.longitude, c.latitude)), false) AS is_in
+            FROM cars c
+            JOIN fleets f ON f.id = c.fleet_id
+            JOIN zone_alarms_fleets zaf ON zaf.fleet_id = f.id
+            JOIN zone_alarms za ON za.id = zaf.zone_alarm_id AND za.active = TRUE
+            WHERE c.plate = :plate";
 
         $rsm = new ResultSetMapping;
         $rsm->addScalarResult('is_in', 'isIn', 'boolean');
@@ -75,5 +75,111 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('plate', $car->getPlate());
 
         return $query->getSingleScalarResult();
+    }
+
+    public function findReservedPlates()
+    {
+        $em = $this->getEntityManager();
+
+        $sql = "SELECT json_agg(plate) as value
+            FROM (
+                SELECT DISTINCT c.plate as plate
+                FROM cars c
+                JOIN reservations r ON r.car_plate = c.plate AND r.active = true
+                WHERE c.hidden = false
+                ORDER BY c.plate ASC
+            ) sub_q";
+
+        $rsm = new ResultSetMapping;
+        $rsm->addScalarResult('value', 'value', 'json_array');
+
+        $query = $em->createNativeQuery($sql, $rsm);
+
+        return $query->getResult();
+    }
+
+    public function findBusyPlates()
+    {
+        $em = $this->getEntityManager();
+
+        $sql = "SELECT json_agg(plate) as value
+            FROM (
+                SELECT DISTINCT c.plate as plate
+                FROM cars c
+                JOIN trips t ON t.car_plate = c.plate AND t.timestamp_end IS NULL
+                WHERE c.hidden = false
+                ORDER BY c.plate ASC
+            ) sub_q";
+
+        $rsm = new ResultSetMapping;
+        $rsm->addScalarResult('value', 'value', 'json_array');
+
+        $query = $em->createNativeQuery($sql, $rsm);
+
+        return $query->getResult();
+    }
+
+    /**
+     * The outer query aggregates the results of the subquery, generating json.
+     * The subquery selects the plate of the car and the highest timestamp of
+     * the relative trips. It then subtracts that timestamp from the current
+     * time and extracts the seconds from the result. It then converts the
+     * result to minutes and rounds it up.
+     */
+    public function findMinutesSinceLastTrip()
+    {
+        $em = $this->getEntityManager();
+
+        $sql = "SELECT json_object_agg(plate, ts_end) as value
+            FROM (
+                SELECT
+                    c.plate as plate,
+                    round(extract('epoch' from (now() - MAX(t.timestamp_end))) / 60) as ts_end
+                FROM trips t
+                JOIN cars c ON t.car_plate = c.plate
+                WHERE t.timestamp_end IS NOT NULL
+                AND c.hidden = false
+                GROUP BY c.plate
+                ORDER BY c.plate ASC
+            ) sub_q";
+
+        $rsm = new ResultSetMapping;
+        $rsm->addScalarResult('value', 'value', 'json_array');
+
+        $query = $em->createNativeQuery($sql, $rsm);
+
+        return $query->getResult();
+    }
+
+    /**
+     * The outer query aggregates the results of the subquery, generating json.
+     * The subquery selects the plate of the car and a boolean value
+     * corresponding to wether the car is out of its permitted boundaries.
+     * The boolean value might also be null if longitude or latitude are null.
+     */
+    public function findOutOfBoundsPlates()
+    {
+        $em = $this->getEntityManager();
+
+        $sql = "SELECT json_object_agg(plate, gps) as value
+            FROM (
+                SELECT
+                    c.plate as plate,
+                    bool_or(za.geo @> point(c.longitude, c.latitude)) as gps
+                FROM cars c
+                JOIN fleets f ON f.id = c.fleet_id
+                JOIN zone_alarms_fleets zaf ON zaf.fleet_id = f.id
+                JOIN zone_alarms za ON za.id = zaf.zone_alarm_id AND za.active = TRUE
+                WHERE c.hidden = false
+                GROUP BY c.plate
+                ORDER BY c.plate ASC
+            ) sub_q";
+
+        $rsm = new ResultSetMapping;
+        $rsm->addScalarResult('value', 'value', 'json_array');
+
+        $query = $em->createNativeQuery($sql, $rsm);
+
+        return $query->getResult();
     }
 }
