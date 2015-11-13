@@ -2,16 +2,17 @@
 
 namespace SharengoCore\Service;
 
-use SharengoCore\Entity\Queries\CustomerBonusByTransaction;
 use Cartasi\Entity\Transactions;
+use SharengoCore\Entity\Queries\BonusPackagePaymentByTransaction;
 use SharengoCore\Entity\CustomersBonus;
-use SharengoCore\Entity\Queries\CustomerBonusForInvoice;
+use SharengoCore\Entity\Queries\BonusPackagePaymentToInvoice;
 use SharengoCore\Entity\CustomersBonusPackages;
+use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Service\InvoicesService;
 
 use Doctrine\ORM\EntityManagerInterface;
 
-class CustomerBonusService
+class BonusPackagePaymentService
 {
     /**
      * @var EntityManagerInterface
@@ -37,47 +38,41 @@ class CustomerBonusService
      */
     public function transactionAlreadyUsed(Transactions $transaction)
     {
-        $query = new CustomerBonusByTransaction($transaction, $this->entityManager);
+        $query = new BonusPackagePaymentByTransaction($transaction, $this->entityManager);
 
-        return $query() instanceof CustomersBonus;
+        return $query() instanceof BonusPackagePayment;
     }
 
     /**
-     * @return CustomersBonus[]
+     * @return BonusPackagePayment[]
      */
-    public function getBonusPaymentsForInvoice()
+    public function getBonusPackagePaymentsToInvoice()
     {
-        $query = new CustomerBonusForInvoice($this->entityManager);
+        $query = new BonusPackagePaymentToInvoice($this->entityManager);
 
         return $query();
     }
 
     /**
-     * @param CustomersBonus $bonus
+     * @param BonusPackagePayment $bonusPayment
      * @param bool $doCommit
      */
     public function generateInvoice(
-        CustomersBonus $bonus,
+        BonusPackagePayment $bonusPayment,
         $doCommit = true
     ) {
         $this->entityManager->beginTransaction();
 
         try {
-            // check if bonus comes from a package
-            if (!$bonus->getPackage() instanceof CustomersBonusPackages) {
-                throw new \Exception('bonus not invoiceable');
-            }
-
-            $invoice = $this->invoiceService->prepareInvoiceForBonusPackage(
-                $bonus->getCustomer(),
-                $bonus->getPackage()
+            $invoice = $this->invoiceService->prepareInvoiceForBonusPackagePayment(
+                $bonusPayment
             );
 
             $this->entityManager->persist($invoice);
 
-            $bonus->associateInvoice($invoice);
+            $bonusPayment->associateInvoice($invoice);
 
-            $this->entityManager->persist($bonus);
+            $this->entityManager->persist($bonusPayment);
 
             if ($doCommit) {
                 $this->entityManager->flush();

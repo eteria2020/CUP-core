@@ -5,6 +5,7 @@ namespace SharengoCore\Service;
 use Cartasi\Service\CartasiCustomerPaymentsInterface;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonusPackages;
+use SharengoCore\Entity\BonusPackagePayment;
 
 use Doctrine\ORM\EntityManager;
 
@@ -43,9 +44,16 @@ class BuyCustomerBonusPackage
             $cartasiResponse = $this->payments->sendPaymentRequest($customer, $package->getCost());
 
             if ($cartasiResponse->getCompletedCorrectly()) {
-                $bonus = $package->generateCustomerBonus($customer, $cartasiResponse->getTransaction());
+                $bonus = $package->generateCustomerBonus($customer);
+                $bonusPayment = new BonusPackagePayment(
+                    $customer,
+                    $bonus,
+                    $package,
+                    $cartasiResponse->getTransaction()
+                );
 
                 $this->entityManager->persist($bonus);
+                $this->entityManager->persist($bonusPayment);
                 $this->entityManager->flush();
             } else {
                 return false;

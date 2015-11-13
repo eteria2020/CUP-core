@@ -203,10 +203,12 @@ class CustomersBonusPackages
         return $this->notes;
     }
 
-    public function generateCustomerBonus(
-        Customers $customer,
-        Transactions $transaction
-    ) {
-        return CustomersBonus::createFromBonusPackage($customer, $this, $transaction);
+    /**
+     * @param Customers $customer
+     * @return CustomersBonus
+     */
+    public function generateCustomerBonus(Customers $customer)
+    {
+        return CustomersBonus::createFromBonusPackage($customer, $this);
     }
 }

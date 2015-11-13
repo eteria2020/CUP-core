@@ -11,7 +11,7 @@ use SharengoCore\Utils\Interval;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Orm\AbstractQuery;
 use Doctrine\ORM\Query\ResultSetMapping;
-use SharengoCore\Entity\CustomersBonusPackages as BonusPackages;
+use SharengoCore\Entity\CustomersBonusPackages;
 
 /**
  * Invoices
@@ -429,9 +429,18 @@ class Invoices
         return $invoice;
     }
 
-    public function createInvoiceForBonusPackage(
+    /**
+     * @param Customers $customer
+     * @param CustomersBonusPackages $bonusPackage
+     * @param Fleet $fleet
+     * @param integer $version
+     * @param array $amounts
+     * @return self
+     */
+    public static function createInvoiceForBonusPackage(
         Customers $customer,
-        BonusPackages $bonusPackage,
+        CustomersBonusPackages $package,
+        Fleet $fleet,
         $version,
         $amounts
     ) {
@@ -441,7 +450,7 @@ class Invoices
             self::TYPE_BONUS_PACKAGE,
             intval(date("Ymd")),
             $amounts,
-            $customer->getFleet()
+            $fleet
         );
 
         $invoice->setContentBody([
@@ -456,7 +465,7 @@ class Invoices
                 ],
                 'body' => [
                     [
-                        [$bonusPackage->getDescription()],
+                        [$package->getDescription()],
                         [$amounts['sum']['total'] . ' €']
                     ]
                 ],
