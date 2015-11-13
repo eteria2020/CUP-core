@@ -6,7 +6,11 @@ use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\Commands;
 use SharengoCore\Service\CustomersService;
+use SharengoCore\Service\CommandsService;
+use Application\Form\InputData\CloseTripData;
+use SharengoCore\Entity\WebUser;
 
 use Zend\View\Helper\Url;
 
@@ -33,6 +37,11 @@ class TripsService
     private $customersService;
 
     /**
+     * @var CommandsService
+     */
+    private $commandsService;
+
+    /**
      * @param EntityRepository $tripRepository
      * @param DatatableService $I_datatableService
      * @param \\TODO $I_urlHelper
@@ -42,12 +51,14 @@ class TripsService
         $tripRepository,
         DatatableService $I_datatableService,
         $I_urlHelper,
-        CustomersService $customersService
+        CustomersService $customersService,
+        CommandsService $commandsService
     ) {
         $this->tripRepository = $tripRepository;
         $this->I_datatableService = $I_datatableService;
         $this->I_urlHelper = $I_urlHelper;
         $this->customersService = $customersService;
+        $this->commandsService = $commandsService;
     }
 
     /**
@@ -118,7 +129,6 @@ class TripsService
                     if ($tripPayment instanceof TripPayments) {
                         $tripCost = $tripPayment->getTotalCost();
                     } else {    // for some reason trip has not beed payed
-
                         // show 0 only if not accounted; otherwise price is not yet defined
                         if ($trip->getIsAccounted()) {
                             $tripCost = 0;
@@ -259,5 +269,23 @@ class TripsService
     public function getTripsNoAddress($limit = 0)
     {
         return $this->tripRepository->findTripsNoAddress($limit);
+    }
+
+    /**
+     * @param CloseTripData $closeTrip
+     */
+    public function closeTrip(CloseTripData $closeTrip, WebUser $webUser)
+    {
+        $this->commandsService->sendCommand(
+            $closeTrip->car(),
+            Commands::CLOSE_TRIP,
+            $webUser
+        );
+
+        $this->tripRepository->closeTrip(
+            $closeTrip->trip(),
+            $closeTrip->dateTime(),
+            $closeTrip->payable()
+        );
     }
 }

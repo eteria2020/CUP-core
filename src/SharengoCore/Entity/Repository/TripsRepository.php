@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity\Repository;
 
 use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\Trips;
 
 /**
  * TripsRepository
@@ -251,5 +252,24 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         }
 
         return $query->getResult();
+    }
+
+    /**
+     * close a trip setting timestampEnd and payable
+     *
+     * @param Trips $trip
+     * @param DateTime $timestampEnd
+     * @param bool $payable
+     */
+    public function closeTrip(
+        Trips $trip,
+        \Datetime $timestampEnd,
+        $payable
+    ) {
+        $trip->setTimestampEnd($timestampEnd);
+        $trip->setPayable($payable);
+
+        $this->getEntityManager()->persist($trip);
+        $this->getEntityManager()->flush();
     }
 }
