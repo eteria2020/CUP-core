@@ -34,10 +34,10 @@ class PayedBetween extends NativeQuery
      * The data is organized in three fields, one for the date, one for the
      * fleet and one for the amount.
      *
-     * - tp_data referres to trip_payments
-     * - sp_data referres to subscription_payments
-     * - ep_data referres to extra_payments
-     * - cb_data referres to customers_bonus
+     * - tp referres to trip_payments
+     * - sp referres to subscription_payments
+     * - ep referres to extra_payments
+     * - bpp referres to bonus_package_payments
      *
      * The last query combines the data from the 4 subqueries creating one or
      * two rows per distinct date-fleet couple that appears in any of the four

@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * BonusPackagePayment
  *
  * @ORM\Table(name="bonus_package_payments")
- * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\BonusPackagePaymentRepository")
+ * @ORM\Entity
  */
 class BonusPackagePayment
 {
@@ -116,13 +116,13 @@ class BonusPackagePayment
         CustomersBonusPackages $package,
         Transactions $transaction
     ) {
-        $this->setCustomer($customer);
-        $this->setBonus($bonus);
-        $this->setPackage($package);
-        $this->setFleet($customer->getFleet());
-        $this->setTransaction($transaction);
-        $this->setAmount($package->getCost());
-        $this->setInsertedTs(date_create());
+        $this->customer = $customer;
+        $this->bonus = $bonus;
+        $this->package = $package;
+        $this->fleet = $customer->getFleet();
+        $this->transaction = $transaction;
+        $this->amount = $package->getCost();
+        $this->insertedTs = date_create();
     }
 
     /**
@@ -142,34 +142,11 @@ class BonusPackagePayment
     }
 
     /**
-     * @param Customers $customer
-     *
-     * @return self
-     */
-    public function setCustomer(Customers $customer)
-    {
-        $this->customer = $customer;
-
-        return $this;
-    }
-
-    /**
      * @return CustomersBonus
      */
     public function getBonus()
     {
         return $this->bonus;
-    }
-
-    /**
-     * @param CustomersBonus $bonus
-     * @return self
-     */
-    public function setBonus(CustomersBonus $bonus)
-    {
-        $this->bonus = $bonus;
-
-        return $this;
     }
 
     /**
@@ -181,18 +158,6 @@ class BonusPackagePayment
     }
 
     /**
-     * @param CustomersBonusPackages
-     *
-     * @return self
-     */
-    public function setPackage(CustomersBonusPackages $package)
-    {
-        $this->package = $package;
-
-        return $this;
-    }
-
-    /**
      * @return Fleet
      */
     public function getFleet()
@@ -201,60 +166,11 @@ class BonusPackagePayment
     }
 
     /**
-     * @param Fleet $fleet
-     *
-     * @return self
-     */
-    public function setFleet(Fleet $fleet)
-    {
-        $this->fleet = $fleet;
-
-        return $this;
-    }
-
-    /**
-     *
-     * @param Transactions $transaction
-     *
-     * @return self
-     */
-    public function setTransaction(Transactions $transaction)
-    {
-        $this->transaction = $transaction;
-
-        return $this;
-    }
-
-    /**
      * @return integer
      */
     public function getAmount()
     {
         return $this->amount;
-    }
-
-    /**
-     * @param integer $amount
-     *
-     * @return self
-     */
-    public function setAmount($amount)
-    {
-        $this->amount = $amount;
-
-        return $this;
-    }
-
-    /**
-     * @param \DateTime $insertedTs
-     *
-     * @return self
-     */
-    public function setInsertedTs($insertedTs)
-    {
-        $this->insertedTs = $insertedTs;
-
-        return $this;
     }
 
     /**
