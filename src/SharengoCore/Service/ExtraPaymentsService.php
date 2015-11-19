@@ -22,6 +22,10 @@ class ExtraPaymentsService
      */
     private $invoicesService;
 
+    /**
+     * @param EntityManager $entityManager
+     * @param InvoicesService $invoicesService
+     */
     public function __construct(
         EntityManager $entityManager,
         InvoicesService $invoicesService
@@ -32,9 +36,12 @@ class ExtraPaymentsService
 
     /**
      * @param Customers $customer
+     * @param Fleet $fleet
+     * @param Transactions $transaction
      * @param int $amount
-     * @param string $paymentType
-     * @param string $reason
+     * @param string $type
+     * @param string[] $reasons
+     * @param integer[] $amounts
      * @return ExtraPayment
      */
     public function registerExtraPayment(
@@ -42,16 +49,32 @@ class ExtraPaymentsService
         Fleet $fleet,
         Transactions $transaction,
         $amount,
-        $paymentType,
-        $reason
+        $type,
+        $reasons,
+        $amounts
     ) {
+        $reasonsAmounts = [];
+        for ($i = 0; $i < $reasons->count(); $i++) {
+            if (!array_key_exists($reasons[$i], $reasonsAmounts)) {
+                $reasonsAmounts[$reasons[$i]] = $amounts[$i];
+            } else {
+                $timesInReasons = array_count_values($reasons)[$reasons[$i]];
+                for ($j = 2; $j < $timesInReasons + 1; $j++) {
+                    if (!array_key_exists($reasons[$i] . $j, $reasonsAmounts)) {
+                        $reasonsAmounts[$reasons[$i] . $j] = $amounts[$i];
+                        break;
+                    }
+                }
+            }
+        }
+
         $extraPayment = new ExtraPayment(
             $customer,
             $fleet,
             $transaction,
             $amount,
             $paymentType,
-            $reason
+            $reasonsAmounts
         );
 
         $this->entityManager->persist($extraPayment);
@@ -93,5 +116,18 @@ class ExtraPaymentsService
         } catch (\Exception $e) {
             $this->entityManager->rollback();
         }
+    }
+
+    /**
+     * Returns an array containing all types of ExtraPayments
+     *
+     * @return string[]
+     */
+    public function getAllTypes()
+    {
+        return [
+            "extra",
+            "penalty"
+        ];
     }
 }
