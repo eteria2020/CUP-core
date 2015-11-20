@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity;
 
+use SharengoCore\Exception\NoteContentNotValidException;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -61,10 +63,14 @@ class CustomerNote
         Webuser $webuser,
         $note
     ) {
+        if (empty($note)) {
+            throw new NoteContentNotValidException();
+        }
+
         $this->customer = $customer;
         $this->webuser = $webuser;
         $this->insertedTs = date_create();
-        $this->note = $note;
+        $this->note = htmlspecialchars($note);
     }
 
     /**
