@@ -6,6 +6,7 @@ use SharengoCore\Entity\ExtraPayment;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Service\InvoicesService;
 use SharengoCore\Entity\Fleet;
+use SharengoCore\Entity\Queries\AllExtraPaymentTypes;
 use Cartasi\Entity\Transactions;
 
 use Doctrine\ORM\EntityManager;
@@ -99,7 +100,7 @@ class ExtraPaymentsService
             $invoice = $this->invoicesService->prepareInvoiceForExtraOrPenalty(
                 $extraPayment->getCustomer(),
                 $extraPayment->getFleet(),
-                $extraPayment->getReason(),
+                $extraPayment->getReasons(),
                 $extraPayment->GetAmount()
             );
 
@@ -126,9 +127,11 @@ class ExtraPaymentsService
      */
     public function getAllTypes()
     {
-        return [
-            "extra",
-            "penalty"
-        ];
+        $query = new AllExtraPaymentTypes($this->entityManager);
+        $result = [];
+        foreach ($query() as $value) {
+            array_push($result, $value['type']);
+        }
+        return $result;
     }
 }

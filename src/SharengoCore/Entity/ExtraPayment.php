@@ -160,9 +160,9 @@ class ExtraPayment
     /**
      * @return string
      */
-    public function getReason()
+    public function getReasons()
     {
-        return $this->reason;
+        return $this->reasons;
     }
 
     /**
