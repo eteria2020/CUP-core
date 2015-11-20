@@ -54,17 +54,18 @@ class ExtraPaymentsService
         $amounts
     ) {
         $reasonsAmounts = [];
-        for ($i = 0; $i < $reasons->count(); $i++) {
+        // Fill reasonsAmounts with key value pairs from reasons and amounts
+        // using reasons as key and amount as value
+        for ($i = 0; $i < count($reasons); $i++) {
+            // Check if reason has not already been used as key
             if (!array_key_exists($reasons[$i], $reasonsAmounts)) {
                 $reasonsAmounts[$reasons[$i]] = $amounts[$i];
             } else {
-                $timesInReasons = array_count_values($reasons)[$reasons[$i]];
-                for ($j = 2; $j < $timesInReasons + 1; $j++) {
-                    if (!array_key_exists($reasons[$i] . $j, $reasonsAmounts)) {
-                        $reasonsAmounts[$reasons[$i] . $j] = $amounts[$i];
-                        break;
-                    }
+                $j = 2;
+                while (array_key_exists($reasons[$i] . ' - ' . $j, $reasonsAmounts)) {
+                    $j++;
                 }
+                $reasonsAmounts[$reasons[$i] . ' - ' . $j] = $amounts[$i];
             }
         }
 
@@ -73,7 +74,7 @@ class ExtraPaymentsService
             $fleet,
             $transaction,
             $amount,
-            $paymentType,
+            $type,
             $reasonsAmounts
         );
 

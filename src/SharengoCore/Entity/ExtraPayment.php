@@ -61,9 +61,9 @@ class ExtraPayment
     /**
      * @var array
      *
-     * @ORM\Column(name="reason", type="json_array", nullable=false)
+     * @ORM\Column(name="reasons", type="json_array", nullable=false)
      */
-    private $reason;
+    private $reasons;
 
     /**
      * @var Invoices
