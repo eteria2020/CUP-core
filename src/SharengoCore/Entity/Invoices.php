@@ -411,11 +411,7 @@ class Invoices
                     'Descrizione',
                     'Imponibile'
                 ],
-                'body' => [
-                    [
-                        $reasons
-                    ]
-                ],
+                'body' => $reasons,
                 'body-format' => [
                     'alignment' => [
                         'left',

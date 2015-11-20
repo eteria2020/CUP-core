@@ -55,19 +55,11 @@ class ExtraPaymentsService
         $amounts
     ) {
         $reasonsAmounts = [];
-        // Fill reasonsAmounts with key value pairs from reasons and amounts
-        // using reasons as key and amount as value
         for ($i = 0; $i < count($reasons); $i++) {
-            // Check if reason has not already been used as key
-            if (!array_key_exists($reasons[$i], $reasonsAmounts)) {
-                $reasonsAmounts[$reasons[$i]] = $this->formatAmount($amounts[$i]);
-            } else {
-                $j = 2;
-                while (array_key_exists($reasons[$i] . ' - ' . $j, $reasonsAmounts)) {
-                    $j++;
-                }
-                $reasonsAmounts[$reasons[$i] . ' - ' . $j] = $this->formatAmount($amounts[$i]);
-            }
+            array_push(
+                $reasonsAmounts,
+                [[$reasons[$i]], [$this->formatAmount($amounts[$i])]]
+            );
         }
 
         $extraPayment = new ExtraPayment(
@@ -141,6 +133,6 @@ class ExtraPaymentsService
      */
     private function formatAmount($amount)
     {
-        return sprintf('%.2f', intval($amount) / 100);
+        return sprintf('%.2f €', intval($amount) / 100);
     }
 }
