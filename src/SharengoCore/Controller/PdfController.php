@@ -80,8 +80,7 @@ class PdfController extends AbstractActionController
 
         $viewModel = new ViewModel([
             'invoiceNumber' => $invoice->getInvoiceNumber(),
-            'invoiceContent' => $invoice->getContent(),
-            'invoiceDate' => $invoice->getInvoiceDate()
+            'invoiceContent' => $invoice->getContent()
         ]);
 
         $templateVersion = $invoice->getContent()['template_version'];
