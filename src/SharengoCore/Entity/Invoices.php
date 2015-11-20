@@ -382,14 +382,14 @@ class Invoices
      * @param Customers $customer
      * @param Fleet $fleet
      * @param int $version template version
-     * @param string $reason
+     * @param array[] $reasons
      * @param array $amounts with fields grand_total_cents, grand_total, total, iva
      */
     public static function createInvoiceForExtraOrPenalty(
         Customers $customer,
         Fleet $fleet,
         $version,
-        $reason,
+        $reasons,
         $amounts
     ) {
         $invoice = new Invoices(
@@ -413,8 +413,7 @@ class Invoices
                 ],
                 'body' => [
                     [
-                        [$reason],
-                        [$amounts['sum']['total'] . ' €']
+                        $reasons
                     ]
                 ],
                 'body-format' => [

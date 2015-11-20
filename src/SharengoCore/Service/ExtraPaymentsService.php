@@ -60,13 +60,13 @@ class ExtraPaymentsService
         for ($i = 0; $i < count($reasons); $i++) {
             // Check if reason has not already been used as key
             if (!array_key_exists($reasons[$i], $reasonsAmounts)) {
-                $reasonsAmounts[$reasons[$i]] = $amounts[$i];
+                $reasonsAmounts[$reasons[$i]] = $this->formatAmount($amounts[$i]);
             } else {
                 $j = 2;
                 while (array_key_exists($reasons[$i] . ' - ' . $j, $reasonsAmounts)) {
                     $j++;
                 }
-                $reasonsAmounts[$reasons[$i] . ' - ' . $j] = $amounts[$i];
+                $reasonsAmounts[$reasons[$i] . ' - ' . $j] = $this->formatAmount($amounts[$i]);
             }
         }
 
@@ -133,5 +133,14 @@ class ExtraPaymentsService
             array_push($result, $value['type']);
         }
         return $result;
+    }
+
+    /**
+     * @param string $amount
+     * @return string
+     */
+    private function formatAmount($amount)
+    {
+        return sprintf('%.2f', intval($amount) / 100);
     }
 }
