@@ -31,7 +31,7 @@ class CustomerDeactivationService
      *
      * @param Customers $customer
      */
-    public function deactivateForFirstPaymentNotCompleted(Customers $customer)
+    public function deactivateAtRegistration(Customers $customer)
     {
         $this->deactivate(
             $customer,
