@@ -15,6 +15,11 @@ class CustomerDeactivation
     /**
      * @var string
      */
+    const FIRST_PAYMENT_NOT_COMPLETED = 'FIRST_PAYMENT_NOT_COMPLETED';
+
+    /**
+     * @var string
+     */
     const FAILED_PAYMENT = 'FAILED_PAYMENT';
 
     /**
