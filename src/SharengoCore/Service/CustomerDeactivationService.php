@@ -26,6 +26,21 @@ class CustomerDeactivationService
     }
 
     /**
+     * Create CustomerDeactivation for when Customer hasn't yet payed the
+     * first payment
+     *
+     * @param Customers $customer
+     */
+    public function deactivateForFirstPaymentNotCompleted(Customers $customer)
+    {
+        $this->deactivate(
+            $customer,
+            CustomerDeactivation::FIRST_PAYMENT_NOT_COMPLETED,
+            []
+        );
+    }
+
+    /**
      * Deactivate Customer that failed to pay a TripPayment
      *
      * @param Customers $customer
@@ -38,7 +53,7 @@ class CustomerDeactivationService
         \DateTime $startTs = null
     ) {
         $details = [
-            'trip_payment_try' => $tripPaymentTry->getId()
+            'trip_payment_try_id' => $tripPaymentTry->getId()
         ];
 
         $this->deactivate(
@@ -130,6 +145,25 @@ class CustomerDeactivationService
     }
 
     /**
+     * Close the CustomerDeactivation when the Customer pays the subscription
+     *
+     * @param CustomerDeactivation $customerDeactivation
+     * @param SubscriptionPayment $subscriptionPayment
+     * @param \DateTime $endTs
+     */
+    public function activateForFirstPayment(
+        CustomerDeactivation $customerDeactivation,
+        SubscriptionPayment $subscriptionPayment,
+        \DateTime $endTs
+    ) {
+        $details = [
+            'subscription_payment_id' => $subscriptionPayment->getId()
+        ];
+
+        $this->activate($customerDeactivation, $details, $endTs);
+    }
+
+    /**
      * Close the CustomerDeactivation when a TripPayment is successfully
      * completed
      *
@@ -142,7 +176,7 @@ class CustomerDeactivationService
         \DateTime $endTs = null
     ) {
         $details = [
-            'trip_payment_try' => $tripPaymentTry->getId()
+            'trip_payment_try_id' => $tripPaymentTry->getId()
         ];
 
         $this->activate($customerDeactivation, $details, $endTs);
