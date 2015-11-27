@@ -46,10 +46,10 @@ class ShouldActivateCustomer extends Query
             FROM SharengoCore\Entity\CustomerDeactivation cd
             JOIN cd.customer c
             WHERE c = :customerParam
-            AND cd.startTs < now()
+            AND cd.startTs < CURRENT_TIMESTAMP()
             AND (
                 cd.endTs IS NULL
-                OR cd.end > now()
+                OR cd.end > CURRENT_TIMESTAMP()
             )";
     }
 
