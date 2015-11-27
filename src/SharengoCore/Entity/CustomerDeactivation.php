@@ -95,10 +95,10 @@ class CustomerDeactivation
      *
      * @ORM\ManyToOne(targetEntity="Webuser")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="activator_webuser_id", referencedColumnName="id", nullable=true)
+     *   @ORM\JoinColumn(name="reactivator_webuser_id", referencedColumnName="id", nullable=true)
      * })
      */
-    private $activatorWebuser;
+    private $reactivatorWebuser;
 
     /**
      * @var array
@@ -147,18 +147,34 @@ class CustomerDeactivation
     }
 
     /**
+     * @return string
+     */
+    public function getReason()
+    {
+        return $this->reason;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getStartTs()
+    {
+        return $this->startTs;
+    }
+
+    /**
      * @param array $details
      * @param \DateTime|null $endTs
      * @param Webuser|null $webuser
      */
-    public function activate(
+    public function reactivate(
         array $details,
         \DateTime $endTs = null,
         Webuser $webuser = null
     ) {
         $this->endTs = ($endTs === null) ? date_create() : $endTs;
-        $this->activatorWebuser = $webuser;
-        $this->details['activation'] = $details;
+        $this->reactivatorWebuser = $webuser;
+        $this->details['reactivation'] = $details;
     }
 
     /**

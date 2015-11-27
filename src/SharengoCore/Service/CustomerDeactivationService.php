@@ -95,11 +95,11 @@ class CustomerDeactivationService
     public function deactivateByWebuser(
         Customers $customer,
         Webuser $webuser,
-        $note = '',
+        $note = null,
         \DateTime $startTs = null
     ) {
         $details = [
-            'note' => $note
+            'note' => ($note === null) ? 'Deactivated manually' : $note
         ];
 
         $this->deactivate(
@@ -142,6 +142,8 @@ class CustomerDeactivationService
         }
 
         $this->entityManager->flush();
+
+        $this->reactivateOlder($customerDeactivation);
     }
 
     /**
@@ -151,7 +153,7 @@ class CustomerDeactivationService
      * @param SubscriptionPayment $subscriptionPayment
      * @param \DateTime $endTs
      */
-    public function activateForFirstPayment(
+    public function reactivateForFirstPayment(
         CustomerDeactivation $customerDeactivation,
         SubscriptionPayment $subscriptionPayment,
         \DateTime $endTs
@@ -160,7 +162,7 @@ class CustomerDeactivationService
             'subscription_payment_id' => $subscriptionPayment->getId()
         ];
 
-        $this->activate($customerDeactivation, $details, $endTs);
+        $this->reactivate($customerDeactivation, $details, $endTs);
     }
 
     /**
@@ -170,7 +172,7 @@ class CustomerDeactivationService
      * @param CustomerDeactivation $customerDeactivation
      * @param \DateTime|null $endTs
      */
-    public function activateForTripPaymentTry(
+    public function reactivateForTripPaymentTry(
         CustomerDeactivation $customerDeactivation,
         TripPaymentTries $tripPaymentTry,
         \DateTime $endTs = null
@@ -179,7 +181,7 @@ class CustomerDeactivationService
             'trip_payment_try_id' => $tripPaymentTry->getId()
         ];
 
-        $this->activate($customerDeactivation, $details, $endTs);
+        $this->reactivate($customerDeactivation, $details, $endTs);
     }
 
     /**
@@ -188,13 +190,13 @@ class CustomerDeactivationService
      * @param CustomerDeactivation $customerDeactivation
      * @param \DateTime|null $endTs
      */
-    public function activateForDriversLicense(
+    public function reactivateForDriversLicense(
         CustomerDeactivation $customerDeactivation,
         \DateTime $endTs = null
     ) {
         $details = $this->getDriverLicenceDetails($customer);
 
-        $this->activate($customerDeactivation, $details, $endTs);
+        $this->reactivate($customerDeactivation, $details, $endTs);
     }
 
     /**
@@ -205,17 +207,17 @@ class CustomerDeactivationService
      * @param string $note
      * @param \DateTime|null $endTs
      */
-    public function activateByWebuser(
+    public function reactivateByWebuser(
         CustomerDeactivation $customerDeactivation,
         Webuser $webuser,
         $note = '',
         \DateTime $endTs = null
     ) {
         $details = [
-            'note' => $note
+            'note' => ($note === null) ? 'reactivated manually' : $note
         ];
 
-        $this->activate($customerDeactivation, $details, $endTs, $webuser);
+        $this->reactivate($customerDeactivation, $details, $endTs, $webuser);
     }
 
     /**
@@ -226,13 +228,13 @@ class CustomerDeactivationService
      * @param \DateTime|null $endTs
      * @param Webuser|null $webuser
      */
-    private function activate(
+    private function reactivate(
         CustomerDeactivation $customerDeactivation,
         array $details,
         \DateTime $endTs = null,
         Webuser $webuser = null
     ) {
-        $customerDeactivation->activate($details, $endTs, $webuser);
+        $customerDeactivation->reactivate($details, $endTs, $webuser);
         $this->entityManager->persist($customerDeactivation);
         $this->entityManager->flush();
 
@@ -274,5 +276,28 @@ class CustomerDeactivationService
             'driver_license_expire' => $customer->getDriverLicenseExpire()->format('Y-m-d H:i:s'),
             'driver_license_name' => $customer->getDriverLicenseName(),
         ];
+    }
+
+    /**
+     * Find CustomerDeactivations that are overridden by new one and reactivate
+     * them
+     *
+     * @param CustomerDeactivation $customerDeactivation
+     */
+    private function reactivateOlder(CustomerDeactivation $customerDeactivation)
+    {
+        $query = new FindCustomerDeactivationsToUpdate(
+            $this->entityManager,
+            $customerDeactivation
+        );
+
+        $customerDeactivations = $query();
+
+        foreach ($customerDeactivations as $value) {
+            $this->reactivate(
+                $value,
+                ['updated_deactivation' => $customerDeactivation->getId()]
+            );
+        }
     }
 }
