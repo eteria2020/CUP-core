@@ -4,6 +4,8 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomerDeactivation;
+use SharengoCore\Entity\Queries\FindCustomerDeactivations;
+use SharengoCore\Entity\Queries\FindCustomerDeactivationsToUpdate;
 use SharengoCore\Entity\Queries\ShouldActivateCustomer;
 use SharengoCore\Entity\TripPaymentTries;
 use SharengoCore\Entity\Webuser;
@@ -23,6 +25,17 @@ class CustomerDeactivationService
     public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
+    }
+
+    /**
+     * @param Customers $customer
+     * @return CustomerDeactivation[]
+     */
+    public function getCustomerDeactivations(Customers $customer)
+    {
+        $query = new FindCustomerDeactivations($this->entityManager, $customer);
+
+        return $query();
     }
 
     /**

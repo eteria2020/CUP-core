@@ -45,7 +45,7 @@ class CustomerDeactivation
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="inserted_ts", type="datetimetz", nullable=false)
+     * @ORM\Column(name="inserted_ts", type="datetime", nullable=false)
      */
     private $insertedTs;
 
@@ -69,14 +69,14 @@ class CustomerDeactivation
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="start_ts", type="datetimetz", nullable=false)
+     * @ORM\Column(name="start_ts", type="datetime", nullable=false)
      */
     private $startTs;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="end_ts", type="datetimetz", nullable=true)
+     * @ORM\Column(name="end_ts", type="datetime", nullable=true)
      */
     private $endTs;
 
@@ -152,6 +152,24 @@ class CustomerDeactivation
     public function getReason()
     {
         return $this->reason;
+    }
+
+    public function getReasonTranslated()
+    {
+        switch ($this->getReason()) {
+            case self::FIRST_PAYMENT_NOT_COMPLETED:
+                return 'Primo pagamento non effettuato';
+                break;
+            case self::FAILED_PAYMENT:
+                return 'Pagamento corsa fallito';
+                break;
+            case self::INVALID_DRIVERS_LICENSE:
+                return 'Patente non valida';
+                break;
+            case self::DISABLED_BY_WEBUSER:
+                return 'Disabilitato manualmente';
+                break;
+        }
     }
 
     /**
