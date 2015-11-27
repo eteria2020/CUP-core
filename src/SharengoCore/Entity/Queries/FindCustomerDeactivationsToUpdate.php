@@ -2,11 +2,11 @@
 
 namespace SharengoCore\Entity\Queries;
 
-use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\CustomerDeactivation;
 
 use Doctrine\ORM\EntityManagerInterface;
 
-class ShouldActivateCustomer extends Query
+class FindCustomerDeactivationsToUpdate extends Query
 {
     /**
      * @var array
@@ -15,26 +15,17 @@ class ShouldActivateCustomer extends Query
 
     /**
      * @param EntityManagerInterface $em
-     * @param Customers $customerDeactivation
+     * @param CustomerDeactivation $customerDeactivation
      */
     public function __construct(
         EntityManagerInterface $em,
-        Customers $customer
+        CustomerDeactivation $customer
     ) {
         parent::__construct($em);
         $this->params = [
-            'customerParam' => $customer
+            'customerParam' => $customerDeactivation->getCustomer(),
+            'reasonParam' => $customerDeactivation->getReason()
         ];
-    }
-
-    /**
-     * @return boolean wether there are no other CustomerDeactivations active
-     * on the same Customer
-     */
-    public function __invoke()
-    {
-        $result = parent::__invoke;
-        return empty($result);
     }
 
     /**
@@ -46,11 +37,8 @@ class ShouldActivateCustomer extends Query
             FROM SharengoCore\Entity\CustomerDeactivation cd
             JOIN cd.customer c
             WHERE c = :customerParam
-            AND cd.startTs < now()
-            AND (
-                cd.endTs IS NULL
-                OR cd.end > now()
-            )";
+            AND cd.reason = :reasonParam
+            AND cd.endTs IS NULL";
     }
 
     /**
