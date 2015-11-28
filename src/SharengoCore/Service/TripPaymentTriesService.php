@@ -64,7 +64,7 @@ class TripPaymentTriesService
      */
     public function generateTripPaymentTry(TripPayments $tripPayment, $outcome, Transactions $transaction = null, Webuser $webuser = null)
     {
-        $tripPaymentTry = new TripPaymentTries($tripPayment, $outcome, $transaction);
+        $tripPaymentTry = new TripPaymentTries($tripPayment, $outcome, $transaction, $webuser);
         if (!$tripPayment->isFirstPaymentTryTsSet()) {
             $tripPayment->setFirstPaymentTryTs($tripPaymentTry->getTs());
         }

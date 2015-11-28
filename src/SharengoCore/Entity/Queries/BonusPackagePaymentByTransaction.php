@@ -6,7 +6,7 @@ use Cartasi\Entity\Transactions;
 
 use Doctrine\ORM\EntityManagerInterface;
 
-class CustomerBonusByTransaction extends Query
+class BonusPackagePaymentByTransaction extends Query
 {
     /**
      * @var Transactions
@@ -24,8 +24,8 @@ class CustomerBonusByTransaction extends Query
 
     protected function dql()
     {
-        return 'SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb '.
-            'WHERE cb.transaction = :transaction';
+        return 'SELECT bpp FROM \SharengoCore\Entity\BonusPackagePayment bpp '.
+            'WHERE bpp.transaction = :transaction';
     }
 
     protected function params()

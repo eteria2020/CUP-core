@@ -257,6 +257,13 @@ class Customers
     /**
      * @var boolean
      *
+     * @ORM\Column(name="driver_license_foreign", type="boolean", nullable=false)
+     */
+    private $driverLicenseForeign;
+
+    /**
+     * @var boolean
+     *
      * @ORM\Column(name="registration_completed", type="boolean", nullable=false)
      */
     private $registrationCompleted = false;
@@ -1635,6 +1642,22 @@ class Customers
         $this->paymentAble = $paymentAble;
 
         return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getDriverLicenseForeign()
+    {
+        return $this->driverLicenseForeign;
+    }
+
+    /**
+     * @param boolean $driverLicenseForeign
+     */
+    public function setDriverLicenseForeign($driverLicenseForeign)
+    {
+        $this->driverLicenseForeign = $driverLicenseForeign;
     }
 
     /**

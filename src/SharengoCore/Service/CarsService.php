@@ -282,4 +282,42 @@ class CarsService
     {
         return $this->carsDamagesRepository->findAll();
     }
+
+    /**
+     * Returns array of plates of cars that have an active reservation
+     * @return string[]
+     */
+    public function getReservedPlates()
+    {
+        return $this->carsRepository->findReservedPlates()[0]['value'];
+    }
+
+    /**
+     * Returns array of plates of cars that have an active trip
+     * @return string[]
+     */
+    public function getBusyPlates()
+    {
+        return $this->carsRepository->findBusyPlates()[0]['value'];
+    }
+
+    /**
+     * Returns an array of key => value pairs where the key is the plate of the
+     * car and the value is the amount of minutes since the last trip it has made.
+     *
+     * @return [string => integer]
+     */
+    public function getMinutesSinceLastTrip()
+    {
+        return $this->carsRepository->findMinutesSinceLastTrip()[0]['value'];
+    }
+
+    /**
+     * Returns an array of plates of cars that are out of permitted Zones
+     * @return string[]
+     */
+    public function getOutOfBoundsPlates()
+    {
+        return $this->carsRepository->findOutOfBoundsPlates()[0]['value'];
+    }
 }

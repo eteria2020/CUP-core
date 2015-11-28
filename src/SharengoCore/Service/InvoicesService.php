@@ -8,7 +8,7 @@ use SharengoCore\Service\DatatableService;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Cards;
 use SharengoCore\Entity\Fleet;
-use SharengoCore\Entity\CustomersBonusPackages as BonusPackages;
+use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 
 use Doctrine\ORM\EntityManager;
@@ -222,18 +222,23 @@ class InvoicesService
         );
     }
 
-    public function prepareInvoiceForBonusPackage(
-        Customers $customer,
-        BonusPackages $bonusPackage
-    ) {
+    /**
+     * @param Customers $customer
+     * @param BonusPackages $bonusPackage
+     * @param Fleet $fleet
+     * @return Invoices
+     */
+    public function prepareInvoiceForBonusPackagePayment(BonusPackagePayment $bonusPayment)
+    {
         $amounts = [
-            'sum' => $this->calculateAmountsWithTaxesFromTotal($bonusPackage->getCost()),
+            'sum' => $this->calculateAmountsWithTaxesFromTotal($bonusPayment->getAmount()),
             'iva' => $this->ivaPercentage
         ];
 
         return Invoices::createInvoiceForBonusPackage(
-            $customer,
-            $bonusPackage,
+            $bonusPayment->getCustomer(),
+            $bonusPayment->getPackage(),
+            $bonusPayment->getFleet(),
             $this->templateVersion,
             $amounts
         );
@@ -360,8 +365,13 @@ class InvoicesService
         $amount
     ) {
         $amounts = [
-            'sum' => $this->calculateAmountsWithTaxesFromTotal($amount),
-            'iva' => $this->ivaPercentage
+            'sum' => [
+                'iva' => $this->parseDecimal(0),
+                'total' => $this->parseDecimal($amount),
+                'grand_total' => $this->parseDecimal($amount),
+                'grand_total_cents' => $amount
+                ],
+            'iva' => 0
         ];
 
         return Invoices::createInvoiceForExtraOrPenalty(

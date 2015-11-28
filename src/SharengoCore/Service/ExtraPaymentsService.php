@@ -6,6 +6,7 @@ use SharengoCore\Entity\ExtraPayment;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Service\InvoicesService;
 use SharengoCore\Entity\Fleet;
+use Cartasi\Entity\Transactions;
 
 use Doctrine\ORM\EntityManager;
 
@@ -39,6 +40,7 @@ class ExtraPaymentsService
     public function registerExtraPayment(
         Customers $customer,
         Fleet $fleet,
+        Transactions $transaction,
         $amount,
         $paymentType,
         $reason
@@ -46,6 +48,7 @@ class ExtraPaymentsService
         $extraPayment = new ExtraPayment(
             $customer,
             $fleet,
+            $transaction,
             $amount,
             $paymentType,
             $reason

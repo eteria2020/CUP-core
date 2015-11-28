@@ -18,7 +18,7 @@
     $totalAmount = $invoiceContent['amounts']['grand_total'];
     $partialAmount = $invoiceContent['amounts']['total'];
     $iva = $invoiceContent['amounts']['iva'];
-    $type = $invoiceContent['type'];
+    $ivaPercentage = $invoiceContent['iva'];
 
     // Invoice header
     $header = $invoiceContent['header'];
@@ -204,7 +204,7 @@
                 <td class="table1-031e right"><?= $partialAmount ?> €</td>
             </tr>
             <tr>
-                <td class="table1-031e">IVA 22%</td>
+                <td class="table1-031e">IVA <?= $ivaPercentage ?>%</td>
                 <td class="table1-031e right"><?= $iva ?> €</td>
             </tr>
             <tr>
@@ -213,6 +213,13 @@
             </tr>
         </table>
         <!-- summary table -->
+
+        <?php if (array_key_exists('bottom_note', $invoiceContent['body'])): ?>
+            <div class="bottom-note">
+                <div class="bottom-note-line"></div>
+                <p><?= $invoiceContent['body']['bottom_note'] ?></p>
+            </div>
+        <?php endif; ?>
 
         <?php
             // close pages if else

@@ -9,7 +9,7 @@ use SharengoCore\Entity\Invoices;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Countries
+ * CustomersBonus
  *
  * @ORM\Table(name="customers_bonus")
  * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CustomersBonusRepository")
@@ -134,49 +134,33 @@ class CustomersBonus
     private $promocode;
 
     /**
-     * @var CustomersBonusPackages
-     *
-     * @ORM\ManyToOne(targetEntity="CustomersBonusPackages")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="package_id", referencedColumnName="id", nullable=true)
-     * })
+     * @param Customers $customer
+     * @param int $total
+     * @param string $description
+     * @param string $validTo
+     * @return CustomersBonus
      */
-    private $package;
+    public static function createBonus($customer, $total, $description, $validTo)
+    {
+        $bonus = new CustomersBonus();
+        $bonus->setCustomer($customer);
+        $bonus->setInsertTs(date_create());
+        $bonus->setUpdateTs(date_create());
+        $bonus->setTotal($total);
+        $bonus->setResidual($total);
+        $bonus->setValidFrom(date_create());
+        $bonus->setValidTo(date_create($validTo));
+        $bonus->setDescription($description);
 
-    /**
-     * @var Transaction
-     *
-     * @ORM\OneToOne(targetEntity="\Cartasi\Entity\Transactions")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id", nullable=true)
-     * })
-     */
-    private $transaction;
-
-    /**
-     * @var Invoices
-     *
-     * @ORM\ManyToOne(targetEntity="\SharengoCore\Entity\Invoices")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="invoice_id", referencedColumnName="id", nullable=true)
-     * })
-     */
-    private $invoice;
-
-    /**
-     * @var DateTime
-     *
-     * @ORM\Column(name="invoiced_at", type="datetime", nullable=true)
-     */
-    private $invoicedAt;
-
+        return $bonus;
+    }
 
     public static function createFromPromoCode(PromoCodes $promoCode)
     {
         $promoCodeDetails = $promoCode->getPromocodesinfo();
 
         $me = new CustomersBonus();
-        $me->setInsertTs(new \DateTime());
+        $me->setInsertTs(date_create());
         $me->setUpdateTs($me->getInsertTs());
         $me->setTotal($promoCodeDetails->getMinutes());
         $me->setResidual($me->getTotal());
@@ -195,8 +179,7 @@ class CustomersBonus
      */
     public static function createFromBonusPackage(
         Customers $customer,
-        CustomersBonusPackages $bonusPackage,
-        Transactions $transaction
+        CustomersBonusPackages $bonusPackage
     ) {
         $bonus = new CustomersBonus();
         $bonus->setCustomer($customer)
@@ -208,9 +191,7 @@ class CustomersBonus
             ->setValidFrom(max(date_create(), $bonusPackage->getValidFrom()))
             ->setDurationDays($bonusPackage->getDuration())
             ->setValidTo($bonusPackage->getValidTo())
-            ->setDescription($bonusPackage->getDescription())
-            ->setPackage($bonusPackage)
-            ->setTransaction($transaction);
+            ->setDescription($bonusPackage->getDescription());
 
         return $bonus;
     }
@@ -562,47 +543,6 @@ class CustomersBonus
     }
 
     /**
-     * Set package
-     *
-     * @param CustomersBonusPackages
-     * @return self
-     */
-    public function setPackage(CustomersBonusPackages $package)
-    {
-        $this->package = $package;
-
-        return $this;
-    }
-
-    /**
-     * @return CustomersBonusPackages
-     */
-    public function getPackage()
-    {
-        return $this->package;
-    }
-
-    /**
-     *
-     * @param Transactions $transaction
-     * @return self
-     */
-    public function setTransaction(Transactions $transaction)
-    {
-        $this->transaction = $transaction;
-
-        return $this;
-    }
-
-    /**
-     * @return Transactions
-     */
-    public function getTransaction()
-    {
-        return $this->transaction;
-    }
-
-    /**
      * increments the residual by the given amount of minutes
      *
      * @var int $minutes
@@ -646,14 +586,5 @@ class CustomersBonus
     {
         return $this->getTotal() == $this->getResidual() &&
                !$this->impliesSubscriptionDiscount();
-    }
-
-    /**
-     * @param Invoices $invoice
-     */
-    public function associateInvoice(Invoices $invoice)
-    {
-        $this->invoice = $invoice;
-        $this->invoicedAt = date_create();
     }
 }
