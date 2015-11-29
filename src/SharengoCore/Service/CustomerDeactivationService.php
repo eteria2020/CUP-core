@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomerDeactivation;
+use SharengoCore\Entity\Queries\FindCustomerDeactivationById;
 use SharengoCore\Entity\Queries\FindCustomerDeactivations;
 use SharengoCore\Entity\Queries\FindCustomerDeactivationsToUpdate;
 use SharengoCore\Entity\Queries\ShouldActivateCustomer;
@@ -25,6 +26,17 @@ class CustomerDeactivationService
     public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
+    }
+
+    /**
+     * @param integer $id
+     * @return CustomerDeactivation
+     */
+    public function getById($id)
+    {
+        $query = new FindCustomerDeactivationById($this->entityManager, $id);
+
+        return $query();
     }
 
     /**
@@ -65,9 +77,7 @@ class CustomerDeactivationService
         TripPaymentTries $tripPaymentTry,
         \DateTime $startTs = null
     ) {
-        $details = [
-            'trip_payment_try_id' => $tripPaymentTry->getId()
-        ];
+        $details = ['trip_payment_try_id' => $tripPaymentTry->getId()];
 
         $this->deactivate(
             $customer,
@@ -156,6 +166,7 @@ class CustomerDeactivationService
 
         $this->entityManager->flush();
 
+        // Reactivate deactivations that are overridden by this one
         $this->reactivateOlder($customerDeactivation);
     }
 
@@ -190,9 +201,7 @@ class CustomerDeactivationService
         TripPaymentTries $tripPaymentTry,
         \DateTime $endTs = null
     ) {
-        $details = [
-            'trip_payment_try_id' => $tripPaymentTry->getId()
-        ];
+        $details = ['trip_payment_try_id' => $tripPaymentTry->getId()];
 
         $this->reactivate($customerDeactivation, $details, $endTs);
     }
@@ -213,7 +222,7 @@ class CustomerDeactivationService
     }
 
     /**
-     * Close the CustomerDeactivation when the Webuser sets the Customer active
+     * Close the CustomerDeactivation when the Webuser removes it
      *
      * @param CustomerDeactivation $customerDeactivation
      * @param Webuser $webuser
@@ -223,14 +232,34 @@ class CustomerDeactivationService
     public function reactivateByWebuser(
         CustomerDeactivation $customerDeactivation,
         Webuser $webuser,
-        $note = '',
+        $note = null,
         \DateTime $endTs = null
     ) {
         $details = [
-            'note' => ($note === null) ? 'reactivated manually' : $note
+            'note' => ($note === null) ? 'Reactivated manually' : $note
         ];
 
         $this->reactivate($customerDeactivation, $details, $endTs, $webuser);
+    }
+
+    /**
+     * Close all the CustomerDeactivations of a Customer
+     *
+     * @param CustomerDeactivation $customerDeactivation
+     * @param Webuser $webuser
+     * @param string $note
+     * @param \DateTime|null $endTs
+     */
+    public function reactivateCustomer(
+        Customers $customer,
+        Webuser $webuser,
+        $note = null,
+        \DateTime $endTs = null
+    ) {
+        $deactivations = $this->getCustomerDeactivations($customer);
+        foreach ($deactivations as $deactivation) {
+            $this->reactivateByWebuser($deactivation, $webuser, $note, $endTs);
+        }
     }
 
     /**
@@ -253,9 +282,9 @@ class CustomerDeactivationService
 
         // If it was the last active CustomerDeactivation for the Customer
         // and this one is deactivated immediatly, enable Customer
-        if ($this->shouldActivateCustomer()) {
-            $customer = $customerDeactivation->getCustomer();
-            $customer->activate();
+        $customer = $customerDeactivation->getCustomer();
+        if ($this->shouldActivateCustomer($customer)) {
+            $customer->enable();
             $this->entityManager->persist($customer);
             $this->entityManager->flush();
         }

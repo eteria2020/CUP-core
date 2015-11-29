@@ -2,11 +2,9 @@
 
 namespace SharengoCore\Entity\Queries;
 
-use SharengoCore\Entity\CustomerDeactivation;
-
 use Doctrine\ORM\EntityManagerInterface;
 
-class FindCustomerDeactivationsToUpdate extends Query
+class FindCustomerDeactivationById extends Query
 {
     /**
      * @var array
@@ -15,17 +13,15 @@ class FindCustomerDeactivationsToUpdate extends Query
 
     /**
      * @param EntityManagerInterface $em
-     * @param CustomerDeactivation $customerDeactivation
+     * @param integer $id
      */
     public function __construct(
         EntityManagerInterface $em,
-        CustomerDeactivation $customerDeactivation
+        $id
     ) {
         parent::__construct($em);
         $this->params = [
-            'deactivation' => $customerDeactivation,
-            'customerParam' => $customerDeactivation->getCustomer(),
-            'reasonParam' => $customerDeactivation->getReason()
+            'idParam' => $id
         ];
     }
 
@@ -36,11 +32,7 @@ class FindCustomerDeactivationsToUpdate extends Query
     {
         return "SELECT cd
             FROM SharengoCore\Entity\CustomerDeactivation cd
-            JOIN cd.customer c
-            WHERE cd != :deactivation
-            AND c = :customerParam
-            AND cd.reason = :reasonParam
-            AND cd.endTs IS NULL";
+            WHERE cd.id = :idParam";
     }
 
     /**
@@ -49,5 +41,13 @@ class FindCustomerDeactivationsToUpdate extends Query
     protected function params()
     {
         return $this->params;
+    }
+
+    /**
+     * @return string
+     */
+    protected function resultMethod()
+    {
+        return 'getOneOrNullResult';
     }
 }

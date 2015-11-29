@@ -33,7 +33,7 @@ class ShouldActivateCustomer extends Query
      */
     public function __invoke()
     {
-        $result = parent::__invoke;
+        $result = parent::__invoke();
         return empty($result);
     }
 
@@ -49,7 +49,7 @@ class ShouldActivateCustomer extends Query
             AND cd.startTs < CURRENT_TIMESTAMP()
             AND (
                 cd.endTs IS NULL
-                OR cd.end > CURRENT_TIMESTAMP()
+                OR cd.endTs > CURRENT_TIMESTAMP()
             )";
     }
 

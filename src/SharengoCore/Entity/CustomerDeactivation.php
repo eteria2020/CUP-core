@@ -202,7 +202,7 @@ class CustomerDeactivation
     public function isEffective()
     {
         $now = date_create();
-        return $this->startTs < $now &&
-            ($this->endTs === null) ? true : $now < $this->endTs;
+        return $this->startTs <= $now &&
+            ($this->endTs == null || $now <= $this->endTs);
     }
 }
