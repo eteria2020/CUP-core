@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity;
 
+use SharengoCore\Exception\CannotSetEndTsEarlierThanStartTs;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -181,6 +183,21 @@ class CustomerDeactivation
     }
 
     /**
+     * @param \DateTime|null $endTs
+     * @return CustomerDeactivation
+     */
+    private function setEndTs(\DateTime $endTs = null)
+    {
+        $endTs = ($endTs === null) ? date_create() : $endTs;
+        if ($endTs < $this->startTs) {
+            throw new CannotSetEndTsEarlierThanStartTs();
+        }
+        $this->endTs = $endTs;
+
+        return $this;
+    }
+
+    /**
      * @param array $details
      * @param \DateTime|null $endTs
      * @param Webuser|null $webuser
@@ -190,7 +207,7 @@ class CustomerDeactivation
         \DateTime $endTs = null,
         Webuser $webuser = null
     ) {
-        $this->endTs = ($endTs === null) ? date_create() : $endTs;
+        $this->setEndTs($endTs);
         $this->reactivatorWebuser = $webuser;
         $this->details['reactivation'] = $details;
     }

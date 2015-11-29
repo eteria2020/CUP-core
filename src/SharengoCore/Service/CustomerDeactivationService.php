@@ -295,11 +295,10 @@ class CustomerDeactivationService
      * @return boolean wether there are no active CustomerDeactivations for the
      *     Customer
      */
-    private function shouldActivateCustomer(Customers $customer) {
-        $query = new ShouldActivateCustomer(
-            $this->entityManager,
-            $customer
-        );
+    private function shouldActivateCustomer(Customers $customer)
+    {
+        $query = new ShouldActivateCustomer($this->entityManager, $customer);
+
         return $query();
     }
 
