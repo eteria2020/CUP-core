@@ -17,6 +17,10 @@ class ReservationsService
      */
     const MAX_RESERVATIONS = 1;
     /**
+     * @const integer
+     */
+    const SYS_RESERVATION_LENGTH = -1;
+    /**
      * @var  ReservationsRepository
      */
     private $reservationsRepository;
@@ -96,7 +100,7 @@ class ReservationsService
                     'carPlate' => $reservation->getCar()->getPlate(),
                     'customer' => null != $reservation->getCustomer() ? $reservation->getCustomer()->getName() . ' ' . $reservation->getCustomer()->getSurname() : '',
                     'customerId' => null != $reservation->getCustomer() ? $reservation->getCustomer()->getId() : '',
-                    'cards'    => $reservation->getCards(),
+                    'cards'    => ($reservation->getLength() != self::SYS_RESERVATION_LENGTH) ? $reservation->getCards() : 'PRENOTAZIONE DI SISTEMA',
                     'active'   => $reservation->getActive() ? 'Si' : 'No',
                 ]
             ];
