@@ -18,6 +18,7 @@ class PaymentsServiceFactory implements FactoryInterface
         $eventManager = new EventManager();
         $eventManager->setIdentifiers(['PaymentsService']);
         $url = $serviceLocator->get('Configuration')['website']['uri'];
+        $deactivationService = $serviceLocator->get('SharengoCore\Service\CustomerDeactivationService');
 
         return new PaymentsService(
             $cartasiCustomerPayments,
@@ -26,7 +27,8 @@ class PaymentsServiceFactory implements FactoryInterface
             $emailService,
             $eventManager,
             $tripPaymentTriesService,
-            $url
+            $url,
+            $deactivationService
         );
     }
 }

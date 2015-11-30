@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Service;
 
+use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomerDeactivation;
 use SharengoCore\Entity\Queries\FindCustomerDeactivationById;
@@ -22,11 +23,20 @@ class CustomerDeactivationService
     private $entityManager;
 
     /**
-     * @param EntityManager $entityManager
+     * @var CustomersService
      */
-    public function __construct(EntityManager $entityManager)
-    {
+    private $customerService;
+
+    /**
+     * @param EntityManager $entityManager
+     * @param CustomersService $customerService
+     */
+    public function __construct(
+        EntityManager $entityManager,
+        CustomersService $customerService
+    ) {
         $this->entityManager = $entityManager;
+        $this->customerService = $customerService;
     }
 
     /**
@@ -216,6 +226,24 @@ class CustomerDeactivationService
     }
 
     /**
+     * Close the CustomerDeactivation when a TripPayment is successfully
+     * completed
+     *
+     * @param CustomerDeactivation $customerDeactivation
+     * @param BonusPackagePayment $bonusPackagePayment
+     * @param \DateTime|null $endTs
+     */
+    public function reactivateForBonusPayment(
+        CustomerDeactivation $customerDeactivation,
+        BonusPackagePayment $bonusPackagePayment,
+        \DateTime $endTs = null
+    ) {
+        $details = ['bonus_package_payment_id' => $bonusPackagePayment->getId()];
+
+        $this->reactivate($customerDeactivation, $details, $endTs);
+    }
+
+    /**
      * Close the CustomerDeactivation when the driver's license is verified
      *
      * @param CustomerDeactivation $customerDeactivation
@@ -293,7 +321,7 @@ class CustomerDeactivationService
         // and this one is deactivated immediatly, enable Customer
         $customer = $customerDeactivation->getCustomer();
         if ($this->shouldActivateCustomer($customer)) {
-            $customer->enable();
+            $this->customerService->enableCustomer($customer, true);
             $this->entityManager->persist($customer);
             $this->entityManager->flush();
         }
