@@ -45,7 +45,7 @@ class ConfigurationsService
     /**
      * @param array $data
      */
-    public function saveData(array $data)
+    public function saveDataManageAlarm(array $data)
     {
         foreach($data['configurations'] as $value) {
 
