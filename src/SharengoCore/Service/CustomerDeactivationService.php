@@ -8,6 +8,7 @@ use SharengoCore\Entity\Queries\FindCustomerDeactivationById;
 use SharengoCore\Entity\Queries\FindCustomerDeactivations;
 use SharengoCore\Entity\Queries\FindCustomerDeactivationsToUpdate;
 use SharengoCore\Entity\Queries\ShouldActivateCustomer;
+use SharengoCore\Entity\SubscriptionPayment;
 use SharengoCore\Entity\TripPaymentTries;
 use SharengoCore\Entity\Webuser;
 
@@ -41,11 +42,18 @@ class CustomerDeactivationService
 
     /**
      * @param Customers $customer
+     * @param string|null $reason
      * @return CustomerDeactivation[]
      */
-    public function getCustomerDeactivations(Customers $customer)
-    {
-        $query = new FindCustomerDeactivations($this->entityManager, $customer);
+    public function getCustomerDeactivations(
+        Customers $customer,
+        $reason = null
+    ) {
+        $query = new FindCustomerDeactivations(
+            $this->entityManager,
+            $customer,
+            $reason
+        );
 
         return $query();
     }
@@ -180,7 +188,7 @@ class CustomerDeactivationService
     public function reactivateForFirstPayment(
         CustomerDeactivation $customerDeactivation,
         SubscriptionPayment $subscriptionPayment,
-        \DateTime $endTs
+        \DateTime $endTs = null
     ) {
         $details = [
             'subscription_payment_id' => $subscriptionPayment->getId()
@@ -194,6 +202,7 @@ class CustomerDeactivationService
      * completed
      *
      * @param CustomerDeactivation $customerDeactivation
+     * @param TripPaymentTries $tripPaymentTry
      * @param \DateTime|null $endTs
      */
     public function reactivateForTripPaymentTry(
