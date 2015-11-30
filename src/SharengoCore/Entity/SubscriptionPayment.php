@@ -78,4 +78,12 @@ class SubscriptionPayment
         $this->amount = $transaction->getAmount();
         $this->insertTs = date_create();
     }
+
+    /**
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 }

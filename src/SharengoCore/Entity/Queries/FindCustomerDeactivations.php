@@ -16,15 +16,20 @@ class FindCustomerDeactivations extends Query
     /**
      * @param EntityManagerInterface $em
      * @param Customers $customer
+     * @param string|null $reason
      */
     public function __construct(
         EntityManagerInterface $em,
-        Customers $customer
+        Customers $customer,
+        $reason = null
     ) {
         parent::__construct($em);
         $this->params = [
             'customerParam' => $customer
         ];
+        if ($reason !== null) {
+            $this->params['reasonParam'] = $reason;
+        }
     }
 
     /**
@@ -40,7 +45,8 @@ class FindCustomerDeactivations extends Query
             AND (
                 cd.endTs IS NULL
                 OR cd.endTs > CURRENT_TIMESTAMP()
-            )";
+            )" .
+            (array_key_exists('reasonParam', $this->params) ? ' AND cd.reason = :reasonParam' : '');
     }
 
     /**
