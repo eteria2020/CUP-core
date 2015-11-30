@@ -86,7 +86,7 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
                 SELECT DISTINCT c.plate as plate
                 FROM cars c
                 JOIN reservations r ON r.car_plate = c.plate AND r.active = true
-                WHERE c.hidden = false
+                WHERE r.length != -1
                 ORDER BY c.plate ASC
             ) sub_q";
 
@@ -107,7 +107,6 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
                 SELECT DISTINCT c.plate as plate
                 FROM cars c
                 JOIN trips t ON t.car_plate = c.plate AND t.timestamp_end IS NULL
-                WHERE c.hidden = false
                 ORDER BY c.plate ASC
             ) sub_q";
 
@@ -138,7 +137,6 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
                 FROM trips t
                 JOIN cars c ON t.car_plate = c.plate
                 WHERE t.timestamp_end IS NOT NULL
-                AND c.hidden = false
                 GROUP BY c.plate
                 ORDER BY c.plate ASC
             ) sub_q";
@@ -170,7 +168,6 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
                 JOIN fleets f ON f.id = c.fleet_id
                 JOIN zone_alarms_fleets zaf ON zaf.fleet_id = f.id
                 JOIN zone_alarms za ON za.id = zaf.zone_alarm_id AND za.active = TRUE
-                WHERE c.hidden = false
                 GROUP BY c.plate
                 ORDER BY c.plate ASC
             ) sub_q";
