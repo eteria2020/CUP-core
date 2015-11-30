@@ -54,14 +54,27 @@ class PoisService
         return $this->poisRepository->find($id);
     }
 
-    public function saveData(Pois $poi)
+    public function saveData(Pois $poi, $update = false)
     {
-        $poi->setBrand(self::BRAND);
+        if(!$update){
+            $poi->setBrand(self::BRAND);
+            $poi->setUpdate($this->getUpdateSequence());
+        }
 
         $this->entityManager->persist($poi);
         $this->entityManager->flush();
         return $poi;
     }
+
+    private function getUpdateSequence()
+    {
+        $em = $this->entityManager;
+        $sequenceName = 'pois_update_seq';
+        $dbConnection = $em->getConnection();
+        $nextvalQuery = $dbConnection->getDatabasePlatform()->getSequenceNextValSQL($sequenceName);
+        return (int)$dbConnection->fetchColumn($nextvalQuery);
+    }
+
 
     public function deletePoi(Pois $poi)
     {
