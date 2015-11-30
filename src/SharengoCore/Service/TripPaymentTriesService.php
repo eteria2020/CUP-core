@@ -40,6 +40,7 @@ class TripPaymentTriesService
      * @param TripPayments $tripPayment
      * @param Transactions $transaction
      * @param string $outcome
+     * @return TripPaymentTries
      */
     public function registerPaymentTry(TripPayments $tripPayment, Transactions $transaction, $outcome)
     {
@@ -53,6 +54,8 @@ class TripPaymentTriesService
 
         $this->entityManager->persist($tripPaymentTry);
         $this->entityManager->flush();
+
+        return $tripPaymentTry;
     }
 
     /**

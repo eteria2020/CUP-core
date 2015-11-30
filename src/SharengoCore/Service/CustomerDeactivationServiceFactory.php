@@ -10,7 +10,8 @@ class CustomerDeactivationServiceFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
+        $customerService = $serviceLocator->get('SharengoCore\Service\CustomersService');
 
-        return new CustomerDeactivationService($entityManager);
+        return new CustomerDeactivationService($entityManager, $customerService);
     }
 }

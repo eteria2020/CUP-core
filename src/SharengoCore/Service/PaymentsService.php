@@ -66,6 +66,11 @@ class PaymentsService
     private $avoidPersistance = true;
 
     /**
+     * @var CustomerDeactivationService
+     */
+    private $deactivationService;
+
+    /**
      * @param CartasiCustomerPaymentsInterface $cartasiCustomerPayments
      * @param CartasiContractsService $cartasiContractService
      * @param EntityManager $entityManager
@@ -73,6 +78,7 @@ class PaymentsService
      * @param EventManager $eventManager
      * @param TripPaymentTriesService $tripPaymentTriesService
      * @param string $url
+     * @param CustomerDeactivationService $deactivationService
      */
     public function __construct(
         CartasiCustomerPaymentsInterface $cartasiCustomerPayments,
@@ -81,7 +87,8 @@ class PaymentsService
         EmailService $emailService,
         EventManager $eventManager,
         TripPaymentTriesService $tripPaymentTriesService,
-        $url
+        $url,
+        CustomerDeactivationService $deactivationService
     ) {
         $this->cartasiCustomerPayments = $cartasiCustomerPayments;
         $this->cartasiContractService = $cartasiContractService;
@@ -90,6 +97,7 @@ class PaymentsService
         $this->eventManager = $eventManager;
         $this->tripPaymentTriesService = $tripPaymentTriesService;
         $this->url = $url;
+        $this->deactivationService = $deactivationService;
     }
 
     /**
@@ -200,18 +208,23 @@ class PaymentsService
         $this->entityManager->getConnection()->beginTransaction();
 
         try {
-            if ($response->getCompletedCorrectly()) {
-                $this->markTripAsPayed($tripPayment);
-            } else {
-                $this->unpayableConsequences($customer, $tripPayment, $avoidDisableUser);
-            }
-
             $tripPaymentTry = $this->tripPaymentTriesService->generateTripPaymentTry(
                 $tripPayment,
                 $response->getOutcome(),
                 $response->getTransaction(),
                 $webuser
             );
+
+            if ($response->getCompletedCorrectly()) {
+                $this->markTripAsPayed($tripPayment);
+            } else {
+                $this->unpayableConsequences(
+                    $customer,
+                    $tripPayment,
+                    $tripPaymentTry,
+                    $avoidDisableUser
+                );
+            }
 
             $this->entityManager->persist($tripPaymentTry);
             $this->entityManager->flush();
@@ -248,16 +261,21 @@ class PaymentsService
      *
      * @param Customers $customer
      * @param TripPayments $tripPayment
+     * @param TripPaymentTries $tripPaymentTry
      * @param boolean $avoidDisableUser
      */
     private function unpayableConsequences(
         Customers $customer,
         TripPayments $tripPayment,
+        TripPaymentTries $tripPaymentTry,
         $avoidDisableUser
     ) {
         // disable the customer
         if (!$avoidDisableUser) {
-            $customer->disable();
+            $this->deactivationService->deactivateForTripPaymentTry(
+                $customer,
+                $tripPaymentTry
+            );
         }
         $customer->setPaymentAble(false);
 
