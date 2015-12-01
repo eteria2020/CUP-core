@@ -43,6 +43,18 @@ class ConfigurationsService
         return $this->configurationsRepository->findBySlug($slug, $arrayResult);
     }
 
+    public function getConfigurationsKeyValueBySlug($slug)
+    {
+        $result = [];
+
+        $configArray = $this->configurationsRepository->findBySlug($slug, true);
+        foreach($configArray as $config) {
+            $result[$config['configKey']] = $config['configValue'];
+        }
+        
+        return $result;
+    }
+
     /**
      * @param array $data
      */
