@@ -201,7 +201,8 @@ return [
             'SharengoCore\Service\BuyCustomerBonusPackage' => 'SharengoCore\Service\BuyCustomerBonusPackageFactory',
             'SharengoCore\Service\BonusPackagePaymentService' => 'SharengoCore\Service\BonusPackagePaymentServiceFactory',
             'SharengoCore\Service\RecapService' => 'SharengoCore\Service\RecapServiceFactory',
-            'SharengoCore\Service\CustomerNoteService' => 'SharengoCore\Service\CustomerNoteServiceFactory'
+            'SharengoCore\Service\CustomerNoteService' => 'SharengoCore\Service\CustomerNoteServiceFactory',
+            'SharengoCore\Service\ConfigurationsService' => 'SharengoCore\Service\ConfigurationsServiceFactory'
         ],
         'shared' => [
             'SharengoCore\Service\TripCostComputerService' => false,
