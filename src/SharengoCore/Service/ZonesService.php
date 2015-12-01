@@ -33,7 +33,7 @@ class ZonesService
      */
     public function getListZones()
     {
-        return $this->zoneRepository->findAll();
+        return $this->zoneRepository->findZonesWithMapCoords();
     }
 
     public function getListZonesAlarms()

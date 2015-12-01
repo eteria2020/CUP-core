@@ -2,6 +2,9 @@
 
 namespace SharengoCore\Entity\Repository;
 
+use Doctrine\ORM\Query\ResultSetMapping;
+use SharengoCore\Entity\Zone;
+
 /**
  * ZoneRepository
  *
@@ -10,4 +13,17 @@ namespace SharengoCore\Entity\Repository;
  */
 class ZoneRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findZonesWithMapCoords() {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('SharengoCore\Entity\Zone', 'z');
+        $rsm->addFieldResult('z', 'id', 'id');
+        $rsm->addFieldResult('z', 'name', 'name');
+        $rsm->addFieldResult('z', 'area_invoice', 'areaInvoice');
+        $rsm->addFieldResult('z', 'area_use', 'areaUse');
+
+        $em = $this->getEntityManager();
+        $query = $em->createNativeQuery('SELECT id, name, ST_AsGeoJSON(area_invoice) as area_invoice, ST_AsGeoJSON(area_use) as area_use FROM zone', $rsm);
+
+        return $query->getResult();
+    }
 }
