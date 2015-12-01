@@ -5,6 +5,7 @@ namespace SharengoCore\Service;
 use Doctrine\ORM\EntityManager;
 use SharengoCore\Entity\Configurations;
 use SharengoCore\Entity\Repository\ConfigurationsRepository;
+use SharengoCore\Exception\ConfigurationSaveAlarmException;
 
 /**
  * Class ConfigurationsService
@@ -47,14 +48,21 @@ class ConfigurationsService
      */
     public function saveDataManageAlarm(array $data)
     {
-        foreach($data['configurations'] as $value) {
+        try {
 
-            /** @var Configurations $configurations */
-            $configurations = $this->configurationsRepository->find($value['id']);
-            $configurations->setConfigValue($value['configValue']);
-            $this->entityManager->persist($configurations);
+            foreach($data['configurations'] as $value) {
+
+                /** @var Configurations $configurations */
+                $configurations = $this->configurationsRepository->find($value['id']);
+                $configurations->setConfigValue($value['configValue']);
+                $this->entityManager->persist($configurations);
+            }
+
+            $this->entityManager->flush();
+
+        } catch(\Exception $e) {
+
+            throw new ConfigurationSaveAlarmException("Si è verificato un errore durante il salvataggio della configurazione");
         }
-
-        $this->entityManager->flush();
     }
 }
