@@ -26,6 +26,7 @@ class ZonesService
         $this->zoneRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Zone');
         $this->zoneAlarmsRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZoneAlarms');
         $this->zoneGroupsRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZoneGroups');
+        $this->zonePricesRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZonePrices');
     }
 
     /**
@@ -39,6 +40,11 @@ class ZonesService
     public function getListZonesAlarms()
     {
         return $this->zoneAlarmsRepository->findAll();
+    }
+
+    public function getListZonesPrices()
+    {
+        return $this->zonePricesRepository->findAll();
     }
 
     public function getListZonesGroups() {
