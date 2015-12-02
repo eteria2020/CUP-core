@@ -12,6 +12,6 @@ class FaresServiceFactory implements FactoryInterface
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $repository = $entityManager->getRepository('\SharengoCore\Entity\Fares');
 
-        return new FaresService($repository);
+        return new FaresService($repository, $entityManager);
     }
 }
