@@ -113,6 +113,8 @@ class Commands
         7 => ['label' => 'Rispedisci corse', 'command' => 'RESEND_TRIP', 'params' => [], 'ttl' => 180],
         8 => ['label' => 'Apri finestra di servizio', 'command' => 'OPEN_SERVICE', 'params' => [], 'ttl' => 60],
         9 => ['label' => 'Chiudi ultima corsa aperta', 'command' => 'CLOSE_TRIP', 'params' => [], 'ttl' => 60],
+        10 => ['label' => 'Usa coordinate GPRS', 'command' => 'SET_CONFIG', 'params' => ['txtarg1' => '{UseExternalGPS : true}'], 'ttl' => 60],
+        11 => ['label' => 'Usa coordinate ANDROID', 'command' => 'SET_CONFIG', 'params' => ['txtarg1' => '{UseExternalGPS : false}'], 'ttl' => 60],
     ];
 
     /**
