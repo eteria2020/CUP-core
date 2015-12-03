@@ -64,7 +64,6 @@ class CarsController extends AbstractRestfulController
 
         // set filter
         $filters = [];
-        $filters['hidden'] = false;
 
         // get customers
         $cars = $this->carsService->getListCarsFiltered($filters);
