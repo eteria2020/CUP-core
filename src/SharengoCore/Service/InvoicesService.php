@@ -354,14 +354,15 @@ class InvoicesService
 
     /**
      * @param Customers $customer
-     * @param string $reason
-     * @param amount in eurocents
+     * @param Fleet $fleet
+     * @param array[] $reasons
+     * @param integer amount in eurocents
      * @return Invoices
      */
     public function prepareInvoiceForExtraOrPenalty(
         Customers $customer,
         Fleet $fleet,
-        $reason,
+        $reasons,
         $amount
     ) {
         $amounts = [
@@ -378,7 +379,7 @@ class InvoicesService
             $customer,
             $fleet,
             $this->templateVersion,
-            $reason,
+            $reasons,
             $amounts
         );
     }

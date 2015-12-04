@@ -6,6 +6,7 @@ use SharengoCore\Entity\ExtraPayment;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Service\InvoicesService;
 use SharengoCore\Entity\Fleet;
+use SharengoCore\Entity\Queries\AllExtraPaymentTypes;
 use Cartasi\Entity\Transactions;
 
 use Doctrine\ORM\EntityManager;
@@ -22,6 +23,10 @@ class ExtraPaymentsService
      */
     private $invoicesService;
 
+    /**
+     * @param EntityManager $entityManager
+     * @param InvoicesService $invoicesService
+     */
     public function __construct(
         EntityManager $entityManager,
         InvoicesService $invoicesService
@@ -32,9 +37,12 @@ class ExtraPaymentsService
 
     /**
      * @param Customers $customer
+     * @param Fleet $fleet
+     * @param Transactions $transaction
      * @param int $amount
-     * @param string $paymentType
-     * @param string $reason
+     * @param string $type
+     * @param string[] $reasons
+     * @param integer[] $amounts
      * @return ExtraPayment
      */
     public function registerExtraPayment(
@@ -42,16 +50,25 @@ class ExtraPaymentsService
         Fleet $fleet,
         Transactions $transaction,
         $amount,
-        $paymentType,
-        $reason
+        $type,
+        $reasons,
+        $amounts
     ) {
+        $reasonsAmounts = [];
+        for ($i = 0; $i < count($reasons); $i++) {
+            array_push(
+                $reasonsAmounts,
+                [[$reasons[$i]], [$this->formatAmount($amounts[$i])]]
+            );
+        }
+
         $extraPayment = new ExtraPayment(
             $customer,
             $fleet,
             $transaction,
             $amount,
-            $paymentType,
-            $reason
+            $type,
+            $reasonsAmounts
         );
 
         $this->entityManager->persist($extraPayment);
@@ -75,7 +92,7 @@ class ExtraPaymentsService
             $invoice = $this->invoicesService->prepareInvoiceForExtraOrPenalty(
                 $extraPayment->getCustomer(),
                 $extraPayment->getFleet(),
-                $extraPayment->getReason(),
+                $extraPayment->getReasons(),
                 $extraPayment->GetAmount()
             );
 
@@ -93,5 +110,29 @@ class ExtraPaymentsService
         } catch (\Exception $e) {
             $this->entityManager->rollback();
         }
+    }
+
+    /**
+     * Returns an array containing all types of ExtraPayments
+     *
+     * @return string[]
+     */
+    public function getAllTypes()
+    {
+        $query = new AllExtraPaymentTypes($this->entityManager);
+        $result = [];
+        foreach ($query() as $value) {
+            array_push($result, $value['type']);
+        }
+        return $result;
+    }
+
+    /**
+     * @param string $amount
+     * @return string
+     */
+    private function formatAmount($amount)
+    {
+        return sprintf('%.2f €', intval($amount) / 100);
     }
 }
