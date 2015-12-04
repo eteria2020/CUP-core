@@ -125,7 +125,7 @@ class Commands
         self::RE_WHITELIST => ['label' => 'Cancella e riscarica whitelist', 'command' => 'WLCLEAN', 'params' => [], 'ttl' => 180],
         self::RESEND_TRIP => ['label' => 'Rispedisci corse', 'command' => 'RESEND_TRIP', 'params' => [], 'ttl' => 180],
         self::OPEN_SERVICE => ['label' => 'Apri finestra di servizio', 'command' => 'OPEN_SERVICE', 'params' => [], 'ttl' => 60],
-        self::CLOSE_TRIP => ['label' => 'Chiudi ultima corsa aperta', 'command' => 'CLOSE_TRIP', 'params' => [], 'ttl' => 60],
+        self::CLOSE_TRIP => ['label' => 'Chiudi ultima corsa aperta', 'command' => 'CLOSE_TRIP', 'params' => ['txtarg1' => ''], 'ttl' => 60],
         self::GPRS_COORDINATES => ['label' => 'Usa coordinate GPRS', 'command' => 'SET_CONFIG', 'params' => ['txtarg1' => '{UseExternalGPS : true}'], 'ttl' => 0],
         self::ANDROID_COORDINATES => ['label' => 'Usa coordinate ANDROID', 'command' => 'SET_CONFIG', 'params' => ['txtarg1' => '{UseExternalGPS : false}'], 'ttl' => 0],
     ];
