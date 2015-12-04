@@ -222,4 +222,17 @@ class CustomerDeactivation
         return $this->startTs <= $now &&
             ($this->endTs == null || $now <= $this->endTs);
     }
+
+    /**
+     * @return boolean specifies if the deactivation has been generated
+     * automatically when CustomerDeactivations were first introduced
+     */
+    public function isGeneratedAutomatically()
+    {
+        if (array_key_exists("note", $this->details['deactivation'])) {
+            return $this->details['deactivation']['note'] ==
+                'Generated automatically';
+        }
+        return false;
+    }
 }
