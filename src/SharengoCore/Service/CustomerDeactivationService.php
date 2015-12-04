@@ -55,10 +55,8 @@ class CustomerDeactivationService
      * @param string|null $reason
      * @return CustomerDeactivation[]
      */
-    public function getCustomerDeactivations(
-        Customers $customer,
-        $reason = null
-    ) {
+    public function getAll(Customers $customer, $reason = null)
+    {
         $query = new FindCustomerDeactivations(
             $this->entityManager,
             $customer,
@@ -130,7 +128,7 @@ class CustomerDeactivationService
      *
      * @param Customers $customer
      * @param Webuser $webuser
-     * @param string $note
+     * @param string|null $note
      * @param \DateTime|null $startTs
      */
     public function deactivateByWebuser(
@@ -193,7 +191,7 @@ class CustomerDeactivationService
      *
      * @param CustomerDeactivation $customerDeactivation
      * @param SubscriptionPayment $subscriptionPayment
-     * @param \DateTime $endTs
+     * @param \DateTime|null $endTs
      */
     public function reactivateForFirstPayment(
         CustomerDeactivation $customerDeactivation,
@@ -263,7 +261,7 @@ class CustomerDeactivationService
      *
      * @param CustomerDeactivation $customerDeactivation
      * @param Webuser $webuser
-     * @param string $note
+     * @param string|null $note
      * @param \DateTime|null $endTs
      */
     public function reactivateByWebuser(
@@ -284,7 +282,7 @@ class CustomerDeactivationService
      *
      * @param CustomerDeactivation $customerDeactivation
      * @param Webuser $webuser
-     * @param string $note
+     * @param string|null $note
      * @param \DateTime|null $endTs
      */
     public function reactivateCustomer(
