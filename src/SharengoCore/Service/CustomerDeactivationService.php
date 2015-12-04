@@ -291,7 +291,7 @@ class CustomerDeactivationService
         $note = null,
         \DateTime $endTs = null
     ) {
-        $deactivations = $this->getCustomerDeactivations($customer);
+        $deactivations = $this->getAll($customer);
         foreach ($deactivations as $deactivation) {
             $this->reactivateByWebuser($deactivation, $webuser, $note, $endTs);
         }
@@ -313,26 +313,33 @@ class CustomerDeactivationService
     ) {
         $customerDeactivation->reactivate($details, $endTs, $webuser);
         $this->entityManager->persist($customerDeactivation);
-        $this->entityManager->flush();
 
         // If it was the last active CustomerDeactivation for the Customer
         // and this one is deactivated immediatly, enable Customer
         $customer = $customerDeactivation->getCustomer();
-        if ($this->shouldActivateCustomer($customer)) {
+        if ($this->shouldActivateCustomer($customer, $customerDeactivation)) {
             $this->customerService->enableCustomer($customer, true);
             $this->entityManager->persist($customer);
-            $this->entityManager->flush();
         }
+        $this->entityManager->flush();
     }
 
     /**
      * @param Customers $customer
+     * @param CustomerDeactivation|null $customerDeactivation this deactivation
+     *     is ignored in the check if not null
      * @return boolean wether there are no active CustomerDeactivations for the
      *     Customer
      */
-    private function shouldActivateCustomer(Customers $customer)
-    {
-        $query = new ShouldActivateCustomer($this->entityManager, $customer);
+    private function shouldActivateCustomer(
+        Customers $customer,
+        CustomerDeactivation $customerDeactivation = null
+    ) {
+        $query = new ShouldActivateCustomer(
+            $this->entityManager,
+            $customer,
+            $customerDeactivation
+        );
 
         return $query();
     }
