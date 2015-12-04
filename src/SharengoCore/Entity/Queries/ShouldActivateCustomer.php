@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Entity\Queries;
 
+use SharengoCore\Entity\CustomerDeactivation;
 use SharengoCore\Entity\Customers;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,17 +15,25 @@ class ShouldActivateCustomer extends Query
     private $params = [];
 
     /**
+     * Checks if Customer has active deactivations. It is possible to give a
+     * CustomerDeactivation that will be ignored in the check
+     *
      * @param EntityManagerInterface $em
      * @param Customers $customerDeactivation
+     * @param CustomerDeactivation|null $deactivation
      */
     public function __construct(
         EntityManagerInterface $em,
-        Customers $customer
+        Customers $customer,
+        CustomerDeactivation $deactivation = null
     ) {
         parent::__construct($em);
         $this->params = [
             'customerParam' => $customer
         ];
+        if ($deactivation !== null) {
+            $this->params['deactivationParam'] = $deactivation;
+        }
     }
 
     /**
@@ -50,7 +59,8 @@ class ShouldActivateCustomer extends Query
             AND (
                 cd.endTs IS NULL
                 OR cd.endTs > CURRENT_TIMESTAMP()
-            )";
+            )" .
+            (array_key_exists('deactivationParam', $this->params) ? ' AND cd != :deactivationParam' : '');
     }
 
     /**
