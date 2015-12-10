@@ -6,12 +6,17 @@ use SharengoCore\Entity\Customers;
 
 use Doctrine\ORM\EntityManagerInterface;
 
-class FindCustomerDeactivations extends Query
+class FindActiveCustomerDeactivations extends Query
 {
     /**
      * @var array
      */
     private $params = [];
+
+    /**
+     * @var string
+     */
+    private $resultMethod = 'getResult';
 
     /**
      * @param EntityManagerInterface $em
@@ -29,6 +34,7 @@ class FindCustomerDeactivations extends Query
         ];
         if ($reason !== null) {
             $this->params['reasonParam'] = $reason;
+            $this->resultMethod = 'getOneOrNullResult';
         }
     }
 
@@ -55,5 +61,13 @@ class FindCustomerDeactivations extends Query
     protected function params()
     {
         return $this->params;
+    }
+
+    /**
+     * @return string
+     */
+    protected function resultMethod()
+    {
+        return $this->resultMethod;
     }
 }
