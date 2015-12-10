@@ -139,6 +139,7 @@ class EditTripsService
 
             // reassign trip bonus minutes
             $customerBonus->incrementResidual($tripBonus->getMinutes());
+            $customerBonus->setUpdateTs(date_create());
             $this->entityManager->persist($customerBonus);
 
             //delete trip bonus
