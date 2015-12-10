@@ -6,7 +6,7 @@ use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomerDeactivation;
 use SharengoCore\Entity\Queries\FindCustomerDeactivationById;
-use SharengoCore\Entity\Queries\FindCustomerDeactivations;
+use SharengoCore\Entity\Queries\FindActiveCustomerDeactivations;
 use SharengoCore\Entity\Queries\FindCustomerDeactivationsToUpdate;
 use SharengoCore\Entity\Queries\ShouldActivateCustomer;
 use SharengoCore\Entity\SubscriptionPayment;
@@ -55,9 +55,9 @@ class CustomerDeactivationService
      * @param string|null $reason
      * @return CustomerDeactivation[]
      */
-    public function getAll(Customers $customer, $reason = null)
+    public function getAllActive(Customers $customer, $reason = null)
     {
-        $query = new FindCustomerDeactivations(
+        $query = new FindActiveCustomerDeactivations(
             $this->entityManager,
             $customer,
             $reason
@@ -206,6 +206,25 @@ class CustomerDeactivationService
     }
 
     /**
+     * @param Customers $customer
+     * @param \DateTime|null $endTs
+     */
+    public function reactivateCustomerForFirstPayment(
+        Customers $customer,
+        \DateTime $endTs = null
+    ) {
+        $query = new FindActiveCustomerDeactivations(
+            $customer,
+            CustomerDeactivation::FIRST_PAYMENT_NOT_COMPLETED
+        );
+
+        $deactivation = $query();
+        if ($deactivation instanceof CustomerDeactivation) {
+            $this->reactivateForFirstPayment($deactivation);
+        }
+    }
+
+    /**
      * Close the CustomerDeactivation when a TripPayment is successfully
      * completed
      *
@@ -221,6 +240,25 @@ class CustomerDeactivationService
         $details = ['trip_payment_try_id' => $tripPaymentTry->getId()];
 
         $this->reactivate($customerDeactivation, $details, $endTs);
+    }
+
+    /**
+     * @param Customers $customer
+     * @param \DateTime|null $endTs
+     */
+    public function reactivateCustomerForTripPaymentTry(
+        Customers $customer,
+        \DateTime $endTs = null
+    ) {
+        $query = new FindActiveCustomerDeactivations(
+            $customer,
+            CustomerDeactivation::FAILED_PAYMENT
+        );
+
+        $deactivation = $query();
+        if ($deactivation instanceof CustomerDeactivation) {
+            $this->reactivateForTripPaymentTry($deactivation);
+        }
     }
 
     /**
@@ -242,6 +280,25 @@ class CustomerDeactivationService
     }
 
     /**
+     * @param Customers $customer
+     * @param \DateTime|null $endTs
+     */
+    public function reactivateCustomerForBonusPayment(
+        Customers $customer,
+        \DateTime $endTs = null
+    ) {
+        $query = new FindActiveCustomerDeactivations(
+            $customer,
+            CustomerDeactivation::FAILED_PAYMENT
+        );
+
+        $deactivation = $query();
+        if ($deactivation instanceof CustomerDeactivation) {
+            $this->reactivateForBonusPayment($deactivation);
+        }
+    }
+
+    /**
      * Close the CustomerDeactivation when the driver's license is verified
      *
      * @param CustomerDeactivation $customerDeactivation
@@ -254,6 +311,25 @@ class CustomerDeactivationService
         $details = $this->getDriverLicenceDetails($customer);
 
         $this->reactivate($customerDeactivation, $details, $endTs);
+    }
+
+    /**
+     * @param Customers $customer
+     * @param \DateTime|null $endTs
+     */
+    public function reactivateCustomerForDriversLicense(
+        Customers $customer,
+        \DateTime $endTs = null
+    ) {
+        $query = new FindActiveCustomerDeactivations(
+            $customer,
+            CustomerDeactivation::INVALID_DRIVERS_LICENSE
+        );
+
+        $deactivation = $query();
+        if ($deactivation instanceof CustomerDeactivation) {
+            $this->reactivateForDriversLicense($deactivation);
+        }
     }
 
     /**
