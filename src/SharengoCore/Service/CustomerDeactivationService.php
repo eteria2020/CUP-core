@@ -311,7 +311,7 @@ class CustomerDeactivationService
         CustomerDeactivation $customerDeactivation,
         \DateTime $endTs = null
     ) {
-        $details = $this->getDriverLicenceDetails($customer);
+        $details = $this->getDriverLicenceDetails($customerDeactivation->getCustomer());
 
         $this->reactivate($customerDeactivation, $details, $endTs);
     }
