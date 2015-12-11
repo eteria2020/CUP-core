@@ -367,7 +367,7 @@ class CustomerDeactivationService
         $note = null,
         \DateTime $endTs = null
     ) {
-        $deactivations = $this->getAll($customer);
+        $deactivations = $this->getAllActive($customer);
         foreach ($deactivations as $deactivation) {
             $this->reactivateByWebuser($deactivation, $webuser, $note, $endTs);
         }
