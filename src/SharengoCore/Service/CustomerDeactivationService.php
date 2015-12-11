@@ -214,6 +214,7 @@ class CustomerDeactivationService
         \DateTime $endTs = null
     ) {
         $query = new FindActiveCustomerDeactivations(
+            $this->entityManager,
             $customer,
             CustomerDeactivation::FIRST_PAYMENT_NOT_COMPLETED
         );
@@ -251,6 +252,7 @@ class CustomerDeactivationService
         \DateTime $endTs = null
     ) {
         $query = new FindActiveCustomerDeactivations(
+            $this->entityManager,
             $customer,
             CustomerDeactivation::FAILED_PAYMENT
         );
@@ -288,6 +290,7 @@ class CustomerDeactivationService
         \DateTime $endTs = null
     ) {
         $query = new FindActiveCustomerDeactivations(
+            $this->entityManager,
             $customer,
             CustomerDeactivation::FAILED_PAYMENT
         );
@@ -322,6 +325,7 @@ class CustomerDeactivationService
         \DateTime $endTs = null
     ) {
         $query = new FindActiveCustomerDeactivations(
+            $this->entityManager,
             $customer,
             CustomerDeactivation::INVALID_DRIVERS_LICENSE
         );
