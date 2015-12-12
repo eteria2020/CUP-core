@@ -53,7 +53,7 @@ class CustomerDeactivationService
     /**
      * @param Customers $customer
      * @param string|null $reason
-     * @return CustomerDeactivation[]
+     * @return CustomerDeactivation|CustomerDeactivation[] if a reason if present just one (or none) result is returned
      */
     public function getAllActive(Customers $customer, $reason = null)
     {
@@ -64,6 +64,17 @@ class CustomerDeactivationService
         );
 
         return $query();
+    }
+
+    /**
+     * @param Customers $customer
+     * @return bool
+     */
+    public function hasActiveDeactivations(Customers $customer)
+    {
+        $allActive = $this->getAllActive($customer);
+
+        return !empty($allActive);
     }
 
     /**
