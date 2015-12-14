@@ -449,6 +449,7 @@ class CustomerDeactivationService
             'driver_license_release_date' => $customer->getDriverLicenseReleaseDate()->format('Y-m-d H:i:s'),
             'driver_license_expire' => $customer->getDriverLicenseExpire()->format('Y-m-d H:i:s'),
             'driver_license_name' => $customer->getDriverLicenseName(),
+            'driver_license_surname' => $customer->getDriverLicenseSurname()
         ];
     }
 

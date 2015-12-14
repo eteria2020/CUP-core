@@ -255,6 +255,13 @@ class Customers
     private $driverLicenseName;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="driver_license_surname", type="string", length=255, nullable=true)
+     */
+    private $driverLicenseSurname;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(name="driver_license_foreign", type="boolean", nullable=false)
@@ -1230,6 +1237,30 @@ class Customers
     public function getDriverLicenseName()
     {
         return $this->driverLicenseName;
+    }
+
+    /**
+     * Set driverLicenseSurname
+     *
+     * @param string $driverLicenseSurname
+     *
+     * @return Customers
+     */
+    public function setDriverLicenseSurname($driverLicenseSurname)
+    {
+        $this->driverLicenseSurname = $driverLicenseSurname;
+
+        return $this;
+    }
+
+    /**
+     * Get driverLicenseSurname
+     *
+     * @return string
+     */
+    public function getDriverLicenseSurname()
+    {
+        return $this->driverLicenseSurname;
     }
 
     /**
