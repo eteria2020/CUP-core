@@ -250,7 +250,7 @@ class Customers
     /**
      * @var string
      *
-     * @ORM\Column(name="driver_license_name", type="string", length=255, nullable=true)
+     * @ORM\Column(name="driver_license_firstname", type="string", length=255, nullable=true)
      */
     private $driverLicenseName;
 
