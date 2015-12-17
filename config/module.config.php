@@ -108,6 +108,16 @@ return [
                             ]
                         ]
                     ],
+                    'municipalities' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => '/municipalities[/:province]',
+                            'defaults' => [
+                                'controller' => 'Municipalities',
+                                'action' => 'activeMunicipalities'
+                            ]
+                        ]
+                    ]
                 ],
             ],
             'pdf' => [
@@ -148,6 +158,7 @@ return [
             'SharengoCore\Controller\Invoices' => 'SharengoCore\Controller\InvoicesControllerFactory',
             'SharengoCore\Controller\Pdf' => 'SharengoCore\Controller\PdfControllerFactory',
             'SharengoCore\Controller\CustomersBonusPackages' => 'SharengoCore\Controller\CustomersBonusPackagesControllerFactory',
+            'SharengoCore\Controller\Municipalities' => 'SharengoCore\Controller\MunicipalitiesControllerFactory',
         ],
     ],
 
@@ -204,7 +215,8 @@ return [
             'SharengoCore\Service\CustomerNoteService' => 'SharengoCore\Service\CustomerNoteServiceFactory',
             'SharengoCore\Service\ConfigurationsService' => 'SharengoCore\Service\ConfigurationsServiceFactory',
             'SharengoCore\Service\ZonesService' => 'SharengoCore\Service\ZonesServiceFactory',
-            'SharengoCore\Service\CustomerDeactivationService' => 'SharengoCore\Service\CustomerDeactivationServiceFactory'
+            'SharengoCore\Service\CustomerDeactivationService' => 'SharengoCore\Service\CustomerDeactivationServiceFactory',
+            'SharengoCore\Service\MunicipalitiesService' => 'SharengoCore\Service\MunicipalitiesServiceFactory'
         ],
         'shared' => [
             'SharengoCore\Service\TripCostComputerService' => false,
@@ -241,6 +253,7 @@ return [
                 ['controller' => 'SharengoCore\Controller\Invoices', 'roles' => ['user']],
                 ['controller' => 'SharengoCore\Controller\Pdf', 'roles' => ['user', 'admin']],
                 ['controller' => 'SharengoCore\Controller\CustomersBonusPackages', 'roles' => ['user', 'admin']],
+                ['controller' => 'SharengoCore\Controller\Municipalities', 'roles' => []],
             ],
         ],
     ],

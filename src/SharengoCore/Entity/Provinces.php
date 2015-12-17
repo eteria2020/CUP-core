@@ -5,7 +5,7 @@ namespace SharengoCore\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Countries
+ * Provinces
  *
  * @ORM\Table(name="provinces")
  * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\ProvincesRepository")
