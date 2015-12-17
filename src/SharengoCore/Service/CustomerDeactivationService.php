@@ -217,49 +217,41 @@ class CustomerDeactivationService
     }
 
     /**
-     * @param Customers $customer
-     * @param \DateTime|null $endTs
-     */
-    public function reactivateCustomerForFirstPayment(
-        Customers $customer,
-        \DateTime $endTs = null
-    ) {
-        $query = new FindActiveCustomerDeactivations(
-            $this->entityManager,
-            $customer,
-            CustomerDeactivation::FIRST_PAYMENT_NOT_COMPLETED
-        );
-
-        $deactivation = $query();
-        if ($deactivation instanceof CustomerDeactivation) {
-            $this->reactivateForFirstPayment($deactivation);
-        }
-    }
-
-    /**
      * Close the CustomerDeactivation when a TripPayment is successfully
      * completed
      *
      * @param CustomerDeactivation $customerDeactivation
      * @param TripPaymentTries $tripPaymentTry
      * @param \DateTime|null $endTs
+     * @param Webuser|null $webuser
      */
     public function reactivateForTripPaymentTry(
         CustomerDeactivation $customerDeactivation,
         TripPaymentTries $tripPaymentTry,
-        \DateTime $endTs = null
+        \DateTime $endTs = null,
+        Webuser $webuser = null
     ) {
         $details = ['trip_payment_try_id' => $tripPaymentTry->getId()];
+        if ($webuser instanceof Webuser) {
+            $details['note'] = 'Reactivated manually';
+        }
 
-        $this->reactivate($customerDeactivation, $details, $endTs);
+        $this->reactivate($customerDeactivation, $details, $endTs, $webuser);
     }
 
     /**
+     * Reactivates all CustomerDeactivations with reason FAILED_PAYMENT for a
+     * specific Customer
+     *
      * @param Customers $customer
+     * @param TripPaymentTries $tripPaymentTry
+     * @param Webuser|null $webuser
      * @param \DateTime|null $endTs
      */
     public function reactivateCustomerForTripPaymentTry(
         Customers $customer,
+        TripPaymentTries $tripPaymentTry,
+        Webuser $webuser = null,
         \DateTime $endTs = null
     ) {
         $query = new FindActiveCustomerDeactivations(
@@ -270,12 +262,17 @@ class CustomerDeactivationService
 
         $deactivation = $query();
         if ($deactivation instanceof CustomerDeactivation) {
-            $this->reactivateForTripPaymentTry($deactivation);
+            $this->reactivateForTripPaymentTry(
+                $deactivation,
+                $tripPaymentTry,
+                $endTs,
+                $webuser
+            );
         }
     }
 
     /**
-     * Close the CustomerDeactivation when a TripPayment is successfully
+     * Close the CustomerDeactivation when a BonusPackagePayment is successfully
      * completed
      *
      * @param CustomerDeactivation $customerDeactivation
@@ -290,26 +287,6 @@ class CustomerDeactivationService
         $details = ['bonus_package_payment_id' => $bonusPackagePayment->getId()];
 
         $this->reactivate($customerDeactivation, $details, $endTs);
-    }
-
-    /**
-     * @param Customers $customer
-     * @param \DateTime|null $endTs
-     */
-    public function reactivateCustomerForBonusPayment(
-        Customers $customer,
-        \DateTime $endTs = null
-    ) {
-        $query = new FindActiveCustomerDeactivations(
-            $this->entityManager,
-            $customer,
-            CustomerDeactivation::FAILED_PAYMENT
-        );
-
-        $deactivation = $query();
-        if ($deactivation instanceof CustomerDeactivation) {
-            $this->reactivateForBonusPayment($deactivation);
-        }
     }
 
     /**
@@ -328,6 +305,9 @@ class CustomerDeactivationService
     }
 
     /**
+     * Reactivates all CustomerDeactivations with reason INVALID_DRIVERS_LICENSE
+     * for a specific Customer
+     *
      * @param Customers $customer
      * @param \DateTime|null $endTs
      */
