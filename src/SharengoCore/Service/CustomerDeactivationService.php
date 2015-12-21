@@ -343,7 +343,7 @@ class CustomerDeactivationService
 
         $deactivation = $query();
         if ($deactivation instanceof CustomerDeactivation) {
-            $this->reactivateForDriversLicense($deactivation);
+            $this->reactivateForDriversLicense($deactivation, $endTs);
         }
     }
 
