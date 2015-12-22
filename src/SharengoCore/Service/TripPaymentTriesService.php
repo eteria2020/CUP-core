@@ -37,6 +37,15 @@ class TripPaymentTriesService
     }
 
     /**
+     * @param integer $id
+     * @return TripPaymentTries
+     */
+    public function getById($id)
+    {
+        return $this->tripPaymentTriesRepository->findOneById($id);
+    }
+
+    /**
      * @param TripPayments $tripPayment
      * @param Transactions $transaction
      * @param string $outcome
