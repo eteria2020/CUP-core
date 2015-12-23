@@ -47,7 +47,6 @@ class BonusService
         }
 
         $bonus->setResidual($availableMinutes - $minutes);
-        $bonus->setUpdateTs(date_create());
 
         $this->entityManager->persist($bonus);
         $this->entityManager->flush();
