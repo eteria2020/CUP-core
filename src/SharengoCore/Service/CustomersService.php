@@ -377,8 +377,7 @@ class CustomersService implements ValidatorServiceInterface
     {
         $bonus->setType('promo');
         $bonus->setResidual($bonus->getTotal());
-        $bonus->setInsertTs(new \DateTime());
-        $bonus->setUpdateTs($bonus->getInsertTs());
+        $bonus->setInsertTs(date_create());
         $bonus->setWebuser($this->userService->getIdentity());
 
         $this->addBonus($customer, $bonus);
@@ -387,7 +386,6 @@ class CustomersService implements ValidatorServiceInterface
     public function removeBonus(CustomersBonus $customerBonus)
     {
         if ($customerBonus->canBeDeleted()) {
-
             $this->entityManager->remove($customerBonus);
             $this->entityManager->flush();
 
@@ -549,7 +547,7 @@ class CustomersService implements ValidatorServiceInterface
         $vat = str_replace(";", " ", $vat);
         $vat = str_replace("it", "", strtolower($vat));
 
-        $cardCode = $customer->getCard() instanceOf Cards ?
+        $cardCode = $customer->getCard() instanceof Cards ?
             $customer->getCard()->getCode() :
             '';
 

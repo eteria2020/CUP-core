@@ -145,7 +145,6 @@ class CustomersBonus
         $bonus = new CustomersBonus();
         $bonus->setCustomer($customer);
         $bonus->setInsertTs(date_create());
-        $bonus->setUpdateTs(date_create());
         $bonus->setTotal($total);
         $bonus->setResidual($total);
         $bonus->setValidFrom(date_create());
@@ -161,7 +160,6 @@ class CustomersBonus
 
         $me = new CustomersBonus();
         $me->setInsertTs(date_create());
-        $me->setUpdateTs($me->getInsertTs());
         $me->setTotal($promoCodeDetails->getMinutes());
         $me->setResidual($me->getTotal());
         $me->setValidFrom($promoCodeDetails->getBonusValidFrom());
@@ -184,7 +182,6 @@ class CustomersBonus
         $bonus = new CustomersBonus();
         $bonus->setCustomer($customer)
             ->setInsertTs(date_create())
-            ->setUpdateTs(date_create())
             ->setTotal($bonusPackage->getMinutes())
             ->setResidual($bonusPackage->getMinutes())
             ->setType($bonusPackage->getType())
@@ -312,6 +309,7 @@ class CustomersBonus
     public function setResidual($residual)
     {
         $this->residual = $residual;
+        $this->touch();
 
         return $this;
     }
@@ -543,6 +541,14 @@ class CustomersBonus
     }
 
     /**
+     * Updates the updateTs
+     */
+    private function touch()
+    {
+        $this->updateTs = date_create();
+    }
+
+    /**
      * increments the residual by the given amount of minutes
      *
      * @var int $minutes
@@ -558,6 +564,7 @@ class CustomersBonus
         $addedMinutes = $this->residual + $minutes;
 
         $this->residual = min($this->total, $addedMinutes);
+        $this->touch();
 
         return $this;
     }
