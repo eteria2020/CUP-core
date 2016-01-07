@@ -17,6 +17,8 @@ class RecapAvailableMonths extends NativeQuery
      * trip_payents, then finding all of those in which there are
      * subscription_payments and finally combining the results.
      *
+     * Ordering is first done by year and then by month.
+     *
      * @return string
      */
     protected function sql()
@@ -36,7 +38,8 @@ class RecapAvailableMonths extends NativeQuery
             SELECT COALESCE(tp.date, sp.date) AS date
             FROM tp
             FULL JOIN sp ON tp.date = sp.date
-            ORDER BY date DESC";
+            ORDER BY substring(COALESCE(tp.date, sp.date) from 4 for 4) DESC,
+                substring(COALESCE(tp.date, sp.date) from 1 for 2) DESC";
     }
 
     /**
