@@ -340,11 +340,13 @@ class CustomersService implements ValidatorServiceInterface
     {
         $card = $customer->getCard();
         $customer->setCard(null);
+
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
+
         $card->setIsAssigned(false);
 
         $this->entityManager->persist($card);
-        $this->entityManager->persist($customer);
-
         $this->entityManager->flush();
     }
 
