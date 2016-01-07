@@ -62,6 +62,15 @@ class TripsService
     }
 
     /**
+     * @param integer $id
+     * @return Trips
+     */
+    public function getById($id)
+    {
+        return $this->tripRepository->findOneById($id);
+    }
+
+    /**
      * @return mixed
      */
     public function getListTrips()

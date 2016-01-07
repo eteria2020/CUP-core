@@ -994,6 +994,22 @@ class Trips
     }
 
     /**
+     * @return boolean true if at least one tripPayment has been payed
+     * successfully for this trip
+     */
+    public function isPaymentCompleted()
+    {
+        $isCompleted = false;
+        if (count($this->getTripPayments()) != 0) {
+            foreach ($this->getTripPayments() as $tripPayment) {
+                $isCompleted = $isCompleted ||
+                    $tripPayment->getPayedSuccessfullyAt() instanceof \DateTime;
+            }
+        }
+        return $isCompleted;
+    }
+
+    /**
      * Throws exception if:
      * - $endDate is not null and not of type \DateTime
      * - $endDate is prior to current timestampEnd of $trip
