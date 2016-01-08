@@ -1021,7 +1021,7 @@ class Trips
      */
     public function checkIfEditable($endDate)
     {
-        if (!$this->isEnded() || $this->isPaymentTried()) {
+        if (!$this->isEnded()) {
             throw new EditTripDeniedException();
         }
         if ($endDate !== null) {

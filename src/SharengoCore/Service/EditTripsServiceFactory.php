@@ -15,6 +15,8 @@ class EditTripsServiceFactory implements FactoryInterface
         $tripPaymentsRepository = $entityManager->getRepository('SharengoCore\Entity\TripPayments');
         $accountTripsService = $serviceLocator->get('SharengoCore\Service\AccountTripsService');
         $tripCostService = $serviceLocator->get('SharengoCore\Service\TripCostService');
+        $tripPaymentsService = $serviceLocator->get('SharengoCore\Service\TripPaymentsService');
+        $tripPaymentTriesService = $serviceLocator->get('SharengoCore\Service\TripPaymentTriesService');
 
         return new EditTripsService(
             $entityManager,
@@ -22,7 +24,9 @@ class EditTripsServiceFactory implements FactoryInterface
             $tripFreeFaresRepository,
             $tripPaymentsRepository,
             $accountTripsService,
-            $tripCostService
+            $tripCostService,
+            $tripPaymentsService,
+            $tripPaymentTriesService
         );
     }
 }

@@ -175,4 +175,13 @@ class TripPaymentsService
 
         return $command();
     }
+
+    /**
+     * @param Trips $trip
+     * @return TripPayments[]
+     */
+    public function getByTrip(Trips $trip)
+    {
+        return $this->tripPaymentsRepository->findByTrip($trip);
+    }
 }
