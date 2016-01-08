@@ -82,4 +82,13 @@ class TripPaymentTriesService
         }
         return $tripPaymentTry;
     }
+
+    /**
+     * @param TripPayments $tripPayment
+     * @return TripPaymentTries[]
+     */
+    public function getByTripPayment(TripPayments $tripPayment)
+    {
+        return $this->tripPaymentTriesRepository->findByTripPayment($tripPayment);
+    }
 }
