@@ -61,7 +61,7 @@ class RecapService
         $start = clone($end);
         $start->sub($interval);
 
-        $query = new PayedBetween($this->em, $start, $end, 'YYYY-IW');
+        $query = new PayedBetween($this->em, $start, $end, 'IYYY-IW');
         $incomes = $query();
 
         return $this->groupIncomesByDate($incomes);
