@@ -56,6 +56,11 @@ class EditTripsService
     private $tripPaymentTriesService;
 
     /**
+     * @var CustomersService
+     */
+    private $customersService;
+
+    /**
      * @param EntityManager $entityManager
      * @param TripBillsRepository $tripBillsRepository
      * @param TripFreeFaresRepository $tripFreeFaresRepository
@@ -64,6 +69,7 @@ class EditTripsService
      * @param TripCostService $tripCostService
      * @param TripPaymentsService $tripPaymentsService
      * @param TripPaymentTriesService $tripPaymentTriesService
+     * @param CustomersService $customersService
      */
     public function __construct(
         EntityManager $entityManager,
@@ -73,7 +79,8 @@ class EditTripsService
         AccountTripsService $accountTripsService,
         TripCostService $tripCostService,
         TripPaymentsService $tripPaymentsService,
-        TripPaymentTriesService $tripPaymentTriesService
+        TripPaymentTriesService $tripPaymentTriesService,
+        CustomersService $customersService
     ) {
         $this->entityManager = $entityManager;
         $this->tripBillsRepository = $tripBillsRepository;
@@ -83,6 +90,7 @@ class EditTripsService
         $this->tripCostService = $tripCostService;
         $this->tripPaymentsService = $tripPaymentsService;
         $this->tripPaymentTriesService = $tripPaymentTriesService;
+        $this->customersService = $customersService;
     }
 
     /**
@@ -115,13 +123,13 @@ class EditTripsService
         $this->entityManager->beginTransaction();
 
         try {
-
             // backup and remove tripPaymentTries if present
             if ($trip->isPaymentTried()) {
-                if (!$webuser instanceof Webuser) {
+                if ($webuser instanceof Webuser) {
+                    $this->cancelTripPaymentTries($trip, $webuser);
+                } else {
                     throw new EditTripDeniedException();
                 }
-                $this->cancelTripPaymentTries($trip, $webuser);
             }
 
             // edit trip fields
@@ -175,6 +183,9 @@ class EditTripsService
                 $this->entityManager->remove($tripPaymentTry);
             }
         }
+        // Set customer's paymentAble to true to enable new cost computation
+        // and to enable payment to be triggered by script
+        $this->customersService->setCustomerPaymentAble($trip->getCustomer());
         $this->entityManager->flush();
     }
 

@@ -100,17 +100,6 @@ class TripPaymentsCanceled
     private $totalCost;
 
     /**
-     * @var string can have values
-     *      - to_be_payed (default)
-     *      - payed_correctly
-     *      - wrong_payment
-     *      - invoiced
-     *
-     * @ORM\Column(name="status", type="string", nullable=false, options={"default" = "to_be_payed"})
-     */
-    private $status;
-
-    /**
      * @var DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
@@ -162,7 +151,6 @@ class TripPaymentsCanceled
         $this->parkingMinutes = $tripPayment->getParkingMinutes();
         $this->discountPercentage = $tripPayment->getDiscountPercentage();
         $this->totalCost = $tripPayment->getTotalCost();
-        $this->status = $tripPayment->getStatus();
         $this->createdAt = $tripPayment->getCreatedAt();
         $this->toBePayedFrom = $tripPayment->getToBePayedFrom();
         $this->firstPaymentTryTs = $tripPayment->getFirstPaymentTryTs();
