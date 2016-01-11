@@ -269,6 +269,16 @@ class Cars
      */
     private $fleet;
     
+    /**
+     * @var \CarsInfo
+     *
+     * @ORM\OneToOne(targetEntity="CarsInfo")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="plate", referencedColumnName="car_plate", nullable=false)
+     * })
+     */
+    private $carsInfo;
+    
 
     public function __construct()
     {
@@ -1121,6 +1131,30 @@ class Cars
     public function setFleet(\SharengoCore\Entity\Fleet $fleet)
     {
         $this->fleet = $fleet;
+
+        return $this;
+    }
+    
+    /**
+     * Get carsInfo
+     *
+     * @return \SharengoCore\Entity\CarsInfo
+     */
+    public function getCarsInfo()
+    {
+        return $this->carsInfo;
+    }
+
+    /**
+     * Set carsInfo
+     *
+     * @param \SharengoCore\Entity\CarsInfo $carsInfo
+     *
+     * @return Cars
+     */
+    public function setCarsInfo(\SharengoCore\Entity\CarsInfo $carsInfo)
+    {
+        $this->carsInfo = $carsInfo;
 
         return $this;
     }
