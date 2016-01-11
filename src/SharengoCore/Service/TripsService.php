@@ -162,6 +162,7 @@ class TripsService
                 ],
                 'cu'       => [
                     'id' => $trip->getCustomer()->getId(),
+                    'email'   => $trip->getCustomer()->getEmail(),
                     'surname' => $trip->getCustomer()->getSurname(),
                     'name'    => $trip->getCustomer()->getName(),
                     'mobile'  => $trip->getCustomer()->getMobile()
