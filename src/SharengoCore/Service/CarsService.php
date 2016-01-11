@@ -134,8 +134,6 @@ class CarsService
     {
         $cars = $this->datatableService->getData('Cars', $as_filters);
 
-		error_log("cars: \n\n".print_r($as_filters,true)."\n",0);
-
         return array_map(function (Cars $cars) {
 
             $clean = sprintf('Interna: %s<br />Esterna: %s', $cars->getIntCleanliness(), $cars->getExtCleanliness());
