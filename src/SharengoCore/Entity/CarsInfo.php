@@ -172,7 +172,7 @@ class CarsInfo
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="lastupdate", type="datetimetz", nullable=true)
+     * @ORM\Column(name="lastupdate", type="datetime", nullable=true)
      */
     private $lastUpdate;
 

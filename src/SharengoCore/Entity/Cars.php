@@ -1140,7 +1140,7 @@ class Cars
      *
      * @return \SharengoCore\Entity\CarsInfo
      */
-    public function getCarsInfo()
+    public function getCarInfo()
     {
         return $this->carsInfo;
     }
@@ -1152,7 +1152,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setCarsInfo(\SharengoCore\Entity\CarsInfo $carsInfo)
+    public function setCarInfo(\SharengoCore\Entity\CarsInfo $carsInfo)
     {
         $this->carsInfo = $carsInfo;
 

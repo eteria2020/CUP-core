@@ -134,6 +134,8 @@ class CarsService
     {
         $cars = $this->datatableService->getData('Cars', $as_filters);
 
+		error_log("cars: \n\n".print_r($as_filters,true)."\n",0);
+
         return array_map(function (Cars $cars) {
 
             $clean = sprintf('Interna: %s<br />Esterna: %s', $cars->getIntCleanliness(), $cars->getExtCleanliness());
@@ -157,7 +159,9 @@ class CarsService
                     'name'        => $cars->getFleet()->getName(),
                 ],
 				'ci'            => [
-                    'gps'        => $cars->getCarInfo()->getGps(),
+                    'gps'		=> $cars->getCarInfo()->getGps(),
+                    'fw_ver'	=> $cars->getCarInfo()->getFirmwareVersion(),
+                    'sw_ver'	=> $cars->getCarInfo()->getSoftwareVersion(),
                 ],
                 'clean'        => $clean,
                 'position'     => sprintf('Lat: %s<br />Lon: %s ', $cars->getLatitude(), $cars->getLongitude()),
