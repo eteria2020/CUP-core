@@ -1134,29 +1134,35 @@ class Cars
 
         return $this;
     }
-    
+
     /**
-     * Get carsInfo
+     * Get  gps
      *
-     * @return \SharengoCore\Entity\CarsInfo
+     * @return \SharengoCore\Entity\CarsInfo gps
      */
-    public function getCarInfo()
+    public function getCarsInfoGps()
     {
-        return $this->carsInfo;
+        return $this->carsInfo->getGps();
     }
 
     /**
-     * Set carsInfo
+     * Get softwareVersion
      *
-     * @param \SharengoCore\Entity\CarsInfo $carsInfo
-     *
-     * @return Cars
+     * @return \SharengoCore\Entity\CarsInfo softwareVersion
      */
-    public function setCarInfo(\SharengoCore\Entity\CarsInfo $carsInfo)
+    public function getCarsInfoSoftwareVersion()
     {
-        $this->carsInfo = $carsInfo;
+        return $this->carsInfo->getSoftwareVersion();
+    }
 
-        return $this;
+    /**
+     * Get firmwareVersion
+     *
+     * @return \SharengoCore\Entity\CarsInfo firmwareVersion
+     */
+    public function getCarsInfoFirmwareVersion()
+    {
+        return $this->carsInfo->getFirmwareVersion();
     }
 
 }

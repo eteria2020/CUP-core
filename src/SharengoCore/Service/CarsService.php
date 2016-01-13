@@ -5,11 +5,9 @@ namespace SharengoCore\Service;
 use BjyAuthorize\Service\Authorize;
 use Doctrine\ORM\EntityManager;
 use SharengoCore\Entity\Cars;
-use SharengoCore\Entity\CarsInfo;
 use SharengoCore\Entity\CarsMaintenance;
 use SharengoCore\Entity\Repository\CarsRepository;
 use SharengoCore\Entity\Repository\CarsDamagesRepository;
-use SharengoCore\Entity\Repository\CarsInfoRepository;
 use SharengoCore\Entity\Repository\FleetRepository;
 use SharengoCore\Entity\Repository\CarsMaintenanceRepository;
 use SharengoCore\Service\DatatableService;
@@ -27,9 +25,6 @@ class CarsService
 
     /** @var  CarsMaintenance */
     private $carsMaintenanceRepository;
-    
-    /** @var  CarsInfoRepository */
-    private $carsInfoRepository;
 
     /** @var  FleetsRepository */
     private $fleetsRepository;
@@ -48,7 +43,6 @@ class CarsService
      * @param EntityManager    $entityManager
      * @param CarsRepository   $carsRepository
      * @param CarsMaintenance  $carsMaintenanceRepository
-     * @param CarsInfoRepository $carsInfoRepository
      * @param FleetsRepository $fleetsRepository
      * @param DatatableService $datatableService
      * @param UserService      $userService
@@ -57,7 +51,6 @@ class CarsService
         EntityManager $entityManager,
         CarsRepository $carsRepository,
         CarsMaintenanceRepository $carsMaintenanceRepository,
-        CarsInfoRepository $carsInfoRepository,
         CarsDamagesRepository $carsDamagesRepository,
         FleetRepository $fleetsRepository,
         DatatableService $datatableService,
@@ -67,7 +60,6 @@ class CarsService
         $this->entityManager = $entityManager;
         $this->carsRepository = $carsRepository;
         $this->carsMaintenanceRepository = $carsMaintenanceRepository;
-        $this->carsInfoRepository = $carsInfoRepository;
         $this->carsDamagesRepository = $carsDamagesRepository;
         $this->fleetsRepository = $fleetsRepository;
         $this->datatableService = $datatableService;
@@ -94,16 +86,6 @@ class CarsService
         return $this->fleetsRepository->find($fleetId);
     }
     
-    public function getCarsInfo()
-    {
-        return $this->carsInfoRepository->findAll();
-    }
-
-    public function getCarInfo($fleetId)
-    {
-        return $this->carsInfoRepository->find($fleetId);
-    }
-
     public function getTotalCars()
     {
         return $this->carsRepository->getTotalCars();
@@ -157,9 +139,9 @@ class CarsService
                     'name'        => $cars->getFleet()->getName(),
                 ],
 				'ci'            => [
-                    'gps'		=> $cars->getCarInfo()->getGps(),
-                    'fw_ver'	=> $cars->getCarInfo()->getFirmwareVersion(),
-                    'sw_ver'	=> $cars->getCarInfo()->getSoftwareVersion(),
+                    'gps'		=> $cars->getGps(),
+                    'fw_ver'	=> $cars->getCarsInfoFirmwareVersion(),
+                    'sw_ver'	=> $cars->getCarsInfoSoftwareVersion(),
                 ],
                 'clean'        => $clean,
                 'position'     => sprintf('Lat: %s<br />Lon: %s ', $cars->getLatitude(), $cars->getLongitude()),

@@ -3,13 +3,11 @@
 namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * CarsInfo
  *
  * @ORM\Table(name="cars_info")
- * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CarsInfoRepository")
  */
 class CarsInfo
 {
@@ -189,16 +187,6 @@ class CarsInfo
     }
 
     /**
-     * @param DoctrineHydrator
-     * @return mixed[]
-     */
-    public function toArray(DoctrineHydrator $hydrator)
-    {
-        return $hydrator->extract($this);
-    }
-
-    
-    /**
      * Get plate
      *
      * @return string
@@ -206,31 +194,6 @@ class CarsInfo
     public function getPlate()
     {
         return $this->plate;
-    }
-
-    /**
-     * Set plate
-     *
-     * @param string $plate
-     */
-    public function setPlate($plate)
-    {
-        $this->plate = $plate;
-    }
-
-
-    /**
-     * Set firmwareVersion
-     *
-     * @param string $firmwareVersion
-     *
-     * @return Cars
-     */
-    public function setFirmwareVersion($firmwareVersion)
-    {
-        $this->firmwareVersion = $firmwareVersion;
-
-        return $this;
     }
 
     /**
@@ -243,20 +206,6 @@ class CarsInfo
         return $this->firmwareVersion;
     }
 
-	/**
-     * Set softwareVersion
-     *
-     * @param string $softwareVersion
-     *
-     * @return Cars
-     */
-    public function setSoftwareVersion($softwareVersion)
-    {
-        $this->softwareVersion = $softwareVersion;
-
-        return $this;
-    }
-
     /**
      * Get softwareVersion
      *
@@ -265,20 +214,6 @@ class CarsInfo
     public function getSoftwareVersion()
     {
         return $this->softwareVersion;
-    }
-
-	/**
-     * Set gps
-     *
-     * @param string $gps
-     *
-     * @return Cars
-     */
-    public function setGps($gps)
-    {
-        $this->gps = $gps;
-
-        return $this;
     }
 
     /**
