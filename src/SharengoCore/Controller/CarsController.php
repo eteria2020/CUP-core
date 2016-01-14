@@ -142,8 +142,8 @@ class CarsController extends AbstractRestfulController
             $this->noGpsCarsPlates = $this->carsService->getOutOfBoundsPlates();
         }
         // Checking == true because the value could be null
-        $car['gps_ok'] = array_key_exists($car['plate'], $this->noGpsCarsPlates)
-            && $this->noGpsCarsPlates[$car['plate']] == true;
+        $car['gps_ok'] = isset($car['plate'], $this->noGpsCarsPlates)
+            && $this->noGpsCarsPlates[$car['plate']];
         return $car;
     }
 

@@ -139,7 +139,7 @@ class CarsService
                     'name'        => $cars->getFleet()->getName(),
                 ],
 				'ci'            => [
-                    'gps'		=> $cars->getGps(),
+                    'gps'		=> $cars->getCarsInfoGps(),
                     'fw_ver'	=> $cars->getCarsInfoFirmwareVersion(),
                     'sw_ver'	=> $cars->getCarsInfoSoftwareVersion(),
                 ],

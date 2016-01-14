@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * CarsInfo
  *
  * @ORM\Table(name="cars_info")
+ * @ORM\Entity
  */
 class CarsInfo
 {
