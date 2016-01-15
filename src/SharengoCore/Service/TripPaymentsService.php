@@ -58,6 +58,20 @@ class TripPaymentsService
         return $this->groupTripPayments($this->tripPaymentsRepository->findTripPaymentsNoInvoice());
     }
 
+    public function getOneGrouped($tripPaymentId)
+    {
+        $tripPayment = $this->tripPaymentsRepository->findOneById($tripPaymentId);
+
+        if (!$tripPayment instanceof TripPayments) {
+            throw new \Exception('No trip payment present with this id');
+        } elseif ($tripPayment->getStatus() !== TripPayments::STATUS_PAYED_CORRECTLY ||
+            is_null($tripPayment->getPayedSuccessfullyAt())) {
+            throw new \Exception('The trip payment was not correctly payed');
+        }
+
+        return $this->groupTripPayments([$tripPayment]);
+    }
+
     /**
      * Groups the tripPayments first by date, then by customer and finally by fleet
      * @param [TripPayments] $tripPayments

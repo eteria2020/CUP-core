@@ -241,7 +241,7 @@ class Invoices
      */
     private function formatNewInvoiceNumber(Invoices $invoice, $newInvoiceNumber)
     {
-        return date_create()->format('Y').
+        return $invoice->getDateTimeDate()->format('Y').
             '/'.
             $invoice->getFleetIntCode().
             sprintf("%'.08d", $newInvoiceNumber);
