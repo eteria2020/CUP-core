@@ -37,7 +37,6 @@ class CarsService
 
     /** @var ReservationsService   */
     private $reservationsService;
-    
 
     /**
      * @param EntityManager    $entityManager
@@ -85,7 +84,7 @@ class CarsService
     {
         return $this->fleetsRepository->find($fleetId);
     }
-    
+
     public function getTotalCars()
     {
         return $this->carsRepository->getTotalCars();
@@ -127,26 +126,26 @@ class CarsService
             );
 
             return [
-                'e'            => [
-                    'plate'       => $cars->getPlate(),
-                    'label'       => $cars->getLabel(),
-                    'battery'     => $cars->getBattery(),
+                'e' => [
+                    'plate' => $cars->getPlate(),
+                    'label' => $cars->getLabel(),
+                    'battery' => $cars->getBattery(),
                     'lastContact' => is_object($cars->getLastContact()) ? $cars->getLastContact()->format('d-m-Y H:i:s') : '',
-                    'km'          => $cars->getKm(),
-                    'status'      => $cars->getStatus(),
+                    'km' => $cars->getKm(),
+                    'status' => $cars->getStatus(),
                 ],
-                'f'            => [
-                    'name'        => $cars->getFleet()->getName(),
+                'f' => [
+                    'name' => $cars->getFleet()->getName(),
                 ],
-				'ci'            => [
-                    'gps'		=> $cars->getCarsInfoGps(),
-                    'firmwareVersion'	=> $cars->getCarsInfoFirmwareVersion(),
-                    'softwareVersion'	=> $cars->getCarsInfoSoftwareVersion(),
+                'ci' => [
+                    'gps' => $cars->getCarsInfoGps(),
+                    'firmwareVersion' => $cars->getCarsInfoFirmwareVersion(),
+                    'softwareVersion' => $cars->getCarsInfoSoftwareVersion(),
                 ],
-                'clean'        => $clean,
-                'position'     => sprintf('Lat: %s<br />Lon: %s ', $cars->getLatitude(), $cars->getLongitude()),
+                'clean' => $clean,
+                'position' => sprintf('Lat: %s<br />Lon: %s ', $cars->getLatitude(), $cars->getLongitude()),
                 'positionLink' => $positionLink,
-                'button'       => $cars->getPlate(),
+                'button' => $cars->getPlate(),
             ];
         }, $cars);
     }
@@ -229,7 +228,8 @@ class CarsService
 
     }
 
-    public function updateDamages(Cars $car, array $damages = null) {
+    public function updateDamages(Cars $car, array $damages = null)
+    {
         $car->setDamages($damages);
         $this->entityManager->persist($car);
         $this->entityManager->flush();
@@ -246,7 +246,6 @@ class CarsService
     {
 
         switch ($status) {
-
             case CarStatus::OPERATIVE:
                 return [
                     CarStatus::OPERATIVE => CarStatus::OPERATIVE,
