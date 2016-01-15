@@ -223,7 +223,7 @@ class CsvService
 
             // Check if amount is the same
             $transactionAmount = $transaction->getAmount();
-            $csvAmount = intval((floatval(str_replace(',', '.', $csvData['Importo contabilizzato'])) * 100));
+            $csvAmount = intval((floatval(str_replace(',', '.', $csvData['Importo contabilizzato'])) * 100) . '.0');
             if ($transactionAmount != $csvAmount) {
                 return true;
             }
