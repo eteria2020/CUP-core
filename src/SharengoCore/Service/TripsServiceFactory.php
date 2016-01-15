@@ -20,12 +20,14 @@ class TripsServiceFactory implements FactoryInterface
 
         // decorate the query builder with the needed decorators
         $I_datatableService->setQueryBuilder(
-            new DatatableQueryBuilders\Cars(
-                new DatatableQueryBuilders\Cards(
-                    new DatatableQueryBuilders\Customers(
-                        new DatatableQueryBuilders\Basic()
-                    ),
-                    'cu'
+            new DatatableQueryBuilders\TripPayments(
+                new DatatableQueryBuilders\Cars(
+                    new DatatableQueryBuilders\Cards(
+                        new DatatableQueryBuilders\Customers(
+                            new DatatableQueryBuilders\Basic()
+                        ),
+                        'cu'
+                    )
                 )
             )
         );

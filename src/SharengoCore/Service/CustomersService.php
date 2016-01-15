@@ -210,9 +210,13 @@ class CustomersService implements ValidatorServiceInterface
         return $customer;
     }
 
-    public function getDataDataTable(array $as_filters = [])
+    public function getDataDataTable(array $as_filters = [], $count = false)
     {
-        $customers = $this->datatableService->getData('Customers', $as_filters);
+        $customers = $this->datatableService->getData('Customers', $as_filters, $count);
+
+        if ($count) {
+            return $customers;
+        }
 
         return array_map(function (Customers $customer) {
             return [

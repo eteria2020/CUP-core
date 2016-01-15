@@ -281,9 +281,13 @@ class InvoicesService
      * @param mixed $filters
      * @return mixed
      */
-    public function getDataDataTable($filters)
+    public function getDataDataTable(array $filters = [], $count = false)
     {
-        $invoices = $this->datatableService->getData('Invoices', $filters);
+        $invoices = $this->datatableService->getData('Invoices', $filters, $count);
+
+        if ($count) {
+            return $invoices;
+        }
 
         return array_map(function (Invoices $invoice) {
             return [

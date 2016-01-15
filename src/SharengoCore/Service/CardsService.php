@@ -76,9 +76,13 @@ class CardsService
         ]);
     }
 
-    public function getDataDataTable(array $as_filters = [])
+    public function getDataDataTable(array $as_filters = [], $count = false)
     {
-        $cards = $this->datatableService->getData('Cards', $as_filters);
+        $cards = $this->datatableService->getData('Cards', $as_filters, $count);
+
+        if ($count) {
+            return $cards;
+        }
 
         return array_map(function (Cards $card) {
             return [

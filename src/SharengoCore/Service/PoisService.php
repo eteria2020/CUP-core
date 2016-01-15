@@ -82,9 +82,13 @@ class PoisService
         $this->entityManager->flush();
     }
 
-    public function getDataDataTable(array $as_filters = [])
+    public function getDataDataTable(array $as_filters = [], $count = false)
     {
-        $pois = $this->datatableService->getData('Pois', $as_filters);
+        $pois = $this->datatableService->getData('Pois', $as_filters, $count);
+
+        if ($count) {
+            return $pois;
+        }
 
         return array_map(function (Pois $poi) {
             return [
