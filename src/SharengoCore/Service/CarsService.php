@@ -140,8 +140,8 @@ class CarsService
                 ],
 				'ci'            => [
                     'gps'		=> $cars->getCarsInfoGps(),
-                    'fw_ver'	=> $cars->getCarsInfoFirmwareVersion(),
-                    'sw_ver'	=> $cars->getCarsInfoSoftwareVersion(),
+                    'firmwareVersion'	=> $cars->getCarsInfoFirmwareVersion(),
+                    'softwareVersion'	=> $cars->getCarsInfoSoftwareVersion(),
                 ],
                 'clean'        => $clean,
                 'position'     => sprintf('Lat: %s<br />Lon: %s ', $cars->getLatitude(), $cars->getLongitude()),
