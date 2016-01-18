@@ -16,16 +16,16 @@ class CountriesRepository extends \Doctrine\ORM\EntityRepository
             ->select('c.code, c.name')
             ->orderBy('c.name')
             ->getQuery();
-        
+
         // Move the element with 'c.name' = 'Italia' to the first place
         $result = $countries->getResult();
-        for($i=0 ; $i<count($result) ; $i++) {
-            if($result[$i]['name'] == 'Italia') {
+        for ($i=0; $i<count($result); $i++) {
+            if ($result[$i]['name'] == 'Italia') {
                 $return = array();
                 $return[0] = $result[$i];
                 // Add the elements before and after the $i index
-                $return +=  array_slice($result, 0, $i, true) + 
-                            array_slice($result, $i+1, count($result)-$i, true);
+                $return += array_slice($result, 0, $i, true) +
+                    array_slice($result, $i+1, count($result)-$i, true);
                 break;
             }
         }

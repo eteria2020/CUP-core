@@ -24,4 +24,15 @@ class CountriesService
 
         return $ret;
     }
+
+    /**
+     * @param string
+     * @return string
+     */
+    public function getMctcCode($code)
+    {
+        $country = $this->repository->findOneByCode($code);
+
+        return $country->getMctc();
+    }
 }

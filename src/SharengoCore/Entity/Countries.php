@@ -29,6 +29,13 @@ class Countries
      */
     private $name;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="mctc", type="string", length=3, nullable=true)
+     */
+    private $mctc;
+
 
 
     /**
@@ -63,5 +70,15 @@ class Countries
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Get code for Motorizzazione civile
+     *
+     * @return string
+     */
+    public function getMctc()
+    {
+        return $this->mctc;
     }
 }
