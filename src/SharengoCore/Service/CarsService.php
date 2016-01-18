@@ -111,9 +111,13 @@ class CarsService
         return $this->carsRepository->find($plate);
     }
 
-    public function getDataDataTable(array $as_filters = [])
+    public function getDataDataTable(array $as_filters = [], $count = false)
     {
-        $cars = $this->datatableService->getData('Cars', $as_filters);
+        $cars = $this->datatableService->getData('Cars', $as_filters, $count);
+
+        if ($count) {
+            return $cars;
+        }
 
         return array_map(function (Cars $cars) {
 

@@ -111,9 +111,13 @@ class TripPaymentsService
     /**
      * retrieved the data for the datatable in the admin area
      */
-    public function getFailedPaymentsData(array $filters)
+    public function getFailedPaymentsData(array $filters = [], $count = false)
     {
-        $payments = $this->datatableService->getData('TripPayments', $filters);
+        $payments = $this->datatableService->getData('TripPayments', $filters, $count);
+
+        if ($count) {
+            return $payments;
+        }
 
         return array_map(function (TripPayments $payment) {
             $customer = $payment->getTrip()->getCustomer();

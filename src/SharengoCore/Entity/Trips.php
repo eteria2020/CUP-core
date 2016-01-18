@@ -193,9 +193,9 @@ class Trips
     /**
      * @var TripPayments
      *
-     * @ORM\OneToMany(targetEntity="TripPayments", mappedBy="trip")
+     * @ORM\OneToOne(targetEntity="TripPayments", mappedBy="trip")
      */
-    private $tripPayments;
+    private $tripPayment;
 
     /**
      * @var TripBills
@@ -769,9 +769,9 @@ class Trips
      *
      * @return TripBills[]
      */
-    public function getTripPayments()
+    public function getTripPayment()
     {
-        return $this->tripPayments;
+        return $this->tripPayment;
     }
 
     /**
@@ -821,10 +821,8 @@ class Trips
         }
 
         if (in_array('tripPayments', $tripsHydrationOptions)) {
-            if (count($this->getTripPayments()) > 0) {
-                // we assume there is a single row with payment infos
-                $tripPayments = $this->getTripPayments();
-                $tripPayment = $tripPayments[0];
+            if ($this->getTripPayment() instanceof TripPayments) {
+                $tripPayment = $this->getTripPayment();
                 $extractedTrip['tripPayments'] = $tripPayment->toArray($hydrator);
             } else {
                 unset($extractedTrip['tripPayments']);
@@ -984,27 +982,23 @@ class Trips
     public function isPaymentTried()
     {
         $isAttempted = false;
-        if (count($this->getTripPayments()) != 0) {
-            foreach ($this->getTripPayments() as $tripPayment) {
-                $isAttempted = $isAttempted ||
-                    count($tripPayment->getTripPaymentTries()) != 0;
-            }
+        $tripPayment = $this->getTripPayment();
+        if ($tripPayment instanceof TripPayments) {
+            $isAttempted = count($tripPayment->getTripPaymentTries()) != 0;
         }
         return $isAttempted;
     }
 
     /**
-     * @return boolean true if at least one tripPayment has been payed
-     * successfully for this trip
+     * @return boolean true if the tripPayment for this trip has been payed
+     * successfully
      */
     public function isPaymentCompleted()
     {
         $isCompleted = false;
-        if (count($this->getTripPayments()) != 0) {
-            foreach ($this->getTripPayments() as $tripPayment) {
-                $isCompleted = $isCompleted ||
-                    $tripPayment->getPayedSuccessfullyAt() instanceof \DateTime;
-            }
+        $tripPayment = $this->getTripPayment();
+        if ($tripPayment instanceof TripPayments) {
+            $isCompleted = $tripPayment->getPayedSuccessfullyAt() instanceof \DateTime;
         }
         return $isCompleted;
     }
