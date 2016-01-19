@@ -154,18 +154,22 @@ class CsvService
                 $transaction = $this->cartasiPaymentsService->getTransaction($key);
 
                 if (!($transaction instanceof Transactions)) {
-                    $csvAnomaly = new CartasiCsvAnomaly(
-                        $csvFile,
-                        CartasiCsvAnomaly::MISSING_FROM_TRANSACTIONS,
-                        $value
-                    );
+                    if (!$this->isAnomalyAlreadyRegistered($value)) {
+                        $csvAnomaly = new CartasiCsvAnomaly(
+                            $csvFile,
+                            CartasiCsvAnomaly::MISSING_FROM_TRANSACTIONS,
+                            $value
+                        );
+                    }
                 } elseif ($this->isDataAnAnomaly($transaction, $value)) {
-                    $csvAnomaly = new CartasiCsvAnomaly(
-                        $csvFile,
-                        CartasiCsvAnomaly::OUTCOME_ERROR,
-                        $value,
-                        $transaction
-                    );
+                    if (!$this->isAnomalyAlreadyRegistered($value, $transaction)) {
+                        $csvAnomaly = new CartasiCsvAnomaly(
+                            $csvFile,
+                            CartasiCsvAnomaly::OUTCOME_ERROR,
+                            $value,
+                            $transaction
+                        );
+                    }
                 }
 
                 if ($csvAnomaly instanceof CartasiCsvAnomaly) {
@@ -230,5 +234,27 @@ class CsvService
         }
 
         return false;
+    }
+
+    /**
+     * @param array $csvData
+     * @param Transactions|null $transaction
+     * @return boolean
+     */
+    private function isAnomalyAlreadyRegistered(
+        array $csvData,
+        Transactions $transaction = null
+    ) {
+        $duplicate = null;
+        if ($transaction instanceof Transactions) {
+            $duplicate = $this->csvAnomalyRepository->findDuplicateByDataAndTransaction(
+                $csvData,
+                $transaction
+            );
+        } else {
+            $duplicate = $this->csvAnomalyRepository->findDuplicateByData($csvData);
+        }
+
+        return $duplicate instanceof CartasiCsvAnomaly;
     }
 }
