@@ -45,6 +45,7 @@ class CardsService
         $card->setRfid($rfid);
         $card->setIsAssigned(true);
         $card->setNotes('Temp Virtual Card');
+        $card->setAssignable(false);
 
         $this->entityManager->persist($card);
         $this->entityManager->flush();
