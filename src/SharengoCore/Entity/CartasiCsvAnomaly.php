@@ -153,6 +153,30 @@ class CartasiCsvAnomaly
     }
 
     /**
+     * @return boolean
+     */
+    public function isResolved()
+    {
+        return $this->resolved;
+    }
+
+    /**
+     * Sets resolved variable as true
+     */
+    public function markAsResolved()
+    {
+        $this->resolved = true;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCsvData()
+    {
+        return $this->csvData;
+    }
+
+    /**
      * @return Transactions|null
      */
     public function getTransaction()
@@ -175,6 +199,8 @@ class CartasiCsvAnomaly
      *
      * The first is 'webuser' => the id of the webuser who inserted the note.
      * The second is 'content' => the content of the note.
+     *
+     * This assumes two notes are not added at the same exact second.
      *
      * @param Webuser $webuser
      * @param string $content
