@@ -7,9 +7,11 @@ use Cartasi\Service\CartasiCsvService;
 use Cartasi\Service\CartasiPaymentsService;
 use SharengoCore\Entity\CartasiCsvAnomaly;
 use SharengoCore\Entity\CartasiCsvFile;
-use SharengoCore\Entity\Repository\CartasiCsvFileRepository;
+use SharengoCore\Entity\Webuser;
 use SharengoCore\Entity\Repository\CartasiCsvAnomalyRepository;
+use SharengoCore\Entity\Repository\CartasiCsvFileRepository;
 use SharengoCore\Exception\CsvFileAlreadyAnalyzedException;
+use SharengoCore\Exception\NoteContentNotValidException;
 
 use Doctrine\ORM\EntityManager;
 
@@ -70,6 +72,8 @@ class CsvService
     }
 
     /**
+     * Get CartasiCsvFile based on id.
+     *
      * @param integer $id
      * @return CartasiCsvFile
      */
@@ -79,6 +83,8 @@ class CsvService
     }
 
     /**
+     * Get all CartasiCsvFiles.
+     *
      * @return CartasiCsvFile[]
      */
     public function getAllFiles()
@@ -87,6 +93,17 @@ class CsvService
     }
 
     /**
+     * @param integer $id
+     * @return CartasiCsvAnomaly
+     */
+    public function getAnomalyById($id)
+    {
+        return $this->csvAnomalyRepository->findOneById($id);
+    }
+
+    /**
+     * Get all CartasiCsvAnomalies with resolved = true.
+     *
      * @return CartasiCsvAnomaly[]
      */
     public function getAllResolvedAnomalies()
@@ -95,6 +112,8 @@ class CsvService
     }
 
     /**
+     * Get all CartasiCsvAnomalies with resolved = false.
+     *
      * @return CartasiCsvAnomaly[]
      */
     public function getAllUnresolvedAnomalies()
@@ -103,6 +122,9 @@ class CsvService
     }
 
     /**
+     * Return files that have not yet been analyzed. These are the files that
+     * have been uploaded manually (not with the upload form).
+     *
      * @return string[]
      */
     public function searchForNewFiles()
@@ -111,30 +133,34 @@ class CsvService
     }
 
     /**
+     * Generate a CartasiCsvFile from a .csv file.
+     *
      * @param string $filename
+     * @param Webuser $webuser
+     * @return CartasiCsvFile
      */
-    public function addFile($filename)
+    public function addFile($filename, Webuser $webuser)
     {
         $this->cartasiCsvService->checkFileCompatibility(
             $this->csvConfig['newPath'] . '/' . $filename
         );
 
-        $csvFile = new CartasiCsvFile($filename);
+        $csvFile = new CartasiCsvFile($filename, $webuser);
         $this->entityManager->persist($csvFile);
         $this->entityManager->flush();
         $this->moveFile($csvFile, $this->csvConfig['newPath'], $this->csvConfig['addedPath']);
+
+        return $csvFile;
     }
 
     /**
+     * Generate all CartasiCsvAnomalies for a CartasiCsvFile.
+     *
      * @param CartasiCsvFile $csvFile
      * @throws CsvFileAlreadyAnalyzedException
      */
     public function analyzeFile(CartasiCsvFile $csvFile)
     {
-        if ($csvFile->isAnalyzed()) {
-            throw new CsvFileAlreadyAnalyzedException();
-        }
-
         $this->moveFile($csvFile, $this->csvConfig['addedPath'], $this->csvConfig['tempPath']);
 
         try {
@@ -151,8 +177,10 @@ class CsvService
             $this->entityManager->beginTransaction();
             foreach ($csvData as $key => $value) {
                 $csvAnomaly = null;
-                $transaction = $this->cartasiPaymentsService->getTransaction($key);
 
+                // Find if related transaction exists. If it does not, proceed
+                // with CartasiCsvAnomaly creation
+                $transaction = $this->cartasiPaymentsService->getTransaction($key);
                 if (!($transaction instanceof Transactions)) {
                     if (!$this->isAnomalyAlreadyRegistered($value)) {
                         $csvAnomaly = new CartasiCsvAnomaly(
@@ -161,6 +189,9 @@ class CsvService
                             $value
                         );
                     }
+
+                // If transaction exists, check if the values are the same. If
+                // not, proceed with CartasiCsvAnomaly creation
                 } elseif ($this->isDataAnAnomaly($transaction, $value)) {
                     if (!$this->isAnomalyAlreadyRegistered($value, $transaction)) {
                         $csvAnomaly = new CartasiCsvAnomaly(
@@ -177,9 +208,7 @@ class CsvService
                 }
             }
 
-            $csvFile->markAsAnalyzed();
             $this->entityManager->persist($csvFile);
-
             $this->entityManager->flush();
             $this->entityManager->commit();
 
@@ -192,6 +221,30 @@ class CsvService
     }
 
     /**
+     * Add a note to the CartasiCsvAnomaly.
+     *
+     * @param CartasiCsvAnomaly $csvAnomaly
+     * @param Webuser $webuser
+     * @param string $content
+     * @throws NoteContentNotValidException
+     */
+    public function addNoteToAnomaly(
+        CartasiCsvAnomaly $csvAnomaly,
+        Webuser $webuser,
+        $content
+    ) {
+        if (empty($content)) {
+            throw new NoteContentNotValidException();
+        }
+
+        $csvAnomaly->addUpdate($webuser, $content);
+        $this->entityManager->persist($csvAnomaly);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * Move a file from one path to another.
+     *
      * @param CartasiCsvFile $csvFile
      * @param string $fromPath
      * @param string $toPath
@@ -225,7 +278,7 @@ class CsvService
             return true;
         } elseif ($transactionOutcome) {
 
-            // Check if amount is the same
+            // Check if amount is the same only if outcome is positive
             $transactionAmount = $transaction->getAmount();
             $csvAmount = intval((floatval(str_replace(',', '.', $csvData['Importo contabilizzato'])) * 100) . '.0');
             if ($transactionAmount != $csvAmount) {
@@ -237,6 +290,9 @@ class CsvService
     }
 
     /**
+     * Checks if a CartasiCsvAnomaly with same csvData and optionally
+     * transaction already exists.
+     *
      * @param array $csvData
      * @param Transactions|null $transaction
      * @return boolean

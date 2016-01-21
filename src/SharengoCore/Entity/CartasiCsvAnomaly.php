@@ -22,11 +22,6 @@ class CartasiCsvAnomaly
     /**
      * @var string
      */
-    const MISSING_FROM_CSV = 'MISSING_FROM_CSV';
-
-    /**
-     * @var string
-     */
     const OUTCOME_ERROR = 'OUTCOME_ERROR';
 
     /**
@@ -47,9 +42,9 @@ class CartasiCsvAnomaly
     private $insertedTs;
 
     /**
-     * @var \SharengoCore\Entity\CartasiCsvFile
+     * @var CartasiCsvFile
      *
-     * @ORM\ManyToOne(targetEntity="SharengoCore\Entity\CartasiCsvFile")
+     * @ORM\ManyToOne(targetEntity="CartasiCsvFile")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="cartasi_csv_file_id", referencedColumnName="id")
      * })
@@ -73,7 +68,7 @@ class CartasiCsvAnomaly
     /**
      * @var array
      *
-     * @ORM\Column(name="csv_data", type="json_array", nullable=true)
+     * @ORM\Column(name="csv_data", type="json_array", nullable=false)
      */
     private $csvData;
 
@@ -103,7 +98,7 @@ class CartasiCsvAnomaly
     public function __construct(
         CartasiCsvFile $cartasiCsvFile,
         $type,
-        array $csvData = null,
+        array $csvData,
         Transactions $transaction = null
     ) {
         $this->insertedTs = date_create();
@@ -148,10 +143,6 @@ class CartasiCsvAnomaly
                 return 'Transazione mancante';
                 break;
 
-            case self::MISSING_FROM_CSV:
-                return 'Transazione non presente in riepilogo';
-                break;
-
             case self::OUTCOME_ERROR:
                 return 'Anomalia nei dati della transazione';
 
@@ -167,5 +158,37 @@ class CartasiCsvAnomaly
     public function getTransaction()
     {
         return $this->transaction;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getUpdates()
+    {
+        return $this->updates;
+    }
+
+    /**
+     * Add an update to the anomaly. Updates are saved as a key => value array
+     * where the key is the date at which the note was added and the value is
+     * another array with two key => value pairs.
+     *
+     * The first is 'webuser' => the id of the webuser who inserted the note.
+     * The second is 'content' => the content of the note.
+     *
+     * @param Webuser $webuser
+     * @param string $content
+     */
+    public function addUpdate(Webuser $webuser, $content)
+    {
+        // Create the main array if no notes were ever added
+        if (empty($this->updates)) {
+            $this->updates = [];
+        }
+
+        $this->updates[date_create()->format('Y-m-d H:i:s')] = [
+                'webuser' => $webuser->getId(),
+                'content' => $content
+            ];
     }
 }

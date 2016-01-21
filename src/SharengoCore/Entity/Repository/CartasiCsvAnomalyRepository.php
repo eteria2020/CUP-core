@@ -66,7 +66,7 @@ class CartasiCsvAnomalyRepository extends \Doctrine\ORM\EntityRepository
             AND ccf.transaction = :transactionParam';
 
         $query = $em->createQuery($dql);
-        $query->setParameter('csvDataParam', $csvData);
+        $query->setParameter('csvDataParam', json_encode($csvData));
         $query->setParameter('transactionParam', $transaction);
 
         return $query->getOneOrNullResult();

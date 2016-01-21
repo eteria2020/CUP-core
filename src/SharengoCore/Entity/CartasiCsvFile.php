@@ -37,20 +37,31 @@ class CartasiCsvFile
     private $filename;
 
     /**
-     * @var boolean
+     * @var Webuser
      *
-     * @ORM\Column(name="analyzed", type="boolean", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Webuser")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="webuser_id", referencedColumnName="id")
+     * })
      */
-    private $analyzed;
+    private $webuser;
+
+    /**
+     * @var CartasiCsvAnomaly[]|null
+     *
+     * @ORM\OneToMany(targetEntity="CartasiCsvAnomaly", mappedBy="cartasiCsvFile")
+     */
+    private $cartasiCsvAnomalies;
 
     /**
      * @param string $filename
+     * @param Webuser
      */
-    public function __construct($filename)
+    public function __construct($filename, $webuser)
     {
         $this->insertedTs = date_create();
         $this->filename = $filename;
-        $this->analyzed = false;
+        $this->webuser = $webuser;
     }
 
     /**
@@ -78,15 +89,10 @@ class CartasiCsvFile
     }
 
     /**
-     * @return boolean
+     * @return CartasiCsvAnomaly[]|null
      */
-    public function isAnalyzed()
+    public function getCartasiCsvAnomalies()
     {
-        return $this->analyzed;
-    }
-
-    public function markAsAnalyzed()
-    {
-        $this->analyzed = true;
+        return $this->cartasiCsvAnomalies;
     }
 }
