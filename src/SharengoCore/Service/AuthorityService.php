@@ -2,7 +2,9 @@
 
 namespace SharengoCore\Service;
 
+use SharengoCore\Entity\Authority;
 use SharengoCore\Entity\Repository\AuthorityRepository;
+use SharengoCore\Exception\InvalidAuthorityCodeException;
 
 class AuthorityService
 {
@@ -23,5 +25,22 @@ class AuthorityService
         }
 
         return $ret;
+    }
+
+    /**
+     * @param string
+     * @return Authority
+     * @throws InvalidAuthorityCodeException if the code does not correspond to
+     *  an actual authority
+     */
+    public function getByCode($code)
+    {
+        $authority = $this->repository->findOneByCode($code);
+
+        if (!$authority instanceof Authority) {
+            throw new InvalidAuthorityCodeException();
+        }
+
+        return $authority;
     }
 }
