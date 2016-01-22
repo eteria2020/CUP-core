@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity;
 
 use Cartasi\Entity\Transactions;
+use SharengoCore\Exception\CartasiCsvAnomalyAlreadyResolvedException;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -23,6 +24,11 @@ class CartasiCsvAnomaly
      * @var string
      */
     const OUTCOME_ERROR = 'OUTCOME_ERROR';
+
+    /**
+     * @var string
+     */
+    const AMOUNT_ERROR = 'AMOUNT_ERROR';
 
     /**
      * @var integer
@@ -59,11 +65,37 @@ class CartasiCsvAnomaly
     private $type;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="amount", type="integer", nullable=false)
+     */
+    private $amount;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(name="resolved", type="boolean", nullable=false)
      */
     private $resolved;
+
+    /**
+     * @var DateTime
+     *
+     * @ORM\Column(name="resolved_ts", type="datetime", nullable = true)
+     */
+    private $resolvedTs;
+
+    /**
+     * Webuser that marks the anomaly as resolved
+     *
+     * @var Webuser
+     *
+     * @ORM\ManyToOne(targetEntity="Webuser")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="webuser_id", referencedColumnName="id")
+     * })
+     */
+    private $webuser;
 
     /**
      * @var array
@@ -107,6 +139,34 @@ class CartasiCsvAnomaly
         $this->resolved = false;
         $this->csvData = $csvData;
         $this->transaction = $transaction;
+        $this->amount = $this->calculateAmount();
+    }
+
+    /**
+     * Returns the amount to be given to the customer. A negative value means
+     * that an invoice should be generated.
+     *
+     * @return integer
+     */
+    private function calculateAmount()
+    {
+        // Calculate amount as stated by csv
+        $csvAmount = intval(floatval(str_replace(',', '.', $this->csvData['Importo dell\'ordine'])) * 100);
+
+        switch ($this->type) {
+            case self::MISSING_FROM_TRANSACTIONS:
+                return $csvAmount;
+
+            case self::OUTCOME_ERROR:
+                if ($this->csvData['Stato'] == 'Contabilizzato rimborsabile') {
+                    return $csvAmount;
+                } else {
+                    return $this->transaction->getAmount();
+                }
+
+            case self::AMOUNT_ERROR:
+                return $csvAmount - $this->transaction->getAmount();
+        }
     }
 
     /**
@@ -136,6 +196,14 @@ class CartasiCsvAnomaly
     /**
      * @return string
      */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return string
+     */
     public function getTypeTranslated()
     {
         switch ($this->type) {
@@ -144,12 +212,23 @@ class CartasiCsvAnomaly
                 break;
 
             case self::OUTCOME_ERROR:
-                return 'Anomalia nei dati della transazione';
+                return 'Anomalia negli esiti';
+
+            case self::AMOUNT_ERROR:
+                return 'Anomalia negli importi';
 
             default:
                 return 'Errore nella traduzione della tipologia';
                 break;
         }
+    }
+
+    /**
+     * @return integer
+     */
+    public function getAmount()
+    {
+        return $this->amount;
     }
 
     /**
@@ -161,11 +240,20 @@ class CartasiCsvAnomaly
     }
 
     /**
-     * Sets resolved variable as true
+     * Sets resolved variable as true and sets the webuser
+     *
+     * @param Webuser $webuser
+     * @throws CartasiCsvAnomalyAlreadyResolvedException
      */
-    public function markAsResolved()
+    public function markAsResolved(Webuser $webuser)
     {
+        if ($this->isResolved()) {
+            throw new CartasiCsvAnomalyAlreadyResolvedException();
+        }
+
+        $this->resolvedTs = date_create();
         $this->resolved = true;
+        $this->webuser = $webuser;
     }
 
     /**

@@ -10,7 +10,6 @@ use SharengoCore\Entity\CartasiCsvFile;
 use SharengoCore\Entity\Webuser;
 use SharengoCore\Entity\Repository\CartasiCsvAnomalyRepository;
 use SharengoCore\Entity\Repository\CartasiCsvFileRepository;
-use SharengoCore\Exception\CsvFileAlreadyAnalyzedException;
 use SharengoCore\Exception\NoteContentNotValidException;
 
 use Doctrine\ORM\EntityManager;
@@ -157,7 +156,6 @@ class CsvService
      * Generate all CartasiCsvAnomalies for a CartasiCsvFile.
      *
      * @param CartasiCsvFile $csvFile
-     * @throws CsvFileAlreadyAnalyzedException
      */
     public function analyzeFile(CartasiCsvFile $csvFile)
     {
@@ -176,35 +174,19 @@ class CsvService
         try {
             $this->entityManager->beginTransaction();
             foreach ($csvData as $key => $value) {
-                $csvAnomaly = null;
-
-                // Find if related transaction exists. If it does not, proceed
-                // with CartasiCsvAnomaly creation
                 $transaction = $this->cartasiPaymentsService->getTransaction($key);
-                if (!($transaction instanceof Transactions)) {
-                    if (!$this->isAnomalyAlreadyRegistered($value)) {
-                        $csvAnomaly = new CartasiCsvAnomaly(
-                            $csvFile,
-                            CartasiCsvAnomaly::MISSING_FROM_TRANSACTIONS,
-                            $value
-                        );
-                    }
+                $anomalyType = $this->getDataAnomaly($value, $transaction);
 
-                // If transaction exists, check if the values are the same. If
-                // not, proceed with CartasiCsvAnomaly creation
-                } elseif ($this->isDataAnAnomaly($transaction, $value)) {
+                if ($anomalyType !== null) {
                     if (!$this->isAnomalyAlreadyRegistered($value, $transaction)) {
                         $csvAnomaly = new CartasiCsvAnomaly(
-                            $csvFile,
-                            CartasiCsvAnomaly::OUTCOME_ERROR,
-                            $value,
-                            $transaction
-                        );
+                                $csvFile,
+                                $anomalyType,
+                                $value,
+                                $transaction
+                            );
+                        $this->entityManager->persist($csvAnomaly);
                     }
-                }
-
-                if ($csvAnomaly instanceof CartasiCsvAnomaly) {
-                    $this->entityManager->persist($csvAnomaly);
                 }
             }
 
@@ -243,6 +225,17 @@ class CsvService
     }
 
     /**
+     * @param CartasiCsvAnomaly $csvAnomaly
+     * @param Webuser $webuser
+     */
+    public function resolveAnomaly(CartasiCsvAnomaly $csvAnomaly, Webuser $webuser)
+    {
+        $csvAnomaly->markAsResolved($webuser);
+        $this->entityManager->persist($csvAnomaly);
+        $this->entityManager->flush();
+    }
+
+    /**
      * Move a file from one path to another.
      *
      * @param CartasiCsvFile $csvFile
@@ -258,35 +251,50 @@ class CsvService
     }
 
     /**
-     * Checks for anomalies between the csv exported data and the related
-     * Transaction. It first checks to see whether the outcomes are the same.
-     * If they are and if they are positive it checks if the amounts are equal,
-     * ignores the rest otherwise.
+     * Checks for anomalies between the csv exported data and the data in the
+     * database. There are three cases of interest for anomalies:
      *
-     * @param Transactions $transaction
+     * - MISSING_FROM_TRANSACTIONS = no transaction and positive csv outcome
+     * - OUTCOME_ERROR = transaction found and outcomes are different
+     * - AMOUNT_ERROR = transaction found, outcomes are positive and amounts
+     *     are different
+     *
      * @param array $csvData
-     * @return boolean
+     * @param Transactions|null $transaction
+     * @return string|null CartasiCsvAnomaly's type if anomaly is found, null
+     *     otherwise
      */
-    private function isDataAnAnomaly(Transactions $transaction, array $csvData)
-    {
-        // Check if outcome is the same
-        $transactionOutcome =
-            $transaction->getOutcome() == 'OK' ||
-            $transaction->getOutcome() == '0 - autorizzazione concessa';
+    private function getDataAnomaly(
+        array $csvData,
+        Transactions $transaction = null
+    ) {
         $csvOutcome = $csvData['Stato'] == 'Contabilizzato rimborsabile';
-        if ($transactionOutcome != $csvOutcome) {
-            return true;
-        } elseif ($transactionOutcome) {
 
-            // Check if amount is the same only if outcome is positive
-            $transactionAmount = $transaction->getAmount();
-            $csvAmount = intval((floatval(str_replace(',', '.', $csvData['Importo contabilizzato'])) * 100) . '.0');
-            if ($transactionAmount != $csvAmount) {
-                return true;
+        // Check if transaction is registered for a positive outcome
+        if (!($transaction instanceof Transactions)) {
+            if ($csvOutcome) {
+                return CartasiCsvAnomaly::MISSING_FROM_TRANSACTIONS;
+            }
+
+        // Check if outcomes are different
+        } else {
+            $transactionOutcome =
+                $transaction->getOutcome() == 'OK' ||
+                $transaction->getOutcome() == '0 - autorizzazione concessa';
+            if($transactionOutcome != $csvOutcome) {
+                return CartasiCsvAnomaly::OUTCOME_ERROR;
+
+            // Check if amounts are different only if outcome is positive
+            } elseif($transactionOutcome) {
+                $transactionAmount = $transaction->getAmount();
+                $csvAmount = intval((floatval(str_replace(',', '.', $csvData['Importo contabilizzato'])) * 100) . '.0');
+                if ($transactionAmount != $csvAmount) {
+                    return CartasiCsvAnomaly::AMOUNT_ERROR;
+                }
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
