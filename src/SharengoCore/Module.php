@@ -31,6 +31,7 @@ class Module
         $platform->registerDoctrineTypeMapping('polygon', 'string');
         $platform->registerDoctrineTypeMapping('extra_payments_types', 'string');
         $platform->registerDoctrineTypeMapping('disabled_reason', 'string');
+        $platform->registerDoctrineTypeMapping('reactivation_reason', 'string');
 
         $this->registerEventListeners(
             $e->getApplication()->getEventManager(),
