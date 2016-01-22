@@ -268,24 +268,21 @@ class Cars
      * })
      */
     private $fleet;
-    
+
     /**
      * @var \CarsInfo
      *
-     * @ORM\OneToOne(targetEntity="CarsInfo")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="plate", referencedColumnName="car_plate", nullable=false)
-     * })
+     * @ORM\OneToOne(targetEntity="CarsInfo", mappedBy="plate")
      */
     private $carsInfo;
-    
+
 
     public function __construct()
     {
         $this->trips = new ArrayCollection();
     }
 
-    
+
     /**
      * Get plate
      *

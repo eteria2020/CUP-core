@@ -15,7 +15,8 @@ class CarsInfo
     /**
      * @var string
      *
-     * @ORM\Column(name="car_plate", type="text", nullable=false)
+     * @ORM\OneToOne(targetEntity="Cars", inversedBy="carsInfo")
+     * @ORM\JoinColumn(name="car_plate", referencedColumnName="plate")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
      */
@@ -83,49 +84,49 @@ class CarsInfo
      * @ORM\Column(name="sw_ver", type="text", nullable=true)
      */
     private $softwareVersion;
-	
+
 	/**
      * @var string
      *
      * @ORM\Column(name="sdk", type="text", nullable=true)
      */
     private $sdk;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="sdk_ver", type="text", nullable=true)
      */
     private $sdkVersion;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="gsm_ver", type="text", nullable=true)
      */
     private $gsmVersion;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="android_device", type="text", nullable=true)
      */
     private $androidDevice;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="android_build", type="text", nullable=true)
      */
     private $androidBuild;
-	
+
 	/**
      * @var string
      *
      * @ORM\Column(name="tbox_sw", type="text", nullable=true)
      */
     private $tboxSoftware;
-    
+
     /**
      * @var string
      *
@@ -139,35 +140,35 @@ class CarsInfo
      * @ORM\Column(name="mcu_model", type="text", nullable=true)
      */
     private $mcuModel;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="mcu", type="text", nullable=true)
      */
     private $mcu;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="hw_version", type="text", nullable=true)
      */
     private $hwVersion;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="hb_ver", type="text", nullable=true)
      */
     private $hbVersion;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="vehicle_type", type="text", nullable=true)
      */
     private $vehicleType;
-    
+
     /**
      * @var \DateTime
      *
@@ -181,7 +182,7 @@ class CarsInfo
      * @ORM\Column(name="gps", type="text", nullable=true)
      */
     private $gps;
-    
+
 
     public function __construct()
     {
@@ -227,4 +228,3 @@ class CarsInfo
         return $this->gps;
     }
 }
-	
