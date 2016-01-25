@@ -156,7 +156,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
     public function findTripsForCostComputation()
     {
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
-            "LEFT JOIN t.tripPayments tp ".
+            "LEFT JOIN t.tripPayment tp ".
             "JOIN t.customer c ".
             "WHERE t.isAccounted = true ". //only trips that were already processed by the accounting trips
             "AND t.costComputed = false ". //only trips that were not already processed by the cost computing script
