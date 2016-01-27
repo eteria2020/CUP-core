@@ -146,6 +146,7 @@ class TripPayments
      * @var TripPaymentTries[]
      *
      * @ORM\OneToMany(targetEntity="TripPaymentTries", mappedBy="tripPayment")
+     * @ORM\OrderBy({"ts" = "ASC"})
      */
     private $tripPaymentTries;
 
