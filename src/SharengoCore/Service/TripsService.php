@@ -135,6 +135,13 @@ class TripsService
                 $parentStart = "<br>(" . $parent->getTimestampBeginning()->format('d-m-Y H:i:s') . ")";
             }
 
+            /**
+             * blank - the trip has not ended
+             * 'FREE' - the trip is free because of bonuses or because customer
+             *     is either in gold list or is a maintainer
+             * n,nn (the actual cost) - if the trip has a cost greater than zero
+             * 0,00 - if the cost has not yet been calculated
+             */
             $tripCost = '';
             if ($trip->isEnded()) {
                 if ($trip->getPayable() && $trip->isAccountable()) {
@@ -144,6 +151,8 @@ class TripsService
                     } else {    // for some reason trip has not beed payed
                         // show 0 only if not accounted; otherwise price is not yet defined
                         if ($trip->getIsAccounted()) {
+                            $tripCost = 'FREE';
+                        } else {
                             $tripCost = 0;
                         }
                     }
