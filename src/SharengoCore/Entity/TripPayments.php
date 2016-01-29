@@ -351,6 +351,8 @@ class TripPayments
     public function setInvoice(Invoices $invoice)
     {
         $this->invoice = $invoice;
+        $this->setInvoicedAt($invoice->getGeneratedTs());
+        $this->setStatus(self::STATUS_INVOICED);
         return $this;
     }
 
@@ -420,7 +422,7 @@ class TripPayments
      * @param \DateTime $invoicedAt
      * @return TripPayments
      */
-    public function setInvoicedAt($invoicedAt)
+    private function setInvoicedAt($invoicedAt)
     {
         $this->invoicedAt = $invoicedAt;
         return $this;

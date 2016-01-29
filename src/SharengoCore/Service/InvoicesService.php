@@ -175,8 +175,7 @@ class InvoicesService
                     array_push($invoices, $invoice);
                     $this->logger->log("Updating tripPayments with invoice...\n\n");
                     foreach ($tripPaymentsForFleet as $tripPayment) {
-                        $tripPayment->setInvoice($invoice)
-                            ->setInvoicedAt($invoice->getGeneratedTs());
+                        $tripPayment->setInvoice($invoice);
                         $this->entityManager->persist($tripPayment);
                     }
                 }
