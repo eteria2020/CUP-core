@@ -11,6 +11,7 @@ use SharengoCore\Entity\Webuser;
 use SharengoCore\Entity\Repository\CartasiCsvAnomalyRepository;
 use SharengoCore\Entity\Repository\CartasiCsvFileRepository;
 use SharengoCore\Exception\NoteContentNotValidException;
+use SharengoCore\Exception\MissingOverrideNameException;
 
 use Doctrine\ORM\EntityManager;
 
@@ -136,18 +137,39 @@ class CsvService
      *
      * @param string $filename
      * @param Webuser $webuser
+     * @param boolean $pathWithName Indicated that $filename inclused the path
+     *     to the file (path/to/file/filename.csv)
+     * @param string|null $overrideName The name used for the CartasiCsvFile
+     *     instead of $filename. Necessary if $pathWithName is true
      * @return CartasiCsvFile
+     * @throws MissingOverrideNameException
      */
-    public function addFile($filename, Webuser $webuser)
-    {
+    public function addFile(
+        $filename,
+        Webuser $webuser,
+        $nameWithPath = false,
+        $overrideName = null
+    ) {
+        // Perform some checks
+        if ($nameWithPath && is_null($overrideName)) {
+            throw new MissingOverrideNameException();
+        }
         $this->cartasiCsvService->checkFileCompatibility(
-            $this->csvConfig['newPath'] . '/' . $filename
+            ($nameWithPath ? '' : $this->csvConfig['newPath'] . '/') . $filename
         );
 
-        $csvFile = new CartasiCsvFile($filename, $webuser);
+        $csvFile = new CartasiCsvFile(
+            $nameWithPath ? $overrideName : $filename,
+            $webuser
+        );
         $this->entityManager->persist($csvFile);
         $this->entityManager->flush();
-        $this->moveFile($csvFile, $this->csvConfig['newPath'], $this->csvConfig['addedPath']);
+        $this->moveFile(
+            $csvFile,
+            $nameWithPath ? $filename : $this->csvConfig['newPath'],
+            $this->csvConfig['addedPath'],
+            !$nameWithPath
+        );
 
         return $csvFile;
     }
@@ -241,11 +263,18 @@ class CsvService
      * @param CartasiCsvFile $csvFile
      * @param string $fromPath
      * @param string $toPath
+     * @param boolean $useCsvFile Specifies wether the name should be extracted
+     *     from the CartasiCsvFile or if it is already included in $fromPath.
+     *     Does not change the behaviour of $toPath
      */
-    private function moveFile(CartasiCsvFile $csvFile, $fromPath, $toPath)
-    {
+    private function moveFile(
+        CartasiCsvFile $csvFile,
+        $fromPath,
+        $toPath,
+        $useCsvFile = true
+    ) {
         rename(
-            $fromPath . '/' . $csvFile->getFilename(),
+            $fromPath . ($useCsvFile ? '/' . $csvFile->getFilename() : ''),
             $toPath . '/' . $csvFile->getFilename()
         );
     }
