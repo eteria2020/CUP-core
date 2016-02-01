@@ -34,6 +34,6 @@ class EventsService
      */
     public function getEventsByTrip(Trips $trip)
     {
-        return $this->eventsRepository->findBy([ "trip" =>  $trip->getId()]);
+        return $this->eventsRepository->findBy([ "trip" =>  (string)$trip->getId()]);
     }
 }

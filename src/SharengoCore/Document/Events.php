@@ -22,6 +22,13 @@ class Events
     private $eventTime;
 
     /**
+     * @var integer
+     *
+     * @ODM\Field(type="integer", name="event_id");
+     */
+    private $eventId;
+
+    /**
      * @var DateTime
      *
      * @ODM\Field(type="date", name="server_time");
@@ -36,16 +43,16 @@ class Events
     private $carPlate;
 
     /**
-     * @var string
+     * @var integer
      *
-     * @ODM\Field(type="string", name="label");
+     * @ODM\Field(type="integer");
      */
     private $label;
 
     /**
      * @var integer
      *
-     * MAYBE TO BE MAPPED
+     * @ODM\Field(type="string");
      */
     private $level;
 
@@ -57,81 +64,60 @@ class Events
     private $customer;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ODM\Field(type="integer", name="trip_id");
+     * @ODM\Field(type="string", name="trip_id");
      */
     private $trip;
 
     /**
      * @var string
      *
-     * MAYBE TO BE MAPPED
+     * @ODM\Field(type="string");
      */
     private $txtval;
 
     /**
      * @var integer
      *
-     * MAYBE TO BE MAPPED
+     * @ODM\Field(type="integer");
      */
     private $intval;
 
     /**
-     * @var string
+     * @var float
      *
-     * MAYBE TO BE MAPPED
-     */
-    private $geo;
-
-    /**
-     * @var string
-     *
-     * MAYBE TO BE MAPPED
+     * @ODM\Field(type="float");
      */
     private $lon;
 
     /**
-     * @var string
+     * @var float
      *
-     * MAYBE TO BE MAPPED
+     * @ODM\Field(type="float");
      */
     private $lat;
 
     /**
      * @var integer
      *
-     * MAYBE TO BE MAPPED
+     * @ODM\Field(type="integer");
      */
     private $km;
 
     /**
      * @var integer
      *
-     * MAYBE TO BE MAPPED
+     * @ODM\Field(type="integer");
      */
     private $battery;
 
     /**
      * @var string
      *
-     * MAYBE TO BE MAPPED
-     */
-    private $mac;
-
-    /**
-     * @var string
-     *
-     * MAYBE TO BE MAPPED
+     * @ODM\Field(type="string");
      */
     private $imei;
-
-    /**
-     * @var array
-     *
-     * MAYBE TO BE MAPPED
-     */
-    private $data;
 
     /**
      * Get id
