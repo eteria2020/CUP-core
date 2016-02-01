@@ -50,7 +50,6 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
 
         $isFirstParam = true;
         foreach ($filters as $key => $value) {
-
             // retrieve card entity, not just card field
             $processedKey = ($key == 'card') ? 'IDENTITY(c.' . $key . ')' : 'c.' . $key;
 
@@ -112,7 +111,7 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
     {
         $dql = "SELECT c FROM \SharengoCore\Entity\Customers c ".
             "JOIN c.trips t ".
-            "JOIN t.tripPayments tp ".
+            "JOIN t.tripPayment tp ".
             "WHERE c.enabled = TRUE ".
             "AND tp.status = :status ".
             "AND tp.toBePayedFrom <= :oneWeekAgo ".

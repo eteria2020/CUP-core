@@ -268,14 +268,21 @@ class Cars
      * })
      */
     private $fleet;
-    
+
+    /**
+     * @var \CarsInfo
+     *
+     * @ORM\OneToOne(targetEntity="CarsInfo", mappedBy="plate")
+     */
+    private $carsInfo;
+
 
     public function __construct()
     {
         $this->trips = new ArrayCollection();
     }
 
-    
+
     /**
      * Get plate
      *
@@ -515,13 +522,18 @@ class Cars
     /**
      * Set damages
      *
-     * @param string $damages
+     * @param array $damages
      *
      * @return Cars
      */
-    public function setDamages($damages)
+    public function setDamages(array $damages = null)
     {
-        $this->damages = $damages;
+        if (count($damages) > 0 &&
+            null != $damages) {
+            $this->damages = json_encode($damages);
+        } else {
+            $this->damages = null;
+        }
 
         return $this;
     }
@@ -1118,6 +1130,36 @@ class Cars
         $this->fleet = $fleet;
 
         return $this;
+    }
+
+    /**
+     * Get  gps
+     *
+     * @return \SharengoCore\Entity\CarsInfo gps
+     */
+    public function getCarsInfoGps()
+    {
+        return $this->carsInfo->getGps();
+    }
+
+    /**
+     * Get softwareVersion
+     *
+     * @return \SharengoCore\Entity\CarsInfo softwareVersion
+     */
+    public function getCarsInfoSoftwareVersion()
+    {
+        return $this->carsInfo->getSoftwareVersion();
+    }
+
+    /**
+     * Get firmwareVersion
+     *
+     * @return \SharengoCore\Entity\CarsInfo firmwareVersion
+     */
+    public function getCarsInfoFirmwareVersion()
+    {
+        return $this->carsInfo->getFirmwareVersion();
     }
 
 }

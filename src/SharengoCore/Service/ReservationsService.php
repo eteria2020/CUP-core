@@ -17,6 +17,10 @@ class ReservationsService
      */
     const MAX_RESERVATIONS = 1;
     /**
+     * @const integer
+     */
+    const SYS_RESERVATION_LENGTH = -1;
+    /**
      * @var  ReservationsRepository
      */
     private $reservationsRepository;
@@ -84,9 +88,13 @@ class ReservationsService
         return $this->reservationsRepository->findReservationsToDelete();
     }
 
-    public function getDataDataTable(array $as_filters = [])
+    public function getDataDataTable(array $as_filters = [], $count = false)
     {
-        $reservations = $this->datatableService->getData('Reservations', $as_filters);
+        $reservations = $this->datatableService->getData('Reservations', $as_filters, $count);
+
+        if ($count) {
+            return $reservations;
+        }
 
         return array_map(function (Reservations $reservation) {
 
@@ -95,7 +103,8 @@ class ReservationsService
                     'id'       => $reservation->getId(),
                     'carPlate' => $reservation->getCar()->getPlate(),
                     'customer' => null != $reservation->getCustomer() ? $reservation->getCustomer()->getName() . ' ' . $reservation->getCustomer()->getSurname() : '',
-                    'cards'    => $reservation->getCards(),
+                    'customerId' => null != $reservation->getCustomer() ? $reservation->getCustomer()->getId() : '',
+                    'cards'    => ($reservation->getLength() != self::SYS_RESERVATION_LENGTH) ? $reservation->getCards() : 'PRENOTAZIONE DI SISTEMA',
                     'active'   => $reservation->getActive() ? 'Si' : 'No',
                 ]
             ];

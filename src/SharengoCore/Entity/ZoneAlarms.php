@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * ZoneAlarms
  *
  * @ORM\Table(name="zone_alarms")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\ZoneAlarmsRepository")
  */
 class ZoneAlarms
 {
@@ -58,5 +58,84 @@ class ZoneAlarms
     public function getFleets()
     {
         return $this->fleets;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->fleets = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Set geo
+     *
+     * @param string $geo
+     *
+     * @return ZoneAlarms
+     */
+    public function setGeo($geo)
+    {
+        $this->geo = $geo;
+
+        return $this;
+    }
+
+    /**
+     * Get geo
+     *
+     * @return string
+     */
+    public function getGeo()
+    {
+        return $this->geo;
+    }
+
+    /**
+     * Set active
+     *
+     * @param boolean $active
+     *
+     * @return ZoneAlarms
+     */
+    public function setActive($active)
+    {
+        $this->active = $active;
+
+        return $this;
+    }
+
+    /**
+     * Get active
+     *
+     * @return boolean
+     */
+    public function getActive()
+    {
+        return $this->active;
+    }
+
+    /**
+     * Add fleet
+     *
+     * @param \SharengoCore\Entity\Fleet $fleet
+     *
+     * @return ZoneAlarms
+     */
+    public function addFleet(\SharengoCore\Entity\Fleet $fleet)
+    {
+        $this->fleets[] = $fleet;
+
+        return $this;
+    }
+
+    /**
+     * Remove fleet
+     *
+     * @param \SharengoCore\Entity\Fleet $fleet
+     */
+    public function removeFleet(\SharengoCore\Entity\Fleet $fleet)
+    {
+        $this->fleets->removeElement($fleet);
     }
 }

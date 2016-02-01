@@ -11,7 +11,15 @@ class CardsServiceFactory implements FactoryInterface
     {
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
+        $I_datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
 
-        return new CardsService($entityManager);
+        $I_datatableService->setQueryBuilder(
+            new DatatableQueryBuilders\Customers(
+                new DatatableQueryBuilders\Basic(),
+                'e'
+            )
+        );
+
+        return new CardsService($entityManager, $I_datatableService);
     }
 }

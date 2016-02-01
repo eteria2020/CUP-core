@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity;
 
+use Cartasi\Entity\Transactions;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -57,11 +59,11 @@ class ExtraPayment
     private $paymentType;
 
     /**
-     * @var string
+     * @var array
      *
-     * @ORM\Column(name="reason", type="string", nullable=false)
+     * @ORM\Column(name="reasons", type="json_array", nullable=false)
      */
-    private $reason;
+    private $reasons;
 
     /**
      * @var Invoices
@@ -95,25 +97,38 @@ class ExtraPayment
     private $generatedTs;
 
     /**
+     * @var Transactions
+     *
+     * @ORM\OneToOne(targetEntity="\Cartasi\Entity\Transactions")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $transaction;
+
+    /**
      * @param Customer $customer
      * @param Fleet $fleet
+     * @param Transactions $transaction
      * @param integer $amount
      * @param string $paymentType
-     * @param string $reason
+     * @param array $reasons
      * @return ExtraPayment
      */
     public function __construct(
         Customers $customer,
         Fleet $fleet,
+        Transactions $transaction,
         $amount,
         $paymentType,
-        $reason
+        $reasons
     ) {
         $this->customer = $customer;
         $this->fleet = $fleet;
+        $this->transaction = $transaction;
         $this->amount = $amount;
         $this->paymentType = $paymentType;
-        $this->reason = $reason;
+        $this->reasons = $reasons;
         $this->invoiceAble = true;
         $this->generatedTs = date_create();
     }
@@ -145,9 +160,9 @@ class ExtraPayment
     /**
      * @return string
      */
-    public function getReason()
+    public function getReasons()
     {
-        return $this->reason;
+        return $this->reasons;
     }
 
     /**

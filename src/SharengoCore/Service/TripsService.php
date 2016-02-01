@@ -2,10 +2,14 @@
 
 namespace SharengoCore\Service;
 
-use SharengoCore\Entity\Repository\TripsRepository;
-use SharengoCore\Entity\Trips;
-use SharengoCore\Entity\TripPayments;
+use Application\Form\InputData\CloseTripData;
+use SharengoCore\Entity\Commands;
 use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\Repository\TripsRepository;
+use SharengoCore\Entity\TripPayments;
+use SharengoCore\Entity\Trips;
+use SharengoCore\Entity\WebUser;
+use SharengoCore\Service\CommandsService;
 use SharengoCore\Service\CustomersService;
 
 use Zend\View\Helper\Url;
@@ -20,7 +24,7 @@ class TripsService
     /**
      * @var DatatableServiceInterface
      */
-    private $I_datatableService;
+    private $datatableService;
 
     /**
      * @var Url
@@ -33,21 +37,37 @@ class TripsService
     private $customersService;
 
     /**
+     * @var CommandsService
+     */
+    private $commandsService;
+
+    /**
      * @param EntityRepository $tripRepository
-     * @param DatatableService $I_datatableService
+     * @param DatatableService $datatableService
      * @param \\TODO $I_urlHelper
      * @param CustomersService $customersService
      */
     public function __construct(
         $tripRepository,
-        DatatableService $I_datatableService,
+        DatatableService $datatableService,
         $I_urlHelper,
-        CustomersService $customersService
+        CustomersService $customersService,
+        CommandsService $commandsService
     ) {
         $this->tripRepository = $tripRepository;
-        $this->I_datatableService = $I_datatableService;
+        $this->datatableService = $datatableService;
         $this->I_urlHelper = $I_urlHelper;
         $this->customersService = $customersService;
+        $this->commandsService = $commandsService;
+    }
+
+    /**
+     * @param integer $id
+     * @return Trips
+     */
+    public function getById($id)
+    {
+        return $this->tripRepository->findOneById($id);
     }
 
     /**
@@ -86,9 +106,13 @@ class TripsService
         return $this->tripRepository->findTripsByCustomerNotEnded($customer);
     }
 
-    public function getDataDataTable(array $as_filters = [])
+    public function getDataDataTable(array $as_filters = [], $count = false)
     {
-        $trips = $this->I_datatableService->getData('Trips', $as_filters);
+        $trips = $this->datatableService->getData('Trips', $as_filters, $count);
+
+        if ($count) {
+            return $trips;
+        }
 
         return array_map(function (Trips $trip) {
 
@@ -106,30 +130,29 @@ class TripsService
             $parentStart = "";
             $parent = $trip->getParent();
 
-            // bad hack to check if the parent really exists
-            if ($parent instanceof \DoctrineORMModule\Proxy\__CG__\SharengoCore\Entity\Trips) {
-                try {
-                    $parent = $parent->__load();
-                } catch (\Exception $e) {
-                    $parent = null;
-                }
-            }
-
-            if ($parent !== null) {
+            if ($parent !== null && $parent instanceof Trips && $parent->getId() != -1) {
                 $parentId = "<br>(" . $parent->getId() . ")";
                 $parentStart = "<br>(" . $parent->getTimestampBeginning()->format('d-m-Y H:i:s') . ")";
             }
 
+            /**
+             * blank - the trip has not ended
+             * 'FREE' - the trip is free because of bonuses or because customer
+             *     is either in gold list or is a maintainer
+             * n,nn (the actual cost) - if the trip has a cost greater than zero
+             * 0,00 - if the cost has not yet been calculated
+             */
             $tripCost = '';
             if ($trip->isEnded()) {
                 if ($trip->getPayable() && $trip->isAccountable()) {
-                    $tripPayment = $trip->getTripPayments()[0];
+                    $tripPayment = $trip->getTripPayment();
                     if ($tripPayment instanceof TripPayments) {
                         $tripCost = $tripPayment->getTotalCost();
                     } else {    // for some reason trip has not beed payed
-
                         // show 0 only if not accounted; otherwise price is not yet defined
                         if ($trip->getIsAccounted()) {
+                            $tripCost = 'FREE';
+                        } else {
                             $tripCost = 0;
                         }
                     }
@@ -151,6 +174,8 @@ class TripsService
                     'idLink' => $trip->getId()
                 ],
                 'cu'       => [
+                    'id' => $trip->getCustomer()->getId(),
+                    'email'   => $trip->getCustomer()->getEmail(),
                     'surname' => $trip->getCustomer()->getSurname(),
                     'name'    => $trip->getCustomer()->getName(),
                     'mobile'  => $trip->getCustomer()->getMobile()
@@ -165,7 +190,8 @@ class TripsService
                     'code' => is_object($trip->getCustomer()->getCard()) ? $trip->getCustomer()->getCard()->getCode() : ''
 
                 ],
-                'duration' => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd())
+                'duration' => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd()),
+                'payed' => $trip->getPayable() ? ($trip->isPaymentCompleted() ? 'Si' : 'No') : '-'
             ];
         }, $trips);
     }
@@ -267,5 +293,23 @@ class TripsService
     public function getTripsNoAddress($limit = 0)
     {
         return $this->tripRepository->findTripsNoAddress($limit);
+    }
+
+    /**
+     * @param CloseTripData $closeTrip
+     */
+    public function closeTrip(CloseTripData $closeTrip, WebUser $webUser)
+    {
+        $this->commandsService->sendCommand(
+            $closeTrip->car(),
+            Commands::CLOSE_TRIP,
+            $webUser
+        );
+
+        $this->tripRepository->closeTrip(
+            $closeTrip->trip(),
+            $closeTrip->dateTime(),
+            $closeTrip->payable()
+        );
     }
 }

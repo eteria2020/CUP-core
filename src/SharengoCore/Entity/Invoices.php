@@ -11,6 +11,7 @@ use SharengoCore\Utils\Interval;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Orm\AbstractQuery;
 use Doctrine\ORM\Query\ResultSetMapping;
+use SharengoCore\Entity\CustomersBonusPackages;
 
 /**
  * Invoices
@@ -27,6 +28,8 @@ class Invoices
     const TYPE_TRIP = 'TRIP';
 
     const TYPE_PENALTY = 'PENALTY';
+
+    const TYPE_BONUS_PACKAGE = 'BONUS_PACKAGE';
 
     /**
      * @var integer
@@ -238,7 +241,7 @@ class Invoices
      */
     private function formatNewInvoiceNumber(Invoices $invoice, $newInvoiceNumber)
     {
-        return date_create()->format('Y').
+        return $invoice->getDateTimeDate()->format('Y').
             '/'.
             $invoice->getFleetIntCode().
             sprintf("%'.08d", $newInvoiceNumber);
@@ -322,7 +325,8 @@ class Invoices
             $version,
             self::TYPE_TRIP,
             intval($tripPayments[0]->getPayedSuccessfullyAt()->format("Ymd")), // it's supposed all trips have been payed on the same day
-            $amounts
+            $amounts,
+            $tripPayments[0]->getTrip()->getFleet()
         );
 
         $body = [];
@@ -378,14 +382,14 @@ class Invoices
      * @param Customers $customer
      * @param Fleet $fleet
      * @param int $version template version
-     * @param string $reason
+     * @param array[] $reasons
      * @param array $amounts with fields grand_total_cents, grand_total, total, iva
      */
     public static function createInvoiceForExtraOrPenalty(
         Customers $customer,
         Fleet $fleet,
         $version,
-        $reason,
+        $reasons,
         $amounts
     ) {
         $invoice = new Invoices(
@@ -407,9 +411,57 @@ class Invoices
                     'Descrizione',
                     'Imponibile'
                 ],
+                'body' => $reasons,
+                'body-format' => [
+                    'alignment' => [
+                        'left',
+                        'right'
+                    ]
+                ]
+            ],
+            'bottom_note' => 'Escluso da IVA ai sensi dell’articolo 15 del D.P.R. 633/1972'
+        ]);
+
+        return $invoice;
+    }
+
+    /**
+     * @param Customers $customer
+     * @param CustomersBonusPackages $bonusPackage
+     * @param Fleet $fleet
+     * @param integer $version
+     * @param array $amounts
+     * @return self
+     */
+    public static function createInvoiceForBonusPackage(
+        Customers $customer,
+        CustomersBonusPackages $package,
+        Fleet $fleet,
+        $version,
+        $amounts
+    ) {
+        $invoice = new Invoices(
+            $customer,
+            $version,
+            self::TYPE_BONUS_PACKAGE,
+            intval(date("Ymd")),
+            $amounts,
+            $fleet
+        );
+
+        $invoice->setContentBody([
+            'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento per il pacchetto da lei acquistato<br>' .
+                'L\'importo totale della fattura è di EUR ' .
+                $amounts['sum']['grand_total'] .
+                '</p>',
+            'contents' => [
+                'header' => [
+                    'Descrizione',
+                    'Imponibile'
+                ],
                 'body' => [
                     [
-                        [$reason],
+                        [$package->getDescription()],
                         [$amounts['sum']['total'] . ' €']
                     ]
                 ],
@@ -504,12 +556,14 @@ class Invoices
     public function getTypeItalianTranslation()
     {
         switch ($this->getType()) {
-            case 'FIRST_PAYMENT':
+            case self::TYPE_FIRST_PAYMENT:
                 return 'Iscrizione';
-            case 'TRIP':
+            case self::TYPE_TRIP:
                 return 'Corse';
-            case 'PENALTY':
+            case self::TYPE_PENALTY:
                 return 'Sanzione';
+            case self::TYPE_BONUS_PACKAGE:
+                return 'Pacchetto bonus';
         }
         return '';
     }

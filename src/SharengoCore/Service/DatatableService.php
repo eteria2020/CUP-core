@@ -18,6 +18,10 @@ class DatatableService
      */
     private $queryBuilder;
 
+    /**
+     * @param EntityManager $entityManager
+     * @param DatatableQueryBuilderInterface $queryBuilder
+     */
     public function __construct(
         EntityManager $entityManager,
         DatatableQueryBuilderInterface $queryBuilder
@@ -27,16 +31,23 @@ class DatatableService
     }
 
     /**
-     * @inheritdoc
+     * Builds a query based on the entity and parameters passed and returns the
+     * results. If $count is set to true, returns the COUNT() of the results.
+     *
+     * @param string $entity
+     * @param array $options
+     * @param boolean $count
+     * @return mixed[] | integer
      */
-    public function getData($entity, array $options/*, array $joinTable = []*/)
+    public function getData($entity, array $options, $count = false)
     {
         $select = $this->queryBuilder->select();
         $join = $this->queryBuilder->join();
+
         $where = false;
         $as_parameters = [];
 
-        $dql = 'SELECT e' . $select . ' FROM \SharengoCore\Entity\\' . $entity . ' e '
+        $dql = 'SELECT ' . ($count ? 'COUNT(e)' : ('e' . $select)) . ' FROM \SharengoCore\Entity\\' . $entity . ' e '
             . $join;
 
         $query = $this->entityManager->createQuery();
@@ -63,7 +74,7 @@ class DatatableService
         }
 
         // query a fixed parameter
-        if(!empty($options['fixedColumn']) &&
+        if (!empty($options['fixedColumn']) &&
            !empty($options['fixedValue']) &&
            !empty($options['fixedLike'])
         ) {
@@ -121,11 +132,14 @@ class DatatableService
             $query->setParameters($as_parameters);
         }
 
-        // apply the requested ordering
-        $orderFieldId = $options['iSortCol_0'];
-        $orderField = $options['mDataProp_' . $orderFieldId];
-
-        $dql .= 'ORDER BY ' . $orderField . ' ' . $options['sSortDir_0'] . ' ';
+        // cannot set order if using count.
+        // might order by not selected field causing failure
+        if (!$count) {
+            // apply the requested ordering
+            $orderFieldId = $options['iSortCol_0'];
+            $orderField = $options['mDataProp_' . $orderFieldId];
+            $dql .= 'ORDER BY ' . $orderField . ' ' . $options['sSortDir_0'] . ' ';
+        }
 
         // limit and offset for pagination
         if ($options['withLimit']) {
@@ -134,6 +148,10 @@ class DatatableService
         }
 
         $query->setDql($dql);
+
+        if ($count) {
+            return $query->getSingleScalarResult();
+        }
 
         return $query->getResult();
     }

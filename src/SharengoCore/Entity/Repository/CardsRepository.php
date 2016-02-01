@@ -1,6 +1,7 @@
 <?php
 
 namespace SharengoCore\Entity\Repository;
+use Doctrine\ORM\Query;
 
 /**
  * CardsRepository
@@ -21,5 +22,19 @@ class CardsRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('value', strtolower("%" . $q . "%"));
         $query->setDql($dql);
         return $query->getResult();
+    }
+
+    public function getLastCardRfid()
+    {
+        $s_query = "SELECT substring(rfid, 5)::INT as LastRfid FROM cards WHERE rfid ILIKE 'CARD%' ORDER BY LastRfid DESC LIMIT 1";
+        $query = $this->getEntityManager()->getConnection()->query($s_query);
+        return $query->fetch();
+    }
+
+    public function getTotalCards()
+    {
+        $em = $this->getEntityManager();
+        $query = $em->createQuery('SELECT COUNT(c.rfid) FROM \SharengoCore\Entity\Cards c');
+        return $query->getSingleScalarResult();
     }
 }

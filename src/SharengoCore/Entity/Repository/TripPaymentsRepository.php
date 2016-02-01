@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Entity\Repository;
 
+use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripPayments;
 
@@ -114,61 +115,26 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->execute();
     }
 
-    public function findAvailableMonths()
+    /**
+     * @param Customers $customer
+     * @return TripPayments[]
+     */
+    public function findFailedByCustomer(Customers $customer)
     {
         $em = $this->getEntityManager();
 
-        $sql = 'SELECT to_char(tp.payed_successfully_at, :format) AS tp_date
-            FROM trip_payments tp
-            WHERE tp.payed_successfully_at IS NOT NULL
-            GROUP BY tp_date
-            ORDER BY tp_date DESC';
+        $dql = "SELECT tp
+            FROM SharengoCore\Entity\TripPayments tp
+            LEFT JOIN SharengoCore\Entity\TripPaymentTries tpt WITH tpt.tripPayment = tp
+            JOIN tp.trip t
+            WHERE t.customer = :customerParam
+            AND tpt.outcome = 'KO'
+            GROUP BY tp.id
+            ORDER BY tp.id DESC";
 
-        $rsm = new ResultSetMapping;
-        $rsm->addScalarResult('tp_date', 'tp_date', 'string');
-        $query = $em->createNativeQuery($sql, $rsm);
-        $query->setParameter('format', 'MM-YYYY');
+        $query = $em->createQuery($dql);
 
-        return $query->getResult();
-    }
-
-    /**
-     * @param \DateTime $start
-     * @param \DateTime $end
-     * @param string $dateGroupingFormat a valid postgresql format for dates
-     *     used to specify the grouping of the results
-     *     Example: to group by day use 'YYYY-MM-DD'
-     *         to group by week use 'YYYY-MM-W'
-     *         to group by month use 'YYYY-MM'
-     * @return array[]
-     */
-    public function findPayedBetween(
-        \DateTime $start,
-        \DateTime $end,
-        $dateGroupingFormat = 'YYYY-MM-DD'
-    ) {
-        $em = $this->getEntityManager();
-
-        $sql = 'SELECT to_char(tp.payed_successfully_at, :format) AS tp_date,
-                f.name AS f_name,
-                sum(tp.total_cost) AS tp_amount
-            FROM trip_payments tp
-            LEFT JOIN trips t ON t.id = tp.trip_id
-            LEFT JOIN fleets f ON t.fleet_id = f.id
-            WHERE tp.payed_successfully_at >= :start
-            AND tp.payed_successfully_at < :end
-            GROUP BY tp_date, f_name
-            ORDER BY tp_date, f_name ASC';
-
-        $rsm = new ResultSetMapping;
-        $rsm->addScalarResult('tp_date', 'tp_date', 'string');
-        $rsm->addScalarResult('f_name', 'f_name', 'string');
-        $rsm->addScalarResult('tp_amount', 'tp_amount', 'integer');
-
-        $query = $em->createNativeQuery($sql, $rsm);
-        $query->setParameter('format', $dateGroupingFormat);
-        $query->setParameter('start', $start->format('Y-m-d H:i:s'));
-        $query->setParameter('end', $end->format('Y-m-d H:i:s'));
+        $query->setParameter('customerParam', $customer);
 
         return $query->getResult();
     }

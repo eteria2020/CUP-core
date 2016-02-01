@@ -8,6 +8,7 @@ use SharengoCore\Service\DatatableService;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Cards;
 use SharengoCore\Entity\Fleet;
+use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 
 use Doctrine\ORM\EntityManager;
@@ -156,22 +157,28 @@ class InvoicesService
             // generate date for invoices
             $date = date_create_from_format('Y-m-d', $dateKey);
             $this->logger->log("Generating invoices for date: " . $dateKey . "\n\n");
+
             // loop through each customer in day
             foreach ($tripPaymentsForDate as $customerId => $tripPaymentsForCustomer) {
                 $this->logger->log("Generating invoice for customer: " . $customerId . "\n");
-                // get customer for group of tripPayments
-                $customer = $tripPaymentsForCustomer[0]->getTrip()->getCustomer();
-                // generate invoice from group of tripPayments
-                $invoice = $this->prepareInvoiceForTrips($customer, $tripPaymentsForCustomer);
-                $this->logger->log("Invoice created: " . $invoice->getId() . "\n");
-                $this->entityManager->persist($invoice);
-                $this->logger->log("EntityManager: invoice persisted\n");
-                array_push($invoices, $invoice);
-                $this->logger->log("Updating tripPayments with invoice...\n\n");
-                foreach ($tripPaymentsForCustomer as $tripPayment) {
-                    $tripPayment->setInvoice($invoice)
-                        ->setInvoicedAt(date_create());
-                    $this->entityManager->persist($tripPayment);
+
+                // loop through each fleet for customer
+                foreach ($tripPaymentsForCustomer as $fleetId => $tripPaymentsForFleet) {
+                    $this->logger->log("Generating invoice for fleet: " . $fleetId . "\n");
+                    // get customer for group of tripPayments
+                    $customer = $tripPaymentsForFleet[0]->getTrip()->getCustomer();
+                    // generate invoice from group of tripPayments
+                    $invoice = $this->prepareInvoiceForTrips($customer, $tripPaymentsForFleet);
+                    $this->logger->log("Invoice created: " . $invoice->getId() . "\n");
+                    $this->entityManager->persist($invoice);
+                    $this->logger->log("EntityManager: invoice persisted\n");
+                    array_push($invoices, $invoice);
+                    $this->logger->log("Updating tripPayments with invoice...\n\n");
+                    foreach ($tripPaymentsForFleet as $tripPayment) {
+                        $tripPayment->setInvoice($invoice)
+                            ->setInvoicedAt($invoice->getGeneratedTs());
+                        $this->entityManager->persist($tripPayment);
+                    }
                 }
             }
         }
@@ -217,6 +224,28 @@ class InvoicesService
 
     /**
      * @param Customers $customer
+     * @param BonusPackages $bonusPackage
+     * @param Fleet $fleet
+     * @return Invoices
+     */
+    public function prepareInvoiceForBonusPackagePayment(BonusPackagePayment $bonusPayment)
+    {
+        $amounts = [
+            'sum' => $this->calculateAmountsWithTaxesFromTotal($bonusPayment->getAmount()),
+            'iva' => $this->ivaPercentage
+        ];
+
+        return Invoices::createInvoiceForBonusPackage(
+            $bonusPayment->getCustomer(),
+            $bonusPayment->getPackage(),
+            $bonusPayment->getFleet(),
+            $this->templateVersion,
+            $amounts
+        );
+    }
+
+    /**
+     * @param Customers $customer
      * @param integer $date
      * @return mixed
      */
@@ -252,9 +281,13 @@ class InvoicesService
      * @param mixed $filters
      * @return mixed
      */
-    public function getDataDataTable($filters)
+    public function getDataDataTable(array $filters = [], $count = false)
     {
-        $invoices = $this->datatableService->getData('Invoices', $filters);
+        $invoices = $this->datatableService->getData('Invoices', $filters, $count);
+
+        if ($count) {
+            return $invoices;
+        }
 
         return array_map(function (Invoices $invoice) {
             return [
@@ -263,6 +296,7 @@ class InvoicesService
                     'invoiceDate' => $invoice->getInvoiceDate(),
                     'type' => $invoice->getType(),
                     'amount' => $invoice->getAmount(),
+                    'customerId' => $invoice->getCustomer()->getId(),
                     'customerName' => $invoice->getCustomer()->getName(),
                     'customerSurname' => $invoice->getCustomer()->getSurname()
                 ],
@@ -324,26 +358,32 @@ class InvoicesService
 
     /**
      * @param Customers $customer
-     * @param string $reason
-     * @param amount in eurocents
+     * @param Fleet $fleet
+     * @param array[] $reasons
+     * @param integer amount in eurocents
      * @return Invoices
      */
     public function prepareInvoiceForExtraOrPenalty(
         Customers $customer,
         Fleet $fleet,
-        $reason,
+        $reasons,
         $amount
     ) {
         $amounts = [
-            'sum' => $this->calculateAmountsWithTaxesFromTotal($amount),
-            'iva' => $this->ivaPercentage
+            'sum' => [
+                'iva' => $this->parseDecimal(0),
+                'total' => $this->parseDecimal($amount),
+                'grand_total' => $this->parseDecimal($amount),
+                'grand_total_cents' => $amount
+                ],
+            'iva' => 0
         ];
 
         return Invoices::createInvoiceForExtraOrPenalty(
             $customer,
             $fleet,
             $this->templateVersion,
-            $reason,
+            $reasons,
             $amounts
         );
     }

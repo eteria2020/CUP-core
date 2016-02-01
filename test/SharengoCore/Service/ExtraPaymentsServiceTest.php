@@ -6,6 +6,7 @@ use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Fleet;
 use SharengoCore\Entity\ExtraPayment;
 use SharengoCore\Entity\Invoices;
+use Cartasi\Entity\Transactions;
 
 class ExtraPaymentsServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,11 +25,12 @@ class ExtraPaymentsServiceTest extends \PHPUnit_Framework_TestCase
     {
         $customer = new Customers();
         $fleet = new Fleet(42, 'Gigi', 0, 0, 15, true);
+        $transaction = new Transactions();
         $amount = 42;
         $paymentType = 'extra';
         $reason = 'interstellar voyages are not allowed';
 
-        $extraPayment = new ExtraPayment($customer, $fleet, $amount, $paymentType, $reason);
+        $extraPayment = new ExtraPayment($customer, $fleet, $transaction, $amount, $paymentType, $reason);
 
         $this->entityManager->shouldReceive('beginTransaction');
 

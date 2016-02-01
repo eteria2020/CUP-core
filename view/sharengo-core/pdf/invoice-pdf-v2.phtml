@@ -14,7 +14,7 @@
 
     // Invoice data
     $docN = $this->invoiceNumber;
-    $invoiceDate = $this->invoiceDate;
+    $invoiceDate = $invoiceContent['invoice_date'];
     $totalAmount = $invoiceContent['amounts']['grand_total'];
     $partialAmount = $invoiceContent['amounts']['total'];
     $iva = $invoiceContent['amounts']['iva'];

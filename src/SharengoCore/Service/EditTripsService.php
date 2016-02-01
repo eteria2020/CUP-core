@@ -2,10 +2,14 @@
 
 namespace SharengoCore\Service;
 
-use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\Repository\TripBillsRepository;
 use SharengoCore\Entity\Repository\TripFreeFaresRepository;
 use SharengoCore\Entity\Repository\TripPaymentsRepository;
+use SharengoCore\Entity\Trips;
+use SharengoCore\Entity\TripPaymentsCanceled;
+use SharengoCore\Entity\TripPaymentTriesCanceled;
+use SharengoCore\Entity\Webuser;
+use SharengoCore\Exception\EditTripDeniedException;
 
 use Doctrine\ORM\EntityManager;
 
@@ -41,13 +45,42 @@ class EditTripsService
      */
     private $tripCostService;
 
+    /**
+     * @var TripPaymentsService
+     */
+    private $tripPaymentsService;
+
+    /**
+     * @var TripPaymentTriesService
+     */
+    private $tripPaymentTriesService;
+
+    /**
+     * @var CustomersService
+     */
+    private $customersService;
+
+    /**
+     * @param EntityManager $entityManager
+     * @param TripBillsRepository $tripBillsRepository
+     * @param TripFreeFaresRepository $tripFreeFaresRepository
+     * @param TripPaymentsRepository $tripPaymentsRepository
+     * @param AccountTripsService $accountTripsService
+     * @param TripCostService $tripCostService
+     * @param TripPaymentsService $tripPaymentsService
+     * @param TripPaymentTriesService $tripPaymentTriesService
+     * @param CustomersService $customersService
+     */
     public function __construct(
         EntityManager $entityManager,
         TripBillsRepository $tripBillsRepository,
         TripFreeFaresRepository $tripFreeFaresRepository,
         TripPaymentsRepository $tripPaymentsRepository,
         AccountTripsService $accountTripsService,
-        TripCostService $tripCostService
+        TripCostService $tripCostService,
+        TripPaymentsService $tripPaymentsService,
+        TripPaymentTriesService $tripPaymentTriesService,
+        CustomersService $customersService
     ) {
         $this->entityManager = $entityManager;
         $this->tripBillsRepository = $tripBillsRepository;
@@ -55,12 +88,17 @@ class EditTripsService
         $this->tripPaymentsRepository = $tripPaymentsRepository;
         $this->accountTripsService = $accountTripsService;
         $this->tripCostService = $tripCostService;
+        $this->tripPaymentsService = $tripPaymentsService;
+        $this->tripPaymentTriesService = $tripPaymentTriesService;
+        $this->customersService = $customersService;
     }
 
     /**
      * NOTICE: DO NOT EXTEND THIS METHOD. IF MORE VARIABLES ARE REQUIRED PLEASE REFACTOR
      *
      * Edit a trip:
+     * - creates backup copies of tripPaymentTries and tripPayments if payment
+     *   has begun (only if performed by webuser, throws exception otherwise)
      * - modifies the trip fields
      * - deletes all the trip bills
      * - deletes all the trip bonuses and reassigns the customer bonuses
@@ -71,14 +109,29 @@ class EditTripsService
      * @param Trips $trip
      * @param boolean $notPayable
      * @param DateTime|null $endDate
+     * @param Webuser|null $webuser
+     * @throws EditTripDeniedException
      */
-    public function editTrip(Trips $trip, $notPayable, $endDate = null)
+    public function editTrip(
+        Trips $trip,
+        $notPayable,
+        $endDate = null,
+        Webuser $webuser = null)
     {
         $trip->checkIfEditable($endDate);
 
         $this->entityManager->beginTransaction();
 
         try {
+            // backup and remove tripPaymentTries if present
+            if ($trip->isPaymentTried()) {
+                if ($webuser instanceof Webuser) {
+                    $this->cancelTripPaymentTries($trip, $webuser);
+                } else {
+                    throw new EditTripDeniedException();
+                }
+            }
+
             // edit trip fields
             $this->doEditTrip($trip, $notPayable, $endDate);
 
@@ -104,6 +157,39 @@ class EditTripsService
     }
 
     /**
+     * This method is called if TripPaymentTries are present for the trip.
+     *
+     * First backup copies of the TripPayments are generated. Then those of the
+     * TripPaymentTries are. Finally all TripPaymentTries are removed.
+     *
+     * @param Trips $trip
+     * @param Webuser $webuser
+     */
+    private function cancelTripPaymentTries(Trips $trip, Webuser $webuser)
+    {
+        foreach ($this->tripPaymentsService->getByTrip($trip) as $tripPayment) {
+            $tripPaymentCanceled = new TripPaymentsCanceled(
+                $tripPayment,
+                $webuser
+            );
+            $this->entityManager->persist($tripPaymentCanceled);
+
+            foreach ($this->tripPaymentTriesService->getByTripPayment($tripPayment) as $tripPaymentTry) {
+                $tripPaymentTryCanceled = new TripPaymentTriesCanceled(
+                    $tripPaymentTry,
+                    $tripPaymentCanceled
+                );
+                $this->entityManager->persist($tripPaymentTryCanceled);
+                $this->entityManager->remove($tripPaymentTry);
+            }
+        }
+        // Set customer's paymentAble to true to enable new cost computation
+        // and to enable payment to be triggered by script
+        $this->customersService->setCustomerPaymentAble($trip->getCustomer());
+        $this->entityManager->flush();
+    }
+
+    /**
      * @param Trips $trip
      * @param boolean $notPayable
      * @param DateTime|null $endDate
@@ -122,7 +208,7 @@ class EditTripsService
     }
 
     /**
-     * @param $trip
+     * @param Trips $trip
      */
     private function deleteTripBills(Trips $trip)
     {
@@ -130,7 +216,7 @@ class EditTripsService
     }
 
     /**
-     * @param $trip
+     * @param Trips $trip
      */
     private function deleteAndReassignTripBonuses(Trips $trip)
     {
@@ -148,7 +234,7 @@ class EditTripsService
     }
 
     /**
-     * @param $trip
+     * @param Trips $trip
      */
     private function deleteTripFreeFares(Trips $trip)
     {
@@ -156,7 +242,7 @@ class EditTripsService
     }
 
     /**
-     * @param $trip
+     * @param Trips $trip
      */
     private function deleteTripPayments(Trips $trip)
     {
@@ -164,7 +250,7 @@ class EditTripsService
     }
 
     /**
-     * @param $trip
+     * @param Trips $trip
      */
     private function reAccountTrip(Trips $trip)
     {
@@ -172,7 +258,7 @@ class EditTripsService
     }
 
     /**
-     * @param $trip
+     * @param Trips $trip
      */
     private function reComputeTrip(Trips $trip)
     {

@@ -210,9 +210,13 @@ class CustomersService implements ValidatorServiceInterface
         return $customer;
     }
 
-    public function getDataDataTable(array $as_filters = [])
+    public function getDataDataTable(array $as_filters = [], $count = false)
     {
-        $customers = $this->datatableService->getData('Customers', $as_filters);
+        $customers = $this->datatableService->getData('Customers', $as_filters, $count);
+
+        if ($count) {
+            return $customers;
+        }
 
         return array_map(function (Customers $customer) {
             return [
@@ -340,11 +344,13 @@ class CustomersService implements ValidatorServiceInterface
     {
         $card = $customer->getCard();
         $customer->setCard(null);
+
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
+
         $card->setIsAssigned(false);
 
         $this->entityManager->persist($card);
-        $this->entityManager->persist($customer);
-
         $this->entityManager->flush();
     }
 
@@ -377,8 +383,7 @@ class CustomersService implements ValidatorServiceInterface
     {
         $bonus->setType('promo');
         $bonus->setResidual($bonus->getTotal());
-        $bonus->setInsertTs(new \DateTime());
-        $bonus->setUpdateTs($bonus->getInsertTs());
+        $bonus->setInsertTs(date_create());
         $bonus->setWebuser($this->userService->getIdentity());
 
         $this->addBonus($customer, $bonus);
@@ -387,7 +392,6 @@ class CustomersService implements ValidatorServiceInterface
     public function removeBonus(CustomersBonus $customerBonus)
     {
         if ($customerBonus->canBeDeleted()) {
-
             $this->entityManager->remove($customerBonus);
             $this->entityManager->flush();
 
@@ -549,7 +553,7 @@ class CustomersService implements ValidatorServiceInterface
         $vat = str_replace(";", " ", $vat);
         $vat = str_replace("it", "", strtolower($vat));
 
-        $cardCode = $customer->getCard() instanceOf Cards ?
+        $cardCode = $customer->getCard() instanceof Cards ?
             $customer->getCard()->getCode() :
             '';
 
@@ -575,8 +579,8 @@ class CustomersService implements ValidatorServiceInterface
             $this->truncateIfLonger(str_replace(";", " ", $customer->getMobile()), 20), // 170 - max 20
             str_replace(";", " ", $customer->getZipCode()), // 110 - max 7
             $this->truncateIfLonger(str_replace(";", " ", $customer->getTown()), 25), // 120 - max 25
-            $customer->getProvince(), // 130 - max 2
-            str_replace(";", " ", $customer->getCountry()), // 140 - max 3
+            $customer->getBirthProvince(), // 130 - max 2
+            str_replace(";", " ", $customer->getBirthCountry()), // 140 - max 3
             $this->truncateIfLonger(str_replace(";", " ", $customer->getSurname()), 25), // 230 - max 25
             $this->truncateIfLonger(str_replace(";", " ", $customer->getName()), 20), // 231 - max 20
             $this->truncateIfLonger(str_replace(";", " ", $customer->getBirthTown()), 25), // 232 - max 25

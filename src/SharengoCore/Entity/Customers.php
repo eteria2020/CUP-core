@@ -250,9 +250,23 @@ class Customers
     /**
      * @var string
      *
-     * @ORM\Column(name="driver_license_name", type="string", length=255, nullable=true)
+     * @ORM\Column(name="driver_license_firstname", type="string", length=255, nullable=true)
      */
     private $driverLicenseName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="driver_license_surname", type="string", length=255, nullable=true)
+     */
+    private $driverLicenseSurname;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="driver_license_foreign", type="boolean", nullable=false)
+     */
+    private $driverLicenseForeign;
 
     /**
      * @var boolean
@@ -1226,6 +1240,30 @@ class Customers
     }
 
     /**
+     * Set driverLicenseSurname
+     *
+     * @param string $driverLicenseSurname
+     *
+     * @return Customers
+     */
+    public function setDriverLicenseSurname($driverLicenseSurname)
+    {
+        $this->driverLicenseSurname = $driverLicenseSurname;
+
+        return $this;
+    }
+
+    /**
+     * Get driverLicenseSurname
+     *
+     * @return string
+     */
+    public function getDriverLicenseSurname()
+    {
+        return $this->driverLicenseSurname;
+    }
+
+    /**
      * Set registrationCompleted
      *
      * @param boolean $registrationCompleted
@@ -1635,6 +1673,22 @@ class Customers
         $this->paymentAble = $paymentAble;
 
         return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getDriverLicenseForeign()
+    {
+        return $this->driverLicenseForeign;
+    }
+
+    /**
+     * @param boolean $driverLicenseForeign
+     */
+    public function setDriverLicenseForeign($driverLicenseForeign)
+    {
+        $this->driverLicenseForeign = $driverLicenseForeign;
     }
 
     /**

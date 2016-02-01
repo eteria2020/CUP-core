@@ -5,6 +5,7 @@ namespace SharengoCore\Service;
 use SharengoCore\Entity\Repository\TripPaymentTriesRepository;
 use SharengoCore\Entity\TripPaymentTries;
 use SharengoCore\Entity\TripPayments;
+use SharengoCore\Entity\Webuser;
 use SharengoCore\Entity\AlreadySetFirstPaymentTryTsException;
 
 use Cartasi\Entity\Transactions;
@@ -36,9 +37,19 @@ class TripPaymentTriesService
     }
 
     /**
+     * @param integer $id
+     * @return TripPaymentTries
+     */
+    public function getById($id)
+    {
+        return $this->tripPaymentTriesRepository->findOneById($id);
+    }
+
+    /**
      * @param TripPayments $tripPayment
      * @param Transactions $transaction
      * @param string $outcome
+     * @return TripPaymentTries
      */
     public function registerPaymentTry(TripPayments $tripPayment, Transactions $transaction, $outcome)
     {
@@ -52,20 +63,32 @@ class TripPaymentTriesService
 
         $this->entityManager->persist($tripPaymentTry);
         $this->entityManager->flush();
+
+        return $tripPaymentTry;
     }
 
     /**
      * @param TripPayments $tripPayment
      * @param string $outcome
      * @param Transactions|null $transaction
+     * @param Webuser|null $webuser
      * @return TripPaymentTries
      */
-    public function generateTripPaymentTry(TripPayments $tripPayment, $outcome, Transactions $transaction = null)
+    public function generateTripPaymentTry(TripPayments $tripPayment, $outcome, Transactions $transaction = null, Webuser $webuser = null)
     {
-        $tripPaymentTry = new TripPaymentTries($tripPayment, $outcome, $transaction);
+        $tripPaymentTry = new TripPaymentTries($tripPayment, $outcome, $transaction, $webuser);
         if (!$tripPayment->isFirstPaymentTryTsSet()) {
             $tripPayment->setFirstPaymentTryTs($tripPaymentTry->getTs());
         }
         return $tripPaymentTry;
+    }
+
+    /**
+     * @param TripPayments $tripPayment
+     * @return TripPaymentTries[]
+     */
+    public function getByTripPayment(TripPayments $tripPayment)
+    {
+        return $this->tripPaymentTriesRepository->findByTripPayment($tripPayment);
     }
 }

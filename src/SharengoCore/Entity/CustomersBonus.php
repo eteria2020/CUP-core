@@ -3,11 +3,13 @@
 namespace SharengoCore\Entity;
 
 use SharengoCore\Exception\NonPositiveIntegerException;
+use Cartasi\Entity\Transactions;
+use SharengoCore\Entity\Invoices;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Countries
+ * CustomersBonus
  *
  * @ORM\Table(name="customers_bonus")
  * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CustomersBonusRepository")
@@ -131,22 +133,65 @@ class CustomersBonus
      */
     private $promocode;
 
+    /**
+     * @param Customers $customer
+     * @param int $total
+     * @param string $description
+     * @param string $validTo
+     * @return CustomersBonus
+     */
+    public static function createBonus($customer, $total, $description, $validTo)
+    {
+        $bonus = new CustomersBonus();
+        $bonus->setCustomer($customer);
+        $bonus->setInsertTs(date_create());
+        $bonus->setTotal($total);
+        $bonus->setResidual($total);
+        $bonus->setValidFrom(date_create());
+        $bonus->setValidTo(date_create($validTo));
+        $bonus->setDescription($description);
+
+        return $bonus;
+    }
 
     public static function createFromPromoCode(PromoCodes $promoCode)
     {
         $promoCodeDetails = $promoCode->getPromocodesinfo();
 
         $me = new CustomersBonus();
-        $me->setInsertTs(new \DateTime());
-        $me->setUpdateTs($me->getInsertTs());
+        $me->setInsertTs(date_create());
         $me->setTotal($promoCodeDetails->getMinutes());
         $me->setResidual($me->getTotal());
         $me->setValidFrom($promoCodeDetails->getBonusValidFrom());
+        $me->setDurationDays($promoCodeDetails->getBonusDurationDays());
         $me->setValidTo($promoCodeDetails->getBonusValidTo());
         $me->setDescription($promoCode->getDescription());
         $me->setPromoCode($promoCode);
 
         return $me;
+    }
+
+    /**
+     * @param Customers $customer
+     * @param CustomersBonusPackages $bonusPackage
+     * @return CustomersBonus
+     */
+    public static function createFromBonusPackage(
+        Customers $customer,
+        CustomersBonusPackages $bonusPackage
+    ) {
+        $bonus = new CustomersBonus();
+        $bonus->setCustomer($customer)
+            ->setInsertTs(date_create())
+            ->setTotal($bonusPackage->getMinutes())
+            ->setResidual($bonusPackage->getMinutes())
+            ->setType($bonusPackage->getType())
+            ->setValidFrom(max(date_create(), $bonusPackage->getValidFrom()))
+            ->setDurationDays($bonusPackage->getDuration())
+            ->setValidTo($bonusPackage->getValidTo())
+            ->setDescription($bonusPackage->getDescription());
+
+        return $bonus;
     }
 
     /**
@@ -265,6 +310,7 @@ class CustomersBonus
     public function setResidual($residual)
     {
         $this->residual = $residual;
+        $this->touch();
 
         return $this;
     }
@@ -496,6 +542,14 @@ class CustomersBonus
     }
 
     /**
+     * Updates the updateTs
+     */
+    private function touch()
+    {
+        $this->updateTs = date_create();
+    }
+
+    /**
      * increments the residual by the given amount of minutes
      *
      * @var int $minutes
@@ -511,6 +565,7 @@ class CustomersBonus
         $addedMinutes = $this->residual + $minutes;
 
         $this->residual = min($this->total, $addedMinutes);
+        $this->touch();
 
         return $this;
     }

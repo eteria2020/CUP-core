@@ -60,9 +60,9 @@ class PromoCodesInfo
     /**
      * @var integer
      *
-     * @ORM\Column(name="duration_days", type="integer", nullable=true)
+     * @ORM\Column(name="bonus_duration_days", type="integer", nullable=true)
      */
-    private $durationDays;
+    private $bonusDurationDays;
 
     /**
      * @var \DateTime
@@ -235,27 +235,27 @@ class PromoCodesInfo
     }
 
     /**
-     * Set durationDays
+     * Set bonusDurationDays
      *
-     * @param integer $durationDays
+     * @param integer $bonusDurationDays
      *
      * @return PromoCodesInfo
      */
-    public function setDurationDays($durationDays)
+    public function setBonusDurationDays($bonusDurationDays)
     {
-        $this->durationDays = $durationDays;
+        $this->bonusDurationDays = $bonusDurationDays;
 
         return $this;
     }
 
     /**
-     * Get durationDays
+     * Get bonusDurationDays
      *
      * @return integer
      */
-    public function getDurationDays()
+    public function getBonusDurationDays()
     {
-        return $this->durationDays;
+        return $this->bonusDurationDays;
     }
 
     /**
@@ -299,6 +299,12 @@ class PromoCodesInfo
      */
     public function getBonusValidTo()
     {
+        if (!empty($this->bonusDurationDays)) {
+            $durationInterval = new \DateInterval('P' . $this->bonusDurationDays . 'D');
+            $from = max(date_create(), $this->bonusValidFrom);
+            return $from->add($durationInterval);
+        }
+
         return $this->bonusValidTo;
     }
 

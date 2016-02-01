@@ -51,16 +51,31 @@ class TripPaymentsService
     }
 
     /**
-     * @return [[[TripPayments]]]
+     * @return [[[[TripPayments]]]]
      */
     public function getTripPaymentsNoInvoiceGrouped()
     {
         return $this->groupTripPayments($this->tripPaymentsRepository->findTripPaymentsNoInvoice());
     }
 
+    public function getOneGrouped($tripPaymentId)
+    {
+        $tripPayment = $this->tripPaymentsRepository->findOneById($tripPaymentId);
+
+        if (!$tripPayment instanceof TripPayments) {
+            throw new \Exception('No trip payment present with this id');
+        } elseif ($tripPayment->getStatus() !== TripPayments::STATUS_PAYED_CORRECTLY ||
+            is_null($tripPayment->getPayedSuccessfullyAt())) {
+            throw new \Exception('The trip payment was not correctly payed');
+        }
+
+        return $this->groupTripPayments([$tripPayment]);
+    }
+
     /**
+     * Groups the tripPayments first by date, then by customer and finally by fleet
      * @param [TripPayments] $tripPayments
-     * @return [[[TripPayments]]]
+     * @return [[[[TripPayments]]]]
      */
     private function groupTripPayments($tripPayments)
     {
@@ -70,17 +85,21 @@ class TripPaymentsService
             // retrieve date and customerId from tripPayment
             $date = $tripPayment->getPayedSuccessfullyAt()->format('Y-m-d');
             $customerId = $tripPayment->getTrip()->getCustomer()->getId();
+            $fleetId = $tripPayment->getTrip()->getFleet()->getId();
             // if first tripPayment for that day, create the entry
             if (isset($orderedTripPayments[$date])) {
                 // if first tripPayment for that customer, create the entry
                 if (!isset($orderedTripPayments[$date][$customerId])) {
-                    $orderedTripPayments[$date][$customerId] = [];
+                    $orderedTripPayments[$date][$customerId] = [$fleetId => []];
+                // if first tripPayment for that fleet, create the entry
+                } elseif (!isset($orderedTripPayments[$date][$customerId][$fleetId])) {
+                    $orderedTripPayments[$date][$customerId][$fleetId] = [];
                 }
             } else {
-                $orderedTripPayments[$date] = [$customerId => []];
+                $orderedTripPayments[$date] = [$customerId => [$fleetId => []]];
             }
             // add the tripPayment in the correct group
-            array_push($orderedTripPayments[$date][$customerId], $tripPayment);
+            array_push($orderedTripPayments[$date][$customerId][$fleetId], $tripPayment);
         }
 
         // sort payments according to their date
@@ -92,9 +111,13 @@ class TripPaymentsService
     /**
      * retrieved the data for the datatable in the admin area
      */
-    public function getFailedPaymentsData(array $filters)
+    public function getFailedPaymentsData(array $filters = [], $count = false)
     {
-        $payments = $this->datatableService->getData('TripPayments', $filters);
+        $payments = $this->datatableService->getData('TripPayments', $filters, $count);
+
+        if ($count) {
+            return $payments;
+        }
 
         return array_map(function (TripPayments $payment) {
             $customer = $payment->getTrip()->getCustomer();
@@ -172,85 +195,20 @@ class TripPaymentsService
     }
 
     /**
-     * @return string[]
+     * @param Trips $trip
+     * @return TripPayments[]
      */
-    public function getAvailableMonths()
+    public function getByTrip(Trips $trip)
     {
-        return $this->tripPaymentsRepository->findAvailableMonths();
+        return $this->tripPaymentsRepository->findByTrip($trip);
     }
 
     /**
-     * Returns incomes for last month's days
-     * @param string $dateString
-     * @return array[] in format day => [fleet => income]
+     * @param Customers $customer
+     * @return TripPayments[]
      */
-    public function getDailyIncomeForMonth($dateString)
+    public function getFailedByCustomer(Customers $customer)
     {
-        // Create an interval to represent a month
-        $interval = new \DateInterval('P1M');
-        $start = date_create_from_format('m-Y-d H:i:s', $dateString . '-01 00:00:00');
-        $end = clone($start);
-        $end->add($interval);
-        $incomes = $this->tripPaymentsRepository->findPayedBetween(
-            $start,
-            $end,
-            'DD-MM-YYYY'
-        );
-        return $this->groupIncomesByDate($incomes);
-    }
-
-    /**
-     * Returns incomes for last month's weeks
-     * @return array[] in format week => [fleet => income]
-     */
-    public function getWeeklyIncome()
-    {
-        // Create an interval to represent a month
-        $interval = new \DateInterval('P28D');
-        $end = date_create('next monday midnight');
-        $start = clone($end);
-        $start->sub($interval);
-        $incomes = $this->tripPaymentsRepository->findPayedBetween(
-            $start,
-            $end,
-            'YYYY-IW'
-        );
-        return $this->groupIncomesByDate($incomes);
-    }
-
-    /**
-     * Returns incomes for last year's months
-     * @return array[] in format month => [fleet => income]
-     */
-    public function getMonthlyIncome()
-    {
-        // Create an interval to represent a month
-        $interval = new \DateInterval('P12M');
-        $end = date_create('first day of next month midnight');
-        $start = clone($end);
-        $start->sub($interval);
-        $incomes = $this->tripPaymentsRepository->findPayedBetween(
-            $start,
-            $end,
-            'YYYY-MM'
-        );
-        return $this->groupIncomesByDate($incomes);
-    }
-
-    /**
-     * @param array[] $incomes
-     * @return array[]
-     */
-    private function groupIncomesByDate($incomes)
-    {
-        $groupedIncomes = [];
-        foreach ($incomes as $income) {
-            $tpDate = $income['tp_date'];
-            if (!array_key_exists($tpDate, $groupedIncomes)) {
-                $groupedIncomes[$tpDate] = [];
-            }
-            $groupedIncomes[$tpDate][$income['f_name']] = $income['tp_amount'];
-        }
-        return $groupedIncomes;
+        return $this->tripPaymentsRepository->findFailedByCustomer($customer);
     }
 }

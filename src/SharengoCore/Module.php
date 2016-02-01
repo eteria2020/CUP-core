@@ -29,6 +29,9 @@ class Module
         $platform->registerDoctrineTypeMapping('invoice_type', 'string');
         $platform->registerDoctrineTypeMapping('trip_payment_status', 'string');
         $platform->registerDoctrineTypeMapping('polygon', 'string');
+        $platform->registerDoctrineTypeMapping('extra_payments_types', 'string');
+        $platform->registerDoctrineTypeMapping('disabled_reason', 'string');
+        $platform->registerDoctrineTypeMapping('reactivation_reason', 'string');
 
         $this->registerEventListeners(
             $e->getApplication()->getEventManager(),
