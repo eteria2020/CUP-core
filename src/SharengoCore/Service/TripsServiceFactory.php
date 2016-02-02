@@ -22,11 +22,13 @@ class TripsServiceFactory implements FactoryInterface
         $I_datatableService->setQueryBuilder(
             new DatatableQueryBuilders\TripPayments(
                 new DatatableQueryBuilders\Cars(
-                    new DatatableQueryBuilders\Cards(
-                        new DatatableQueryBuilders\Customers(
-                            new DatatableQueryBuilders\Basic()
-                        ),
-                        'cu'
+                    new DatatableQueryBuilders\Fleets(
+                        new DatatableQueryBuilders\Cards(
+                            new DatatableQueryBuilders\Customers(
+                                new DatatableQueryBuilders\Basic()
+                            ),
+                            'cu'
+                        )
                     )
                 )
             )

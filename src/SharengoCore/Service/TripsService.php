@@ -182,6 +182,9 @@ class TripsService
 
                 ],
                 'duration' => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd()),
+                'f'        => [
+                    'name'     => $trip->getFleet()->getName(),  
+                ],
                 'payed' => $trip->getPayable() ? ($trip->isPaymentCompleted() ? 'Si' : 'No') : '-'
             ];
         }, $trips);
