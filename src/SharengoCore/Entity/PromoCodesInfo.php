@@ -289,7 +289,7 @@ class PromoCodesInfo
      */
     public function getBonusValidFrom()
     {
-        return $this->bonusValidFrom;
+        return max(date_create(), $this->bonusValidFrom);
     }
 
     /**
