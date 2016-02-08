@@ -161,6 +161,14 @@ class Events
     /**
      * @return string
      */
+    public function getTrip()
+    {
+        return $this->trip;
+    }
+
+    /**
+     * @return string
+     */
     public function getTxtval()
     {
         return $this->txtval;
