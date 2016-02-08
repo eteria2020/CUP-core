@@ -43,16 +43,16 @@ class Events
     private $carPlate;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ODM\Field(type="integer");
+     * @ODM\Field(type="string");
      */
     private $label;
 
     /**
      * @var integer
      *
-     * @ODM\Field(type="string");
+     * @ODM\Field(type="integer");
      */
     private $level;
 
@@ -118,6 +118,11 @@ class Events
      * @ODM\Field(type="string");
      */
     private $imei;
+
+    /**
+     * @var $eventType
+     */
+    private $eventType;
 
     /**
      * Get id
@@ -199,5 +204,35 @@ class Events
     public function getLat()
     {
         return $this->lat;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCarPlate()
+    {
+        return $this->carPlate;
+    }
+
+    /**
+     * @return EventsType
+     */
+    public function getEventType()
+    {
+        return $this->eventType;
+    }
+
+    /**
+     * Set EventType
+     *
+     * @param EventsTypes $eventTYpe
+     *
+     * @return EventsTypes
+     */
+    public function setEventType($eventType)
+    {
+        $this->eventType = $eventType;
+
+        return $this;
     }
 }
