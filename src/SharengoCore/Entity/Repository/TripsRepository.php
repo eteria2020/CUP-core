@@ -272,4 +272,26 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $this->getEntityManager()->persist($trip);
         $this->getEntityManager()->flush();
     }
+
+    public function findTripsNotPayedData()
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT tr, cu, cd, ca, tp
+        FROM \SharengoCore\Entity\Trips tr
+        JOIN tr.customer cu
+        JOIN cu.card cd
+        JOIN tr.car ca
+        JOIN tr.tripPayment tp
+        WHERE tr.payable = true
+        AND tr.timestampEnd IS NOT NULL
+        AND (tr.timestampEnd - tr.timestampBeginning) >= (DATE_ADD(CURRENT_TIMESTAMP(), 300, 'second') - CURRENT_TIMESTAMP())
+        AND cu.goldList = false
+        AND tp.payedSuccessfullyAt IS NULL
+        ORDER BY tr.id DESC";
+
+        $query = $em->createQuery($dql);
+
+        return $query->getResult();
+    }
 }

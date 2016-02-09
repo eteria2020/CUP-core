@@ -137,10 +137,11 @@ class TripsService
 
             /**
              * blank - the trip has not ended
-             * 'FREE' - the trip is free because of bonuses or because customer
-             *     is either in gold list or is a maintainer
+             * 'FREE' - the trip is free because the customer is either in gold
+             *     list or is a maintainer
              * n,nn (the actual cost) - if the trip has a cost greater than zero
-             * 0,00 - if the cost has not yet been calculated
+             * 0,00 - if the cost has not yet been calculated or bonus minutes
+             *     have been used
              */
             $tripCost = '';
             if ($trip->isEnded()) {
@@ -148,13 +149,8 @@ class TripsService
                     $tripPayment = $trip->getTripPayment();
                     if ($tripPayment instanceof TripPayments) {
                         $tripCost = $tripPayment->getTotalCost();
-                    } else {    // for some reason trip has not beed payed
-                        // show 0 only if not accounted; otherwise price is not yet defined
-                        if ($trip->getIsAccounted()) {
-                            $tripCost = 'FREE';
-                        } else {
-                            $tripCost = 0;
-                        }
+                    } else {
+                        $tripCost = 0;
                     }
                 } else {
                     $tripCost = 'FREE';
@@ -314,5 +310,16 @@ class TripsService
             $closeTrip->dateTime(),
             $closeTrip->payable()
         );
+    }
+
+    /**
+     * Returns an array of Trips to be displayed in a datatable that represents
+     * trips that have not yet been payed
+     *
+     * @return Trips[]
+     */
+    public function getTripsNotPayedData()
+    {
+        return $this->tripRepository->findTripsNotPayedData();
     }
 }
