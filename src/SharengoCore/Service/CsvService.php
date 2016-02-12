@@ -188,7 +188,7 @@ class CsvService
             $csvData = $this->cartasiCsvService->getCsvData(
                 $this->csvConfig['tempPath'] . '/' . $csvFile->getFilename()
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->moveFile($csvFile, $this->csvConfig['tempPath'], $this->csvConfig['addedPath']);
             throw $e;
         }
@@ -202,11 +202,11 @@ class CsvService
                 if ($anomalyType !== null) {
                     if (!$this->isAnomalyAlreadyRegistered($value, $transaction)) {
                         $csvAnomaly = new CartasiCsvAnomaly(
-                                $csvFile,
-                                $anomalyType,
-                                $value,
-                                $transaction
-                            );
+                            $csvFile,
+                            $anomalyType,
+                            $value,
+                            $transaction
+                        );
                         $this->entityManager->persist($csvAnomaly);
                     }
                 }
@@ -217,7 +217,7 @@ class CsvService
             $this->entityManager->commit();
 
             $this->moveFile($csvFile, $this->csvConfig['tempPath'], $this->csvConfig['analyzedPath']);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->moveFile($csvFile, $this->csvConfig['tempPath'], $this->csvConfig['addedPath']);
             $this->entityManager->rollback();
             throw $e;
@@ -310,11 +310,11 @@ class CsvService
             $transactionOutcome =
                 $transaction->getOutcome() == 'OK' ||
                 $transaction->getOutcome() == '0 - autorizzazione concessa';
-            if($transactionOutcome != $csvOutcome) {
+            if ($transactionOutcome != $csvOutcome) {
                 return CartasiCsvAnomaly::OUTCOME_ERROR;
 
             // Check if amounts are different only if outcome is positive
-            } elseif($transactionOutcome) {
+            } elseif ($transactionOutcome) {
                 $transactionAmount = $transaction->getAmount();
                 $csvAmount = intval((floatval(str_replace(',', '.', $csvData['Importo contabilizzato'])) * 100) . '.0');
                 if ($transactionAmount != $csvAmount) {

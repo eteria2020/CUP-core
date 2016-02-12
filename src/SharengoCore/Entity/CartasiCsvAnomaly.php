@@ -151,7 +151,7 @@ class CartasiCsvAnomaly
     private function calculateAmount()
     {
         // Calculate amount as stated by csv
-        $csvAmount = intval(floatval(str_replace(',', '.', $this->csvData['Importo dell\'ordine'])) * 100);
+        $csvAmount = intval(floatval(str_replace(',', '.', $this->csvData['Importo contabilizzato'])) * 100);
 
         switch ($this->type) {
             case self::MISSING_FROM_TRANSACTIONS:
@@ -159,7 +159,7 @@ class CartasiCsvAnomaly
 
             case self::OUTCOME_ERROR:
                 if ($this->csvData['Stato'] == 'Contabilizzato rimborsabile') {
-                    return $csvAmount;
+                    return - $csvAmount;
                 } else {
                     return $this->transaction->getAmount();
                 }
