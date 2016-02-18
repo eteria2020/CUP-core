@@ -409,6 +409,13 @@ class Customers
      */
     private $trips;
 
+    /**
+     * Bidirectional - One-To-Many (INVERSE SIDE)
+     *
+     * @ORM\OneToMany(targetEntity="ForeignDriversLicenseUpload", mappedBy="customer")
+     */
+    private $foreignDriversLicenseUploads;
+
 
     public function __construct()
     {
@@ -1192,6 +1199,16 @@ class Customers
     }
 
     /**
+     * checks if the user driver's license is from a foreign country
+     *
+     * @return bool
+     */
+    public function hasForeignDriverLicense()
+    {
+        return $this->driverLicenseCountry !== 'it';
+    }
+
+    /**
      * Set driverLicenseReleaseDate
      *
      * @param \DateTime $driverLicenseReleaseDate
@@ -1514,10 +1531,10 @@ class Customers
     }
 
     /**
-	 * Get list of customer bonuses
-	 *
-	 * @return Array of Doctrine Entities
-	 */
+     * Get list of customer bonuses
+     *
+     * @return Array of Doctrine Entities
+     */
     public function getBonuses()
     {
         return $this->customersbonuses;
@@ -1745,12 +1762,16 @@ class Customers
     {
         $bonuses = $this->getBonuses();
         foreach ($bonuses as $bonus) {
-
             if ($bonus->impliesSubscriptionDiscount()) {
                 return $bonus->findDiscountedSubscriptionAmount();
             }
         }
 
         return null;
+    }
+
+    public function getForeignDriversLicenseUploads()
+    {
+        return $this->foreignDriversLicenseUploads;
     }
 }

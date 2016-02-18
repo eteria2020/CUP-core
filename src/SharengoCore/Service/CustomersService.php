@@ -609,4 +609,38 @@ class CustomersService implements ValidatorServiceInterface
         }
         return substr($string, 0, $length);
     }
+
+    /**
+     * Returns true if the user needs to sign the foreign friver's license form,
+     * also if he did it already
+     *
+     * @param Customers $customer
+     * @return bool
+     */
+    public function customerNeedsToAcceptDriversLicenseForm(Customers $customer)
+    {
+        return $customer->hasForeignDriverLicense();
+    }
+
+    /**
+     * Returns true if the user already uploaded a foreign drivers license
+     *
+     * @param Customers $customer
+     * @return bool
+     */
+    public function customerHasAcceptedDriversLicenseForm(Customers $customer)
+    {
+        return count($customer->getForeignDriversLicenseUploads()) > 0;
+    }
+
+    /**
+     * @param string $hash
+     * @return Customers
+     */
+    public function getUserFromHash($hash)
+    {
+        return $this->customersRepository->findOneBy([
+            'hash' => $hash
+        ]);
+    }
 }

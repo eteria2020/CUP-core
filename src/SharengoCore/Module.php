@@ -32,6 +32,7 @@ class Module
         $platform->registerDoctrineTypeMapping('extra_payments_types', 'string');
         $platform->registerDoctrineTypeMapping('disabled_reason', 'string');
         $platform->registerDoctrineTypeMapping('reactivation_reason', 'string');
+        $platform->registerDoctrineTypeMapping('csv_anomaly_type', 'string');
 
         $this->registerEventListeners(
             $e->getApplication()->getEventManager(),
