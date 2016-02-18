@@ -164,26 +164,26 @@ class TripsService
                     'totalCost' => ['amount' => $tripCost, 'id' => $trip->getId()],
                     'idLink' => $trip->getId()
                 ],
-                'cu'       => [
+                'cu' => [
                     'id' => $trip->getCustomer()->getId(),
-                    'email'   => $trip->getCustomer()->getEmail(),
+                    'email' => $trip->getCustomer()->getEmail(),
                     'surname' => $trip->getCustomer()->getSurname(),
-                    'name'    => $trip->getCustomer()->getName(),
-                    'mobile'  => $trip->getCustomer()->getMobile()
+                    'name' => $trip->getCustomer()->getName(),
+                    'mobile' => $trip->getCustomer()->getMobile()
                 ],
-                'c'        => [
-                    'plate'     => $plate,
-                    'label'     => $trip->getCar()->getLabel(),
-                    'parking'   => $trip->getCar()->getParking() ? 'Si' : 'No',
+                'c' => [
+                    'plate' => $plate,
+                    'label' => $trip->getCar()->getLabel(),
+                    'parking' => $trip->getCar()->getParking() ? 'Si' : 'No',
                     'keyStatus' => $trip->getCar()->getKeystatus()
                 ],
-                'cc'       => [
+                'cc' => [
                     'code' => is_object($trip->getCustomer()->getCard()) ? $trip->getCustomer()->getCard()->getCode() : ''
 
                 ],
                 'duration' => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd()),
-                'f'        => [
-                    'name'     => $trip->getFleet()->getName(),  
+                'f' => [
+                    'name' => $trip->getFleetName(),
                 ],
                 'payed' => $trip->getPayable() ? ($trip->isPaymentCompleted() ? 'Si' : 'No') : '-'
             ];

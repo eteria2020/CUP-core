@@ -966,6 +966,16 @@ class Trips
     }
 
     /**
+     * Get fleet name
+     *
+     * @return \SharengoCore\Entity\Fleet name
+     */
+    public function getFleetName()
+    {
+        return $this->fleet->getName();
+    }
+
+    /**
      * Checks if trip is ended or not
      *
      * @return bool
