@@ -190,10 +190,10 @@ class TripsService
                     'code' => is_object($trip->getCustomer()->getCard()) ? $trip->getCustomer()->getCard()->getCode() : ''
 
                 ],
-                'duration' => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd()),
                 'f' => [
                     'name' => $trip->getFleetName(),
                 ],
+                'duration' => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd()),
                 'payed' => $trip->getPayable() ? ($trip->isPaymentCompleted() ? 'Si' : 'No') : '-'
             ];
         }, $trips);

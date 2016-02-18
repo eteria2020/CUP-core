@@ -968,7 +968,7 @@ class Trips
     /**
      * Get fleet name
      *
-     * @return \SharengoCore\Entity\Fleet name
+     * @return string
      */
     public function getFleetName()
     {
