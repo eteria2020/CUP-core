@@ -16,11 +16,13 @@ class ForeignDriversLicenseServiceFactory implements FactoryInterface
         ]);
         $config = $serviceLocator->get('Config');
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
+        $eventManager = new EventManager('ForeignDriversLicenseService');
 
         return new ForeignDriversLicenseService(
             $renameUpload,
             $config['driversLicense'],
-            $entityManager
+            $entityManager,
+            $eventManager
         );
     }
 }
