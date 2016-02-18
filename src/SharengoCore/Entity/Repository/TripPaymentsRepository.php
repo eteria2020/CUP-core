@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Entity\Repository;
 
+use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripPayments;
 
@@ -112,5 +113,29 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('trip', $trip);
 
         return $query->execute();
+    }
+
+    /**
+     * @param Customers $customer
+     * @return TripPayments[]
+     */
+    public function findFailedByCustomer(Customers $customer)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT tp
+            FROM SharengoCore\Entity\TripPayments tp
+            LEFT JOIN SharengoCore\Entity\TripPaymentTries tpt WITH tpt.tripPayment = tp
+            JOIN tp.trip t
+            WHERE t.customer = :customerParam
+            AND tpt.outcome = 'KO'
+            GROUP BY tp.id
+            ORDER BY tp.id DESC";
+
+        $query = $em->createQuery($dql);
+
+        $query->setParameter('customerParam', $customer);
+
+        return $query->getResult();
     }
 }

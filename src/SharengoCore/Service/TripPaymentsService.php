@@ -202,4 +202,13 @@ class TripPaymentsService
     {
         return $this->tripPaymentsRepository->findByTrip($trip);
     }
+
+    /**
+     * @param Customers $customer
+     * @return TripPayments[]
+     */
+    public function getFailedByCustomer(Customers $customer)
+    {
+        return $this->tripPaymentsRepository->findFailedByCustomer($customer);
+    }
 }
