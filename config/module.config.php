@@ -219,6 +219,7 @@ return [
             'SharengoCore\Service\MunicipalitiesService' => 'SharengoCore\Service\MunicipalitiesServiceFactory',
             'SharengoCore\Service\CsvService' => 'SharengoCore\Service\CsvServiceFactory',
             'SharengoCore\Service\ForeignDriversLicenseService' => 'SharengoCore\Service\ForeignDriversLicenseServiceFactory',
+            'SharengoCore\Service\ValidateForeignDriversLicenseService' => 'SharengoCore\Service\ValidateForeignDriversLicenseServiceFactory',
         ],
         'shared' => [
             'SharengoCore\Service\TripCostComputerService' => false,

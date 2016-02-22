@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * ForeignDriversLicesUpload
  *
  * @ORM\Table(name="foreign_drivers_license_upload")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\ForeignDriversLicenseUploadRepository")
  */
 class ForeignDriversLicenseUpload
 {
@@ -63,6 +63,13 @@ class ForeignDriversLicenseUpload
     /**
      * @var string
      *
+     * @ORM\Column(name="customer_birth_country", type="string", nullable=true)
+     */
+    private $customerBirthCountry;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="customer_birth_date", type="date", nullable=true)
      */
     private $customerBirthDate;
@@ -98,49 +105,49 @@ class ForeignDriversLicenseUpload
     /**
      * @var string
      *
-     * @ORM\Column(name="driver_license_authority", type="string", nullable=true)
+     * @ORM\Column(name="drivers_license_authority", type="string", nullable=true)
      */
     private $driversLicenseAuthority;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="driver_license_country", type="string", length=2, nullable=true)
+     * @ORM\Column(name="drivers_license_country", type="string", length=2, nullable=true)
      */
-    private $driverLicenseCountry;
+    private $driversLicenseCountry;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="driver_license_release_date", type="date", nullable=true)
+     * @ORM\Column(name="drivers_license_release_date", type="date", nullable=true)
      */
-    private $driverLicenseReleaseDate;
+    private $driversLicenseReleaseDate;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="driver_license_firstname", type="string", length=255, nullable=true)
+     * @ORM\Column(name="drivers_license_firstname", type="string", length=255, nullable=true)
      */
-    private $driverLicenseName;
+    private $driversLicenseName;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="driver_license_surname", type="string", length=255, nullable=true)
+     * @ORM\Column(name="drivers_license_surname", type="string", length=255, nullable=true)
      */
-    private $driverLicenseSurname;
+    private $driversLicenseSurname;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="driver_license_categories", type="string", nullable=true)
+     * @ORM\Column(name="drivers_license_categories", type="string", nullable=true)
      */
     private $driversLicenseCategories;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="driver_license_expire", type="date", nullable=true)
+     * @ORM\Column(name="drivers_license_expire", type="date", nullable=true)
      */
     private $driversLicenseExpire;
 
@@ -172,6 +179,37 @@ class ForeignDriversLicenseUpload
      */
     private $fileSize;
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="valid", type="boolean", nullable=true)
+     */
+    private $valid;
+
+    /**
+     * @var DateTime
+     *
+     * @ORM\Column(name="validated_at", type="datetime", nullable=true)
+     */
+    private $validatedAt;
+
+    /**
+     * @var Webuser
+     *
+     * @ORM\ManyToOne(targetEntity="Webuser")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="validated_by", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $validatedBy;
+
+    /**
+     * @var DateTime
+     *
+     * @ORM\Column(name="uploaded_at", type="datetime", nullable=true)
+     */
+    private $uploadedAt;
+
     public function __construct(
         Customers $customer,
         $fileName,
@@ -184,21 +222,129 @@ class ForeignDriversLicenseUpload
         $this->customerSurname = $customer->getSurname();
         $this->customerBirthTown = $customer->getBirthTown();
         $this->customerBirthProvince = $customer->getBirthProvince();
+        $this->customerBirthCoutry = $customer->getBirthCountry();
         $this->customerBirthDate = $customer->getBirthDate();
         $this->customerCountry = $customer->getCountry();
         $this->customerTown = $customer->getTown();
         $this->customerAddress = $customer->getAddress();
         $this->driversLicenseNumber = $customer->getDriverLicense();
         $this->driversLicenseAuthority = $customer->getDriverLicenseAuthority();
-        $this->driverLicenseCountry = $customer->getDriverLicenseCountry();
-        $this->driverLicenseReleaseDate = $customer->getDriverLicenseReleaseDate();
-        $this->driverLicenseName = $customer->getDriverLicenseName();
-        $this->driverLicenseSurname = $customer->getDriverLicenseSurname();
+        $this->driversLicenseCountry = $customer->getDriverLicenseCountry();
+        $this->driversLicenseReleaseDate = $customer->getDriverLicenseReleaseDate();
+        $this->driversLicenseName = $customer->getDriverLicenseName();
+        $this->driversLicenseSurname = $customer->getDriverLicenseSurname();
         $this->driversLicenseCategories = $customer->getDriverLicenseCategories();
         $this->driversLicenseExpire = $customer->getDriverLicenseExpire();
         $this->fileName = $fileName;
         $this->fileType = $fileType;
         $this->fileLocation = $fileLocation;
         $this->fileSize = $fileSize;
+        $this->uploadedAt = date_create();
+    }
+
+    public function id()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return Customers
+     */
+    public function customer()
+    {
+        return $this->customer;
+    }
+
+    public function customerId()
+    {
+        return $this->customer->getId();
+    }
+
+    public function customerName()
+    {
+        return $this->customerName;
+    }
+
+    public function customerSurname()
+    {
+        return $this->customerSurname;
+    }
+
+    public function customerAddress()
+    {
+        return $this->customerAddress . ',' . $this->customerTown . ', ' .
+            $this->customerCountry;
+    }
+
+    public function customerBirthDate()
+    {
+        return $this->customerBirthDate;
+    }
+
+    public function customerBirthPlace()
+    {
+        return $this->customerBirthTown . ' (' . $this->customerBirthProvince . '), ' .
+            $this->customerBirthCountry;
+    }
+
+    public function driversLicenseNumber()
+    {
+        return $this->driversLicenseNumber;
+    }
+
+    public function driversLicenseAuthority()
+    {
+        return $this->driversLicenseAuthority;
+    }
+
+    public function driversLicenseCountry()
+    {
+        return $this->driversLicenseCountry;
+    }
+
+    public function driversLicenseReleaseDate()
+    {
+        return $this->driversLicenseReleaseDate;
+    }
+
+    public function driversLicenseName()
+    {
+        return $this->driversLicenseName . ' ' . $this->driversLicenseSurname;
+    }
+
+    public function driversLicenseCategories()
+    {
+        return $this->driversLicenseCategories;
+    }
+
+    public function driversLicenseExpire()
+    {
+        return $this->driversLicenseExpire;
+    }
+
+    public function fileLocation()
+    {
+        return $this->fileLocation;
+    }
+
+    /**
+     * @return bool
+     */
+    public function valid()
+    {
+        return $this->valid;
+    }
+
+    /**
+     * @var Webuser $webuser
+     * @return static
+     */
+    public function validate(Webuser $webuser)
+    {
+        $this->valid = true;
+        $this->validatedAt = date_create();
+        $this->validatedBy = $webuser;
+
+        return $this;
     }
 }
