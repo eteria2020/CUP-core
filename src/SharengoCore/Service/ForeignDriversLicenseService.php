@@ -66,14 +66,17 @@ class ForeignDriversLicenseService
         $this->renameUpload->setTarget($target);
 
         // we save the uploaded file in the file system
-        $newFileLocation = $this->renameUpload->filter($uploadedFile->getTemporaryLocation());
+        $newFileLocation = $this->renameUpload->filter([
+            'tmp_name' => $uploadedFile->getTemporaryLocation(),
+            'name' => $uploadedFile->getName()
+        ]);
 
         // we write the data of the customer and of the file in the database
         $foreignDriversLicenseUpload = new ForeignDriversLicenseUpload(
             $customer,
             $uploadedFile->getName(),
             $uploadedFile->getType(),
-            $newFileLocation,
+            $newFileLocation['tmp_name'],
             $uploadedFile->getSize()
         );
 

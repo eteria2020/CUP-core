@@ -220,6 +220,7 @@ return [
             'SharengoCore\Service\CsvService' => 'SharengoCore\Service\CsvServiceFactory',
             'SharengoCore\Service\ForeignDriversLicenseService' => 'SharengoCore\Service\ForeignDriversLicenseServiceFactory',
             'SharengoCore\Service\ValidateForeignDriversLicenseService' => 'SharengoCore\Service\ValidateForeignDriversLicenseServiceFactory',
+            'SharengoCore\Listener\UploadedDriversLicenseMailSender' => 'SharengoCore\Listener\UploadedDriversLicenseMailSenderFactory'
         ],
         'shared' => [
             'SharengoCore\Service\TripCostComputerService' => false,
