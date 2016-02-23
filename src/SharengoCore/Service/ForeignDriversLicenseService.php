@@ -107,10 +107,10 @@ class ForeignDriversLicenseService
                     'drivers_license_number' => $driversLicense->driversLicenseNumber(),
                     'drivers_license_authority' => $driversLicense->driversLicenseAuthority(),
                     'drivers_license_country' => $driversLicense->driversLicenseCountry(),
-                    'drivers_license_release_date' => $driversLicense->driversLicenseReleaseDate(),
+                    'drivers_license_release_date' => $driversLicense->driversLicenseReleaseDate()->format('Y-m-d'),
                     'drivers_license_name' => $driversLicense->driversLicenseName(),
                     'drivers_license_categories' => $driversLicense->driversLicenseCategories(),
-                    'drivers_license_expire' => $driversLicense->driversLicenseExpire(),
+                    'drivers_license_expire' => $driversLicense->driversLicenseExpire()->format('Y-m-d'),
                     'valid' => $driversLicense->valid()
                 ]
             ];
