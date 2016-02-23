@@ -60,9 +60,15 @@ class EmailService
         $mimeMessage = new Mime\Message();
         $mimeMessage->setParts($parts);
 
+        if (is_array($to)) {
+            $to = array_map('strtolower', $to);
+        } else {
+            $to = strtolower($to);
+        }
+
         $mail = (new Message())
             ->setFrom($this->emailSettings['from'])
-            ->setTo(strtolower($to))
+            ->setTo($to)
             ->setSubject($subject)
             ->setReplyTo($this->emailSettings['replyTo'])
             ->setBcc($this->emailSettings['registrationBcc'])
