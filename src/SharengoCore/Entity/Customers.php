@@ -4,6 +4,8 @@ namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * Customers
@@ -420,6 +422,7 @@ class Customers
     public function __construct()
     {
         $this->insertedTs = date('Y-m-d h:i:s');
+        $this->foreignDriversLicenseUploads = new ArrayCollection();
     }
 
     /**
@@ -1773,5 +1776,21 @@ class Customers
     public function getForeignDriversLicenseUploads()
     {
         return $this->foreignDriversLicenseUploads;
+    }
+
+    public function addForeignDriversLicenseUploads(Collection $uploads)
+    {
+        foreach ($uploads as $upload) {
+            $upload->setCustomer($this);
+            $this->foreignDriversLicenseUploads->add($upload);
+        }
+    }
+
+    public function removeForeignDriversLicenseUploads(Collection $uploads)
+    {
+        foreach ($uploads as $upload) {
+            $upload->setCustomer(null);
+            $this->foreignDriversLicenseUploads->removeElement($upload);
+        }
     }
 }

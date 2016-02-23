@@ -25,9 +25,9 @@ class ForeignDriversLicenseUpload
     /**
      * @var \Customers
      *
-     * @ORM\ManyToOne(targetEntity="Customers", inversedBy="foreignDriversLicenseUploads")
+     * @ORM\ManyToOne(targetEntity="Customers")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="customer_id", referencedColumnName="id", nullable=false)
+     *   @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      * })
      */
     private $customer;
