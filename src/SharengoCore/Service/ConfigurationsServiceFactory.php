@@ -18,6 +18,9 @@ class ConfigurationsServiceFactory implements FactoryInterface
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $configurationsRepository = $entityManager->getRepository('\SharengoCore\Entity\Configurations');
 
-        return new ConfigurationsService($entityManager, $configurationsRepository);
+        $languageService = $serviceLocator->get('LanguageService');
+        $translator = $languageService->getTranslator();
+
+        return new ConfigurationsService($entityManager, $configurationsRepository, $translator);
     }
 }

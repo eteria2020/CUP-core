@@ -8,6 +8,7 @@ use SharengoCore\Entity\Reservations;
 use SharengoCore\Entity\Cars;
 use SharengoCore\Service\CustomersService;
 use SharengoCore\Entity\Customers;
+use Zend\Mvc\I18n\Translator;
 
 class ReservationsService
 {
@@ -39,6 +40,10 @@ class ReservationsService
      * @var EntityManager
      */
     private $entityManager;
+    /**
+     * @var Translator
+     */
+    private $translator;
 
     /**
      * @param ReservationsRepository $reservationsRepository
@@ -50,12 +55,14 @@ class ReservationsService
         ReservationsRepository $reservationsRepository,
         DatatableService $datatableService,
         CustomersService $customersService,
-        EntityManager $entityManager
+        EntityManager $entityManager,
+        Translator $translator
     ) {
         $this->reservationsRepository = $reservationsRepository;
         $this->datatableService = $datatableService;
         $this->customersService = $customersService;
         $this->entityManager = $entityManager;
+        $this->translator = $translator;
     }
 
     public function getListReservationsFiltered($filters = [])
@@ -104,8 +111,8 @@ class ReservationsService
                     'carPlate' => $reservation->getCar()->getPlate(),
                     'customer' => null != $reservation->getCustomer() ? $reservation->getCustomer()->getName() . ' ' . $reservation->getCustomer()->getSurname() : '',
                     'customerId' => null != $reservation->getCustomer() ? $reservation->getCustomer()->getId() : '',
-                    'cards'    => ($reservation->getLength() != self::SYS_RESERVATION_LENGTH) ? $reservation->getCards() : 'PRENOTAZIONE DI SISTEMA',
-                    'active'   => $reservation->getActive() ? 'Si' : 'No',
+                    'cards'    => ($reservation->getLength() != self::SYS_RESERVATION_LENGTH) ? $reservation->getCards() : $this->translator->translate('PRENOTAZIONE DI SISTEMA'),
+                    'active'   => $reservation->getActive() ? $this->translator->translate('Si') : $this->translator->translate('No'),
                 ]
             ];
         }, $reservations);

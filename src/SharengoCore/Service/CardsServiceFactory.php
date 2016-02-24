@@ -20,6 +20,9 @@ class CardsServiceFactory implements FactoryInterface
             )
         );
 
-        return new CardsService($entityManager, $I_datatableService);
+        $languageService = $serviceLocator->get('LanguageService');
+        $translator = $languageService->getTranslator();
+
+        return new CardsService($entityManager, $I_datatableService, $translator);
     }
 }

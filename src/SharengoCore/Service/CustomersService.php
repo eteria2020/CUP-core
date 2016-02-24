@@ -16,6 +16,8 @@ use Cartasi\Service\CartasiContractsService;
 
 use Zend\Authentication\AuthenticationService as UserService;
 use Doctrine\ORM\EntityManager;
+use Zend\Mvc\I18n\Translator;
+
 
 class CustomersService implements ValidatorServiceInterface
 {
@@ -68,6 +70,11 @@ class CustomersService implements ValidatorServiceInterface
     private $url;
 
     /**
+     * @var Translator
+     */
+    private $translator;
+
+    /**
      * @param EntityManager $entityManager
      * @param UserService $userService
      * @param DatatableService $datatableService
@@ -84,6 +91,7 @@ class CustomersService implements ValidatorServiceInterface
         DatatableService $datatableService,
         CardsService $cardsService,
         EmailService $emailService,
+        Translator $translator,
         Logger $logger,
         CartasiContractsService $cartasiContractsService,
         TripPaymentsService $tripPaymentsService,
@@ -96,6 +104,7 @@ class CustomersService implements ValidatorServiceInterface
         $this->datatableService = $datatableService;
         $this->cardsService = $cardsService;
         $this->emailService = $emailService;
+        $this->translator = $translator;
         $this->logger = $logger;
         $this->cartasiContractsService = $cartasiContractsService;
         $this->tripPaymentsService = $tripPaymentsService;
@@ -229,7 +238,7 @@ class CustomersService implements ValidatorServiceInterface
                     'driverLicenseExpire' => is_object($customer->getDriverLicenseExpire()) ? $customer->getDriverLicenseExpire()->format('d-m-Y') : '',
                     'email'               => $customer->getEmail(),
                     'taxCode'             => $customer->getTaxCode(),
-                    'registration'        => $customer->getRegistrationCompleted() ? 'Completata' : 'Non Completata',
+                    'registration'        => $customer->getRegistrationCompleted() ? $this->translator->translate('Completata') : $this->translator->translate('Non Completata'),
                 ],
                 'cc'     => [
                     'code' => is_object($customer->getCard()) ? $customer->getCard()->getCode() : '',
@@ -363,15 +372,15 @@ class CustomersService implements ValidatorServiceInterface
     {
 
         if (is_null($promoCode)) {
-            throw new BonusAssignmentException('Codice promo non valido.');
+            throw new BonusAssignmentException($this->translator->translate('Codice promo non valido.'));
         }
 
         if ($this->checkUsedPromoCode($customer, $promoCode)) {
-            throw new BonusAssignmentException('Codice promo già associato a questo account.');
+            throw new BonusAssignmentException($this->translator->translate('Codice promo già associato a questo account.'));
         }
 
         if ($promoCode->getPromocodesinfo()->changesSubscriptionCost()) {
-            throw new BonusAssignmentException('Codice promo non valido.');
+            throw new BonusAssignmentException($this->translator->translate('Codice promo non valido.'));
         }
 
         $customerBonus = CustomersBonus::createFromPromoCode($promoCode);
@@ -448,7 +457,7 @@ class CustomersService implements ValidatorServiceInterface
 
                 $this->emailService->sendEmail(
                     $customer->getEmail(),
-                    'SHARENGO - NOTIFICA DI DISABILITAZIONE',
+                    $this->translator->translate('SHARENGO - NOTIFICA DI DISABILITAZIONE'),
                     $content,
                     $attachments
                 );
@@ -507,7 +516,7 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->emailService->sendEmail(
             $customer->getEmail(),
-            'SHARENGO - RIABILITAZIONE UTENTE',
+            $this->translator->translate('SHARENGO - RIABILITAZIONE UTENTE'),
             $content,
             $attachments
         );

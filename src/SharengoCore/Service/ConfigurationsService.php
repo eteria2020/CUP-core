@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 use SharengoCore\Entity\Configurations;
 use SharengoCore\Entity\Repository\ConfigurationsRepository;
 use SharengoCore\Exception\ConfigurationSaveAlarmException;
+use Zend\Mvc\I18n\Translator;
 
 /**
  * Class ConfigurationsService
@@ -20,6 +21,10 @@ class ConfigurationsService
      * @var ConfigurationsRepository
      */
     private $configurationsRepository;
+    /**
+     * @var Translator
+     */
+    private $translator;
 
     /**
      * ConfigurationsService constructor.
@@ -27,9 +32,12 @@ class ConfigurationsService
      * @param EntityManager            $entityManager
      * @param ConfigurationsRepository $configurationsRepository
      */
-    public function __construct(EntityManager $entityManager, ConfigurationsRepository $configurationsRepository) {
+    public function __construct(EntityManager $entityManager,
+                                ConfigurationsRepository $configurationsRepository,
+                                Translator $translator) {
         $this->entityManager = $entityManager;
         $this->configurationsRepository = $configurationsRepository;
+        $this->translator = $translator;
     }
 
     /**
@@ -74,7 +82,7 @@ class ConfigurationsService
 
         } catch(\Exception $e) {
 
-            throw new ConfigurationSaveAlarmException("Si è verificato un errore durante il salvataggio della configurazione");
+            throw new ConfigurationSaveAlarmException($this->translator->translate("Si è verificato un errore durante il salvataggio della configurazione"));
         }
     }
 }

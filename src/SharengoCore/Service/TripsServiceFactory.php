@@ -36,12 +36,16 @@ class TripsServiceFactory implements FactoryInterface
 
         $commandsService = $serviceLocator->get('SharengoCore\Service\CommandsService');
 
+        $languageService = $serviceLocator->get('LanguageService');
+        $translator = $languageService->getTranslator();
+
         return new TripsService(
             $tripRepository,
             $I_datatableService,
             $I_urlHelper,
             $customerService,
-            $commandsService
+            $commandsService,
+            $translator
         );
     }
 }
