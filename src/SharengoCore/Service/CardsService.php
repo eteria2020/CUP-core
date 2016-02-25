@@ -6,6 +6,7 @@ use SharengoCore\Entity\Cards;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Repository\CardsRepository;
 use SharengoCore\Service\DatatableQueryBuilders\Basic;
+use Zend\Mvc\I18n\Translator;
 use Zend\Validator\IsInstanceOf;
 
 class CardsService
@@ -23,11 +24,15 @@ class CardsService
     /** @var  CardsRepository */
     private $cardsRepository;
 
-    public function __construct($entityManager, DatatableService $datatableService)
+    /** @var  Translator */
+    private $translator;
+
+    public function __construct($entityManager, DatatableService $datatableService, Translator $translator)
     {
         $this->entityManager = $entityManager;
         $this->cardsRepository = $entityManager->getRepository('\SharengoCore\Entity\Cards');
         $this->datatableService = $datatableService;
+        $this->translator = $translator;
     }
 
     /**
@@ -62,7 +67,7 @@ class CardsService
 
             $as_cards[] = [
                 'id'   => $card->getCode(),
-                'name' => sprintf('Rfid: %s - Codice: %s', $card->getRfid(), $card->getCode())
+                'name' => sprintf($this->translator->translate('Rfid: %s - Codice: %s'), $card->getRfid(), $card->getCode())
             ];
         }
 
@@ -89,9 +94,9 @@ class CardsService
                 'e' => [
                     'rfid'       => $card->getRfid(),
                     'code'       => $card->getCode(),
-                    'isAssigned' => $card->getIsAssigned() ? 'Si' : 'No',
+                    'isAssigned' => $card->getIsAssigned() ? $this->translator->translate('Si') : $this->translator->translate('No'),
                     'notes'      => $card->getNotes(),
-                    'assignable' => $card->getAssignable() ? 'Si' : 'No',
+                    'assignable' => $card->getAssignable() ? $this->translator->translate('Si') : $this->translator->translate('No'),
                 ],
                 'cu' => [
                     'surname'   => is_object($card->getCustomer()) ? $card->getCustomer()->getSurname() .' '. $card->getCustomer()->getName() : ''

@@ -24,6 +24,9 @@ class ReservationsServiceFactory implements FactoryInterface
             )
         );
 
-        return new ReservationsService($reservationsRepository, $I_datatableService, $customersService, $entityManager);
+        $languageService = $serviceLocator->get('LanguageService');
+        $translator = $languageService->getTranslator();
+
+        return new ReservationsService($reservationsRepository, $I_datatableService, $customersService, $entityManager, $translator);
     }
 }

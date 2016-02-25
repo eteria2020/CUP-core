@@ -28,12 +28,16 @@ class CustomersServiceFactory implements FactoryInterface
         $tripPaymentsService = $serviceLocator->get('SharengoCore\Service\TripPaymentsService');
         $url = $serviceLocator->get('Configuration')['website']['uri'];
 
+        $languageService = $serviceLocator->get('LanguageService');
+        $translator = $languageService->getTranslator();
+
         return new CustomersService(
             $entityManager,
             $userService,
             $datatableService,
             $cardsService,
             $emailService,
+            $translator,
             $logger,
             $cartasiContractsService,
             $tripPaymentsService,

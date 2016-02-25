@@ -14,6 +14,7 @@ use SharengoCore\Service\DatatableService;
 use SharengoCore\Service\ReservationsService;
 use SharengoCore\Utility\CarStatus;
 use Zend\Authentication\AuthenticationService as UserService;
+use Zend\Mvc\I18n\Translator;
 
 class CarsService
 {
@@ -38,6 +39,9 @@ class CarsService
     /** @var ReservationsService   */
     private $reservationsService;
 
+    /** @var Translator   */
+    private $translator;
+
     /**
      * @param EntityManager    $entityManager
      * @param CarsRepository   $carsRepository
@@ -45,6 +49,7 @@ class CarsService
      * @param FleetsRepository $fleetsRepository
      * @param DatatableService $datatableService
      * @param UserService      $userService
+     * @param Translator $translator
      */
     public function __construct(
         EntityManager $entityManager,
@@ -54,7 +59,8 @@ class CarsService
         FleetRepository $fleetsRepository,
         DatatableService $datatableService,
         UserService $userService,
-        ReservationsService $reservationsService
+        ReservationsService $reservationsService,
+        Translator $translator
     ) {
         $this->entityManager = $entityManager;
         $this->carsRepository = $carsRepository;
@@ -64,6 +70,7 @@ class CarsService
         $this->datatableService = $datatableService;
         $this->userService = $userService;
         $this->reservationsService = $reservationsService;
+        $this->translator = $translator;
     }
 
 
@@ -121,10 +128,10 @@ class CarsService
 
         return array_map(function (Cars $cars) {
 
-            $clean = sprintf('Interna: %s<br />Esterna: %s', $cars->getIntCleanliness(), $cars->getExtCleanliness());
+            $clean = sprintf($this->translator->translate("Interna").': %s<br />' . $this->translator->translate("Esterna") . ': %s', $cars->getIntCleanliness(), $cars->getExtCleanliness());
 
             $positionLink = sprintf(
-                '<a href="http://maps.google.com/?q=%s,%s" target="_blank">Mappa</a>',
+                '<a href="http://maps.google.com/?q=%s,%s" target="_blank">' . $this->translator->translate("Mappa") . '</a>',
                 $cars->getLatitude(),
                 $cars->getLongitude()
             );

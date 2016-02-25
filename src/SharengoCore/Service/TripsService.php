@@ -12,6 +12,7 @@ use SharengoCore\Entity\WebUser;
 use SharengoCore\Service\CommandsService;
 use SharengoCore\Service\CustomersService;
 
+use Zend\Mvc\I18n\Translator;
 use Zend\View\Helper\Url;
 
 class TripsService
@@ -40,6 +41,10 @@ class TripsService
      * @var CommandsService
      */
     private $commandsService;
+    /**
+     * @var Translator
+     */
+    private $translator;
 
     /**
      * @param EntityRepository $tripRepository
@@ -52,13 +57,16 @@ class TripsService
         DatatableService $datatableService,
         $I_urlHelper,
         CustomersService $customersService,
-        CommandsService $commandsService
+        CommandsService $commandsService,
+        Translator $translator
+
     ) {
         $this->tripRepository = $tripRepository;
         $this->datatableService = $datatableService;
         $this->I_urlHelper = $I_urlHelper;
         $this->customersService = $customersService;
         $this->commandsService = $commandsService;
+        $this->translator = $translator;
     }
 
     /**
@@ -165,7 +173,7 @@ class TripsService
                     'timestampBeginning' => $trip->getTimestampBeginning()->format('d-m-Y H:i:s') . $parentStart,
                     'timestampEnd' => (null != $trip->getTimestampEnd() ? $trip->getTimestampEnd()->format('d-m-Y H:i:s') : ''),
                     'parkSeconds' => $trip->getParkSeconds() . ' sec',
-                    'payable' => $trip->getPayable() ? 'Si' : 'No',
+                    'payable' => $trip->getPayable() ? $this->translator->translate('Si') : $this->translator->translate('No'),
                     'totalCost' => ['amount' => $tripCost, 'id' => $trip->getId()],
                     'idLink' => $trip->getId()
                 ],
@@ -179,7 +187,7 @@ class TripsService
                 'c' => [
                     'plate' => $plate,
                     'label' => $trip->getCar()->getLabel(),
-                    'parking' => $trip->getCar()->getParking() ? 'Si' : 'No',
+                    'parking' => $trip->getCar()->getParking() ? $this->translator->translate('Si') : $this->translator->translate('No'),
                     'keyStatus' => $trip->getCar()->getKeystatus()
                 ],
                 'cc' => [
@@ -190,7 +198,7 @@ class TripsService
                     'name' => $trip->getFleetName(),
                 ],
                 'duration' => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd()),
-                'payed' => $trip->getPayable() ? ($trip->isPaymentCompleted() ? 'Si' : 'No') : '-'
+                'payed' => $trip->getPayable() ? ($trip->isPaymentCompleted() ? $this->translator->translate('Si') : $this->translator->translate('No')) : '-'
             ];
         }, $trips);
     }
@@ -206,7 +214,7 @@ class TripsService
             return $s_from->diff($s_to)->format('%dg %H:%I:%S');
         }
 
-        return self::DURATION_NOT_AVAILABLE;
+        return $this->translator->translate(self::DURATION_NOT_AVAILABLE);
     }
 
     public function getUrlHelper()
