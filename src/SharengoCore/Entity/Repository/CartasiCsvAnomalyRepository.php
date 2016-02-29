@@ -71,4 +71,22 @@ class CartasiCsvAnomalyRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getOneOrNullResult();
     }
+
+    /**
+     * @param CartasiCsvAnomaly $anomaly
+     * @return array
+     */
+    public function findNotesByAnomaly(CartasiCsvAnomaly $anomaly)
+    {
+        $em = $this->getEntityManager();
+        $dql = 'SELECT an
+            FROM \SharengoCore\Entity\CartasiCsvAnomalyNote an
+            WHERE an.cartasiCsvAnomaly = :anomaly
+            ORDER BY an.insertedAt ASC';
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('anomaly', $anomaly);
+
+        return $query->getResult();
+    }
 }

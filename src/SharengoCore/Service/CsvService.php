@@ -6,6 +6,7 @@ use Cartasi\Entity\Transactions;
 use Cartasi\Service\CartasiCsvService;
 use Cartasi\Service\CartasiPaymentsService;
 use SharengoCore\Entity\CartasiCsvAnomaly;
+use SharengoCore\Entity\CartasiCsvAnomalyNote;
 use SharengoCore\Entity\CartasiCsvFile;
 use SharengoCore\Entity\Webuser;
 use SharengoCore\Entity\Repository\CartasiCsvAnomalyRepository;
@@ -232,7 +233,7 @@ class CsvService
      * @param string $content
      * @throws NoteContentNotValidException
      */
-    public function addNoteToAnomaly(
+    public function createAnomalyNote(
         CartasiCsvAnomaly $csvAnomaly,
         Webuser $webuser,
         $content
@@ -241,9 +242,14 @@ class CsvService
             throw new NoteContentNotValidException();
         }
 
-        $csvAnomaly->addUpdate($webuser, $content);
-        $this->entityManager->persist($csvAnomaly);
+        $note = new CartasiCsvAnomalyNote($webuser, $csvAnomaly, $content);
+        $this->entityManager->persist($note);
         $this->entityManager->flush();
+    }
+
+    public function getAnomalyNotes(CartasiCsvAnomaly $anomaly)
+    {
+        return $this->csvAnomalyRepository->findNotesByAnomaly($anomaly);
     }
 
     /**

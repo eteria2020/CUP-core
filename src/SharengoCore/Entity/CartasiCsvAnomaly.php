@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity;
 
 use Cartasi\Entity\Transactions;
+use DateTime;
 use SharengoCore\Exception\CartasiCsvAnomalyAlreadyResolvedException;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -115,13 +116,6 @@ class CartasiCsvAnomaly
     private $transaction;
 
     /**
-     * @var array
-     *
-     * @ORM\Column(name="updates", type="json_array", nullable=true)
-     */
-    private $updates;
-
-    /**
      * @param CartasiCsvFile $cartasiCsvFile
      * @param string $type
      * @param array $csvData
@@ -183,6 +177,22 @@ class CartasiCsvAnomaly
     public function getInsertedTs()
     {
         return $this->insertedTs;
+    }
+
+    /**
+     * @return Webuser
+     */
+    public function getWebuser()
+    {
+        return $this->webuser;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getResolvedTs()
+    {
+        return $this->resolvedTs;
     }
 
     /**
@@ -270,39 +280,5 @@ class CartasiCsvAnomaly
     public function getTransaction()
     {
         return $this->transaction;
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getUpdates()
-    {
-        return $this->updates;
-    }
-
-    /**
-     * Add an update to the anomaly. Updates are saved as a key => value array
-     * where the key is the date at which the note was added and the value is
-     * another array with two key => value pairs.
-     *
-     * The first is 'webuser' => the id of the webuser who inserted the note.
-     * The second is 'content' => the content of the note.
-     *
-     * This assumes two notes are not added at the same exact second.
-     *
-     * @param Webuser $webuser
-     * @param string $content
-     */
-    public function addUpdate(Webuser $webuser, $content)
-    {
-        // Create the main array if no notes were ever added
-        if (empty($this->updates)) {
-            $this->updates = [];
-        }
-
-        $this->updates[date_create()->format('Y-m-d H:i:s')] = [
-                'webuser' => $webuser->getId(),
-                'content' => $content
-            ];
     }
 }
