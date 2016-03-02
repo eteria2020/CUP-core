@@ -59,7 +59,7 @@ class TripPaymentTries
     private $outcome;
 
     /**
-     * @var Tranasctions
+     * @var Transactions
      *
      * @ORM\ManyToOne(targetEntity="Cartasi\Entity\Transactions")
      * @ORM\JoinColumns({
@@ -118,7 +118,7 @@ class TripPaymentTries
     }
 
     /**
-     * @var string
+     * @return string
      */
     public function getOutcome()
     {

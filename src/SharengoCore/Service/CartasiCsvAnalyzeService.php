@@ -5,9 +5,11 @@ namespace SharengoCore\Service;
 use Cartasi\Entity\Transactions;
 use Cartasi\Service\CartasiCsvService;
 use Cartasi\Service\CartasiPaymentsService;
+use Composer\DependencyResolver\Transaction;
 use SharengoCore\Entity\CartasiCsvAnomaly;
 use SharengoCore\Entity\CartasiCsvAnomalyNote;
 use SharengoCore\Entity\CartasiCsvFile;
+use SharengoCore\Entity\Repository\CartasiCsvAnomalyNoteRepository;
 use SharengoCore\Entity\Webuser;
 use SharengoCore\Entity\Repository\CartasiCsvAnomalyRepository;
 use SharengoCore\Entity\Repository\CartasiCsvFileRepository;
@@ -16,7 +18,7 @@ use SharengoCore\Exception\MissingOverrideNameException;
 
 use Doctrine\ORM\EntityManager;
 
-class CsvService
+class CartasiCsvAnalyzeService
 {
     /**
      * @var EntityManager
@@ -249,7 +251,7 @@ class CsvService
 
     public function getAnomalyNotes(CartasiCsvAnomaly $anomaly)
     {
-        return $this->csvAnomalyRepository->findNotesByAnomaly($anomaly);
+        return $this->csvAnomalyNoteRepository->findNotesByAnomaly($anomaly);
     }
 
     /**
@@ -355,5 +357,10 @@ class CsvService
         }
 
         return $duplicate instanceof CartasiCsvAnomaly;
+    }
+
+    public function getTransactionTypeEntity(Transactions $transaction)
+    {
+        return $this->csvAnomalyRepository->findTransactionTypeEntityFromTransaction($transaction);
     }
 }

@@ -86,4 +86,12 @@ class SubscriptionPayment
     {
         return $this->id;
     }
+
+    /**
+     * @return \Customers
+     */
+    public function getCustomer()
+    {
+        return $this->customer;
+    }
 }

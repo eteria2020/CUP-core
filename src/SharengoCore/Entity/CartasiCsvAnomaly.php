@@ -3,7 +3,6 @@
 namespace SharengoCore\Entity;
 
 use Cartasi\Entity\Transactions;
-use DateTime;
 use SharengoCore\Exception\CartasiCsvAnomalyAlreadyResolvedException;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -114,6 +113,15 @@ class CartasiCsvAnomaly
      * })
      */
     private $transaction;
+
+
+    /**
+     * Bidirectional - One-To-Many (INVERSE SIDE)
+     * @var CartasiCsvAnomalyNote[]
+     * @ORM\OneToMany(targetEntity="CartasiCsvAnomalyNote", mappedBy="cartasiCsvAnomaly")
+     * @ORM\OrderBy({"insertedAt" = "DESC"})
+     */
+    private $notes;
 
     /**
      * @param CartasiCsvFile $cartasiCsvFile
@@ -280,5 +288,13 @@ class CartasiCsvAnomaly
     public function getTransaction()
     {
         return $this->transaction;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNotes()
+    {
+        return $this->notes;
     }
 }

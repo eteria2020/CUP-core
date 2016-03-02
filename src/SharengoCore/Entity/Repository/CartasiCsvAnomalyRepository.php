@@ -72,21 +72,38 @@ class CartasiCsvAnomalyRepository extends \Doctrine\ORM\EntityRepository
         return $query->getOneOrNullResult();
     }
 
-    /**
-     * @param CartasiCsvAnomaly $anomaly
-     * @return array
-     */
-    public function findNotesByAnomaly(CartasiCsvAnomaly $anomaly)
+    public function findTransactionTypeEntityFromTransaction(Transactions $transaction)
     {
         $em = $this->getEntityManager();
-        $dql = 'SELECT an
-            FROM \SharengoCore\Entity\CartasiCsvAnomalyNote an
-            WHERE an.cartasiCsvAnomaly = :anomaly
-            ORDER BY an.insertedAt ASC';
+        $query = $em->createQuery(
+            'SELECT p FROM \SharengoCore\Entity\SubscriptionPayment p '.
+            'WHERE p.transaction = :transaction '
+        );
+        $query->setParameter('transaction', $transaction);
+        $query->setMaxResults(1);
+        $result = $query->getOneOrNullResult();
+        if (!is_null($result)) {
+            return $result;
+        }
 
-        $query = $em->createQuery($dql);
-        $query->setParameter('anomaly', $anomaly);
+        $query = $em->createQuery(
+            'SELECT p FROM \SharengoCore\Entity\BonusPackagePayment p '.
+            'WHERE p.transaction = :transaction '
+        );
+        $query->setParameter('transaction', $transaction);
+        $query->setMaxResults(1);
+        $result = $query->getOneOrNullResult();
+        if (!is_null($result)) {
+            return $result;
+        }
 
-        return $query->getResult();
+        $query = $em->createQuery(
+            'SELECT tp FROM \SharengoCore\Entity\TripPayments tp '.
+            'JOIN tp.tripPaymentTries tpt '.
+            'WHERE tpt.transaction = :transaction '
+        );
+        $query->setParameter('transaction', $transaction);
+        $query->setMaxResults(1);
+        return $query->getOneOrNullResult();
     }
 }

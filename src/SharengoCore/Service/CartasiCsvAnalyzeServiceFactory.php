@@ -5,7 +5,7 @@ namespace SharengoCore\Service;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class CsvServiceFactory implements FactoryInterface
+class CartasiCsvAnalyzeServiceFactory implements FactoryInterface
 {
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
@@ -17,7 +17,7 @@ class CsvServiceFactory implements FactoryInterface
         $config = $serviceLocator->get('Config');
         $csvConfig = $config['csv'];
 
-        return new CsvService(
+        return new CartasiCsvAnalyzeService(
             $entityManager,
             $cartasiCsvFileRepository,
             $cartasiCsvAnomalyRepository,

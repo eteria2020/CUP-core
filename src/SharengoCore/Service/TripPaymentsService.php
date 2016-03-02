@@ -167,7 +167,7 @@ class TripPaymentsService
         return $this->tripPaymentsRepository->findTripPaymentsForUserPayment($customer);
     }
 
-    /*
+    /**
      * @param Customers $customer
      * @return TripPayments | null
      */

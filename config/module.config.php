@@ -218,7 +218,7 @@ return [
             'SharengoCore\Service\ZonesService' => 'SharengoCore\Service\ZonesServiceFactory',
             'SharengoCore\Service\CustomerDeactivationService' => 'SharengoCore\Service\CustomerDeactivationServiceFactory',
             'SharengoCore\Service\MunicipalitiesService' => 'SharengoCore\Service\MunicipalitiesServiceFactory',
-            'SharengoCore\Service\CsvService' => 'SharengoCore\Service\CsvServiceFactory',
+            'SharengoCore\Service\CartasiCsvAnalyzeService' => 'SharengoCore\Service\CartasiCsvAnalyzeServiceFactory',
             'SharengoCore\Service\ForeignDriversLicenseService' => 'SharengoCore\Service\ForeignDriversLicenseServiceFactory',
             'SharengoCore\Service\ValidateForeignDriversLicenseService' => 'SharengoCore\Service\ValidateForeignDriversLicenseServiceFactory',
             'SharengoCore\Listener\UploadedDriversLicenseMailSender' => 'SharengoCore\Listener\UploadedDriversLicenseMailSenderFactory'

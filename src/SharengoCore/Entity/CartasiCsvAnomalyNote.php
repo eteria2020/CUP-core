@@ -2,14 +2,13 @@
 
 namespace SharengoCore\Entity;
 
-use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * CartasiCsvAnomalyNote
  *
  * @ORM\Table(name="cartasi_csv_anomalies_notes")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CartasiCsvAnomalyNoteRepository")
  */
 class CartasiCsvAnomalyNote
 {
@@ -66,10 +65,11 @@ class CartasiCsvAnomalyNote
      * @param CartasiCsvAnomaly $anomaly
      * @param $note
      */
-    public function __construct(Webuser $webuser, CartasiCsvAnomaly $anomaly, $note) {
+    public function __construct(Webuser $webuser, CartasiCsvAnomaly $anomaly, $note)
+    {
         $this->webuser = $webuser;
         $this->cartasiCsvAnomaly = $anomaly;
-        $this->insertedAt = new DateTime();
+        $this->insertedAt = date_create();
         $this->note = $note;
     }
 
@@ -104,5 +104,4 @@ class CartasiCsvAnomalyNote
     {
         return $this->cartasiCsvAnomaly;
     }
-
 }
