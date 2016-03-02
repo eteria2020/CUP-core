@@ -249,11 +249,6 @@ class CartasiCsvAnalyzeService
         $this->entityManager->flush();
     }
 
-    public function getAnomalyNotes(CartasiCsvAnomaly $anomaly)
-    {
-        return $this->csvAnomalyNoteRepository->findNotesByAnomaly($anomaly);
-    }
-
     /**
      * @param CartasiCsvAnomaly $csvAnomaly
      * @param Webuser $webuser
