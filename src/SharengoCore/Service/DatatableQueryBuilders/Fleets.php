@@ -8,10 +8,15 @@ class Fleets implements DatatableQueryBuilderInterface
      * @var DatatableQueryBuilderInterface
      */
     private $queryBuilder;
+    /**
+     * @var string
+     */
+    private $joinType;
 
-    public function __construct(DatatableQueryBuilderInterface $queryBuilder)
+    public function __construct(DatatableQueryBuilderInterface $queryBuilder, $joinType = 'LEFT')
     {
         $this->queryBuilder = $queryBuilder;
+        $this->joinType = $joinType;
     }
 
     public function select()
@@ -21,6 +26,11 @@ class Fleets implements DatatableQueryBuilderInterface
 
     public function join()
     {
-        return $this->queryBuilder->join().'LEFT JOIN e.fleet f ';
+        return $this->queryBuilder->join(). $this->joinType . ' JOIN e.fleet f ';
+    }
+
+    public function where()
+    {
+        return $this->queryBuilder->where();
     }
 }

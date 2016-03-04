@@ -7,4 +7,6 @@ interface DatatableQueryBuilderInterface
     public function select();
 
     public function join();
+
+    public function where();
 }

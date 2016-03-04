@@ -9,9 +9,12 @@ class Cars implements DatatableQueryBuilderInterface
      */
     private $queryBuilder;
 
-    public function __construct(DatatableQueryBuilderInterface $queryBuilder)
+    private $joinType;
+
+    public function __construct(DatatableQueryBuilderInterface $queryBuilder, $joinType = 'LEFT')
     {
         $this->queryBuilder = $queryBuilder;
+        $this->joinType = $joinType;
     }
 
     public function select()
@@ -21,6 +24,11 @@ class Cars implements DatatableQueryBuilderInterface
 
     public function join()
     {
-        return $this->queryBuilder->join().'LEFT JOIN e.car c ';
+        return $this->queryBuilder->join().$this->joinType . ' JOIN e.car c ';
+    }
+
+    public function where()
+    {
+        return $this->queryBuilder->where();
     }
 }

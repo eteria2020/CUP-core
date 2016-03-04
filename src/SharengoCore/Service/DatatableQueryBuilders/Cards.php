@@ -11,10 +11,13 @@ class Cards implements DatatableQueryBuilderInterface
 
     private $alias;
 
-    public function __construct(DatatableQueryBuilderInterface $queryBuilder, $alias)
+    private $joinType;
+
+    public function __construct(DatatableQueryBuilderInterface $queryBuilder, $alias, $joinType = 'LEFT')
     {
         $this->queryBuilder = $queryBuilder;
         $this->alias = $alias;
+        $this->joinType = $joinType;
     }
 
     public function select()
@@ -24,6 +27,11 @@ class Cards implements DatatableQueryBuilderInterface
 
     public function join()
     {
-        return $this->queryBuilder->join().sprintf('LEFT JOIN %s.card cc ', $this->alias);
+        return $this->queryBuilder->join().sprintf($this->joinType . ' JOIN %s.card cc ', $this->alias);
+    }
+
+    public function where()
+    {
+        return $this->queryBuilder->where();
     }
 }

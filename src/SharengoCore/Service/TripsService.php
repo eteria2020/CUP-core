@@ -28,6 +28,11 @@ class TripsService
     private $datatableService;
 
     /**
+     * @var DatatableServiceInterface
+     */
+    private $datatableServiceNotPayed;
+
+    /**
      * @var Url
      */
     private $I_urlHelper;
@@ -55,6 +60,7 @@ class TripsService
     public function __construct(
         $tripRepository,
         DatatableService $datatableService,
+        DatatableService $datatableServiceNotPayed,
         $I_urlHelper,
         CustomersService $customersService,
         CommandsService $commandsService,
@@ -63,6 +69,7 @@ class TripsService
     ) {
         $this->tripRepository = $tripRepository;
         $this->datatableService = $datatableService;
+        $this->datatableServiceNotPayed = $datatableServiceNotPayed;
         $this->I_urlHelper = $I_urlHelper;
         $this->customersService = $customersService;
         $this->commandsService = $commandsService;
@@ -124,15 +131,7 @@ class TripsService
 
         return array_map(function (Trips $trip) {
 
-            $urlHelper = $this->I_urlHelper;
-            $plate = sprintf(
-                '<a href="%s">%s</a>',
-                $urlHelper(
-                    'cars/edit',
-                    ['plate' => $trip->getCar()->getPlate()]
-                ),
-                $trip->getCar()->getPlate()
-            );
+            $plate = $this->getClickablePlate($trip);
 
             $parentId = "";
             $parentStart = "";
@@ -143,27 +142,7 @@ class TripsService
                 $parentStart = "<br>(" . $parent->getTimestampBeginning()->format('d-m-Y H:i:s') . ")";
             }
 
-            /**
-             * blank - the trip has not ended
-             * 'FREE' - the trip is free because the customer is either in gold
-             *     list or is a maintainer
-             * n,nn (the actual cost) - if the trip has a cost greater than zero
-             * 0,00 - if the cost has not yet been calculated or bonus minutes
-             *     have been used
-             */
-            $tripCost = '';
-            if ($trip->isEnded()) {
-                if ($trip->getPayable() && $trip->isAccountable()) {
-                    $tripPayment = $trip->getTripPayment();
-                    if ($tripPayment instanceof TripPayments) {
-                        $tripCost = $tripPayment->getTotalCost();
-                    } else {
-                        $tripCost = 0;
-                    }
-                } else {
-                    $tripCost = 'FREE';
-                }
-            }
+            $tripCost = $this->calculateTripCost($trip);
 
             return [
                 'e' => [
@@ -203,9 +182,97 @@ class TripsService
         }, $trips);
     }
 
+    public function getDataNotPayedDataTable(array $filters = [], $count = false)
+    {
+        $trips = $this->datatableServiceNotPayed->getData('Trips', $filters, $count);
+
+        if ($count) {
+            return $trips;
+        }
+
+        return array_map(function (Trips $trip) {
+
+            $plate = $this->getClickablePlate($trip);
+            $tripCost = $this->calculateTripCost($trip);
+
+            return [
+                'e' => [
+                    'id' => $trip->getId(),
+                    'kmBeginning' => $trip->getKmBeginning(),
+                    'kmEnd' => $trip->getKmEnd(),
+                    'timestampBeginning' => $trip->getTimestampBeginning()->format('d-m-Y H:i:s'),
+                    'timestampEnd' => (null != $trip->getTimestampEnd() ? $trip->getTimestampEnd()->format('d-m-Y H:i:s') : ''),
+                    'duration' => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd()),
+                    'parkSeconds' => $trip->getParkSeconds() . ' sec',
+                    'totalCost' => ['amount' => $tripCost, 'id' => $trip->getId()],
+                ],
+                'cu' => [
+                    'id' => $trip->getCustomer()->getId(),
+                    'surname' => $trip->getCustomer()->getSurname() ,
+                    'name' => $trip->getCustomer()->getName()
+                ],
+                'cc' => [
+                    'rfid' => $trip->getCustomer()->getCard()->getRfid(),
+                ],
+                'c' => [
+                    'plate' => $plate,
+
+                    ],
+                'f'=>[
+                    'name' => $trip->getCar()->getFleet()->getName()
+                ]
+            ];
+        }, $trips);
+    }
+
+    private function getClickablePlate(Trips $trip)
+    {
+        $urlHelper = $this->I_urlHelper;
+        return sprintf(
+            '<a href="%s">%s</a>',
+            $urlHelper(
+                'cars/edit',
+                ['plate' => $trip->getCar()->getPlate()]
+            ),
+            $trip->getCar()->getPlate()
+        );
+    }
+
+    /**
+     * blank - the trip has not ended
+     * 'FREE' - the trip is free because the customer is either in gold
+     *     list or is a maintainer
+     * n,nn (the actual cost) - if the trip has a cost greater than zero
+     * 0,00 - if the cost has not yet been calculated or bonus minutes
+     *     have been used
+     * @param Trips $trip
+     * @return float|string
+     */
+    private function calculateTripCost(Trips $trip)
+    {
+        if ($trip->isEnded()) {
+            if ($trip->getPayable() && $trip->isAccountable()) {
+                $tripPayment = $trip->getTripPayment();
+                if ($tripPayment instanceof TripPayments) {
+                    return $tripPayment->getTotalCost();
+                } else {
+                    return 0;
+                }
+            } else {
+                return 'FREE';
+            }
+        }
+        return '';
+    }
+
     public function getTotalTrips()
     {
         return $this->tripRepository->getTotalTrips();
+    }
+
+    public function getTotalTripsNotPayed()
+    {
+        return $this->tripRepository->getTotalTripsNotPayed();
     }
 
     public function getDuration($s_from, $s_to)
@@ -233,8 +300,9 @@ class TripsService
     }
 
     /**
-     * @param Customers
-     * @return Trips[]
+     * @param Customers $customer
+     * @return \SharengoCore\Entity\Trips[]
+     * @internal param $Customers
      */
     public function getCustomerTripsToBeAccounted(Customers $customer)
     {

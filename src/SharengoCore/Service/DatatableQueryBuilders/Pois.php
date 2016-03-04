@@ -23,4 +23,9 @@ class Pois implements DatatableQueryBuilderInterface
     {
         return '';
     }
+
+    public function where()
+    {
+        return $this->queryBuilder->where();
+    }
 }

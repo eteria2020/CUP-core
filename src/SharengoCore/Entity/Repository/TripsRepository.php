@@ -131,6 +131,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
      *
      * @param int[] an array of trip Ids
      * @param boolean wether to set the trips payable or not
+     * @return mixed
      */
     public function updateTripsPayable($tripIds, $payable)
     {
@@ -258,7 +259,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
      * close a trip setting timestampEnd and payable
      *
      * @param Trips $trip
-     * @param DateTime $timestampEnd
+     * @param \DateTime $timestampEnd
      * @param bool $payable
      */
     public function closeTrip(
@@ -273,25 +274,25 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $this->getEntityManager()->flush();
     }
 
-    public function findTripsNotPayedData()
+
+    public function getTotalTripsNotPayed()
     {
         $em = $this->getEntityManager();
 
-        $dql = "SELECT tr, cu, cd, ca, tp
-        FROM \SharengoCore\Entity\Trips tr
-        JOIN tr.customer cu
-        JOIN cu.card cd
-        JOIN tr.car ca
-        JOIN tr.tripPayment tp
-        WHERE tr.payable = true
-        AND tr.timestampEnd IS NOT NULL
-        AND (tr.timestampEnd - tr.timestampBeginning) >= (DATE_ADD(CURRENT_TIMESTAMP(), 300, 'second') - CURRENT_TIMESTAMP())
-        AND cu.goldList = false
-        AND tp.payedSuccessfullyAt IS NULL
-        ORDER BY tr.id DESC";
+        $dql = "SELECT COUNT(e.id)
+        FROM \SharengoCore\Entity\Trips e
+        INNER JOIN e.customer cu
+        INNER JOIN e.fleet f
+        INNER JOIN e.car c
+        INNER JOIN cu.card cc
+        INNER JOIN e.tripPayment tp
+        WHERE cu.goldList = false
+        AND e.payable = true AND
+        e.timestampEnd IS NOT NULL AND
+        (e.timestampEnd - e.timestampBeginning) >= (DATE_ADD(CURRENT_TIMESTAMP(), 300, 'second') - CURRENT_TIMESTAMP()) AND
+        tp.payedSuccessfullyAt IS NULL ";
 
         $query = $em->createQuery($dql);
-
-        return $query->getResult();
+        return $query->getSingleScalarResult();
     }
 }

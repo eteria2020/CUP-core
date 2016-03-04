@@ -34,6 +34,25 @@ class TripsServiceFactory implements FactoryInterface
             )
         );
 
+        $I_datatableServiceNotPayed = $serviceLocator->get('SharengoCore\Service\DatatableService');
+        $I_datatableServiceNotPayed->setQueryBuilder(
+            new DatatableQueryBuilders\TripPaymentNotPayed(
+                new DatatableQueryBuilders\Cards(
+                    new DatatableQueryBuilders\Cars(
+                        new DatatableQueryBuilders\Fleets(
+                            new DatatableQueryBuilders\CustomersNotGold(
+                                new DatatableQueryBuilders\Basic()
+                            ),
+                            'INNER'
+                        ),
+                        'INNER'
+                    ),
+                    'cu',
+                    'INNER'
+                )
+            )
+        );
+
         $commandsService = $serviceLocator->get('SharengoCore\Service\CommandsService');
 
         $languageService = $serviceLocator->get('LanguageService');
@@ -42,6 +61,7 @@ class TripsServiceFactory implements FactoryInterface
         return new TripsService(
             $tripRepository,
             $I_datatableService,
+            $I_datatableServiceNotPayed,
             $I_urlHelper,
             $customerService,
             $commandsService,
