@@ -21,12 +21,12 @@ class Trips implements DatatableQueryBuilderInterface
 
     public function select()
     {
-        return $this->queryBuilder->select().', t';
+        return $this->queryBuilder->select() . ', t';
     }
 
     public function join()
     {
-        return $this->queryBuilder->join(). $this->joinType . ' JOIN e.trip t ';
+        return $this->queryBuilder->join() . $this->joinType . ' JOIN e.trip t ';
     }
 
     public function where()

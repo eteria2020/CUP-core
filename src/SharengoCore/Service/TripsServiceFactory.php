@@ -14,12 +14,12 @@ class TripsServiceFactory implements FactoryInterface
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $tripRepository = $entityManager->getRepository('\SharengoCore\Entity\Trips');
-        $I_datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
+        $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
         $customerService = $serviceLocator->get('SharengoCore\Service\CustomersService');
-        $I_urlHelper = $serviceLocator->get('viewhelpermanager')->get('url');
+        $urlHelper = $serviceLocator->get('viewhelpermanager')->get('url');
 
         // decorate the query builder with the needed decorators
-        $I_datatableService->setQueryBuilder(
+        $datatableService->setQueryBuilder(
             new DatatableQueryBuilders\TripPayments(
                 new DatatableQueryBuilders\Cars(
                     new DatatableQueryBuilders\Fleets(
@@ -34,8 +34,8 @@ class TripsServiceFactory implements FactoryInterface
             )
         );
 
-        $I_datatableServiceNotPayed = $serviceLocator->get('SharengoCore\Service\DatatableService');
-        $I_datatableServiceNotPayed->setQueryBuilder(
+        $datatableServiceNotPayed = $serviceLocator->get('SharengoCore\Service\DatatableService');
+        $datatableServiceNotPayed->setQueryBuilder(
             new DatatableQueryBuilders\TripPaymentNotPayed(
                 new DatatableQueryBuilders\Cards(
                     new DatatableQueryBuilders\Cars(
@@ -60,9 +60,9 @@ class TripsServiceFactory implements FactoryInterface
 
         return new TripsService(
             $tripRepository,
-            $I_datatableService,
-            $I_datatableServiceNotPayed,
-            $I_urlHelper,
+            $datatableService,
+            $datatableServiceNotPayed,
+            $urlHelper,
             $customerService,
             $commandsService,
             $translator

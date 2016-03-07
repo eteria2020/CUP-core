@@ -19,12 +19,12 @@ class Cars implements DatatableQueryBuilderInterface
 
     public function select()
     {
-        return $this->queryBuilder->select().', c';
+        return $this->queryBuilder->select() . ', c';
     }
 
     public function join()
     {
-        return $this->queryBuilder->join().$this->joinType . ' JOIN e.car c ';
+        return $this->queryBuilder->join() . $this->joinType . ' JOIN e.car c ';
     }
 
     public function where()

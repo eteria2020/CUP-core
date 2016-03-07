@@ -35,7 +35,7 @@ class TripsService
     /**
      * @var Url
      */
-    private $I_urlHelper;
+    private $urlHelper;
 
     /**
      * @var CustomersService
@@ -54,14 +54,14 @@ class TripsService
     /**
      * @param EntityRepository $tripRepository
      * @param DatatableService $datatableService
-     * @param \\TODO $I_urlHelper
+     * @param \\TODO $urlHelper
      * @param CustomersService $customersService
      */
     public function __construct(
-        $tripRepository,
+        TripsRepository $tripRepository,
         DatatableService $datatableService,
         DatatableService $datatableServiceNotPayed,
-        $I_urlHelper,
+        Url $urlHelper,
         CustomersService $customersService,
         CommandsService $commandsService,
         Translator $translator
@@ -70,7 +70,7 @@ class TripsService
         $this->tripRepository = $tripRepository;
         $this->datatableService = $datatableService;
         $this->datatableServiceNotPayed = $datatableServiceNotPayed;
-        $this->I_urlHelper = $I_urlHelper;
+        $this->urlHelper = $urlHelper;
         $this->customersService = $customersService;
         $this->commandsService = $commandsService;
         $this->translator = $translator;
@@ -121,9 +121,9 @@ class TripsService
         return $this->tripRepository->findTripsByCustomerNotEnded($customer);
     }
 
-    public function getDataDataTable(array $as_filters = [], $count = false)
+    public function getDataDataTable(array $filters = [], $count = false)
     {
-        $trips = $this->datatableService->getData('Trips', $as_filters, $count);
+        $trips = $this->datatableService->getData('Trips', $filters, $count);
 
         if ($count) {
             return $trips;
@@ -227,7 +227,7 @@ class TripsService
 
     private function getClickablePlate(Trips $trip)
     {
-        $urlHelper = $this->I_urlHelper;
+        $urlHelper = $this->urlHelper;
         return sprintf(
             '<a href="%s">%s</a>',
             $urlHelper(
@@ -275,18 +275,13 @@ class TripsService
         return $this->tripRepository->getTotalTripsNotPayed();
     }
 
-    public function getDuration($s_from, $s_to)
+    public function getDuration($from, $to)
     {
-        if ('' != $s_from && '' != $s_to) {
-            return $s_from->diff($s_to)->format('%dg %H:%I:%S');
+        if ('' != $from && '' != $to) {
+            return $from->diff($to)->format('%dg %H:%I:%S');
         }
 
         return $this->translator->translate(self::DURATION_NOT_AVAILABLE);
-    }
-
-    public function getUrlHelper()
-    {
-        return $this->I_viewHelperManager->get('url');
     }
 
     public function getTripsToBeAccounted()
@@ -301,8 +296,7 @@ class TripsService
 
     /**
      * @param Customers $customer
-     * @return \SharengoCore\Entity\Trips[]
-     * @internal param $Customers
+     * @return Trips[]
      */
     public function getCustomerTripsToBeAccounted(Customers $customer)
     {

@@ -16,12 +16,12 @@ class TripPaymentNotPayed implements DatatableQueryBuilderInterface
 
     public function select()
     {
-        return $this->queryBuilder->select().', tp';
+        return $this->queryBuilder->select() . ', tp';
     }
 
     public function join()
     {
-        return $this->queryBuilder->join().'INNER JOIN e.tripPayment tp ';
+        return $this->queryBuilder->join() . 'INNER JOIN e.tripPayment tp ';
     }
 
     public function where()
@@ -33,6 +33,6 @@ class TripPaymentNotPayed implements DatatableQueryBuilderInterface
         if (strlen($this->queryBuilder->where()) > 0) {
             $where = ' AND ' . $where;
         }
-        return $this->queryBuilder->where().$where;
+        return $this->queryBuilder->where() . $where;
     }
 }

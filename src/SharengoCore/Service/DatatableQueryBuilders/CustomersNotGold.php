@@ -17,12 +17,12 @@ class CustomersNotGold implements DatatableQueryBuilderInterface
 
     public function select()
     {
-        return $this->queryBuilder->select().', cu';
+        return $this->queryBuilder->select() . ', cu';
     }
 
     public function join()
     {
-        return $this->queryBuilder->join().sprintf('INNER JOIN %s.customer cu ', $this->alias);
+        return $this->queryBuilder->join() . sprintf('INNER JOIN %s.customer cu ', $this->alias);
     }
 
     public function where()
@@ -31,6 +31,6 @@ class CustomersNotGold implements DatatableQueryBuilderInterface
         if (strlen($this->queryBuilder->where()) > 0) {
             $where = ' AND ' . $where;
         }
-        return $this->queryBuilder->where().$where;
+        return $this->queryBuilder->where() . $where;
     }
 }

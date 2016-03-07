@@ -21,12 +21,12 @@ class TripPayments implements DatatableQueryBuilderInterface
 
     public function select()
     {
-        return $this->queryBuilder->select().', tp';
+        return $this->queryBuilder->select() . ', tp';
     }
 
     public function join()
     {
-        return $this->queryBuilder->join(). $this->joinType .' JOIN e.tripPayment tp ';
+        return $this->queryBuilder->join() . $this->joinType . ' JOIN e.tripPayment tp ';
     }
 
     public function where()

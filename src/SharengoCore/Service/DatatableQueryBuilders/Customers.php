@@ -20,12 +20,12 @@ class Customers implements DatatableQueryBuilderInterface
 
     public function select()
     {
-        return $this->queryBuilder->select().', cu';
+        return $this->queryBuilder->select() . ', cu';
     }
 
     public function join()
     {
-        return $this->queryBuilder->join().sprintf($this->joinType . ' JOIN %s.customer cu ', $this->alias);
+        return $this->queryBuilder->join() . sprintf($this->joinType . ' JOIN %s.customer cu ', $this->alias);
     }
 
     public function where()

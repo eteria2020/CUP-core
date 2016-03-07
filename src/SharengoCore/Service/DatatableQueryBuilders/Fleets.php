@@ -26,7 +26,7 @@ class Fleets implements DatatableQueryBuilderInterface
 
     public function join()
     {
-        return $this->queryBuilder->join(). $this->joinType . ' JOIN e.fleet f ';
+        return $this->queryBuilder->join() . $this->joinType . ' JOIN e.fleet f ';
     }
 
     public function where()
