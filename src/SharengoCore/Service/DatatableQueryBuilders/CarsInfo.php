@@ -23,4 +23,9 @@ class CarsInfo implements DatatableQueryBuilderInterface
     {
         return $this->queryBuilder->join().'LEFT JOIN e.carsInfo ci ';
     }
+
+    public function where()
+    {
+        return $this->queryBuilder->where();
+    }
 }

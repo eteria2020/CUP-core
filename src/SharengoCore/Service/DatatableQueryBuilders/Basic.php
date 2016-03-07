@@ -13,4 +13,9 @@ class Basic implements DatatableQueryBuilderInterface
     {
         return '';
     }
+
+    public function where()
+    {
+        return '';
+    }
 }

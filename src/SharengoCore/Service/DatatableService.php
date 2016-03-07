@@ -43,12 +43,18 @@ class DatatableService
     {
         $select = $this->queryBuilder->select();
         $join = $this->queryBuilder->join();
+        $whereData = $this->queryBuilder->where();
+        if (strlen($whereData) > 0) {
+            $where = true;
+            $whereData = 'WHERE ' . $whereData;
+        } else {
+            $where = false;
+        }
 
-        $where = false;
         $as_parameters = [];
 
         $dql = 'SELECT ' . ($count ? 'COUNT(e)' : ('e' . $select)) . ' FROM \SharengoCore\Entity\\' . $entity . ' e '
-            . $join;
+            . $join . $whereData;
 
         $query = $this->entityManager->createQuery();
 
@@ -56,21 +62,20 @@ class DatatableService
             !empty($options['searchValue']) &&
             !empty($options['column'])
         ) {
-
             // if there is a selected filter, we apply it to the query
-            $checkIdColumn = strpos($options['column'], 'id');
+            $checkIdColumn = strpos($options['column'], '.id');
 
             if ($options['column'] == 'id' || $checkIdColumn) {
-                $dql .= 'WHERE ' . $options['column'] . ' = :id ';
+                $withAndWhere = $where ? 'AND ' : 'WHERE ';
+                $dql .= $withAndWhere . $options['column'] . ' = :id ';
                 $as_parameters['id'] = (int)$options['searchValue'];
-                $where = true;
-
             } else {
                 $value = strtolower("%" . $options['searchValue'] . "%");
-                $dql .= 'WHERE LOWER(' . $options['column'] . ') LIKE :value ';
+                $withAndWhere = $where ? 'AND ' : 'WHERE ';
+                $dql .= $withAndWhere . ' LOWER(' . $options['column'] . ') LIKE :value ';
                 $as_parameters['value'] = $value;
-                $where = true;
             }
+            $where = true;
         }
 
         // query a fixed parameter
@@ -106,10 +111,10 @@ class DatatableService
             !empty($options['columnWithoutLike']) &&
             !empty($options['columnValueWithoutLike'])
         ) {
-
             $withAndWhere = $where ? 'AND ' : 'WHERE ';
-            $ValueWithoutLike = is_bool($options['columnValueWithoutLike']) ? $options['columnValueWithoutLike'] : sprintf("'%s'",
-                $options['columnValueWithoutLike']);
+            $ValueWithoutLike = is_bool($options['columnValueWithoutLike']) ?
+                $options['columnValueWithoutLike'] :
+                sprintf("'%s'", $options['columnValueWithoutLike']);
             $dql .= $withAndWhere . $options['columnWithoutLike'] . " =  " . $ValueWithoutLike . " ";
             $where = true;
         }
@@ -119,7 +124,6 @@ class DatatableService
             !empty($options['columnFromDate']) &&
             !empty($options['columnFromEnd'])
         ) {
-
             $withAndWhere = $where ? 'AND ' : 'WHERE ';
             $dql .= $withAndWhere . $options['columnFromDate'] . ' >= :from ';
             $dql .= 'AND ' . $options['columnFromEnd'] . ' <= :to ';
@@ -152,7 +156,6 @@ class DatatableService
         if ($count) {
             return $query->getSingleScalarResult();
         }
-
         return $query->getResult();
     }
 

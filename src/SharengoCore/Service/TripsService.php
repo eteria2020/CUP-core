@@ -28,9 +28,14 @@ class TripsService
     private $datatableService;
 
     /**
+     * @var DatatableServiceInterface
+     */
+    private $datatableServiceNotPayed;
+
+    /**
      * @var Url
      */
-    private $I_urlHelper;
+    private $urlHelper;
 
     /**
      * @var CustomersService
@@ -49,13 +54,14 @@ class TripsService
     /**
      * @param EntityRepository $tripRepository
      * @param DatatableService $datatableService
-     * @param \\TODO $I_urlHelper
+     * @param \\TODO $urlHelper
      * @param CustomersService $customersService
      */
     public function __construct(
-        $tripRepository,
+        TripsRepository $tripRepository,
         DatatableService $datatableService,
-        $I_urlHelper,
+        DatatableService $datatableServiceNotPayed,
+        Url $urlHelper,
         CustomersService $customersService,
         CommandsService $commandsService,
         Translator $translator
@@ -63,7 +69,8 @@ class TripsService
     ) {
         $this->tripRepository = $tripRepository;
         $this->datatableService = $datatableService;
-        $this->I_urlHelper = $I_urlHelper;
+        $this->datatableServiceNotPayed = $datatableServiceNotPayed;
+        $this->urlHelper = $urlHelper;
         $this->customersService = $customersService;
         $this->commandsService = $commandsService;
         $this->translator = $translator;
@@ -114,9 +121,9 @@ class TripsService
         return $this->tripRepository->findTripsByCustomerNotEnded($customer);
     }
 
-    public function getDataDataTable(array $as_filters = [], $count = false)
+    public function getDataDataTable(array $filters = [], $count = false)
     {
-        $trips = $this->datatableService->getData('Trips', $as_filters, $count);
+        $trips = $this->datatableService->getData('Trips', $filters, $count);
 
         if ($count) {
             return $trips;
@@ -124,15 +131,7 @@ class TripsService
 
         return array_map(function (Trips $trip) {
 
-            $urlHelper = $this->I_urlHelper;
-            $plate = sprintf(
-                '<a href="%s">%s</a>',
-                $urlHelper(
-                    'cars/edit',
-                    ['plate' => $trip->getCar()->getPlate()]
-                ),
-                $trip->getCar()->getPlate()
-            );
+            $plate = $this->getClickablePlate($trip);
 
             $parentId = "";
             $parentStart = "";
@@ -143,27 +142,7 @@ class TripsService
                 $parentStart = "<br>(" . $parent->getTimestampBeginning()->format('d-m-Y H:i:s') . ")";
             }
 
-            /**
-             * blank - the trip has not ended
-             * 'FREE' - the trip is free because the customer is either in gold
-             *     list or is a maintainer
-             * n,nn (the actual cost) - if the trip has a cost greater than zero
-             * 0,00 - if the cost has not yet been calculated or bonus minutes
-             *     have been used
-             */
-            $tripCost = '';
-            if ($trip->isEnded()) {
-                if ($trip->getPayable() && $trip->isAccountable()) {
-                    $tripPayment = $trip->getTripPayment();
-                    if ($tripPayment instanceof TripPayments) {
-                        $tripCost = $tripPayment->getTotalCost();
-                    } else {
-                        $tripCost = 0;
-                    }
-                } else {
-                    $tripCost = 'FREE';
-                }
-            }
+            $tripCost = $this->calculateTripCost($trip);
 
             return [
                 'e' => [
@@ -203,23 +182,106 @@ class TripsService
         }, $trips);
     }
 
+    public function getDataNotPayedDataTable(array $filters = [], $count = false)
+    {
+        $trips = $this->datatableServiceNotPayed->getData('Trips', $filters, $count);
+
+        if ($count) {
+            return $trips;
+        }
+
+        return array_map(function (Trips $trip) {
+
+            $plate = $this->getClickablePlate($trip);
+            $tripCost = $this->calculateTripCost($trip);
+
+            return [
+                'e' => [
+                    'id' => $trip->getId(),
+                    'kmBeginning' => $trip->getKmBeginning(),
+                    'kmEnd' => $trip->getKmEnd(),
+                    'timestampBeginning' => $trip->getTimestampBeginning()->format('d-m-Y H:i:s'),
+                    'timestampEnd' => (null != $trip->getTimestampEnd() ? $trip->getTimestampEnd()->format('d-m-Y H:i:s') : ''),
+                    'duration' => $this->getDuration($trip->getTimestampBeginning(), $trip->getTimestampEnd()),
+                    'parkSeconds' => $trip->getParkSeconds() . ' sec',
+                    'totalCost' => ['amount' => $tripCost, 'id' => $trip->getId()],
+                ],
+                'cu' => [
+                    'id' => $trip->getCustomer()->getId(),
+                    'surname' => $trip->getCustomer()->getSurname() ,
+                    'name' => $trip->getCustomer()->getName()
+                ],
+                'cc' => [
+                    'rfid' => $trip->getCustomer()->getCard()->getRfid(),
+                ],
+                'c' => [
+                    'plate' => $plate,
+
+                    ],
+                'f'=>[
+                    'name' => $trip->getCar()->getFleet()->getName()
+                ]
+            ];
+        }, $trips);
+    }
+
+    private function getClickablePlate(Trips $trip)
+    {
+        $urlHelper = $this->urlHelper;
+        return sprintf(
+            '<a href="%s">%s</a>',
+            $urlHelper(
+                'cars/edit',
+                ['plate' => $trip->getCar()->getPlate()]
+            ),
+            $trip->getCar()->getPlate()
+        );
+    }
+
+    /**
+     * blank - the trip has not ended
+     * 'FREE' - the trip is free because the customer is either in gold
+     *     list or is a maintainer
+     * n,nn (the actual cost) - if the trip has a cost greater than zero
+     * 0,00 - if the cost has not yet been calculated or bonus minutes
+     *     have been used
+     * @param Trips $trip
+     * @return float|string
+     */
+    private function calculateTripCost(Trips $trip)
+    {
+        if ($trip->isEnded()) {
+            if ($trip->getPayable() && $trip->isAccountable()) {
+                $tripPayment = $trip->getTripPayment();
+                if ($tripPayment instanceof TripPayments) {
+                    return $tripPayment->getTotalCost();
+                } else {
+                    return 0;
+                }
+            } else {
+                return 'FREE';
+            }
+        }
+        return '';
+    }
+
     public function getTotalTrips()
     {
         return $this->tripRepository->getTotalTrips();
     }
 
-    public function getDuration($s_from, $s_to)
+    public function getTotalTripsNotPayed()
     {
-        if ('' != $s_from && '' != $s_to) {
-            return $s_from->diff($s_to)->format('%dg %H:%I:%S');
+        return $this->tripRepository->getTotalTripsNotPayed();
+    }
+
+    public function getDuration($from, $to)
+    {
+        if ('' != $from && '' != $to) {
+            return $from->diff($to)->format('%dg %H:%I:%S');
         }
 
         return $this->translator->translate(self::DURATION_NOT_AVAILABLE);
-    }
-
-    public function getUrlHelper()
-    {
-        return $this->I_viewHelperManager->get('url');
     }
 
     public function getTripsToBeAccounted()
@@ -233,7 +295,7 @@ class TripsService
     }
 
     /**
-     * @param Customers
+     * @param Customers $customer
      * @return Trips[]
      */
     public function getCustomerTripsToBeAccounted(Customers $customer)
