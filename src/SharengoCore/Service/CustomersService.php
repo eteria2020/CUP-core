@@ -665,4 +665,9 @@ class CustomersService implements ValidatorServiceInterface
             'hash' => $hash
         ]);
     }
+
+    public function getBonusFromId($id)
+    {
+        return $this->customersBonusRepository->getBonusFromId($id);
+    }
 }

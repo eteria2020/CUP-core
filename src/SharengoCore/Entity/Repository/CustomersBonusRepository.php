@@ -38,17 +38,28 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
-    public function checkUsedPromoCode(Customers $I_customer, PromoCodes $I_promoCode)
+    public function checkUsedPromoCode(Customers $customer, PromoCodes $promoCode)
     {
-        $s_query = 'SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb ' .
+        $dql = 'SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb ' .
                    'WHERE cb.customer = :id AND cb.promocode = :code';
 
-        $I_query = $this->getEntityManager()->createQuery($s_query);
-        $I_query->setParameters([
-            'id'   => $I_customer->getId(),
-            'code' => $I_promoCode->getId()
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameters([
+            'id'   => $customer->getId(),
+            'code' => $promoCode->getId()
         ]);
 
-        return $I_query->getResult();
+        return $query->getResult();
+    }
+
+    public function getBonusFromId($id)
+    {
+        $dql = 'SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb ' .
+            'WHERE cb.id = :id';
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('id', $id);
+
+        return $query->getOneOrNullResult();
     }
 }

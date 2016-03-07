@@ -3,7 +3,7 @@
 namespace SharengoCore\Entity;
 
 use SharengoCore\Exception\NonPositiveIntegerException;
-use Cartasi\Entity\Transactions;
+use Cartasi\Entity\TransactionsTransactions;
 use SharengoCore\Entity\Invoices;
 
 use Doctrine\ORM\Mapping as ORM;
