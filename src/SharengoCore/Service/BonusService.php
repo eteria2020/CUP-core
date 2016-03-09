@@ -37,6 +37,7 @@ class BonusService
      * @param Bonus $bonus
      * @param int $minutes
      * @return Bonus
+     * @throws \Exception
      */
     public function decreaseBonusMinutes(Bonus $bonus, $minutes)
     {
@@ -88,11 +89,16 @@ class BonusService
      */
     public function createBonusForCustomerFromCode(Customers $customer, BonusPackages $bonusPackage)
     {
-        $bonus = Bonus::createBonusFromPackage($customer, $bonusPackage);
+        $bonus = Bonus::createFromBonusPackage($customer, $bonusPackage);
 
         $this->entityManager->persist($bonus);
         $this->entityManager->flush();
 
         return $bonus;
+    }
+
+    public function getBonusFromId($id)
+    {
+        return $this->bonusRepository->getBonusFromId($id);
     }
 }

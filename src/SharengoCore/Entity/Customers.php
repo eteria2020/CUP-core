@@ -1764,6 +1764,7 @@ class Customers
     public function findDiscountedSubscriptionAmount()
     {
         $bonuses = $this->getBonuses();
+        /** @var CustomersBonus $bonus */
         foreach ($bonuses as $bonus) {
             if ($bonus->impliesSubscriptionDiscount()) {
                 return $bonus->findDiscountedSubscriptionAmount();
@@ -1792,5 +1793,20 @@ class Customers
             $upload->setCustomer(null);
             $this->foreignDriversLicenseUploads->removeElement($upload);
         }
+    }
+
+    /**
+     * @param CustomersBonus $bonus
+     * @return bool
+     */
+    public function hasAlreadyBonus(CustomersBonus $bonus)
+    {
+        /** @var CustomersBonus $currentBonus */
+        foreach ($this->getBonuses() as $currentBonus) {
+            if ($bonus->getId() == $currentBonus->getId()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

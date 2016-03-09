@@ -292,6 +292,7 @@ class CustomersService implements ValidatorServiceInterface
     /**
      * Persists customer
      *
+     * @param Customers $customer
      * @return Customers
      */
     public function saveData(Customers $customer)
@@ -327,6 +328,10 @@ class CustomersService implements ValidatorServiceInterface
     /**
      * assign a Card to the Customer.
      * if the card is null, it first creates a virtual one
+     * @param Customers $customer
+     * @param Cards $card
+     * @param null $isAssigned
+     * @return bool
      */
     public function assignCard(Customers $customer, Cards $card = null, $isAssigned = null)
     {
@@ -623,6 +628,7 @@ class CustomersService implements ValidatorServiceInterface
      *
      * @param string $string string to truncate
      * @param integer $length maximum length
+     * @return string
      */
     private function truncateIfLonger($string, $length)
     {
@@ -664,10 +670,5 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersRepository->findOneBy([
             'hash' => $hash
         ]);
-    }
-
-    public function getBonusFromId($id)
-    {
-        return $this->customersBonusRepository->getBonusFromId($id);
     }
 }
