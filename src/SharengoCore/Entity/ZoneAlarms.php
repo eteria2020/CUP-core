@@ -43,6 +43,12 @@ class ZoneAlarms
      */
     private $fleets;
 
+    /**
+     * @var $string
+     *
+     * @ORM\Column(name="description", type="string", nullable=true)
+     */
+    private $description;
 
     /**
      * @return integer
