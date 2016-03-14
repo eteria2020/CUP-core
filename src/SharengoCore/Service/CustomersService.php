@@ -368,9 +368,8 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersBonusRepository->checkUsedPromoCode($customers, $promoCode);
     }
 
-    public function addBonusFromPromoCode(Customers $customer, PromoCodes $promoCode = null)
+    public function validatePromoCode(Customers $customer, PromoCodes $promoCode)
     {
-
         if (is_null($promoCode)) {
             throw new BonusAssignmentException($this->translator->translate('Codice promo non valido.'));
         }
@@ -378,6 +377,20 @@ class CustomersService implements ValidatorServiceInterface
         if ($this->checkUsedPromoCode($customer, $promoCode)) {
             throw new BonusAssignmentException($this->translator->translate('Codice promo già associato a questo account.'));
         }
+    }
+
+    public function addBonusFromPromoCodeFromWebuser(Customers $customer, PromoCodes $promoCode = null)
+    {
+        $this->validatePromoCode($customer, $promoCode);
+
+        $customerBonus = CustomersBonus::createFromPromoCode($promoCode);
+
+        $this->addBonusFromWebUser($customer, $customerBonus);
+    }
+
+    public function addBonusFromPromoCode(Customers $customer, PromoCodes $promoCode = null)
+    {
+        $this->validatePromoCode($customer, $promoCode);
 
         if ($promoCode->getPromocodesinfo()->changesSubscriptionCost()) {
             throw new BonusAssignmentException($this->translator->translate('Codice promo non valido.'));
