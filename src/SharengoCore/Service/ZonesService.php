@@ -30,11 +30,12 @@ class ZonesService
     }
 
     /**
-     * @return mixed
+     *  @return mixed
+     *  @param showHidden bool Specify if return only the zone with property "hidden = true".
      */
-    public function getListZones()
+    public function getListZones($showHidden = true)
     {
-        return $this->zoneRepository->findZonesWithMapCoords();
+        return $this->zoneRepository->findZonesWithMapCoords($showHidden);
     }
 
     public function getListZonesAlarms()

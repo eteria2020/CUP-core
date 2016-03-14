@@ -13,7 +13,8 @@ use SharengoCore\Entity\Zone;
  */
 class ZoneRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function findZonesWithMapCoords() {
+    public function findZonesWithMapCoords($showHidden) {
+
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('SharengoCore\Entity\Zone', 'z');
         $rsm->addFieldResult('z', 'id', 'id');
@@ -22,7 +23,7 @@ class ZoneRepository extends \Doctrine\ORM\EntityRepository
         $rsm->addFieldResult('z', 'area_use', 'areaUse');
 
         $em = $this->getEntityManager();
-        $query = $em->createNativeQuery('SELECT id, name, ST_AsGeoJSON(area_invoice) as area_invoice, ST_AsGeoJSON(area_use) as area_use FROM zone', $rsm);
+        $query = $em->createNativeQuery('SELECT id, name, ST_AsGeoJSON(area_invoice) as area_invoice, ST_AsGeoJSON(area_use) as area_use FROM zone'.( $showHidden == true ? '' : ' WHERE hidden = FALSE' ), $rsm);
 
         return $query->getResult();
     }
