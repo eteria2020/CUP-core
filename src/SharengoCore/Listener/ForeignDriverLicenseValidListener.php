@@ -37,7 +37,7 @@ final class ForeignDriverLicenseValidListener implements SharedListenerAggregate
         $this->listeners[] = $events->attach(
             'ValidateForeignDriversLicenseService',
             'foreignDriversLicenseValidated',
-            [$this, 'foreignDriversLicenseValidated']
+            [$this, 'sendEmailToCustomer']
         );
     }
 
@@ -50,7 +50,7 @@ final class ForeignDriverLicenseValidListener implements SharedListenerAggregate
         }
     }
 
-    public function foreignDriversLicenseValidated(EventInterface $e)
+    public function sendEmailToCustomer(EventInterface $e)
     {
         $customer = $e->getParam('customer');
         $content = sprintf(
