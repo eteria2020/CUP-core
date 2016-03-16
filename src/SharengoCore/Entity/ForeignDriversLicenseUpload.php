@@ -180,35 +180,18 @@ class ForeignDriversLicenseUpload
     private $fileSize;
 
     /**
-     * @var bool
-     *
-     * @ORM\Column(name="valid", type="boolean", nullable=true)
-     */
-    private $valid;
-
-    /**
-     * @var DateTime
-     *
-     * @ORM\Column(name="validated_at", type="datetime", nullable=true)
-     */
-    private $validatedAt;
-
-    /**
-     * @var Webuser
-     *
-     * @ORM\ManyToOne(targetEntity="Webuser")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="validated_by", referencedColumnName="id", nullable=true)
-     * })
-     */
-    private $validatedBy;
-
-    /**
      * @var DateTime
      *
      * @ORM\Column(name="uploaded_at", type="datetime", nullable=true)
      */
     private $uploadedAt;
+
+    /**
+     * Bidirectional - One-To-Many (INVERSE SIDE)
+     *
+     * @ORM\OneToMany(targetEntity="ForeignDriversLicenseValidation", mappedBy="foreignDriversLicenseUpload")
+     */
+    private $validations;
 
     public function __construct(
         Customers $customer,
@@ -332,19 +315,35 @@ class ForeignDriversLicenseUpload
      */
     public function valid()
     {
-        return $this->valid;
+        /** @var ForeignDriversLicenseValidation $validation */
+        foreach ($this->validations as $validation) {
+            if (!is_null($validation->getValidatedAt()) && is_null($validation->getRevokedAt())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
      * @var Webuser $webuser
-     * @return static
+     * @return ForeignDriversLicenseValidation|null
      */
-    public function validate(Webuser $webuser)
+    public function getValidationToRevoke()
     {
-        $this->valid = true;
-        $this->validatedAt = date_create();
-        $this->validatedBy = $webuser;
+        /** @var ForeignDriversLicenseValidation $validation */
+        foreach ($this->validations as $validation) {
+            if (!is_null($validation->getValidatedAt()) && is_null($validation->getRevokedAt())) {
+                return $validation;
+            }
+        }
+        return null;
+    }
 
-        return $this;
+    /**
+     * @return array
+     */
+    public function getValidations()
+    {
+        return $this->validations;
     }
 }

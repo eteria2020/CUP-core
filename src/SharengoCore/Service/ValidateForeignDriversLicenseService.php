@@ -3,6 +3,7 @@
 namespace SharengoCore\Service;
 
 use SharengoCore\Entity\ForeignDriversLicenseUpload;
+use SharengoCore\Entity\ForeignDriversLicenseValidation;
 use SharengoCore\Entity\Webuser;
 
 use Doctrine\ORM\EntityManager;
@@ -48,9 +49,10 @@ class ValidateForeignDriversLicenseService
         $this->entityManager->beginTransaction();
 
         try {
-            $foreignDriversLicense->validate($webuser);
+            $validation = new ForeignDriversLicenseValidation($foreignDriversLicense);
+            $validation->validate($webuser);
 
-            $this->entityManager->persist($foreignDriversLicense);
+            $this->entityManager->persist($validation);
             $this->entityManager->flush();
 
             $this->customerDeactivationService->reactivateCustomerForDriversLicense(
@@ -64,6 +66,30 @@ class ValidateForeignDriversLicenseService
             $this->eventManager->trigger('foreignDriversLicenseValidated', $this, [
                 'customer' => $customer
             ]);
+        } catch (\Exception $e) {
+            $this->entityManager->rollback();
+            throw $e;
+        }
+    }
+
+    public function revokeForeignDriversLicense(
+        ForeignDriversLicenseUpload $foreignDriversLicense,
+        Webuser $webuser
+    ) {
+        $this->entityManager->beginTransaction();
+
+        try {
+            $validation = $foreignDriversLicense->getValidationToRevoke();
+            $validation->revoke($webuser);
+
+            $this->entityManager->persist($validation);
+            $this->entityManager->flush();
+
+            $this->customerDeactivationService->deactivateForDriversLicense(
+                $foreignDriversLicense->customer(),
+                date_create()
+            );
+            $this->entityManager->commit();
         } catch (\Exception $e) {
             $this->entityManager->rollback();
             throw $e;
