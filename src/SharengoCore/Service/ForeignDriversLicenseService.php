@@ -11,6 +11,7 @@ use SharengoCore\Exception\ForeignDriversLicenseUploadNotFoundException;
 use Doctrine\ORM\EntityManager;
 use Zend\Filter\File\RenameUpload;
 use Zend\EventManager\EventManager;
+use ZipArchive;
 
 class ForeignDriversLicenseService
 {
@@ -58,35 +59,73 @@ class ForeignDriversLicenseService
         $this->datatableService = $datatableService;
     }
 
-    public function saveUploadedForeignDriversLicense(
-        UploadedFile $uploadedFile,
+    /**
+     * @param array $uploadedFiles
+     * @param Customers $customer
+     */
+    public function saveUploadedFiles(
+        array $uploadedFiles,
         Customers $customer
     ) {
         $target = $this->config['path'] . '/foreign-drivers-license-' . $customer->getId();
-        $this->renameUpload->setTarget($target);
 
-        // we save the uploaded file in the file system
-        $newFileLocation = $this->renameUpload->filter([
-            'tmp_name' => $uploadedFile->getTemporaryLocation(),
-            'name' => $uploadedFile->getName()
-        ]);
+        if (count($uploadedFiles) == 1) {
+            $upload = $this->uploadSingleFile($customer, $uploadedFiles[0], $target);
+        } else {
+            $upload = $this->uploadMultipleFiles($customer, $uploadedFiles, $target);
+        }
 
-        // we write the data of the customer and of the file in the database
-        $foreignDriversLicenseUpload = new ForeignDriversLicenseUpload(
-            $customer,
-            $uploadedFile->getName(),
-            $uploadedFile->getType(),
-            $newFileLocation['tmp_name'],
-            $uploadedFile->getSize()
-        );
-
-        $this->entityManager->persist($foreignDriversLicenseUpload);
+        $this->entityManager->persist($upload);
         $this->entityManager->flush();
 
         // we notify the application that the file is saved
         $this->eventManager->trigger('uploadedDriversLicense', $this, [
             'customer' => $customer
         ]);
+    }
+
+    private function uploadMultipleFiles($customer, $uploadedFiles, $target)
+    {
+        $destination = $target . '.zip';
+        $zip = new \ZipArchive();
+        $tmp_file = tempnam('.','');
+        $zip->open($tmp_file, ZipArchive::CREATE);
+
+        /** @var UploadedFile $uploadedFile */
+        foreach ($uploadedFiles as $uploadedFile) {
+            $zip->addFile($uploadedFile->getTemporaryLocation(), $uploadedFile->getName());
+        }
+        $zip->close();
+
+        // we move the zip from /tmp to the right directory
+        rename($tmp_file, $destination);
+
+        return new ForeignDriversLicenseUpload(
+            $customer,
+            end(explode('/', $destination)),
+            'application/zip',
+            $destination,
+            filesize($destination)
+        );
+    }
+
+    private function uploadSingleFile($customer, $uploadedFile, $target)
+    {
+        // we save the uploaded file in the file system
+        $this->renameUpload->setTarget($target);
+        $newFileLocation = $this->renameUpload->filter([
+            'tmp_name' => $uploadedFile->getTemporaryLocation(),
+            'name' => $uploadedFile->getName()
+        ]);
+
+        // we write the data of the customer and of the file in the database
+        return new ForeignDriversLicenseUpload(
+            $customer,
+            $uploadedFile->getName(),
+            $uploadedFile->getType(),
+            $newFileLocation['tmp_name'],
+            $uploadedFile->getSize()
+        );
     }
 
     public function getDataDataTable(array $filters = [], $count = false)

@@ -64,7 +64,7 @@ final class UploadedDriversLicenseMailSender implements SharedListenerAggregateI
             'SHARENGO - nuovo upload patente straniera ' .
             $customer->getId() . ' - ' . $customer->getName() . ' ' . $customer->getSurname(),
             'Il cliente ' . $customer->getName() . ' ' . $customer->getSurname() .
-            'con id' . $customer->getId() .
+            ' con id ' . $customer->getId() .
             ' ha effettuato il caricamento di una copia della sua patente ' .
             'straniera. E\' necessario procedere alla validazione manuale'
         );
