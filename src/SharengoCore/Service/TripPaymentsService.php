@@ -8,6 +8,7 @@ use SharengoCore\Service\DatatableService;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Commands\SetCustomerWrongPaymentsAsToBePayed;
+use SharengoCore\Exception\TripPaymentWithoutDateException;
 
 use Doctrine\ORM\EntityManager;
 
@@ -83,7 +84,13 @@ class TripPaymentsService
         $orderedTripPayments = [];
         foreach ($tripPayments as $tripPayment) {
             // retrieve date and customerId from tripPayment
-            $date = $tripPayment->getPayedSuccessfullyAt()->format('Y-m-d');
+            $date = $tripPayment->getPayedSuccessfullyAt();
+
+            if ($date instanceof \DateTime) {
+                $date = $date->format('Y-m-d');
+            } else {
+                throw new TripPaymentWithoutDateException($tripPayment);
+            }
             $customerId = $tripPayment->getTrip()->getCustomer()->getId();
             $fleetId = $tripPayment->getTrip()->getFleet()->getId();
             // if first tripPayment for that day, create the entry
