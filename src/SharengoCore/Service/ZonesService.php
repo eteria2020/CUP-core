@@ -30,11 +30,13 @@ class ZonesService
     }
 
     /**
-     * @return mixed
+     *  @return mixed
+     *  @param showHidden bool Specify if return only the zone with property "hidden = true".
+     *  @param showOnlyActive bool Specify if return only the zone with property "active = true".
      */
-    public function getListZones()
+    public function getListZones($showHidden = true,$showOnlyActive = false)
     {
-        return $this->zoneRepository->findZonesWithMapCoords();
+        return $this->zoneRepository->findZonesWithMapCoords($showHidden,$showOnlyActive);
     }
 
     public function getListZonesAlarms()
