@@ -206,6 +206,7 @@ return [
             'SharengoCore\Service\DisableContractService' => 'SharengoCore\Service\DisableContractServiceFactory',
             'SharengoCore\Listener\DisableContractListener' => 'SharengoCore\Listener\DisableContractListenerFactory',
             'SharengoCore\Service\EventsService' => 'SharengoCore\Service\EventsServiceFactory',
+            'SharengoCore\Service\EventsTypesService' => 'SharengoCore\Service\EventsTypesServiceFactory',
             'SharengoCore\Service\FleetService' => 'SharengoCore\Service\FleetServiceFactory',
             'SharengoCore\Service\ExtraPaymentsSearchService' => 'SharengoCore\Service\ExtraPaymentsSearchServiceFactory',
             'SharengoCore\Service\BonusPackagesService' => 'SharengoCore\Service\CustomersBonusPackagesServiceFactory',
@@ -239,6 +240,16 @@ return [
                 'class'   => 'Doctrine\ORM\Mapping\Driver\DriverChain',
                 'drivers' => [
                     __NAMESPACE__ . '\Entity' => __NAMESPACE__ . '_driver'
+                ]
+            ],
+            __NAMESPACE__ . '_driver_odm' => array(
+                'class' => 'Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver',
+                'cache' => 'array',
+                'paths' => array(__DIR__ . '/../src/' . __NAMESPACE__ . '/Document')
+            ),
+            'odm_default' => [
+                'drivers' => [
+                    __NAMESPACE__ . '\Document' => __NAMESPACE__ . '_driver_odm'
                 ]
             ],
         ],
