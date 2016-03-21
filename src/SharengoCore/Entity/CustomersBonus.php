@@ -3,8 +3,6 @@
 namespace SharengoCore\Entity;
 
 use SharengoCore\Exception\NonPositiveIntegerException;
-use Cartasi\Entity\TransactionsTransactions;
-use SharengoCore\Entity\Invoices;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -472,11 +470,11 @@ class CustomersBonus
     /**
      * Set customer
      *
-     * @param \SharengoCore\Entity\Customers $customer
+     * @param Customers $customer
      *
      * @return CustomersBonus
      */
-    public function setCustomer(\SharengoCore\Entity\Customers $customer)
+    public function setCustomer(Customers $customer)
     {
         $this->customer = $customer;
 
@@ -486,7 +484,7 @@ class CustomersBonus
     /**
      * Get customer
      *
-     * @return \SharengoCore\Entity\Customers
+     * @return Customers
      */
     public function getCustomer()
     {
@@ -496,11 +494,11 @@ class CustomersBonus
     /**
      * Set webuser
      *
-     * @param \SharengoCore\Entity\Webuser $webuser
+     * @param Webuser $webuser
      *
      * @return CustomersBonus
      */
-    public function setWebuser(\SharengoCore\Entity\Webuser $webuser = null)
+    public function setWebuser(Webuser $webuser = null)
     {
         $this->webuser = $webuser;
 
@@ -510,7 +508,7 @@ class CustomersBonus
     /**
      * Get webuser
      *
-     * @return \SharengoCore\Entity\Webuser
+     * @return Webuser
      */
     public function getWebuser()
     {
@@ -520,11 +518,11 @@ class CustomersBonus
     /**
      * Set promocode
      *
-     * @param \SharengoCore\Entity\Promocodes $promocode
+     * @param Promocodes $promocode
      *
      * @return CustomersBonus
      */
-    public function setPromocode(\SharengoCore\Entity\PromoCodes $promocode = null)
+    public function setPromocode(PromoCodes $promocode = null)
     {
         $this->promocode = $promocode;
 
@@ -534,7 +532,7 @@ class CustomersBonus
     /**
      * Get promocode
      *
-     * @return \SharengoCore\Entity\Promocodes
+     * @return Promocodes
      */
     public function getPromocode()
     {

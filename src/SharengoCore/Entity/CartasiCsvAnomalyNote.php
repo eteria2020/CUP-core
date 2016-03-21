@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * CartasiCsvAnomalyNote
  *
  * @ORM\Table(name="cartasi_csv_anomalies_notes")
- * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CartasiCsvAnomalyNoteRepository")
+ * @ORM\Entity
  */
 class CartasiCsvAnomalyNote
 {
