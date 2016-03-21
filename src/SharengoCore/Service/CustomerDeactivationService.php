@@ -294,14 +294,16 @@ class CustomerDeactivationService
      *
      * @param CustomerDeactivation $customerDeactivation
      * @param \DateTime|null $endTs
+     * @param Webuser $webuser
      */
     public function reactivateForDriversLicense(
         CustomerDeactivation $customerDeactivation,
-        \DateTime $endTs = null
+        \DateTime $endTs = null,
+        Webuser $webuser = null
     ) {
         $details = $this->getDriverLicenceDetails($customerDeactivation->getCustomer());
-
-        $this->reactivate($customerDeactivation, $details, $endTs);
+        $sendEmail = false;
+        $this->reactivate($customerDeactivation, $details, $endTs, $webuser, $sendEmail);
     }
 
     /**
@@ -310,10 +312,13 @@ class CustomerDeactivationService
      *
      * @param Customers $customer
      * @param \DateTime|null $endTs
+     * @param Webuser $webuser
      */
     public function reactivateCustomerForDriversLicense(
         Customers $customer,
-        \DateTime $endTs = null
+        \DateTime $endTs = null,
+        Webuser $webuser = null
+
     ) {
         $query = new FindActiveCustomerDeactivations(
             $this->entityManager,
@@ -323,7 +328,7 @@ class CustomerDeactivationService
 
         $deactivation = $query();
         if ($deactivation instanceof CustomerDeactivation) {
-            $this->reactivateForDriversLicense($deactivation, $endTs);
+            $this->reactivateForDriversLicense($deactivation, $endTs, $webuser);
         }
     }
 
@@ -375,12 +380,14 @@ class CustomerDeactivationService
      * @param array $details
      * @param \DateTime|null $endTs
      * @param Webuser|null $webuser
+     * @param bool $sendEmail
      */
     private function reactivate(
         CustomerDeactivation $customerDeactivation,
         array $details,
         \DateTime $endTs = null,
-        Webuser $webuser = null
+        Webuser $webuser = null,
+        $sendEmail = true
     ) {
         $customerDeactivation->reactivate($details, $endTs, $webuser);
         $this->entityManager->persist($customerDeactivation);
@@ -389,7 +396,7 @@ class CustomerDeactivationService
         // and this one is deactivated immediatly, enable Customer
         $customer = $customerDeactivation->getCustomer();
         if ($this->shouldActivateCustomer($customer, $customerDeactivation)) {
-            $this->customerService->enableCustomer($customer, true);
+            $this->customerService->enableCustomer($customer, $sendEmail);
             $this->entityManager->persist($customer);
         }
         $this->entityManager->flush();

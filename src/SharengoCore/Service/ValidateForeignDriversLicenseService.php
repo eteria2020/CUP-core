@@ -55,14 +55,16 @@ class ValidateForeignDriversLicenseService
             $this->entityManager->persist($validation);
             $this->entityManager->flush();
 
+            $customer = $foreignDriversLicense->customer();
+
             $this->customerDeactivationService->reactivateCustomerForDriversLicense(
                 $foreignDriversLicense->customer(),
-                date_create()
+                date_create(),
+                $webuser
             );
             $this->entityManager->commit();
 
             // we notify the application that the driver license is valid
-            $customer = $foreignDriversLicense->customer();
             $this->eventManager->trigger('foreignDriversLicenseValidated', $this, [
                 'customer' => $customer
             ]);
