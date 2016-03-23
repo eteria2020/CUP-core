@@ -10,7 +10,7 @@ class EmailServiceFactory implements FactoryInterface
 {
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        //$emailTransport = new Sendmail();
+        $emailTransport = new Sendmail();
         $emailSettings = $serviceLocator->get('Configuration')['emailSettings'];
 
         return new EmailService($emailTransport, $emailSettings);
