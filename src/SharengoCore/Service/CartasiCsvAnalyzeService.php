@@ -138,12 +138,12 @@ class CartasiCsvAnalyzeService
      *
      * @param string $filename
      * @param Webuser $webuser
-     * @param boolean $pathWithName Indicated that $filename inclused the path
-     *     to the file (path/to/file/filename.csv)
+     * @param bool $nameWithPath
      * @param string|null $overrideName The name used for the CartasiCsvFile
      *     instead of $filename. Necessary if $pathWithName is true
      * @return CartasiCsvFile
-     * @throws MissingOverrideNameException
+     * @internal param bool $pathWithName Indicated that $filename inclused the path
+     *     to the file (path/to/file/filename.csv)
      */
     public function addFile(
         $filename,
@@ -163,14 +163,14 @@ class CartasiCsvAnalyzeService
             $nameWithPath ? $overrideName : $filename,
             $webuser
         );
-        $this->entityManager->persist($csvFile);
-        $this->entityManager->flush();
         $this->moveFile(
             $csvFile,
             $nameWithPath ? $filename : $this->csvConfig['newPath'],
             $this->csvConfig['addedPath'],
             !$nameWithPath
         );
+        $this->entityManager->persist($csvFile);
+        $this->entityManager->flush();
 
         return $csvFile;
     }
@@ -179,6 +179,7 @@ class CartasiCsvAnalyzeService
      * Generate all CartasiCsvAnomalies for a CartasiCsvFile.
      *
      * @param CartasiCsvFile $csvFile
+     * @throws \Exception
      */
     public function analyzeFile(CartasiCsvFile $csvFile)
     {
@@ -213,11 +214,11 @@ class CartasiCsvAnalyzeService
                 }
             }
 
+            $this->moveFile($csvFile, $this->csvConfig['tempPath'], $this->csvConfig['analyzedPath']);
+
             $this->entityManager->persist($csvFile);
             $this->entityManager->flush();
             $this->entityManager->commit();
-
-            $this->moveFile($csvFile, $this->csvConfig['tempPath'], $this->csvConfig['analyzedPath']);
         } catch (\Exception $e) {
             $this->moveFile($csvFile, $this->csvConfig['tempPath'], $this->csvConfig['addedPath']);
             $this->entityManager->rollback();
@@ -350,10 +351,5 @@ class CartasiCsvAnalyzeService
         }
 
         return $duplicate instanceof CartasiCsvAnomaly;
-    }
-
-    public function getTransactionTypeEntity(Transactions $transaction)
-    {
-        return $this->csvAnomalyRepository->findTransactionTypeEntityFromTransaction($transaction);
     }
 }

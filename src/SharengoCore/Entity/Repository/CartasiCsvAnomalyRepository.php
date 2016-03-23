@@ -71,39 +71,4 @@ class CartasiCsvAnomalyRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getOneOrNullResult();
     }
-
-    public function findTransactionTypeEntityFromTransaction(Transactions $transaction)
-    {
-        $em = $this->getEntityManager();
-        $query = $em->createQuery(
-            'SELECT p FROM \SharengoCore\Entity\SubscriptionPayment p '.
-            'WHERE p.transaction = :transaction '
-        );
-        $query->setParameter('transaction', $transaction);
-        $query->setMaxResults(1);
-        $result = $query->getOneOrNullResult();
-        if (!is_null($result)) {
-            return $result;
-        }
-
-        $query = $em->createQuery(
-            'SELECT p FROM \SharengoCore\Entity\BonusPackagePayment p '.
-            'WHERE p.transaction = :transaction '
-        );
-        $query->setParameter('transaction', $transaction);
-        $query->setMaxResults(1);
-        $result = $query->getOneOrNullResult();
-        if (!is_null($result)) {
-            return $result;
-        }
-
-        $query = $em->createQuery(
-            'SELECT tp FROM \SharengoCore\Entity\TripPayments tp '.
-            'JOIN tp.tripPaymentTries tpt '.
-            'WHERE tpt.transaction = :transaction '
-        );
-        $query->setParameter('transaction', $transaction);
-        $query->setMaxResults(1);
-        return $query->getOneOrNullResult();
-    }
 }

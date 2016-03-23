@@ -51,15 +51,4 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
-
-    public function getBonusFromId($id)
-    {
-        $dql = 'SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb ' .
-            'WHERE cb.id = :id';
-
-        $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameter('id', $id);
-
-        return $query->getOneOrNullResult();
-    }
 }

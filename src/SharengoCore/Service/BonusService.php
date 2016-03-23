@@ -99,6 +99,6 @@ class BonusService
 
     public function getBonusFromId($id)
     {
-        return $this->bonusRepository->getBonusFromId($id);
+        return $this->bonusRepository->findOneById($id);
     }
 }
