@@ -302,8 +302,7 @@ class CustomerDeactivationService
         Webuser $webuser = null
     ) {
         $details = $this->getDriverLicenceDetails($customerDeactivation->getCustomer());
-        $sendEmail = false;
-        $this->reactivate($customerDeactivation, $details, $endTs, $webuser, $sendEmail);
+        $this->reactivate($customerDeactivation, $details, $endTs, $webuser, false);
     }
 
     /**

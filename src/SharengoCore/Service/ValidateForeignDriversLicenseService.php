@@ -40,7 +40,6 @@ class ValidateForeignDriversLicenseService
      * @param ForeignDriversLicenseUpload $foreignDriversLicense
      * @param Webuser $webuser
      * @throws \Exception
-     * @internal param ForeignDriversLicenseUpload $
      */
     public function validateForeignDriversLicense(
         ForeignDriversLicenseUpload $foreignDriversLicense,
@@ -49,8 +48,7 @@ class ValidateForeignDriversLicenseService
         $this->entityManager->beginTransaction();
 
         try {
-            $validation = new ForeignDriversLicenseValidation($foreignDriversLicense);
-            $validation->validate($webuser);
+            $validation = ForeignDriversLicenseValidation::validatedByWebuser($foreignDriversLicense, $webuser);
 
             $this->entityManager->persist($validation);
             $this->entityManager->flush();
@@ -81,8 +79,7 @@ class ValidateForeignDriversLicenseService
         $this->entityManager->beginTransaction();
 
         try {
-            $validation = $foreignDriversLicense->getValidationToRevoke();
-            $validation->revoke($webuser);
+            $validation = $foreignDriversLicense->revoke($webuser);
 
             $this->entityManager->persist($validation);
             $this->entityManager->flush();

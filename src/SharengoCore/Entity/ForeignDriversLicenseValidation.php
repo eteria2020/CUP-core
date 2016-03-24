@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * ForeignDriversLicesValidation
  *
  * @ORM\Table(name="foreign_drivers_license_validation")
- * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\ForeignDriversLicenseValidationRepository")
+ * @ORM\Entity
  */
 class ForeignDriversLicenseValidation
 {
@@ -71,64 +71,13 @@ class ForeignDriversLicenseValidation
         $this->foreignDriversLicenseUpload = $license;
     }
 
-    /**
-     * @return DateTime
-     */
-    public function getRevokedAt()
+    public static function validatedByWebuser(ForeignDriversLicenseUpload $license, Webuser $webuser)
     {
-        return $this->revokedAt;
-    }
+        $validation = new ForeignDriversLicenseValidation($license);
+        $validation->validatedAt = date_create();
+        $validation->validatedBy = $webuser;
 
-    /**
-     * @return DateTime
-     */
-    public function getValidatedAt()
-    {
-        return $this->validatedAt;
-    }
-
-    /**
-     * @return ForeignDriversLicenseUpload
-     */
-    public function getForeignDriversLicenseUpload()
-    {
-        return $this->foreignDriversLicenseUpload;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @return Webuser
-     */
-    public function getValidatedBy()
-    {
-        return $this->validatedBy;
-    }
-
-    /**
-     * @return Webuser
-     */
-    public function getRevokedBy()
-    {
-        return $this->revokedBy;
-    }
-
-    /**
-     * @var Webuser $webuser
-     * @return static
-     */
-    public function validate(Webuser $webuser)
-    {
-        $this->validatedAt = date_create();
-        $this->validatedBy = $webuser;
-
-        return $this;
+        return $validation;
     }
 
     /**
@@ -141,5 +90,13 @@ class ForeignDriversLicenseValidation
         $this->revokedBy = $webuser;
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isValid()
+    {
+        return !is_null($this->validatedAt) && is_null($this->revokedAt);
     }
 }

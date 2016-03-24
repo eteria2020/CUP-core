@@ -317,7 +317,7 @@ class ForeignDriversLicenseUpload
     {
         /** @var ForeignDriversLicenseValidation $validation */
         foreach ($this->validations as $validation) {
-            if (!is_null($validation->getValidatedAt()) && is_null($validation->getRevokedAt())) {
+            if ($validation->isValid()) {
                 return true;
             }
         }
@@ -328,11 +328,12 @@ class ForeignDriversLicenseUpload
      * @var Webuser $webuser
      * @return ForeignDriversLicenseValidation|null
      */
-    public function getValidationToRevoke()
+    public function revoke($webuser)
     {
         /** @var ForeignDriversLicenseValidation $validation */
         foreach ($this->validations as $validation) {
-            if (!is_null($validation->getValidatedAt()) && is_null($validation->getRevokedAt())) {
+            if ($validation->isValid()) {
+                $validation->revoke($webuser);
                 return $validation;
             }
         }
@@ -340,10 +341,10 @@ class ForeignDriversLicenseUpload
     }
 
     /**
-     * @return array
+     * @return bool
      */
-    public function getValidations()
+    public function isFirstTime()
     {
-        return $this->validations;
+        return count($this->validations) == 0;
     }
 }

@@ -153,7 +153,8 @@ class ForeignDriversLicenseService
                     'drivers_license_name' => $driversLicense->driversLicenseName(),
                     'drivers_license_categories' => $driversLicense->driversLicenseCategories(),
                     'drivers_license_expire' => $driversLicense->driversLicenseExpire()->format('Y-m-d'),
-                    'valid' => $driversLicense->valid()
+                    'valid' => $driversLicense->valid(),
+                    'first_time' => $driversLicense->isFirstTime()
                 ]
             ];
         }, $customers);
