@@ -48,7 +48,7 @@ class ValidateForeignDriversLicenseService
         $this->entityManager->beginTransaction();
 
         try {
-            $validation = ForeignDriversLicenseValidation::validatedByWebuser($foreignDriversLicense, $webuser);
+            $validation = new ForeignDriversLicenseValidation($foreignDriversLicense, $webuser);
 
             $this->entityManager->persist($validation);
             $this->entityManager->flush();

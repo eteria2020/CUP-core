@@ -66,18 +66,11 @@ class ForeignDriversLicenseValidation
      */
     private $revokedBy;
 
-    public function __construct(ForeignDriversLicenseUpload $license)
+    public function __construct(ForeignDriversLicenseUpload $license, Webuser $webuser)
     {
         $this->foreignDriversLicenseUpload = $license;
-    }
-
-    public static function validatedByWebuser(ForeignDriversLicenseUpload $license, Webuser $webuser)
-    {
-        $validation = new ForeignDriversLicenseValidation($license);
         $validation->validatedAt = date_create();
         $validation->validatedBy = $webuser;
-
-        return $validation;
     }
 
     /**
