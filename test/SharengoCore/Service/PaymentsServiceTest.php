@@ -12,6 +12,7 @@ class PaymentsServiceTest extends \PHPUnit_Framework_TestCase
         $this->emailService = \Mockery::mock('SharengoCore\Service\EmailService');
         $this->eventManager = \Mockery::mock('Zend\EventManager\EventManager');
         $this->tripPaymentTriesService = \Mockery::mock('SharengoCore\Service\TripPaymentTriesService');
+        $this->customerDeactivationService = \Mockery::mock('SharengoCore\Service\CustomerDeactivationService');
 
         $this->paymentsService = new PaymentsService(
             $this->cartasiCustomerPayments,
@@ -20,7 +21,8 @@ class PaymentsServiceTest extends \PHPUnit_Framework_TestCase
             $this->emailService,
             $this->eventManager,
             $this->tripPaymentTriesService,
-            ''
+            '',
+            $this->customerDeactivationService
         );
     }
 
@@ -30,11 +32,17 @@ class PaymentsServiceTest extends \PHPUnit_Framework_TestCase
         $consequencesMethod->setAccessible(true);
 
         $customer = \Mockery::mock('SharengoCore\Entity\Customers');
-        $customer->shouldReceive('disable');
         $customer->shouldReceive('setPaymentAble')->with(false);
 
         $tripPayment = \Mockery::mock('SharengoCore\Entity\TripPayments');
         $tripPayment->shouldReceive('setWrongPayment');
+
+        $tripPaymentTry = \Mockery::mock('SharengoCore\Entity\tripPaymentTries');
+
+        $this->customerDeactivationService->shouldReceive('deactivateForTripPaymentTry')->with(
+            $customer,
+            $tripPaymentTry
+        );
 
         $this->entityManager->shouldReceive('persist')->with($customer);
         $this->entityManager->shouldReceive('persist')->with($tripPayment);
@@ -52,6 +60,6 @@ class PaymentsServiceTest extends \PHPUnit_Framework_TestCase
         $customer->shouldReceive('getName');
         $customer->shouldReceive('getSurname');
 
-        $consequencesMethod->invoke($this->paymentsService, $customer, $tripPayment, true);
+        $consequencesMethod->invoke($this->paymentsService, $customer, $tripPayment, $tripPaymentTry, true);
     }
 }

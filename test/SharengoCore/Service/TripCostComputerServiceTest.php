@@ -21,7 +21,7 @@ class TripCostComputerServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->serviceManager = Bootstrap::getServiceManager();
 
-        $entityManager = \Mockery::mock('Doctrine\ORM\EntitityManager');
+        $entityManager = \Mockery::mock('Doctrine\ORM\EntityManager');
         $faresRepository = \Mockery::mock('SharengoCore\Entity\Repository\FaresRepository');
 
         $costSteps = [
