@@ -54,27 +54,25 @@ class TripCostService
         Trips $trip,
         $avoidPersistance = true
     ) {
-        if ($trip->customerIsPaymentAble()) {
-            $tripPayment = $this->retrieveTripCost($trip);
+        $tripPayment = $this->retrieveTripCost($trip);
 
-            try {
-                $this->entityManager->getConnection()->beginTransaction();
+        try {
+            $this->entityManager->getConnection()->beginTransaction();
 
-                $this->tripCostComputed($trip);
+            $this->tripCostComputed($trip);
 
-                if ($tripPayment->getTotalCost() > 0) {
-                    $this->saveTripPayment($tripPayment);
-                }
-
-                if (!$avoidPersistance) {
-                    $this->entityManager->getConnection()->commit();
-                } else {
-                    $this->entityManager->getConnection()->rollback();
-                }
-            } catch (\Exception $e) {
-                $this->entityManager->getConnection()->rollback();
-                throw $e;
+            if ($tripPayment->getTotalCost() > 0) {
+                $this->saveTripPayment($tripPayment);
             }
+
+            if (!$avoidPersistance) {
+                $this->entityManager->getConnection()->commit();
+            } else {
+                $this->entityManager->getConnection()->rollback();
+            }
+        } catch (\Exception $e) {
+            $this->entityManager->getConnection()->rollback();
+            throw $e;
         }
     }
 
