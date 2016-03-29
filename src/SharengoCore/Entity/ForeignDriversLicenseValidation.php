@@ -69,8 +69,8 @@ class ForeignDriversLicenseValidation
     public function __construct(ForeignDriversLicenseUpload $license, Webuser $webuser)
     {
         $this->foreignDriversLicenseUpload = $license;
-        $validation->validatedAt = date_create();
-        $validation->validatedBy = $webuser;
+        $this->validatedAt = date_create();
+        $this->validatedBy = $webuser;
     }
 
     /**
