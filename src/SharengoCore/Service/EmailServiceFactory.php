@@ -16,17 +16,8 @@ class EmailServiceFactory implements FactoryInterface
         $transportConfig = $config['emailTransport'];
         $emailSettings = $config['emailSettings'];
 
-        $emailTransport = Factory::create([$transportConfig['type']]);
+        $emailTransport = Factory::create($transportConfig);
 
-        if ($emailTransport instanceof File) {
-            $options   = new FileOptions(array(
-                'path' => $transportConfig['filePath'],
-                'callback' => function (File $transport) {
-                    return 'Message_' . microtime(true) . '_' . mt_rand() . '.txt';
-                },
-            ));
-            $emailTransport->setOptions($options);
-        }
         return new EmailService($emailTransport, $emailSettings);
     }
 }
