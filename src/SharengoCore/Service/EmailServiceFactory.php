@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Service;
 
+use Zend\Mail\Transport\Factory;
 use Zend\Mail\Transport\File;
 use Zend\Mail\Transport\FileOptions;
 use Zend\ServiceManager\FactoryInterface;
@@ -15,7 +16,7 @@ class EmailServiceFactory implements FactoryInterface
         $transportConfig = $config['emailTransport'];
         $emailSettings = $config['emailSettings'];
 
-        $emailTransport = new $transportConfig['type'];
+        $emailTransport = Factory::create([$transportConfig['type']]);
 
         if ($emailTransport instanceof File) {
             $options   = new FileOptions(array(
