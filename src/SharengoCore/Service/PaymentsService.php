@@ -125,7 +125,7 @@ class PaymentsService
                 $tripPayment
             );
         } else {
-            $this->disableCustomerForPayment($customer);
+            $this->disableCustomer($customer);
 
             // enable hooks on the event that the customer doesn't have a valid contract
             $this->eventManager->trigger('notifyCustomerPay', $this, [
@@ -138,9 +138,10 @@ class PaymentsService
     /**
      * @var Customers $customer
      */
-    private function disableCustomerForPayment(Customers $customer)
+    private function disableCustomer(Customers $customer)
     {
         $customer->setPaymentAble(false);
+        $customer->disable();
 
         $this->entityManager->persist($customer);
 
