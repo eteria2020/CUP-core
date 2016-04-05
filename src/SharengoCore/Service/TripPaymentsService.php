@@ -155,11 +155,13 @@ class TripPaymentsService
     }
 
     /**
+     * @param Customers $customer optional parameter to filter the results by
+     *  customer
      * @return PersistentCollection
      */
-    public function getTripPaymentsForPayment()
+    public function getTripPaymentsForPayment(Customers $customer = null)
     {
-        return $this->tripPaymentsRepository->findTripPaymentsForPayment();
+        return $this->tripPaymentsRepository->findTripPaymentsForPayment($customer);
     }
 
     public function getTripPaymentsForUserPayment(Customers $customer)

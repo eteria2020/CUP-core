@@ -41,7 +41,7 @@ final class PaymentEmailListener implements SharedListenerAggregateInterface
         );
 
         $this->listeners[] = $events->attach(
-            'Application\Controller\ConsolePayInvoiceController',
+            'ProcessPaymentsService',
             'processPaymentsCompleted',
             [$this, 'sendEmailToCustomers']
         );

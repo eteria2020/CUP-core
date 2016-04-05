@@ -55,12 +55,10 @@ final class DisableContractListener implements SharedListenerAggregateInterface
     {
         // TODO: FIX THESE DATA
 
-        $date = date_create('midnight +7 days');
         $content = sprintf(
             file_get_contents(__DIR__.'/../../../view/emails/disabled_contract_it-IT.html'),
             $customer->getName(),
-            $customer->getSurname(),
-            $date->format('d/m/Y')
+            $customer->getSurname()
         );
 
         $attachments = [

@@ -43,7 +43,11 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getSingleScalarResult();
     }
 
-    public function findTripPaymentsForPayment()
+    /**
+     * @param Customers $customer optional parameter to filter the results by
+     *  customer
+     */
+    public function findTripPaymentsForPayment(Customers $customer = null)
     {
         $em = $this->getEntityManager();
 
@@ -52,13 +56,21 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
             'JOIN t.customer c '.
             'WHERE tp.status = :status '.
             'AND c.paymentAble = :paymentAble '.
-            'AND t.timestampEnd < :midnight';
+            'AND t.timestampEnd < :midnight ';
+
+        if ($customer instanceof Customers) {
+            $dql .= 'AND c = :customer ';
+        }
 
         $query = $em->createQuery($dql);
 
         $query->setParameter('status', TripPayments::STATUS_TO_BE_PAYED);
         $query->setParameter('paymentAble', true);
         $query->setParameter('midnight', date_create('midnight'));
+
+        if ($customer instanceof Customers) {
+            $query->setParameter('customer', $customer);
+        }
 
         return $query->getResult();
     }

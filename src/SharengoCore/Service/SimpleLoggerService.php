@@ -2,7 +2,7 @@
 
 namespace SharengoCore\Service;
 
-class SimpleLoggerService
+class SimpleLoggerService implements LoggerInterface
 {
     const OUTPUT_OFF = 0;
 
@@ -89,5 +89,4 @@ class SimpleLoggerService
     {
         fwrite(STDOUT, $message);
     }
-
 }
