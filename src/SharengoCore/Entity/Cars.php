@@ -276,6 +276,27 @@ class Cars
      */
     private $carsInfo;
 
+    /**
+     * Bidirectional - One-To-Many (INVERSE SIDE)
+     *
+     * @ORM\OneToMany(targetEntity="Reservations", mappedBy="car", cascade={"remove"})
+     */
+    private $reservations;
+
+    /**
+     * Bidirectional - One-To-Many (INVERSE SIDE)
+     *
+     * @ORM\OneToMany(targetEntity="ReservationsArchive", mappedBy="car", cascade={"remove"})
+     */
+    private $reservationsArchive;
+
+    /**
+     * Bidirectional - One-To-Many (INVERSE SIDE)
+     *
+     * @ORM\OneToMany(targetEntity="CarsMaintenance", mappedBy="carPlate", cascade={"remove"})
+     */
+    private $maintenances;
+
 
     public function __construct()
     {
