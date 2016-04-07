@@ -3,6 +3,7 @@
 namespace SharengoCore\Document\Repository;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use SharengoCore\Document\Events;
 
 class EventsRepository extends DocumentRepository
 {
@@ -20,7 +21,8 @@ class EventsRepository extends DocumentRepository
         while ($is_same_trip) {
             $event = $this->_getPreviousEvent($plate, $startTime);
 
-            if ($event && $event->getTrip() == '0') {
+            if ($event && $event->getTrip() == '0'
+            && $event->getCustomerId() == $trip->getCustomer()->getId()) {
                 array_unshift($events, $event);
                 $startTime = $event->getEventTime();
             } else {
