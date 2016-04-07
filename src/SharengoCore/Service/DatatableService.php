@@ -4,7 +4,6 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\DatatableQueryBuilders\DatatableQueryBuilderInterface;
-
 use Doctrine\ORM\EntityManager;
 
 class DatatableService implements DatatableServiceInterface
@@ -97,22 +96,39 @@ class DatatableService implements DatatableServiceInterface
         }
 
         //query with null
-        if ($options['column'] != 'select' &&
-            isset($options['columnNull']) &&
+        if (isset($options['columnNull']) &&
             !empty($options['columnNull'])
         ) {
-            $withAndWhere = $where ? 'AND ' : 'WHERE ';
-            $dql .= $withAndWhere . $options['columnNull'] . " IS NULL ";
-            $where = true;
+            /**
+             *  This allow to pass multiple columns that must be NULL
+             *  directly from the JS dataTable funcion, using the std:
+             *
+             *      aoData.push({ "name": "columnNull", "value": ["col1","col2",etc...] });
+             */
+            $columnsNull = explode(",", $options['columnNull']);
+            foreach ($columnsNull as $column) {
+                $withAndWhere = $where ? 'AND ' : 'WHERE ';
+                $dql .= $withAndWhere . $column . " IS NULL ";
+                $where = true;
+            }
         }
 
         //query with not null
         if (isset($options['columnNotNull']) &&
             !empty($options['columnNotNull'])
         ) {
-            $withAndWhere = $where ? 'AND ' : 'WHERE ';
-            $dql .= $withAndWhere . $options['columnNotNull'] . " IS NOT NULL ";
-            $where = true;
+            /**
+             *  This allow to pass multiple columns that must be NOT NULL
+             *  directly from the JS dataTable funcion, using the std:
+             *
+             *      aoData.push({ "name": "columnNotNull", "value": ["col1","col2",etc...] });
+             */
+            $columnsNotNull = explode(",", $options['columnNotNull']);
+            foreach ($columnsNotNull as $column) {
+                $withAndWhere = $where ? 'AND ' : 'WHERE ';
+                $dql .= $withAndWhere . $column . " IS NOT NULL ";
+                $where = true;
+            }
         }
 
         //query without LIKE operator
