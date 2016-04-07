@@ -106,6 +106,15 @@ class DatatableService implements DatatableServiceInterface
             $where = true;
         }
 
+        //query with not null
+        if (isset($options['columnNotNull']) &&
+            !empty($options['columnNotNull'])
+        ) {
+            $withAndWhere = $where ? 'AND ' : 'WHERE ';
+            $dql .= $withAndWhere . $options['columnNotNull'] . " IS NOT NULL ";
+            $where = true;
+        }
+
         //query without LIKE operator
         if ($options['column'] != 'select' &&
             isset($options['columnWithoutLike']) &&
