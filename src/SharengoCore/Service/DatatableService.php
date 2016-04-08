@@ -72,7 +72,10 @@ class DatatableService
             } else {
                 $value = strtolower("%" . $options['searchValue'] . "%");
                 $withAndWhere = $where ? 'AND ' : 'WHERE ';
-                $dql .= $withAndWhere . ' LOWER(' . $options['column'] . ') LIKE :value ';
+                /**
+                 * Because here we need an explicit cast (but ::text boes not work with DQL), should we use https://github.com/orocrm/doctrine-extensions#dql-functions ?
+                 */
+                $dql .= $withAndWhere . ' LOWER((' . $options['column'] . ') ::text ) LIKE :value ';
                 $as_parameters['value'] = $value;
             }
             $where = true;
