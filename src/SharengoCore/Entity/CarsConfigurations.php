@@ -182,4 +182,17 @@ class CarsConfigurations
         $this->value = $value;
     }
 
+    public function getPriority()
+    {
+        if ( $this->getCarPlate() !== null ){
+            return 'Configurazione Specifica di un Auto';
+        }
+        if ( $this->getModel() !== null ){
+            return 'Configurazione di un Modello di Auto';
+        }
+        if ( $this->getFleetName() !== null ){
+            return 'Configurazione di una Citta\'';
+        }
+        return 'Configurazione Globale';
+    }
 }
