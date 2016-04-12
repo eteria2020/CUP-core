@@ -122,6 +122,16 @@ class ZoneAlarms
     }
 
     /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
      * Add fleet
      *
      * @param \SharengoCore\Entity\Fleet $fleet
