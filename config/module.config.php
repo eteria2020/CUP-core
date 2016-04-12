@@ -217,12 +217,12 @@ return [
             'SharengoCore\Service\ForeignDriversLicenseService' => 'SharengoCore\Service\ForeignDriversLicenseServiceFactory',
             'SharengoCore\Service\ValidateForeignDriversLicenseService' => 'SharengoCore\Service\ValidateForeignDriversLicenseServiceFactory',
             'SharengoCore\Service\ProcessPaymentsService' => 'SharengoCore\Service\ProcessPaymentsServiceFactory',
+            'SharengoCore\Service\ProviderAuthenticatedCustomersService' => 'SharengoCore\Service\ProviderAuthenticatedCustomersServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
             'SharengoCore\Listener\DisableContractListener' => 'SharengoCore\Listener\DisableContractListenerFactory',
             'SharengoCore\Listener\UploadedDriversLicenseMailSender' => 'SharengoCore\Listener\UploadedDriversLicenseMailSenderFactory',
             'SharengoCore\Listener\ForeignDriverLicenseValidListener' => 'SharengoCore\Listener\ForeignDriverLicenseValidListenerFactory',
-
         ],
         'shared' => [
             'SharengoCore\Service\TripCostComputerService' => false,

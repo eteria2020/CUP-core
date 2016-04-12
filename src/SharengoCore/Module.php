@@ -34,6 +34,9 @@ class Module
         $platform->registerDoctrineTypeMapping('reactivation_reason', 'string');
         $platform->registerDoctrineTypeMapping('csv_anomaly_type', 'string');
 
+        \Doctrine\DBAL\Types\Type::addType('uuid', 'Ramsey\Uuid\Doctrine\UuidType');
+        $platform->registerDoctrineTypeMapping('uuid', 'uuid');
+
         $this->registerEventListeners(
             $e->getApplication()->getEventManager(),
             $e->getApplication()->getServiceManager()
