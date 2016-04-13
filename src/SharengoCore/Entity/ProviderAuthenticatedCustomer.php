@@ -216,6 +216,14 @@ final class ProviderAuthenticatedCustomer
      */
     private $customer = null;
 
+    /**
+     * Inserted timestamp
+     * @var DateTime
+     *
+     * @ORM\Column(name="inserted_ts", type="datetime", nullable=false)
+     */
+    private $insertedTs;
+
     private function __construct(
         $provider,
         $identifier,
@@ -265,6 +273,7 @@ final class ProviderAuthenticatedCustomer
         $this->region = $region;
         $this->city = $city;
         $this->zip = $zip;
+        $this->insertedTs = date_create();
     }
 
     /**
