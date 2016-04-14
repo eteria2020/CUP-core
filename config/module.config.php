@@ -254,6 +254,13 @@ return [
                 ]
             ],
         ],
+        'configuration' => [
+            'orm_default' => [
+                'string_functions' => [
+                    'cast' => 'Oro\ORM\Query\AST\Functions\Cast',
+                ]
+            ]
+        ]
     ],
 
     'bjyauthorize' => [
