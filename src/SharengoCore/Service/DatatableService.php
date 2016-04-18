@@ -72,7 +72,7 @@ class DatatableService
             } else {
                 $value = strtolower("%" . $options['searchValue'] . "%");
                 $withAndWhere = $where ? 'AND ' : 'WHERE ';
-                $dql .= $withAndWhere . ' LOWER(' . $options['column'] . ') LIKE :value ';
+                $dql .= $withAndWhere . ' LOWER(CAST(' . $options['column'] . ' as text)) LIKE :value ';
                 $as_parameters['value'] = $value;
             }
             $where = true;
