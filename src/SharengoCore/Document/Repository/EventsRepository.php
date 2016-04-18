@@ -3,7 +3,6 @@
 namespace SharengoCore\Document\Repository;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use SharengoCore\Document\Events;
 
 class EventsRepository extends DocumentRepository
 {
