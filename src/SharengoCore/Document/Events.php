@@ -243,8 +243,4 @@ class Events
 
         return $this;
     }
-
-    public function getCustomerId() {
-        return $this->customer;
-    }
 }

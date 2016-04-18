@@ -21,8 +21,7 @@ class EventsRepository extends DocumentRepository
         while ($is_same_trip) {
             $event = $this->_getPreviousEvent($plate, $startTime);
 
-            if ($event && $event->getTrip() == '0'
-            && $event->getCustomerId() == $trip->getCustomer()->getId()) {
+            if ($event && $event->getTrip() == '0') {
                 array_unshift($events, $event);
                 $startTime = $event->getEventTime();
             } else {
