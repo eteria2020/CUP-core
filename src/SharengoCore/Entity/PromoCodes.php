@@ -161,4 +161,12 @@ class PromoCodes
     {
         return $this->promocodesinfo;
     }
+
+    /**
+     * @return int
+     */
+    public function discountPercentage()
+    {
+        return $this->promocodesinfo->discountPercentage();
+    }
 }

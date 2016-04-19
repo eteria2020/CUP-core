@@ -91,7 +91,7 @@ class PromoCodesInfo
      * @ORM\Column(name="overridden_subscription_cost", type="integer", nullable=true)
      */
     private $overriddenSubscriptionCost = null;
-    
+
     /**
      * @var \Webuser
      *
@@ -101,7 +101,13 @@ class PromoCodesInfo
      * })
      */
     private $webuser;
-    
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="discount_percentage", type="integer", nullable=true)
+     */
+    private $discountPercentage;
 
 
     /**
@@ -365,5 +371,13 @@ class PromoCodesInfo
     {
         return null != $this->overriddenSubscriptionCost &&
                $this->overriddenSubscriptionCost > 0;
+    }
+
+    /**
+     * @return int
+     */
+    public function discountPercentage()
+    {
+        return $this->discountPercentage;
     }
 }
