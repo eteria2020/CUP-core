@@ -138,7 +138,9 @@ class InvoicesService
     public function prepareInvoiceForFirstPayment(Customers $customer)
     {
         $amounts = [
-            "sum" => $this->calculateAmountsWithTaxesFromTotal($customer->getSubscriptionAmount($this->subscriptionAmount)),
+            "sum" => $this->calculateAmountsWithTaxesFromTotal(
+                $customer->payedSubscriptionAmount($this->subscriptionAmount)
+            ),
             "iva" => $this->ivaPercentage
         ];
         return Invoices::createInvoiceForFirstPayment(
@@ -328,7 +330,7 @@ class InvoicesService
      * @param integer $amount
      * @return mixed
      */
-    private function calculateAmountsWithTaxesFromTotal($amount)
+    public function calculateAmountsWithTaxesFromTotal($amount)
     {
         $amounts = [];
 

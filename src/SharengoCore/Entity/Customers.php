@@ -418,6 +418,14 @@ class Customers
      */
     private $foreignDriversLicenseUploads;
 
+    /**
+     * Bidirectional - One-To-Many (INVERSE SIDE)
+     *
+     * @ORM\OneToMany(targetEntity="SubscriptionPayment", mappedBy="customer")
+     * @ORM\OrderBy({"insertTs" = "DESC"})
+     */
+    private $subscriptionPayments;
+
 
     public function __construct()
     {
@@ -1772,6 +1780,23 @@ class Customers
         }
 
         return null;
+    }
+
+    /**
+     * retrieves the amount actually payed from the customer for the subscription
+     *
+     * @param int $defaultAmount
+     * @return int amount in euro cents
+     */
+    public function payedSubscriptionAmount($defaultAmount)
+    {
+        if (empty($this->subscriptionPayments)) {
+            return $this->getSubscriptionAmount($defaultAmount);
+        }
+
+        $lastSubscriptionPayment = $this->subscriptionPayments[0];
+
+        return $lastSubscriptionPayment->amount();
     }
 
     public function getForeignDriversLicenseUploads()

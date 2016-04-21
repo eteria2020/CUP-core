@@ -13,6 +13,9 @@ class InvoicesServiceFactory implements FactoryInterface
         $invoicesRepository = $entityManager->getRepository('\SharengoCore\Entity\Invoices');
         $config = $serviceLocator->get('Config');
         $invoicesConfig = $config['invoice'];
+        // default subscription amount equals the first payment amount defined
+        // for cartasi
+        $invoicesConfig['subscription_amount'] = $config['cartasi']['first_payment_amount'];
         $simpleLoggerService = $serviceLocator->get('\SharengoCore\Service\SimpleLoggerService');
 
         $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');

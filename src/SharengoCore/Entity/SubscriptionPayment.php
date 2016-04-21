@@ -94,4 +94,12 @@ class SubscriptionPayment
     {
         return $this->customer;
     }
+
+    /**
+     * @return int amount in euro cents
+     */
+    public function amount()
+    {
+        return $this->amount;
+    }
 }
