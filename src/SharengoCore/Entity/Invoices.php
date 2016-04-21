@@ -260,13 +260,19 @@ class Invoices
      * @param Customers $customer
      * @param integer $version
      * @param mixed $amounts
+     * @param int $date in the format YYYYMMDD
      * @return Invoice
      */
     public static function createInvoiceForFirstPayment(
         Customers $customer,
         $version,
-        $amounts
+        $amounts,
+        $date = null
     ) {
+        if (is_null($date)) {
+            $date = intval(date("Ymd"));
+        }
+
         $invoice = new Invoices(
             $customer,
             $version,
