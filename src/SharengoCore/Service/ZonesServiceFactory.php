@@ -11,7 +11,16 @@ class ZonesServiceFactory implements FactoryInterface
     {
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
+        $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
 
-        return new ZonesService($entityManager);
+        // decorate the query builder with the needed decorators
+        $datatableService->setQueryBuilder(
+            new DatatableQueryBuilders\Basic()
+        );
+
+        return new ZonesService(
+            $entityManager,
+            $datatableService
+        );
     }
 }

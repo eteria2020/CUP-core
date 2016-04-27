@@ -3,7 +3,9 @@
 namespace SharengoCore\Service;
 
 use Doctrine\ORM\EntityManager;
+
 use SharengoCore\Entity\Zone;
+use SharengoCore\Entity\Repository\ZonesRepository;
 
 class ZonesService
 {
@@ -17,15 +19,31 @@ class ZonesService
     private $zoneAlarmsRepository;
 
     /**
+     * @var DatatableServiceInterface
+     */
+    private $datatableService;
+
+    /**
      * @param EntityManager               $entityManager
      */
-    public function __construct(EntityManager $entityManager)
-    {
+    public function __construct(
+        EntityManager $entityManager,
+        DatatableService $datatableService
+    ) {
         $this->entityManager = $entityManager;
         $this->zoneRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Zone');
         $this->zoneAlarmsRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZoneAlarms');
         $this->zoneGroupsRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZoneGroups');
         $this->zonePricesRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZonePrices');
+        $this->datatableService = $datatableService;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTotalZones()
+    {
+        return $this->zoneRepository->getTotalZones();
     }
 
     /**
@@ -69,4 +87,35 @@ class ZonesService
         }
         return $zoneGroups;
     }
+
+    public function getDataDataTable(array $as_filters = [], $count = false)
+    {
+        $zones = $this->datatableService->getData('Zone', $as_filters, $count);
+
+        if ($count) {
+            return $zones;
+        }
+
+        return array_map(function (Zone $zone) {
+            return [
+                'e'      => [
+                    'id'                  => $zone->getId(),
+                    'name'                => $zone->getName(),
+                    'areaInvoice'         => $zone->getAreaInvoice(),
+                    'active'              => $zone->getActive(),
+                    'hidden'              => $zone->getHidden(),
+                    'invoiceDescription'  => $zone->getInvoiceDescription(),
+                    'revGeo'              => $zone->getRevGeo(),
+                    'areaUse'             => $zone->getAreaUse(),
+                ],
+                'button' => $zone->getId()
+            ];
+        }, $zones);
+    }
+
+    public function getZoneById($id)
+    {
+        return $this->zoneRepository->find($id);
+    }
+
 }
