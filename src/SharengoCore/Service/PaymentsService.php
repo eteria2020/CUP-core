@@ -125,13 +125,15 @@ class PaymentsService
                 $tripPayment
             );
         } else {
-            $this->disableCustomer($customer);
+            if ($customer->getPaymentAble()) {
+                // enable hooks on the event that the customer doesn't have a valid contract
+                $this->eventManager->trigger('notifyCustomerPay', $this, [
+                    'customer' => $customer,
+                    'tripPayment' => $tripPayment
+                ]);
+            }
 
-            // enable hooks on the event that the customer doesn't have a valid contract
-            $this->eventManager->trigger('notifyCustomerPay', $this, [
-                'customer' => $customer,
-                'tripPayment' => $tripPayment
-            ]);
+            $this->disableCustomer($customer);
         }
     }
 
@@ -206,7 +208,7 @@ class PaymentsService
             $this->avoidCartasi
         );
 
-        $this->entityManager->getConnection()->beginTransaction();
+        $this->entityManager->beginTransaction();
 
         try {
             $tripPaymentTry = $this->tripPaymentTriesService->generateTripPaymentTry(
@@ -231,12 +233,12 @@ class PaymentsService
             $this->entityManager->flush();
 
             if (!$this->avoidPersistance) {
-                $this->entityManager->getConnection()->commit();
+                $this->entityManager->commit();
             } else {
-                $this->entityManager->getConnection()->rollback();
+                $this->entityManager->rollback();
             }
         } catch (\Exception $e) {
-            $this->entityManager->getConnection()->rollback();
+            $this->entityManager->rollback();
             throw $e;
         }
 

@@ -2,6 +2,16 @@
 
 namespace SharengoCore\Service;
 
+use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\Trips;
+use SharengoCore\Entity\Fares;
+use SharengoCore\Entity\TripPayments;
+use SharengoCore\Entity\TripPaymentTries;
+use Cartasi\Entity\Transactions;
+use Cartasi\Entity\CartasiResponse;
+
+use Doctrine\DBAL\Connection;
+
 class PaymentsServiceTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
@@ -61,5 +71,73 @@ class PaymentsServiceTest extends \PHPUnit_Framework_TestCase
         $customer->shouldReceive('getSurname');
 
         $consequencesMethod->invoke($this->paymentsService, $customer, $tripPayment, $tripPaymentTry, true);
+    }
+
+    public function testTryPaymentNoContractPaymentAble()
+    {
+        $customer = new Customers();
+        $customer->setPaymentAble(true);
+        $trip = new Trips();
+        $trip->setCustomer($customer);
+        $fare = new Fares(0, 0, '{}');
+        $tripPayment = new TripPayments($trip, $fare, 10, 0, 0, 1);
+
+        $this->cartasiContractsService->shouldReceive('hasCartasiContract')->andReturn(false);
+        $this->eventManager->shouldReceive('trigger')->with(
+            'notifyCustomerPay',
+            $this->paymentsService,
+            [
+                'customer' => $customer,
+                'tripPayment' => $tripPayment
+            ]
+        );
+        $this->entityManager->shouldReceive('persist')->with($customer);
+        $this->entityManager->shouldReceive('flush');
+
+        $this->paymentsService->tryPayment($tripPayment);
+    }
+
+    public function testTryPaymentNoContractNotPaymentAble()
+    {
+        $customer = new Customers();
+        $customer->setPaymentAble(false);
+        $trip = new Trips();
+        $trip->setCustomer($customer);
+        $fare = new Fares(0, 0, '{}');
+        $tripPayment = new TripPayments($trip, $fare, 10, 0, 0, 1);
+
+        $this->cartasiContractsService->shouldReceive('hasCartasiContract')->andReturn(false);
+        $this->entityManager->shouldReceive('persist')->with($customer);
+        $this->entityManager->shouldReceive('flush');
+
+        $this->paymentsService->tryPayment($tripPayment);
+    }
+
+    public function testTryPaymentWithContract()
+    {
+        $customer = new Customers();
+        $trip = new Trips();
+        $trip->setCustomer($customer);
+        $fare = new Fares(0, 0, '{}');
+        $tripPayment = new TripPayments($trip, $fare, 10, 0, 0, 1);
+
+        $this->cartasiContractsService->shouldReceive('hasCartasiContract')->andReturn(true);
+        $transaction = new Transactions();
+        $response = new CartasiResponse(true, 'OK', $transaction);
+        $this->cartasiCustomerPayments->shouldReceive('sendPaymentRequest')->andReturn($response);
+        $this->entityManager->shouldReceive('beginTransaction');
+        $tripPaymentTry = new TripPaymentTries(
+            $tripPayment,
+            $response->getOutcome(),
+            $response->getTransaction()
+        );
+        $this->tripPaymentTriesService->shouldReceive('generateTripPaymentTry')->andReturn($tripPaymentTry);
+        $this->entityManager->shouldReceive('persist')->with($tripPayment);
+        $this->entityManager->shouldReceive('flush');
+        $this->entityManager->shouldReceive('persist')->with($tripPaymentTry);
+        $this->entityManager->shouldReceive('flush');
+        $this->entityManager->shouldReceive('commit');
+
+        $this->paymentsService->tryPayment($tripPayment);
     }
 }
