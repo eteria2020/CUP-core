@@ -185,7 +185,7 @@ class EditTripsService
         }
         // Set customer's paymentAble to true to enable new cost computation
         // and to enable payment to be triggered by script
-        $this->customersService->setCustomerPaymentAble($trip->getCustomer());
+        $this->customersService->enableCustomerPayment($trip->getCustomer());
         $this->entityManager->flush();
     }
 

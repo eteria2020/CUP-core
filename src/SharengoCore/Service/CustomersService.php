@@ -541,20 +541,6 @@ class CustomersService implements ValidatorServiceInterface
     }
 
     /**
-     * set the customer paymentAble flag to true
-     * reabilitates him to be processed in trips to be payed
-     *
-     * @var Customers $customer
-     */
-    public function setCustomerPaymentAble(Customers $customer)
-    {
-        $customer->setPaymentAble(true);
-
-        $this->entityManager->persist($customer);
-        $this->entityManager->flush();
-    }
-
-    /**
      * @param Customers $customer
      * @return boolean
      */
