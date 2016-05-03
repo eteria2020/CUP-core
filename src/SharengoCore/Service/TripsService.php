@@ -134,7 +134,7 @@ class TripsService
 
     public function getDataDataTable(array $filters = [], $count = false)
     {
-        $trips = $this->datatableService->getData('Trips', $filters, $count, 'Trips');
+        $trips = $this->datatableService->getData('Trips', $filters, $count);
 
         if ($count) {
             return $trips;
@@ -207,7 +207,7 @@ class TripsService
 
     public function getDataNotPayedDataTable(array $filters = [], $count = false)
     {
-        $trips = $this->datatableServiceNotPayed->getData('Trips', $filters, $count,'TripsNotPayed');
+        $trips = $this->datatableServiceNotPayed->getData('TripsNotPayed', $filters, $count);
 
         if ($count) {
             return $trips;

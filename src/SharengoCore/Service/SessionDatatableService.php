@@ -51,6 +51,9 @@ class SessionDatatableService implements DatatableServiceInterface
             $this->sessionContainer->offsetSet($entity, $options);
         }
 
+        // Translate Renamed Tables
+        $entity = $entity === "TripsNotPayed" ? "Trips" : $entity;  
+
         return $this->datatableService->getData($entity, $options, $count); 
     }
 
