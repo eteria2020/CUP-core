@@ -43,7 +43,7 @@ class SessionDatatableService implements DatatableServiceInterface
      * @param boolean $count
      * @return mixed[] | integer
      */
-    public function getData($entity, $options, $count = false)
+    public function getData($entity, $options, $count)
     {
         // Save the datatable filter options on a Session Contianer to maintain datatable
         // filters after page refresh.

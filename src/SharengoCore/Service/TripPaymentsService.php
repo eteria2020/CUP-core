@@ -2,15 +2,16 @@
 
 namespace SharengoCore\Service;
 
+// Externals
+use Doctrine\ORM\EntityManager;
+// Internals
 use SharengoCore\Entity\Repository\TripPaymentsRepository;
 use SharengoCore\Entity\TripPayments;
-use SharengoCore\Service\DatatableService;
+use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Commands\SetCustomerWrongPaymentsAsToBePayed;
 use SharengoCore\Exception\TripPaymentWithoutDateException;
-
-use Doctrine\ORM\EntityManager;
 
 class TripPaymentsService
 {
@@ -20,7 +21,7 @@ class TripPaymentsService
     private $tripPaymentsRepository;
 
     /**
-     * @var DatatableService
+     * @var DatatableServiceInterface
      */
     private $datatableService;
 
@@ -34,7 +35,7 @@ class TripPaymentsService
      */
     public function __construct(
         TripPaymentsRepository $tripPaymentsRepository,
-        DatatableService $datatableService,
+        DatatableServiceInterface $datatableService,
         EntityManager $entityManager
     ) {
         $this->tripPaymentsRepository = $tripPaymentsRepository;
@@ -113,6 +114,17 @@ class TripPaymentsService
         ksort($orderedTripPayments);
 
         return $orderedTripPayments;
+    }
+
+    /**
+     * This method return an array containing the DataTable filters,
+     * from a Session Container defined in the SessionDatatableSerivce.
+     *
+     * @return array
+     */
+    public function getDataTableSessionFilters()
+    {
+        return $this->datatableService->getSessionFilter('TripPayments');
     }
 
     /**

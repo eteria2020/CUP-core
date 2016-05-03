@@ -2,18 +2,17 @@
 
 namespace SharengoCore\Service;
 
+// Externals
+use Doctrine\ORM\EntityManager;
+use Zend\Filter\File\RenameUpload;
+use Zend\EventManager\EventManager;
+use ZipArchive;
 // Internals
 use SharengoCore\Form\DTO\UploadedFile;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\ForeignDriversLicenseUpload;
 use SharengoCore\Entity\Repository\ForeignDriversLicenseUploadRepository;
 use SharengoCore\Exception\ForeignDriversLicenseUploadNotFoundException;
-use SharengoCore\Service\DatatableServiceInterface;
-// Externals
-use Doctrine\ORM\EntityManager;
-use Zend\Filter\File\RenameUpload;
-use Zend\EventManager\EventManager;
-use ZipArchive;
 
 class ForeignDriversLicenseService
 {
@@ -153,12 +152,12 @@ class ForeignDriversLicenseService
             return [
                 'e' => [
                     'id' => $driversLicense->id(),
-                    'customer_id' => $driversLicense->customerId(),
+                    'customer' => $driversLicense->customerId(),
                     'customer_name' => $driversLicense->customerName(),
                     'customer_surname' => $driversLicense->customerSurname(),
                     'customer_address' => $driversLicense->customerAddress(),
-                    'customer_birth_date' => $driversLicense->customerBirthDate()->format('Y-m-d'),
-                    'customer_birth_place' => $driversLicense->customerBirthPlace(),
+                    'customer_birthdate' => $driversLicense->customerBirthDate()->format('Y-m-d'),
+                    'customer_birthplace' => $driversLicense->customerBirthPlace(),
                     'drivers_license_number' => $driversLicense->driversLicenseNumber(),
                     'drivers_license_authority' => $driversLicense->driversLicenseAuthority(),
                     'drivers_license_country' => $driversLicense->driversLicenseCountry(),

@@ -2,13 +2,13 @@
 
 namespace SharengoCore\Service;
 
-// Internals
-use SharengoCore\Service\SessionDatatableService;
 // Externals
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Filter\File\RenameUpload;
 use Zend\EventManager\EventManager;
+// Internals
+use SharengoCore\Service\SessionDatatableService;
 
 class ForeignDriversLicenseServiceFactory implements FactoryInterface
 {
