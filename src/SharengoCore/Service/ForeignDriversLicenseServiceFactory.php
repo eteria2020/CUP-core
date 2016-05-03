@@ -2,6 +2,9 @@
 
 namespace SharengoCore\Service;
 
+// Internals
+use SharengoCore\Service\SessionDatatableService;
+// Externals
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Filter\File\RenameUpload;
@@ -18,7 +21,9 @@ class ForeignDriversLicenseServiceFactory implements FactoryInterface
         $config = $serviceLocator->get('Config');
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $eventManager = new EventManager('ForeignDriversLicenseService');
-        $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
+
+        /** @var DatatableServiceInterface **/
+        $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
 
         return new ForeignDriversLicenseService(
             $renameUpload,

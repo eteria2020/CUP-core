@@ -2,6 +2,9 @@
 
 namespace SharengoCore\Service;
 
+// Internals
+use SharengoCore\Service\SessionDatatableService;
+// Externals
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -11,12 +14,15 @@ class ReservationsServiceFactory implements FactoryInterface
     {
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
-        $I_datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
+        
+        /** @var DatatableServiceInterface **/
+        $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
+
         $customersService = $serviceLocator->get('SharengoCore\Service\CustomersService');
         $reservationsRepository = $entityManager->getRepository('\SharengoCore\Entity\Reservations');
 
         // decorate the query builder with the needed decorators
-        $I_datatableService->setQueryBuilder(
+        $datatableService->setQueryBuilder(
             new DatatableQueryBuilders\Cars(
                 new DatatableQueryBuilders\Customers(
                     new DatatableQueryBuilders\Basic()
@@ -27,6 +33,6 @@ class ReservationsServiceFactory implements FactoryInterface
         $languageService = $serviceLocator->get('LanguageService');
         $translator = $languageService->getTranslator();
 
-        return new ReservationsService($reservationsRepository, $I_datatableService, $customersService, $entityManager, $translator);
+        return new ReservationsService($reservationsRepository, $datatableService, $customersService, $entityManager, $translator);
     }
 }

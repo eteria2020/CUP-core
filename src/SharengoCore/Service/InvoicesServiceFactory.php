@@ -2,6 +2,9 @@
 
 namespace SharengoCore\Service;
 
+// Internals
+use SharengoCore\Service\SessionDatatableService;
+// Externals
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -18,7 +21,8 @@ class InvoicesServiceFactory implements FactoryInterface
         $invoicesConfig['subscription_amount'] = $config['cartasi']['first_payment_amount'];
         $simpleLoggerService = $serviceLocator->get('\SharengoCore\Service\SimpleLoggerService');
 
-        $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
+        /** @var DatatableServiceInterface **/
+        $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
 
         // decorate the query builder with the needed decorators
         $datatableService->setQueryBuilder(

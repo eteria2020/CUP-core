@@ -7,6 +7,7 @@ use SharengoCore\Entity\Repository\ReservationsRepository;
 use SharengoCore\Entity\Reservations;
 use SharengoCore\Entity\Cars;
 use SharengoCore\Service\CustomersService;
+use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Entity\Customers;
 use Zend\Mvc\I18n\Translator;
 
@@ -27,7 +28,7 @@ class ReservationsService
     private $reservationsRepository;
 
     /**
-     * @var DatatableService
+     * @var DatatableServiceInterface
      */
     private $datatableService;
 
@@ -47,13 +48,13 @@ class ReservationsService
 
     /**
      * @param ReservationsRepository $reservationsRepository
-     * @param DatatableService $datatableService
+     * @param DatatableServiceInterface $datatableService
      * @param CustomersService $customersService
      * @param EntityManager $entityManager
      */
     public function __construct(
         ReservationsRepository $reservationsRepository,
-        DatatableService $datatableService,
+        DatatableServiceInterface $datatableService,
         CustomersService $customersService,
         EntityManager $entityManager,
         Translator $translator
@@ -93,6 +94,17 @@ class ReservationsService
     public function getReservationsToDelete()
     {
         return $this->reservationsRepository->findReservationsToDelete();
+    }
+
+    /**
+     * This method return an array containing the DataTable filters,
+     * from a Session Container defined in the SessionDatatableSerivce.
+     *
+     * @return array
+     */
+    public function getDataTableSessionFilters()
+    {
+        return $this->datatableService->getSessionFilter('Reservations');
     }
 
     public function getDataDataTable(array $as_filters = [], $count = false)

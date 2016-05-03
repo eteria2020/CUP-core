@@ -11,12 +11,11 @@ class SessionDatatableServiceFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         // Dependencies are fetched from Service Manager
-        $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
 
         // Creating Session Container
-        $sessionContainer = new Container($this->params['datatableFilters']);
+        $sessionContainer = new Container('datatableFilters');
 
-        return new SessionDatatableService($entityManager, $datatableService, $sessionContainer);
+        return new SessionDatatableService($datatableService, $sessionContainer);
     }
 }

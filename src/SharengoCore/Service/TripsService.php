@@ -59,8 +59,8 @@ class TripsService
      */
     public function __construct(
         TripsRepository $tripRepository,
-        DatatableService $datatableService,
-        DatatableService $datatableServiceNotPayed,
+        DatatableServiceInterface $datatableService,
+        DatatableServiceInterface $datatableServiceNotPayed,
         Url $urlHelper,
         CustomersService $customersService,
         CommandsService $commandsService,
@@ -121,9 +121,20 @@ class TripsService
         return $this->tripRepository->findTripsByCustomerNotEnded($customer);
     }
 
+    /**
+     * This method return an array containing the DataTable filters,
+     * from a Session Container defined in the SessionDatatableSerivce.
+     *
+     * @return array
+     */
+    public function getDataTableSessionFilters()
+    {
+        return $this->datatableService->getSessionFilter('Trips');
+    }
+
     public function getDataDataTable(array $filters = [], $count = false)
     {
-        $trips = $this->datatableService->getData('Trips', $filters, $count);
+        $trips = $this->datatableService->getData('Trips', $filters, $count, 'Trips');
 
         if ($count) {
             return $trips;
@@ -182,9 +193,21 @@ class TripsService
         }, $trips);
     }
 
+
+    /**
+     * This method return an array containing the DataTable filters,
+     * from a Session Container defined in the SessionDatatableSerivce.
+     *
+     * @return array
+     */
+    public function getNotPayedDataTableSessionFilters()
+    {
+        return $this->datatableService->getSessionFilter('TripsNotPayed');
+    }
+
     public function getDataNotPayedDataTable(array $filters = [], $count = false)
     {
-        $trips = $this->datatableServiceNotPayed->getData('Trips', $filters, $count);
+        $trips = $this->datatableServiceNotPayed->getData('Trips', $filters, $count,'TripsNotPayed');
 
         if ($count) {
             return $trips;

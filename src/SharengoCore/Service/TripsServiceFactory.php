@@ -2,9 +2,11 @@
 
 namespace SharengoCore\Service;
 
+// Externals
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-
+// Internals
+use SharengoCore\Service\SessionDatatableService;
 use SharengoCore\Service\DatatableQueryBuilders;
 
 class TripsServiceFactory implements FactoryInterface
@@ -14,7 +16,8 @@ class TripsServiceFactory implements FactoryInterface
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $tripRepository = $entityManager->getRepository('\SharengoCore\Entity\Trips');
-        $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
+        $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
+        $datatableServiceNotPayed = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
         $customerService = $serviceLocator->get('SharengoCore\Service\CustomersService');
         $urlHelper = $serviceLocator->get('viewhelpermanager')->get('url');
 
@@ -34,7 +37,6 @@ class TripsServiceFactory implements FactoryInterface
             )
         );
 
-        $datatableServiceNotPayed = $serviceLocator->get('SharengoCore\Service\DatatableService');
         $datatableServiceNotPayed->setQueryBuilder(
             new DatatableQueryBuilders\TripPaymentNotPayed(
                 new DatatableQueryBuilders\Cards(

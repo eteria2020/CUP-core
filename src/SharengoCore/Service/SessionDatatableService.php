@@ -2,9 +2,13 @@
 
 namespace SharengoCore\Service;
 
+// Internals
 use SharengoCore\Service\DatatableService;
+use SharengoCore\Service\DatatableQueryBuilders\DatatableQueryBuilderInterface;
+// Externals
+use Zend\Session\Container;
 
-class SessionDatatableService
+class SessionDatatableService implements DatatableServiceInterface
 {
     /**
      * @var DatatableService
@@ -39,15 +43,15 @@ class SessionDatatableService
      * @param boolean $count
      * @return mixed[] | integer
      */
-    public function getData($entity, array $options, $count = false)
+    public function getData($entity, $options, $count = false)
     {
         // Save the datatable filter options on a Session Contianer to maintain datatable
         // filters after page refresh.
         if (!empty($options)) {
-            $sessionContainer->offsetSet($this->params['datatableFilters'][$entity], $options);
+            $this->sessionContainer->offsetSet($entity, $options);
         }
 
-        return $datatableService->getData($entity, $options, $count); 
+        return $this->datatableService->getData($entity, $options, $count); 
     }
 
     /**
@@ -55,7 +59,7 @@ class SessionDatatableService
      */
     public function getQueryBuilder()
     {
-        return $datatableService->getQueryBuilder();
+        return $this->datatableService->getQueryBuilder();
     }
 
     /**
@@ -63,6 +67,16 @@ class SessionDatatableService
      */
     public function setQueryBuilder(DatatableQueryBuilderInterface $queryBuilder)
     {
-        $datatableService->setQueryBuilder($queryBuilder);
+        $this->datatableService->setQueryBuilder($queryBuilder);
+    }
+
+    /**
+     * Return the session saved datatable filters for a given $entity
+     *
+     * @param string $entity
+     */
+    public function getSessionFilter($entity)
+    {
+        return $this->sessionContainer->offsetGet($entity);
     }
 }

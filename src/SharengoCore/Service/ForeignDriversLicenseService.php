@@ -2,12 +2,14 @@
 
 namespace SharengoCore\Service;
 
+// Internals
 use SharengoCore\Form\DTO\UploadedFile;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\ForeignDriversLicenseUpload;
 use SharengoCore\Entity\Repository\ForeignDriversLicenseUploadRepository;
 use SharengoCore\Exception\ForeignDriversLicenseUploadNotFoundException;
-
+use SharengoCore\Service\DatatableServiceInterface;
+// Externals
 use Doctrine\ORM\EntityManager;
 use Zend\Filter\File\RenameUpload;
 use Zend\EventManager\EventManager;
@@ -36,7 +38,7 @@ class ForeignDriversLicenseService
     private $eventManager;
 
     /**
-     * @var DatatableService
+     * @var DatatableServiceInterface
      */
     private $datatableService;
 
@@ -50,7 +52,7 @@ class ForeignDriversLicenseService
         array $config,
         EntityManager $entityManager,
         EventManager $eventManager,
-        DatatableService $datatableService
+        DatatableServiceInterface $datatableService
     ) {
         $this->renameUpload = $renameUpload;
         $this->config = $config;
@@ -128,6 +130,17 @@ class ForeignDriversLicenseService
         );
     }
 
+    /**
+     * This method return an array containing the DataTable filters,
+     * from a Session Container defined in the SessionDatatableSerivce.
+     *
+     * @return array
+     */
+    public function getDataTableSessionFilters()
+    {
+        return $this->datatableService->getSessionFilter('ForeignDriversLicenseUpload');
+    }
+
     public function getDataDataTable(array $filters = [], $count = false)
     {
         $customers = $this->datatableService->getData('ForeignDriversLicenseUpload', $filters, $count);
@@ -140,12 +153,12 @@ class ForeignDriversLicenseService
             return [
                 'e' => [
                     'id' => $driversLicense->id(),
-                    'customer' => $driversLicense->customerId(),
+                    'customer_id' => $driversLicense->customerId(),
                     'customer_name' => $driversLicense->customerName(),
                     'customer_surname' => $driversLicense->customerSurname(),
                     'customer_address' => $driversLicense->customerAddress(),
-                    'customer_birthdate' => $driversLicense->customerBirthDate()->format('Y-m-d'),
-                    'customer_birthplace' => $driversLicense->customerBirthPlace(),
+                    'customer_birth_date' => $driversLicense->customerBirthDate()->format('Y-m-d'),
+                    'customer_birth_place' => $driversLicense->customerBirthPlace(),
                     'drivers_license_number' => $driversLicense->driversLicenseNumber(),
                     'drivers_license_authority' => $driversLicense->driversLicenseAuthority(),
                     'drivers_license_country' => $driversLicense->driversLicenseCountry(),

@@ -10,7 +10,7 @@ use SharengoCore\Entity\Repository\CarsRepository;
 use SharengoCore\Entity\Repository\CarsDamagesRepository;
 use SharengoCore\Entity\Repository\FleetRepository;
 use SharengoCore\Entity\Repository\CarsMaintenanceRepository;
-use SharengoCore\Service\DatatableService;
+use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\ReservationsService;
 use SharengoCore\Utility\CarStatus;
 use Zend\Authentication\AuthenticationService as UserService;
@@ -21,25 +21,25 @@ class CarsService
     /** @var EntityManager */
     private $entityManager;
 
-    /** @var  CarsRepository */
+    /** @var CarsRepository */
     private $carsRepository;
 
-    /** @var  CarsMaintenance */
+    /** @var CarsMaintenance */
     private $carsMaintenanceRepository;
 
-    /** @var  FleetsRepository */
+    /** @var FleetsRepository */
     private $fleetsRepository;
 
-    /** @var DatatableService */
+    /** @var DatatableServiceInterface */
     private $datatableService;
 
-    /** @var UserService   */
+    /** @var UserService */
     private $userService;
 
-    /** @var ReservationsService   */
+    /** @var ReservationsService */
     private $reservationsService;
 
-    /** @var Translator   */
+    /** @var Translator */
     private $translator;
 
     /**
@@ -47,7 +47,7 @@ class CarsService
      * @param CarsRepository   $carsRepository
      * @param CarsMaintenance  $carsMaintenanceRepository
      * @param FleetsRepository $fleetsRepository
-     * @param DatatableService $datatableService
+     * @param DatatableServiceInterface $sessionDatatableService
      * @param UserService      $userService
      * @param Translator $translator
      */
@@ -57,7 +57,7 @@ class CarsService
         CarsMaintenanceRepository $carsMaintenanceRepository,
         CarsDamagesRepository $carsDamagesRepository,
         FleetRepository $fleetsRepository,
-        DatatableService $datatableService,
+        DatatableServiceInterface $datatableService,
         UserService $userService,
         ReservationsService $reservationsService,
         Translator $translator
@@ -116,6 +116,17 @@ class CarsService
     {
 
         return $this->carsRepository->find($plate);
+    }
+
+    /**
+     * This method return an array containing the DataTable filters,
+     * from a Session Container defined in the SessionDatatableSerivce.
+     *
+     * @return array
+     */
+    public function getDataTableSessionFilters()
+    {
+        return $this->datatableService->getSessionFilter('Cars');
     }
 
     public function getDataDataTable(array $as_filters = [], $count = false)

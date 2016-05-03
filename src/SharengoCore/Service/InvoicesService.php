@@ -4,7 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Repository\InvoicesRepository;
 use SharengoCore\Entity\Invoices;
-use SharengoCore\Service\DatatableService;
+use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Cards;
 use SharengoCore\Entity\Fleet;
@@ -31,7 +31,7 @@ class InvoicesService
     private $subscriptionAmount;
 
     /**
-     * @var DatatableService
+     * @var DatatableServiceInterface
      */
     private $datatableService;
 
@@ -56,7 +56,7 @@ class InvoicesService
      */
     public function __construct(
         InvoicesRepository $invoicesRepository,
-        DatatableService $datatableService,
+        DatatableServiceInterface $datatableService,
         EntityManager $entityManager,
         Logger $logger,
         $invoiceConfig
@@ -279,6 +279,17 @@ class InvoicesService
     }
 
     /**
+     * This method return an array containing the DataTable filters,
+     * from a Session Container defined in the SessionDatatableSerivce.
+     *
+     * @return array
+     */
+    public function getDataTableSessionFilters()
+    {
+        return $this->datatableService->getSessionFilter('Invoices');
+    }
+
+    /**
      * @param mixed $filters
      * @return mixed
      */
@@ -297,9 +308,11 @@ class InvoicesService
                     'invoiceDate' => $invoice->getInvoiceDate(),
                     'type' => $invoice->getType(),
                     'amount' => $invoice->getAmount(),
-                    'customerId' => $invoice->getCustomer()->getId(),
-                    'customerName' => $invoice->getCustomer()->getName(),
-                    'customerSurname' => $invoice->getCustomer()->getSurname()
+                ],
+                'cu' => [
+                    'id' => $invoice->getCustomer()->getId(),
+                    'name' => $invoice->getCustomer()->getName(),
+                    'surname' => $invoice->getCustomer()->getSurname()
                 ],
                 'link' => $invoice->getId()
             ];

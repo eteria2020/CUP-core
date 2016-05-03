@@ -11,7 +11,10 @@ class CarsServiceFactory implements FactoryInterface
     {
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
-        $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
+
+        /** @var DatatableServiceInterface **/
+        $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
+
         $carsRepository = $entityManager->getRepository('\SharengoCore\Entity\Cars');
         $carsDamagesRepository = $entityManager->getRepository('\SharengoCore\Entity\CarsDamages');
         $fleetsRepository = $entityManager->getRepository('\SharengoCore\Entity\Fleet');

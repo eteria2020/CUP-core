@@ -7,7 +7,7 @@ use SharengoCore\Entity\CustomersBonus;
 use SharengoCore\Entity\PromoCodes;
 use SharengoCore\Entity\Repository\CustomersBonusRepository;
 use SharengoCore\Entity\Cards;
-use SharengoCore\Service\DatatableService;
+use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 use SharengoCore\Service\TripPaymentsService;
 use SharengoCore\Exception\BonusAssignmentException;
@@ -40,7 +40,7 @@ class CustomersService implements ValidatorServiceInterface
     private $userService;
 
     /**
-     * @var DatatableService
+     * @var DatatableServiceInterface
      */
     private $datatableService;
 
@@ -77,7 +77,7 @@ class CustomersService implements ValidatorServiceInterface
     /**
      * @param EntityManager $entityManager
      * @param UserService $userService
-     * @param DatatableService $datatableService
+     * @param DatatableServiceInterface $datatableService
      * @param CardsService $cardsService
      * @param EmailService $emailService
      * @param Logger $logger
@@ -88,7 +88,7 @@ class CustomersService implements ValidatorServiceInterface
     public function __construct(
         EntityManager $entityManager,
         UserService $userService,
-        DatatableService $datatableService,
+        DatatableServiceInterface $datatableService,
         CardsService $cardsService,
         EmailService $emailService,
         Translator $translator,
@@ -217,6 +217,17 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->flush($customer);
 
         return $customer;
+    }
+
+    /**
+     * This method return an array containing the DataTable filters,
+     * from a Session Container defined in the SessionDatatableSerivce.
+     *
+     * @return array
+     */
+    public function getDataTableSessionFilters()
+    {
+        return $this->datatableService->getSessionFilter('Customers');
     }
 
     public function getDataDataTable(array $as_filters = [], $count = false)

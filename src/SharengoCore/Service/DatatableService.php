@@ -2,11 +2,12 @@
 
 namespace SharengoCore\Service;
 
+use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\DatatableQueryBuilders\DatatableQueryBuilderInterface;
 
 use Doctrine\ORM\EntityManager;
 
-class DatatableService
+class DatatableService implements DatatableServiceInterface
 {
     /**
      * @var EntityManager
@@ -39,7 +40,7 @@ class DatatableService
      * @param boolean $count
      * @return mixed[] | integer
      */
-    public function getData($entity, array $options, $count = false)
+    public function getData($entity, $options, $count = false)
     {
         $select = $this->queryBuilder->select();
         $join = $this->queryBuilder->join();
