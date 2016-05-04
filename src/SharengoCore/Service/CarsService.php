@@ -17,7 +17,6 @@ use BjyAuthorize\Service\Authorize;
 use Doctrine\ORM\EntityManager;
 use Zend\Authentication\AuthenticationService as UserService;
 use Zend\Mvc\I18n\Translator;
-use Zend\Session\Container;
 
 class CarsService
 {
@@ -46,19 +45,13 @@ class CarsService
     private $translator;
 
     /**
-     * @var Container
-     */
-    private $datatableFiltersSessionContainer;
-
-    /**
-     * @param EntityManager    $entityManager
-     * @param CarsRepository   $carsRepository
-     * @param CarsMaintenance  $carsMaintenanceRepository
+     * @param EntityManager $entityManager
+     * @param CarsRepository $carsRepository
+     * @param CarsMaintenance $carsMaintenanceRepository
      * @param FleetsRepository $fleetsRepository
      * @param DatatableServiceInterface $datatableService
-     * @param UserService      $userService
+     * @param UserService $userService
      * @param Translator $translator
-     * @param Container $datatableFiltersSessionContainer
      */
     public function __construct(
         EntityManager $entityManager,
@@ -69,8 +62,7 @@ class CarsService
         DatatableServiceInterface $datatableService,
         UserService $userService,
         ReservationsService $reservationsService,
-        Translator $translator,
-        Container $datatableFiltersSessionContainer
+        Translator $translator
     ) {
         $this->entityManager = $entityManager;
         $this->carsRepository = $carsRepository;
@@ -81,7 +73,6 @@ class CarsService
         $this->userService = $userService;
         $this->reservationsService = $reservationsService;
         $this->translator = $translator;
-        $this->datatableFiltersSessionContainer = $datatableFiltersSessionContainer;
     }
 
 
@@ -127,17 +118,6 @@ class CarsService
     {
 
         return $this->carsRepository->find($plate);
-    }
-
-    /**
-     * This method return an array containing the DataTable filters,
-     * from a Session Container.
-     *
-     * @return array
-     */
-    public function getDataTableSessionFilters()
-    {
-        return $this->datatableFiltersSessionContainer->offsetGet('Cars');
     }
 
     public function getDataDataTable(array $as_filters = [], $count = false)

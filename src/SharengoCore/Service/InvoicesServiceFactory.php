@@ -5,7 +5,6 @@ namespace SharengoCore\Service;
 // Externals
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Session\Container;
 
 class InvoicesServiceFactory implements FactoryInterface
 {
@@ -30,16 +29,12 @@ class InvoicesServiceFactory implements FactoryInterface
             )
         );
 
-        // Creating DataTable Filters Session Container
-        $datatableFiltersSessionContainer = new Container('datatableFilters');
-
         return new InvoicesService(
             $invoicesRepository,
             $datatableService,
             $entityManager,
             $simpleLoggerService,
-            $invoicesConfig,
-            $datatableFiltersSessionContainer
+            $invoicesConfig
         );
     }
 }

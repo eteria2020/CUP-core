@@ -5,7 +5,6 @@ namespace SharengoCore\Service;
 // Externals
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Session\Container;
 
 class TripPaymentsServiceFactory implements FactoryInterface
 {
@@ -26,14 +25,10 @@ class TripPaymentsServiceFactory implements FactoryInterface
             )
         );
 
-        // Creating DataTable Filters Session Container
-        $datatableFiltersSessionContainer = new Container('datatableFilters');
-
         return new TripPaymentsService(
             $tripPaymentsRepository,
             $datatableService,
-            $entityManager,
-            $datatableFiltersSessionContainer
+            $entityManager
         );
     }
 }

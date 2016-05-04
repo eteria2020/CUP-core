@@ -13,7 +13,6 @@ use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 // Externals
 use Doctrine\ORM\EntityManager;
-use Zend\Session\Container;
 
 class InvoicesService
 {
@@ -53,25 +52,18 @@ class InvoicesService
     private $entityManager;
 
     /**
-     * @var Container
-     */
-    private $datatableFiltersSessionContainer;
-
-    /**
      * @param InvoicesRepository $invoicesRepository
      * @param DatatableServiceInterface $datatableService,
      * @param EntityRepository $invoicesRepository
      * @param Logger $logger
      * @param mixed $invoiceConfig
-     * @param Container $datatableFiltersSessionContainer
      */
     public function __construct(
         InvoicesRepository $invoicesRepository,
         DatatableServiceInterface $datatableService,
         EntityManager $entityManager,
         Logger $logger,
-        $invoiceConfig,
-        Container $datatableFiltersSessionContainer
+        $invoiceConfig
     ) {
         $this->invoicesRepository = $invoicesRepository;
         $this->datatableService = $datatableService;
@@ -80,7 +72,6 @@ class InvoicesService
         $this->templateVersion = $invoiceConfig['template_version'];
         $this->subscriptionAmount = $invoiceConfig['subscription_amount'];
         $this->ivaPercentage = $invoiceConfig['iva_percentage'];
-        $this->datatableFiltersSessionContainer = $datatableFiltersSessionContainer;
     }
 
     /**
@@ -289,17 +280,6 @@ class InvoicesService
             array_push($returnDates, $date[1]);
         }
         return $returnDates;
-    }
-
-    /**
-     * This method return an array containing the DataTable filters,
-     * from a Session Container.
-     *
-     * @return array
-     */
-    public function getDataTableSessionFilters()
-    {
-        return $this->datatableFiltersSessionContainer->offsetGet('Invoices');
     }
 
     /**

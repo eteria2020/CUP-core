@@ -12,7 +12,6 @@ use SharengoCore\Entity\Customers;
 // Externals
 use Doctrine\ORM\EntityManager;
 use Zend\Mvc\I18n\Translator;
-use Zend\Session\Container;
 
 class ReservationsService
 {
@@ -49,32 +48,25 @@ class ReservationsService
      */
     private $translator;
 
-    /**
-     * @var Container
-     */
-    private $datatableFiltersSessionContainer;
 
     /**
      * @param ReservationsRepository $reservationsRepository
      * @param DatatableServiceInterface $datatableService
      * @param CustomersService $customersService
      * @param EntityManager $entityManager
-     * @param Container $datatableFiltersSessionContainer
      */
     public function __construct(
         ReservationsRepository $reservationsRepository,
         DatatableServiceInterface $datatableService,
         CustomersService $customersService,
         EntityManager $entityManager,
-        Translator $translator,
-        Container $datatableFiltersSessionContainer
+        Translator $translator
     ) {
         $this->reservationsRepository = $reservationsRepository;
         $this->datatableService = $datatableService;
         $this->customersService = $customersService;
         $this->entityManager = $entityManager;
         $this->translator = $translator;
-        $this->datatableFiltersSessionContainer = $datatableFiltersSessionContainer;
     }
 
     public function getListReservationsFiltered($filters = [])
@@ -105,17 +97,6 @@ class ReservationsService
     public function getReservationsToDelete()
     {
         return $this->reservationsRepository->findReservationsToDelete();
-    }
-
-    /**
-     * This method return an array containing the DataTable filters,
-     * from a Session Container.
-     *
-     * @return array
-     */
-    public function getDataTableSessionFilters()
-    {
-        return $this->datatableFiltersSessionContainer->offsetGet('Reservations');
     }
 
     public function getDataDataTable(array $as_filters = [], $count = false)

@@ -15,7 +15,6 @@ use SharengoCore\Service\CustomersService;
 // Externals
 use Zend\Mvc\I18n\Translator;
 use Zend\View\Helper\Url;
-use Zend\Session\Container;
 
 class TripsService
 {
@@ -54,11 +53,6 @@ class TripsService
     private $translator;
 
     /**
-     * @var Container
-     */
-    private $datatableFiltersSessionContainer;
-
-    /**
      * @param EntityRepository $tripRepository
      * @param DatatableServiceInterface $datatableService
      * @param DatatableServiceInterface $datatableServiceNotPayed
@@ -66,7 +60,6 @@ class TripsService
      * @param CustomersService $customersService
      * @param CommandsService $commandsService
      * @param Translator $translator
-     * @param Container $datatableFiltersSessionContainer
      */
     public function __construct(
         TripsRepository $tripRepository,
@@ -75,8 +68,7 @@ class TripsService
         Url $urlHelper,
         CustomersService $customersService,
         CommandsService $commandsService,
-        Translator $translator,
-        Container $datatableFiltersSessionContainer
+        Translator $translator
     ) {
         $this->tripRepository = $tripRepository;
         $this->datatableService = $datatableService;
@@ -85,7 +77,6 @@ class TripsService
         $this->customersService = $customersService;
         $this->commandsService = $commandsService;
         $this->translator = $translator;
-        $this->datatableFiltersSessionContainer = $datatableFiltersSessionContainer;
     }
 
     /**
@@ -131,17 +122,6 @@ class TripsService
     public function getTripsByCustomerNotEnded($customer)
     {
         return $this->tripRepository->findTripsByCustomerNotEnded($customer);
-    }
-
-    /**
-     * This method return an array containing the DataTable filters,
-     * from a Session Container.
-     *
-     * @return array
-     */
-    public function getDataTableSessionFilters()
-    {
-        return $this->datatableFiltersSessionContainer->offsetGet('Trips');
     }
 
     public function getDataDataTable(array $filters = [], $count = false)
@@ -203,18 +183,6 @@ class TripsService
                 'payed' => $trip->getPayable() ? ($trip->isPaymentCompleted() ? $this->translator->translate('Si') : $this->translator->translate('No')) : '-'
             ];
         }, $trips);
-    }
-
-
-    /**
-     * This method return an array containing the DataTable filters,
-     * from a Session Container.
-     *
-     * @return array
-     */
-    public function getNotPayedDataTableSessionFilters()
-    {
-        return $this->datatableFiltersSessionContainer->offsetGet('TripsNotPayed');
     }
 
     public function getDataNotPayedDataTable(array $filters = [], $count = false)
