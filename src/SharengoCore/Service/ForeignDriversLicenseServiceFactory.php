@@ -7,8 +7,7 @@ use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Filter\File\RenameUpload;
 use Zend\EventManager\EventManager;
-// Internals
-use SharengoCore\Service\SessionDatatableService;
+use Zend\Session\Container;
 
 class ForeignDriversLicenseServiceFactory implements FactoryInterface
 {
@@ -25,12 +24,16 @@ class ForeignDriversLicenseServiceFactory implements FactoryInterface
         /** @var DatatableServiceInterface **/
         $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
 
+        // Creating DataTable Filters Session Container
+        $datatableFiltersSessionContainer = new Container('datatableFilters');
+
         return new ForeignDriversLicenseService(
             $renameUpload,
             $config['driversLicense'],
             $entityManager,
             $eventManager,
-            $datatableService
+            $datatableService,
+            $datatableFiltersSessionContainer
         );
     }
 }

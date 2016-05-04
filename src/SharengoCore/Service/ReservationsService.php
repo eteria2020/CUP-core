@@ -2,14 +2,17 @@
 
 namespace SharengoCore\Service;
 
-use Doctrine\ORM\EntityManager;
+// Internals
 use SharengoCore\Entity\Repository\ReservationsRepository;
 use SharengoCore\Entity\Reservations;
 use SharengoCore\Entity\Cars;
 use SharengoCore\Service\CustomersService;
 use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Entity\Customers;
+// Externals
+use Doctrine\ORM\EntityManager;
 use Zend\Mvc\I18n\Translator;
+use Zend\Session\Container;
 
 class ReservationsService
 {
@@ -47,23 +50,31 @@ class ReservationsService
     private $translator;
 
     /**
+     * @var Container
+     */
+    private $datatableFiltersSessionContainer;
+
+    /**
      * @param ReservationsRepository $reservationsRepository
      * @param DatatableServiceInterface $datatableService
      * @param CustomersService $customersService
      * @param EntityManager $entityManager
+     * @param Container $datatableFiltersSessionContainer
      */
     public function __construct(
         ReservationsRepository $reservationsRepository,
         DatatableServiceInterface $datatableService,
         CustomersService $customersService,
         EntityManager $entityManager,
-        Translator $translator
+        Translator $translator,
+        Container $datatableFiltersSessionContainer
     ) {
         $this->reservationsRepository = $reservationsRepository;
         $this->datatableService = $datatableService;
         $this->customersService = $customersService;
         $this->entityManager = $entityManager;
         $this->translator = $translator;
+        $this->datatableFiltersSessionContainer = $datatableFiltersSessionContainer;
     }
 
     public function getListReservationsFiltered($filters = [])
@@ -98,13 +109,13 @@ class ReservationsService
 
     /**
      * This method return an array containing the DataTable filters,
-     * from a Session Container defined in the SessionDatatableSerivce.
+     * from a Session Container.
      *
      * @return array
      */
     public function getDataTableSessionFilters()
     {
-        return $this->datatableService->getSessionFilter('Reservations');
+        return $this->datatableFiltersSessionContainer->offsetGet('Reservations');
     }
 
     public function getDataDataTable(array $as_filters = [], $count = false)

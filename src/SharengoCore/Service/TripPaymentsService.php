@@ -2,8 +2,6 @@
 
 namespace SharengoCore\Service;
 
-// Externals
-use Doctrine\ORM\EntityManager;
 // Internals
 use SharengoCore\Entity\Repository\TripPaymentsRepository;
 use SharengoCore\Entity\TripPayments;
@@ -12,6 +10,9 @@ use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Commands\SetCustomerWrongPaymentsAsToBePayed;
 use SharengoCore\Exception\TripPaymentWithoutDateException;
+// Externals
+use Doctrine\ORM\EntityManager;
+use Zend\Session\Container;
 
 class TripPaymentsService
 {
@@ -31,16 +32,26 @@ class TripPaymentsService
     private $entityManager;
 
     /**
-     * @param TripPayments
+     * @var Container
+     */
+    private $datatableFiltersSessionContainer;
+
+    /**
+     * @param TripPaymentsRepository $tripPaymentsRepository
+     * @param DatatableServiceInterface $datatableService
+     * @param EntityManager $entityManager
+     * @param Container $datatableFiltersSessionContainer
      */
     public function __construct(
         TripPaymentsRepository $tripPaymentsRepository,
         DatatableServiceInterface $datatableService,
-        EntityManager $entityManager
+        EntityManager $entityManager,
+        Container $datatableFiltersSessionContainer
     ) {
         $this->tripPaymentsRepository = $tripPaymentsRepository;
         $this->datatableService = $datatableService;
         $this->entityManager = $entityManager;
+        $this->datatableFiltersSessionContainer = $datatableFiltersSessionContainer;
     }
 
     /**
@@ -118,13 +129,13 @@ class TripPaymentsService
 
     /**
      * This method return an array containing the DataTable filters,
-     * from a Session Container defined in the SessionDatatableSerivce.
+     * from a Session Container.
      *
      * @return array
      */
     public function getDataTableSessionFilters()
     {
-        return $this->datatableService->getSessionFilter('TripPayments');
+        return $this->datatableFiltersSessionContainer->offsetGet('TripPayments');
     }
 
     /**

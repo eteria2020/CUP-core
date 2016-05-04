@@ -2,12 +2,12 @@
 
 namespace SharengoCore\Service;
 
+// Internals
+use SharengoCore\Service\DatatableQueryBuilders;
 // Externals
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-// Internals
-use SharengoCore\Service\SessionDatatableService;
-use SharengoCore\Service\DatatableQueryBuilders;
+use Zend\Session\Container;
 
 class TripsServiceFactory implements FactoryInterface
 {
@@ -55,6 +55,9 @@ class TripsServiceFactory implements FactoryInterface
             )
         );
 
+        // Creating DataTable Filters Session Container
+        $datatableFiltersSessionContainer = new Container('datatableFilters');
+
         $commandsService = $serviceLocator->get('SharengoCore\Service\CommandsService');
 
         $languageService = $serviceLocator->get('LanguageService');
@@ -67,7 +70,8 @@ class TripsServiceFactory implements FactoryInterface
             $urlHelper,
             $customerService,
             $commandsService,
-            $translator
+            $translator,
+            $datatableFiltersSessionContainer
         );
     }
 }

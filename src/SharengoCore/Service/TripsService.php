@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Service;
 
+// Internals
 use Application\Form\InputData\CloseTripData;
 use SharengoCore\Entity\Commands;
 use SharengoCore\Entity\Customers;
@@ -11,9 +12,10 @@ use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\WebUser;
 use SharengoCore\Service\CommandsService;
 use SharengoCore\Service\CustomersService;
-
+// Externals
 use Zend\Mvc\I18n\Translator;
 use Zend\View\Helper\Url;
+use Zend\Session\Container;
 
 class TripsService
 {
@@ -52,10 +54,19 @@ class TripsService
     private $translator;
 
     /**
+     * @var Container
+     */
+    private $datatableFiltersSessionContainer;
+
+    /**
      * @param EntityRepository $tripRepository
-     * @param DatatableService $datatableService
+     * @param DatatableServiceInterface $datatableService
+     * @param DatatableServiceInterface $datatableServiceNotPayed
      * @param \\TODO $urlHelper
      * @param CustomersService $customersService
+     * @param CommandsService $commandsService
+     * @param Translator $translator
+     * @param Container $datatableFiltersSessionContainer
      */
     public function __construct(
         TripsRepository $tripRepository,
@@ -64,8 +75,8 @@ class TripsService
         Url $urlHelper,
         CustomersService $customersService,
         CommandsService $commandsService,
-        Translator $translator
-
+        Translator $translator,
+        Container $datatableFiltersSessionContainer
     ) {
         $this->tripRepository = $tripRepository;
         $this->datatableService = $datatableService;
@@ -74,6 +85,7 @@ class TripsService
         $this->customersService = $customersService;
         $this->commandsService = $commandsService;
         $this->translator = $translator;
+        $this->datatableFiltersSessionContainer = $datatableFiltersSessionContainer;
     }
 
     /**
@@ -123,13 +135,13 @@ class TripsService
 
     /**
      * This method return an array containing the DataTable filters,
-     * from a Session Container defined in the SessionDatatableSerivce.
+     * from a Session Container.
      *
      * @return array
      */
     public function getDataTableSessionFilters()
     {
-        return $this->datatableService->getSessionFilter('Trips');
+        return $this->datatableFiltersSessionContainer->offsetGet('Trips');
     }
 
     public function getDataDataTable(array $filters = [], $count = false)
@@ -196,13 +208,13 @@ class TripsService
 
     /**
      * This method return an array containing the DataTable filters,
-     * from a Session Container defined in the SessionDatatableSerivce.
+     * from a Session Container.
      *
      * @return array
      */
     public function getNotPayedDataTableSessionFilters()
     {
-        return $this->datatableService->getSessionFilter('TripsNotPayed');
+        return $this->datatableFiltersSessionContainer->offsetGet('TripsNotPayed');
     }
 
     public function getDataNotPayedDataTable(array $filters = [], $count = false)
@@ -239,8 +251,7 @@ class TripsService
                 ],
                 'c' => [
                     'plate' => $plate,
-
-                    ],
+                ],
                 'f'=>[
                     'name' => $trip->getCar()->getFleet()->getName()
                 ]

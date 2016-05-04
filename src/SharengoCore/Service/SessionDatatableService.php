@@ -3,7 +3,7 @@
 namespace SharengoCore\Service;
 
 // Internals
-use SharengoCore\Service\DatatableService;
+use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\DatatableQueryBuilders\DatatableQueryBuilderInterface;
 // Externals
 use Zend\Session\Container;
@@ -11,7 +11,7 @@ use Zend\Session\Container;
 class SessionDatatableService implements DatatableServiceInterface
 {
     /**
-     * @var DatatableService
+     * @var DatatableServiceInterface
      */
     private $datatableService;
 
@@ -21,11 +21,11 @@ class SessionDatatableService implements DatatableServiceInterface
     private $sessionContainer;
 
     /**
-     * @param DatatableService $datatableService
+     * @param DatatableServiceInterface $datatableService
      * @param Container $sessionContainer
      */
     public function __construct(
-        DatatableService $datatableService,
+        DatatableServiceInterface $datatableService,
         Container $sessionContainer
     ) {
         $this->sessionContainer = $sessionContainer;
@@ -43,7 +43,7 @@ class SessionDatatableService implements DatatableServiceInterface
      * @param boolean $count
      * @return mixed[] | integer
      */
-    public function getData($entity, $options, $count)
+    public function getData($entity, array $options, $count)
     {
         // Save the datatable filter options on a Session Contianer to maintain datatable
         // filters after page refresh.
@@ -73,13 +73,4 @@ class SessionDatatableService implements DatatableServiceInterface
         $this->datatableService->setQueryBuilder($queryBuilder);
     }
 
-    /**
-     * Return the session saved datatable filters for a given $entity
-     *
-     * @param string $entity
-     */
-    public function getSessionFilter($entity)
-    {
-        return $this->sessionContainer->offsetGet($entity);
-    }
 }

@@ -17,7 +17,7 @@ use Cartasi\Service\CartasiContractsService;
 use Zend\Authentication\AuthenticationService as UserService;
 use Doctrine\ORM\EntityManager;
 use Zend\Mvc\I18n\Translator;
-
+use Zend\Session\Container;
 
 class CustomersService implements ValidatorServiceInterface
 {
@@ -75,6 +75,11 @@ class CustomersService implements ValidatorServiceInterface
     private $translator;
 
     /**
+     * @var Container
+     */
+    private $datatableFiltersSessionContainer;
+
+    /**
      * @param EntityManager $entityManager
      * @param UserService $userService
      * @param DatatableServiceInterface $datatableService
@@ -84,6 +89,7 @@ class CustomersService implements ValidatorServiceInterface
      * @param CartasiContractsService $cartasiContractsService
      * @param TripPaymentsService $tripPaymentsService
      * @param string $url
+     * @param Container $datatableFiltersSessionContainer
      */
     public function __construct(
         EntityManager $entityManager,
@@ -95,7 +101,8 @@ class CustomersService implements ValidatorServiceInterface
         Logger $logger,
         CartasiContractsService $cartasiContractsService,
         TripPaymentsService $tripPaymentsService,
-        $url
+        $url,
+        Container $datatableFiltersSessionContainer
     ) {
         $this->entityManager = $entityManager;
         $this->customersRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Customers');
@@ -109,6 +116,7 @@ class CustomersService implements ValidatorServiceInterface
         $this->cartasiContractsService = $cartasiContractsService;
         $this->tripPaymentsService = $tripPaymentsService;
         $this->url = $url;
+        $this->datatableFiltersSessionContainer = $datatableFiltersSessionContainer;
     }
 
     /**
@@ -221,13 +229,13 @@ class CustomersService implements ValidatorServiceInterface
 
     /**
      * This method return an array containing the DataTable filters,
-     * from a Session Container defined in the SessionDatatableSerivce.
+     * from a Session Container.
      *
      * @return array
      */
     public function getDataTableSessionFilters()
     {
-        return $this->datatableService->getSessionFilter('Customers');
+        return $this->datatableFiltersSessionContainer->offsetGet('Customers');
     }
 
     public function getDataDataTable(array $as_filters = [], $count = false)

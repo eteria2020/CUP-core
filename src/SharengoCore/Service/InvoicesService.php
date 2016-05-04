@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Service;
 
+// Internals
 use SharengoCore\Entity\Repository\InvoicesRepository;
 use SharengoCore\Entity\Invoices;
 use SharengoCore\Service\DatatableServiceInterface;
@@ -10,8 +11,9 @@ use SharengoCore\Entity\Cards;
 use SharengoCore\Entity\Fleet;
 use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Service\SimpleLoggerService as Logger;
-
+// Externals
 use Doctrine\ORM\EntityManager;
+use Zend\Session\Container;
 
 class InvoicesService
 {
@@ -51,15 +53,25 @@ class InvoicesService
     private $entityManager;
 
     /**
+     * @var Container
+     */
+    private $datatableFiltersSessionContainer;
+
+    /**
+     * @param InvoicesRepository $invoicesRepository
+     * @param DatatableServiceInterface $datatableService,
      * @param EntityRepository $invoicesRepository
+     * @param Logger $logger
      * @param mixed $invoiceConfig
+     * @param Container $datatableFiltersSessionContainer
      */
     public function __construct(
         InvoicesRepository $invoicesRepository,
         DatatableServiceInterface $datatableService,
         EntityManager $entityManager,
         Logger $logger,
-        $invoiceConfig
+        $invoiceConfig,
+        Container $datatableFiltersSessionContainer
     ) {
         $this->invoicesRepository = $invoicesRepository;
         $this->datatableService = $datatableService;
@@ -68,6 +80,7 @@ class InvoicesService
         $this->templateVersion = $invoiceConfig['template_version'];
         $this->subscriptionAmount = $invoiceConfig['subscription_amount'];
         $this->ivaPercentage = $invoiceConfig['iva_percentage'];
+        $this->datatableFiltersSessionContainer = $datatableFiltersSessionContainer;
     }
 
     /**
@@ -280,13 +293,13 @@ class InvoicesService
 
     /**
      * This method return an array containing the DataTable filters,
-     * from a Session Container defined in the SessionDatatableSerivce.
+     * from a Session Container.
      *
      * @return array
      */
     public function getDataTableSessionFilters()
     {
-        return $this->datatableService->getSessionFilter('Invoices');
+        return $this->datatableFiltersSessionContainer->offsetGet('Invoices');
     }
 
     /**

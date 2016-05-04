@@ -2,17 +2,18 @@
 
 namespace SharengoCore\Service;
 
-// Externals
-use Doctrine\ORM\EntityManager;
-use Zend\Filter\File\RenameUpload;
-use Zend\EventManager\EventManager;
-use ZipArchive;
 // Internals
 use SharengoCore\Form\DTO\UploadedFile;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\ForeignDriversLicenseUpload;
 use SharengoCore\Entity\Repository\ForeignDriversLicenseUploadRepository;
 use SharengoCore\Exception\ForeignDriversLicenseUploadNotFoundException;
+// Externals
+use Doctrine\ORM\EntityManager;
+use Zend\Filter\File\RenameUpload;
+use Zend\EventManager\EventManager;
+use Zend\Session\Container;
+use ZipArchive;
 
 class ForeignDriversLicenseService
 {
@@ -46,18 +47,33 @@ class ForeignDriversLicenseService
      */
     private $foreignDriversLicenseUploadRepository;
 
+    /**
+     * @var Container
+     */
+    private $datatableFiltersSessionContainer;
+
+    /**
+     * @param RenameUpload $renameUpload
+     * @param array $config
+     * @param EntityManager $entityManager
+     * @param EventManager $eventManager
+     * @param DatatableServiceInterface $datatableService
+     * @param Container $datatableFiltersSessionContainer
+     */
     public function __construct(
         RenameUpload $renameUpload,
         array $config,
         EntityManager $entityManager,
         EventManager $eventManager,
-        DatatableServiceInterface $datatableService
+        DatatableServiceInterface $datatableService,
+        Container $datatableFiltersSessionContainer
     ) {
         $this->renameUpload = $renameUpload;
         $this->config = $config;
         $this->entityManager = $entityManager;
         $this->eventManager = $eventManager;
         $this->datatableService = $datatableService;
+        $this->datatableFiltersSessionContainer = $datatableFiltersSessionContainer;
     }
 
     /**
@@ -131,13 +147,13 @@ class ForeignDriversLicenseService
 
     /**
      * This method return an array containing the DataTable filters,
-     * from a Session Container defined in the SessionDatatableSerivce.
+     * from a Session Container.
      *
      * @return array
      */
     public function getDataTableSessionFilters()
     {
-        return $this->datatableService->getSessionFilter('ForeignDriversLicenseUpload');
+        return $this->datatableFiltersSessionContainer->offsetGet('ForeignDriversLicenseUpload');
     }
 
     public function getDataDataTable(array $filters = [], $count = false)

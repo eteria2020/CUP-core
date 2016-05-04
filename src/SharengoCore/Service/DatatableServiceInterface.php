@@ -15,7 +15,7 @@ interface DatatableServiceInterface
      * @param boolean $count
      * @return mixed[] | integer
      */
-    public function getData($entity, $options, $count);
+    public function getData($entity, array $options, $count);
     
     /**
      * @return DatatableQueryBuilderInterface

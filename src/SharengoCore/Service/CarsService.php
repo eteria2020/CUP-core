@@ -2,8 +2,7 @@
 
 namespace SharengoCore\Service;
 
-use BjyAuthorize\Service\Authorize;
-use Doctrine\ORM\EntityManager;
+// Internals
 use SharengoCore\Entity\Cars;
 use SharengoCore\Entity\CarsMaintenance;
 use SharengoCore\Entity\Repository\CarsRepository;
@@ -13,8 +12,12 @@ use SharengoCore\Entity\Repository\CarsMaintenanceRepository;
 use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\ReservationsService;
 use SharengoCore\Utility\CarStatus;
+// Externals
+use BjyAuthorize\Service\Authorize;
+use Doctrine\ORM\EntityManager;
 use Zend\Authentication\AuthenticationService as UserService;
 use Zend\Mvc\I18n\Translator;
+use Zend\Session\Container;
 
 class CarsService
 {
@@ -43,13 +46,19 @@ class CarsService
     private $translator;
 
     /**
+     * @var Container
+     */
+    private $datatableFiltersSessionContainer;
+
+    /**
      * @param EntityManager    $entityManager
      * @param CarsRepository   $carsRepository
      * @param CarsMaintenance  $carsMaintenanceRepository
      * @param FleetsRepository $fleetsRepository
-     * @param DatatableServiceInterface $sessionDatatableService
+     * @param DatatableServiceInterface $datatableService
      * @param UserService      $userService
      * @param Translator $translator
+     * @param Container $datatableFiltersSessionContainer
      */
     public function __construct(
         EntityManager $entityManager,
@@ -60,7 +69,8 @@ class CarsService
         DatatableServiceInterface $datatableService,
         UserService $userService,
         ReservationsService $reservationsService,
-        Translator $translator
+        Translator $translator,
+        Container $datatableFiltersSessionContainer
     ) {
         $this->entityManager = $entityManager;
         $this->carsRepository = $carsRepository;
@@ -71,6 +81,7 @@ class CarsService
         $this->userService = $userService;
         $this->reservationsService = $reservationsService;
         $this->translator = $translator;
+        $this->datatableFiltersSessionContainer = $datatableFiltersSessionContainer;
     }
 
 
@@ -120,13 +131,13 @@ class CarsService
 
     /**
      * This method return an array containing the DataTable filters,
-     * from a Session Container defined in the SessionDatatableSerivce.
+     * from a Session Container.
      *
      * @return array
      */
     public function getDataTableSessionFilters()
     {
-        return $this->datatableService->getSessionFilter('Cars');
+        return $this->datatableFiltersSessionContainer->offsetGet('Cars');
     }
 
     public function getDataDataTable(array $as_filters = [], $count = false)

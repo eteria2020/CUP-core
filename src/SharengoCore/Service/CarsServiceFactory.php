@@ -2,8 +2,10 @@
 
 namespace SharengoCore\Service;
 
+// Externals
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Session\Container;
 
 class CarsServiceFactory implements FactoryInterface
 {
@@ -27,21 +29,26 @@ class CarsServiceFactory implements FactoryInterface
 
         $datatableService->setQueryBuilder(
             new DatatableQueryBuilders\CarsInfo(
-	            new DatatableQueryBuilders\Fleets(
-    	            new DatatableQueryBuilders\Basic()
-				)
-			)
+                new DatatableQueryBuilders\Fleets(
+                    new DatatableQueryBuilders\Basic()
+                )
+            )
         );
 
-        return new CarsService($entityManager, 
-                               $carsRepository,
-                               $carsMaintenanceRepository,
-                               $carsDamagesRepository,
-                               $fleetsRepository,
-                               $datatableService,
-                               $userService,
-                               $reservationsService,
-                               $translator
-            );
+        // Creating DataTable Filters Session Container
+        $datatableFiltersSessionContainer = new Container('datatableFilters');
+
+        return new CarsService(
+            $entityManager,
+            $carsRepository,
+            $carsMaintenanceRepository,
+            $carsDamagesRepository,
+            $fleetsRepository,
+            $datatableService,
+            $userService,
+            $reservationsService,
+            $translator,
+            $datatableFiltersSessionContainer
+        );
     }
 }
