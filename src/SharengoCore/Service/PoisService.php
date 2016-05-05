@@ -16,7 +16,9 @@ class PoisService
      */
     private $poisRepository;
 
-    /** @var DatatableService */
+    /** 
+     * @var DatatableServiceInterface
+     */
     private $datatableService;
 
     const BRAND = "Share'n'Go";
@@ -24,12 +26,12 @@ class PoisService
     /**
      * @param $entityManager EntityManager
      * @param $poisRepository PoisRepository
-     * @param $datatableService DatatableService
+     * @param $datatableService DatatableServiceInterface
      */
     public function __construct(
         EntityManager $entityManager,
         PoisRepository $poisRepository,
-        DatatableService $datatableService
+        DatatableServiceInterface $datatableService
     ) {
         $this->entityManager = $entityManager;
         $this->poisRepository = $poisRepository;
