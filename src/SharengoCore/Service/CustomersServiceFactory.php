@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Service;
 
+// Externals
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -12,7 +13,10 @@ class CustomersServiceFactory implements FactoryInterface
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $userService = $serviceLocator->get('zfcuser_auth_service');
-        $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
+
+        /** @var DatatableServiceInterface **/
+        $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
+
         $cardsService = $serviceLocator->get('SharengoCore\Service\CardsService');
 
         $datatableService->setQueryBuilder(

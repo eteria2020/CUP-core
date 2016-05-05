@@ -2,11 +2,12 @@
 
 namespace SharengoCore\Service;
 
+use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\DatatableQueryBuilders\DatatableQueryBuilderInterface;
 
 use Doctrine\ORM\EntityManager;
 
-class DatatableService
+class DatatableService implements DatatableServiceInterface
 {
     /**
      * @var EntityManager

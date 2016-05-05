@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Service;
 
+// Externals
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -11,7 +12,10 @@ class CarsServiceFactory implements FactoryInterface
     {
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
-        $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
+
+        /** @var DatatableServiceInterface **/
+        $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
+
         $carsRepository = $entityManager->getRepository('\SharengoCore\Entity\Cars');
         $carsDamagesRepository = $entityManager->getRepository('\SharengoCore\Entity\CarsDamages');
         $fleetsRepository = $entityManager->getRepository('\SharengoCore\Entity\Fleet');
@@ -24,21 +28,22 @@ class CarsServiceFactory implements FactoryInterface
 
         $datatableService->setQueryBuilder(
             new DatatableQueryBuilders\CarsInfo(
-	            new DatatableQueryBuilders\Fleets(
-    	            new DatatableQueryBuilders\Basic()
-				)
-			)
+                new DatatableQueryBuilders\Fleets(
+                    new DatatableQueryBuilders\Basic()
+                )
+            )
         );
 
-        return new CarsService($entityManager, 
-                               $carsRepository,
-                               $carsMaintenanceRepository,
-                               $carsDamagesRepository,
-                               $fleetsRepository,
-                               $datatableService,
-                               $userService,
-                               $reservationsService,
-                               $translator
-            );
+        return new CarsService(
+            $entityManager,
+            $carsRepository,
+            $carsMaintenanceRepository,
+            $carsDamagesRepository,
+            $fleetsRepository,
+            $datatableService,
+            $userService,
+            $reservationsService,
+            $translator
+        );
     }
 }

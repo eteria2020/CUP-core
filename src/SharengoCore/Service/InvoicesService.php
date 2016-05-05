@@ -2,15 +2,16 @@
 
 namespace SharengoCore\Service;
 
+// Internals
 use SharengoCore\Entity\Repository\InvoicesRepository;
 use SharengoCore\Entity\Invoices;
-use SharengoCore\Service\DatatableService;
+use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Cards;
 use SharengoCore\Entity\Fleet;
 use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Service\SimpleLoggerService as Logger;
-
+// Externals
 use Doctrine\ORM\EntityManager;
 
 class InvoicesService
@@ -31,7 +32,7 @@ class InvoicesService
     private $subscriptionAmount;
 
     /**
-     * @var DatatableService
+     * @var DatatableServiceInterface
      */
     private $datatableService;
 
@@ -51,12 +52,15 @@ class InvoicesService
     private $entityManager;
 
     /**
+     * @param InvoicesRepository $invoicesRepository
+     * @param DatatableServiceInterface $datatableService,
      * @param EntityRepository $invoicesRepository
+     * @param Logger $logger
      * @param mixed $invoiceConfig
      */
     public function __construct(
         InvoicesRepository $invoicesRepository,
-        DatatableService $datatableService,
+        DatatableServiceInterface $datatableService,
         EntityManager $entityManager,
         Logger $logger,
         $invoiceConfig
@@ -297,9 +301,11 @@ class InvoicesService
                     'invoiceDate' => $invoice->getInvoiceDate(),
                     'type' => $invoice->getType(),
                     'amount' => $invoice->getAmount(),
-                    'customerId' => $invoice->getCustomer()->getId(),
-                    'customerName' => $invoice->getCustomer()->getName(),
-                    'customerSurname' => $invoice->getCustomer()->getSurname()
+                ],
+                'cu' => [
+                    'id' => $invoice->getCustomer()->getId(),
+                    'name' => $invoice->getCustomer()->getName(),
+                    'surname' => $invoice->getCustomer()->getSurname()
                 ],
                 'link' => $invoice->getId()
             ];

@@ -2,17 +2,19 @@
 
 namespace SharengoCore\Service;
 
-use BjyAuthorize\Service\Authorize;
-use Doctrine\ORM\EntityManager;
+// Internals
 use SharengoCore\Entity\Cars;
 use SharengoCore\Entity\CarsMaintenance;
 use SharengoCore\Entity\Repository\CarsRepository;
 use SharengoCore\Entity\Repository\CarsDamagesRepository;
 use SharengoCore\Entity\Repository\FleetRepository;
 use SharengoCore\Entity\Repository\CarsMaintenanceRepository;
-use SharengoCore\Service\DatatableService;
+use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\ReservationsService;
 use SharengoCore\Utility\CarStatus;
+// Externals
+use BjyAuthorize\Service\Authorize;
+use Doctrine\ORM\EntityManager;
 use Zend\Authentication\AuthenticationService as UserService;
 use Zend\Mvc\I18n\Translator;
 
@@ -21,34 +23,34 @@ class CarsService
     /** @var EntityManager */
     private $entityManager;
 
-    /** @var  CarsRepository */
+    /** @var CarsRepository */
     private $carsRepository;
 
-    /** @var  CarsMaintenance */
+    /** @var CarsMaintenance */
     private $carsMaintenanceRepository;
 
-    /** @var  FleetsRepository */
+    /** @var FleetsRepository */
     private $fleetsRepository;
 
-    /** @var DatatableService */
+    /** @var DatatableServiceInterface */
     private $datatableService;
 
-    /** @var UserService   */
+    /** @var UserService */
     private $userService;
 
-    /** @var ReservationsService   */
+    /** @var ReservationsService */
     private $reservationsService;
 
-    /** @var Translator   */
+    /** @var Translator */
     private $translator;
 
     /**
-     * @param EntityManager    $entityManager
-     * @param CarsRepository   $carsRepository
-     * @param CarsMaintenance  $carsMaintenanceRepository
+     * @param EntityManager $entityManager
+     * @param CarsRepository $carsRepository
+     * @param CarsMaintenance $carsMaintenanceRepository
      * @param FleetsRepository $fleetsRepository
-     * @param DatatableService $datatableService
-     * @param UserService      $userService
+     * @param DatatableServiceInterface $datatableService
+     * @param UserService $userService
      * @param Translator $translator
      */
     public function __construct(
@@ -57,7 +59,7 @@ class CarsService
         CarsMaintenanceRepository $carsMaintenanceRepository,
         CarsDamagesRepository $carsDamagesRepository,
         FleetRepository $fleetsRepository,
-        DatatableService $datatableService,
+        DatatableServiceInterface $datatableService,
         UserService $userService,
         ReservationsService $reservationsService,
         Translator $translator

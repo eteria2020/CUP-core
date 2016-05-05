@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Service;
 
+// Externals
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -11,7 +12,9 @@ class TripPaymentsServiceFactory implements FactoryInterface
     {
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $tripPaymentsRepository = $entityManager->getRepository('\SharengoCore\Entity\TripPayments');
-        $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
+
+        /** @var DatatableServiceInterface **/
+        $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
 
         $datatableService->setQueryBuilder(
             new DatatableQueryBuilders\Customers(

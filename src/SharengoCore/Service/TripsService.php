@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Service;
 
+// Internals
 use Application\Form\InputData\CloseTripData;
 use SharengoCore\Entity\Commands;
 use SharengoCore\Entity\Customers;
@@ -11,7 +12,7 @@ use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\WebUser;
 use SharengoCore\Service\CommandsService;
 use SharengoCore\Service\CustomersService;
-
+// Externals
 use Zend\Mvc\I18n\Translator;
 use Zend\View\Helper\Url;
 
@@ -53,19 +54,21 @@ class TripsService
 
     /**
      * @param EntityRepository $tripRepository
-     * @param DatatableService $datatableService
+     * @param DatatableServiceInterface $datatableService
+     * @param DatatableServiceInterface $datatableServiceNotPayed
      * @param \\TODO $urlHelper
      * @param CustomersService $customersService
+     * @param CommandsService $commandsService
+     * @param Translator $translator
      */
     public function __construct(
         TripsRepository $tripRepository,
-        DatatableService $datatableService,
-        DatatableService $datatableServiceNotPayed,
+        DatatableServiceInterface $datatableService,
+        DatatableServiceInterface $datatableServiceNotPayed,
         Url $urlHelper,
         CustomersService $customersService,
         CommandsService $commandsService,
         Translator $translator
-
     ) {
         $this->tripRepository = $tripRepository;
         $this->datatableService = $datatableService;
@@ -184,7 +187,7 @@ class TripsService
 
     public function getDataNotPayedDataTable(array $filters = [], $count = false)
     {
-        $trips = $this->datatableServiceNotPayed->getData('Trips', $filters, $count);
+        $trips = $this->datatableServiceNotPayed->getData('TripsNotPayed', $filters, $count);
 
         if ($count) {
             return $trips;
@@ -216,8 +219,7 @@ class TripsService
                 ],
                 'c' => [
                     'plate' => $plate,
-
-                    ],
+                ],
                 'f'=>[
                     'name' => $trip->getCar()->getFleet()->getName()
                 ]

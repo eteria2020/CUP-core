@@ -2,12 +2,13 @@
 
 namespace SharengoCore\Service;
 
+// Internals
 use SharengoCore\Form\DTO\UploadedFile;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\ForeignDriversLicenseUpload;
 use SharengoCore\Entity\Repository\ForeignDriversLicenseUploadRepository;
 use SharengoCore\Exception\ForeignDriversLicenseUploadNotFoundException;
-
+// Externals
 use Doctrine\ORM\EntityManager;
 use Zend\Filter\File\RenameUpload;
 use Zend\EventManager\EventManager;
@@ -36,7 +37,7 @@ class ForeignDriversLicenseService
     private $eventManager;
 
     /**
-     * @var DatatableService
+     * @var DatatableServiceInterface
      */
     private $datatableService;
 
@@ -45,12 +46,19 @@ class ForeignDriversLicenseService
      */
     private $foreignDriversLicenseUploadRepository;
 
+    /**
+     * @param RenameUpload $renameUpload
+     * @param array $config
+     * @param EntityManager $entityManager
+     * @param EventManager $eventManager
+     * @param DatatableServiceInterface $datatableService
+     */
     public function __construct(
         RenameUpload $renameUpload,
         array $config,
         EntityManager $entityManager,
         EventManager $eventManager,
-        DatatableService $datatableService
+        DatatableServiceInterface $datatableService
     ) {
         $this->renameUpload = $renameUpload;
         $this->config = $config;

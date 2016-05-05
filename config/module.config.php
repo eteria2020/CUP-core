@@ -178,6 +178,7 @@ return [
             'SharengoCore\Service\AuthorityService' => 'SharengoCore\Service\AuthorityServiceFactory',
             'SharengoCore\Service\TripsService' => 'SharengoCore\Service\TripsServiceFactory',
             'SharengoCore\Service\DatatableService' => 'SharengoCore\Service\DatatableServiceFactory',
+            'SharengoCore\Service\SessionDatatableService' => 'SharengoCore\Service\SessionDatatableServiceFactory',
             'SharengoCore\Service\CarsService' => 'SharengoCore\Service\CarsServiceFactory',
             'SharengoCore\Service\PoisService' => 'SharengoCore\Service\PoisServiceFactory',
             'SharengoCore\Service\ReservationsService' => 'SharengoCore\Service\ReservationsServiceFactory',
@@ -227,6 +228,7 @@ return [
         'shared' => [
             'SharengoCore\Service\TripCostComputerService' => false,
             'SharengoCore\Service\DatatableService' => false,
+            'SharengoCore\Service\SessionDatatableService' => false,
         ]
     ],
 

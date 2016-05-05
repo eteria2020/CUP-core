@@ -2,14 +2,15 @@
 
 namespace SharengoCore\Service;
 
+// Internals
 use SharengoCore\Entity\Repository\TripPaymentsRepository;
 use SharengoCore\Entity\TripPayments;
-use SharengoCore\Service\DatatableService;
+use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Commands\SetCustomerWrongPaymentsAsToBePayed;
 use SharengoCore\Exception\TripPaymentWithoutDateException;
-
+// Externals
 use Doctrine\ORM\EntityManager;
 
 class TripPaymentsService
@@ -20,7 +21,7 @@ class TripPaymentsService
     private $tripPaymentsRepository;
 
     /**
-     * @var DatatableService
+     * @var DatatableServiceInterface
      */
     private $datatableService;
 
@@ -29,12 +30,15 @@ class TripPaymentsService
      */
     private $entityManager;
 
+
     /**
-     * @param TripPayments
+     * @param TripPaymentsRepository $tripPaymentsRepository
+     * @param DatatableServiceInterface $datatableService
+     * @param EntityManager $entityManager
      */
     public function __construct(
         TripPaymentsRepository $tripPaymentsRepository,
-        DatatableService $datatableService,
+        DatatableServiceInterface $datatableService,
         EntityManager $entityManager
     ) {
         $this->tripPaymentsRepository = $tripPaymentsRepository;

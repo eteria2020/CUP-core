@@ -7,7 +7,7 @@ use SharengoCore\Entity\CustomersBonus;
 use SharengoCore\Entity\PromoCodes;
 use SharengoCore\Entity\Repository\CustomersBonusRepository;
 use SharengoCore\Entity\Cards;
-use SharengoCore\Service\DatatableService;
+use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 use SharengoCore\Service\TripPaymentsService;
 use SharengoCore\Exception\BonusAssignmentException;
@@ -17,7 +17,6 @@ use Cartasi\Service\CartasiContractsService;
 use Zend\Authentication\AuthenticationService as UserService;
 use Doctrine\ORM\EntityManager;
 use Zend\Mvc\I18n\Translator;
-
 
 class CustomersService implements ValidatorServiceInterface
 {
@@ -40,7 +39,7 @@ class CustomersService implements ValidatorServiceInterface
     private $userService;
 
     /**
-     * @var DatatableService
+     * @var DatatableServiceInterface
      */
     private $datatableService;
 
@@ -77,7 +76,7 @@ class CustomersService implements ValidatorServiceInterface
     /**
      * @param EntityManager $entityManager
      * @param UserService $userService
-     * @param DatatableService $datatableService
+     * @param DatatableServiceInterface $datatableService
      * @param CardsService $cardsService
      * @param EmailService $emailService
      * @param Logger $logger
@@ -88,7 +87,7 @@ class CustomersService implements ValidatorServiceInterface
     public function __construct(
         EntityManager $entityManager,
         UserService $userService,
-        DatatableService $datatableService,
+        DatatableServiceInterface $datatableService,
         CardsService $cardsService,
         EmailService $emailService,
         Translator $translator,

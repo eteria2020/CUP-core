@@ -2,12 +2,15 @@
 
 namespace SharengoCore\Service;
 
-use Doctrine\ORM\EntityManager;
+// Internals
 use SharengoCore\Entity\Repository\ReservationsRepository;
 use SharengoCore\Entity\Reservations;
 use SharengoCore\Entity\Cars;
 use SharengoCore\Service\CustomersService;
+use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Entity\Customers;
+// Externals
+use Doctrine\ORM\EntityManager;
 use Zend\Mvc\I18n\Translator;
 
 class ReservationsService
@@ -27,7 +30,7 @@ class ReservationsService
     private $reservationsRepository;
 
     /**
-     * @var DatatableService
+     * @var DatatableServiceInterface
      */
     private $datatableService;
 
@@ -45,15 +48,16 @@ class ReservationsService
      */
     private $translator;
 
+
     /**
      * @param ReservationsRepository $reservationsRepository
-     * @param DatatableService $datatableService
+     * @param DatatableServiceInterface $datatableService
      * @param CustomersService $customersService
      * @param EntityManager $entityManager
      */
     public function __construct(
         ReservationsRepository $reservationsRepository,
-        DatatableService $datatableService,
+        DatatableServiceInterface $datatableService,
         CustomersService $customersService,
         EntityManager $entityManager,
         Translator $translator
