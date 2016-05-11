@@ -29,7 +29,7 @@ class ZonesService
      */
     public function __construct(
         EntityManager $entityManager,
-        DatatableService $datatableService
+        DatatableServiceInterface $datatableService
     ) {
         $this->entityManager = $entityManager;
         $this->zoneRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Zone');
