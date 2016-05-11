@@ -2,10 +2,11 @@
 
 namespace SharengoCore\Service;
 
-use Doctrine\ORM\EntityManager;
-
+// Internals
 use SharengoCore\Entity\Zone;
 use SharengoCore\Entity\Repository\ZonesRepository;
+// Externals
+use Doctrine\ORM\EntityManager;
 
 class ZonesService
 {
@@ -98,15 +99,15 @@ class ZonesService
 
         return array_map(function (Zone $zone) {
             return [
-                'e'      => [
-                    'id'                  => $zone->getId(),
-                    'name'                => $zone->getName(),
-                    'areaInvoice'         => $zone->getAreaInvoice(),
-                    'active'              => $zone->getActive(),
-                    'hidden'              => $zone->getHidden(),
-                    'invoiceDescription'  => $zone->getInvoiceDescription(),
-                    'revGeo'              => $zone->getRevGeo(),
-                    'areaUse'             => $zone->getAreaUse(),
+                'e' => [
+                    'id' => $zone->getId(),
+                    'name' => $zone->getName(),
+                    'areaInvoice' => json_decode($zone->getAreaInvoiceJson(),true),
+                    'active' => $zone->getActive(),
+                    'hidden' => $zone->getHidden(),
+                    'invoiceDescription' => $zone->getInvoiceDescription(),
+                    'revGeo' => $zone->getRevGeo(),
+                    'areaUse' => json_decode($zone->getAreaUseJson(),true),
                 ],
                 'button' => $zone->getId()
             ];
@@ -116,6 +117,19 @@ class ZonesService
     public function getZoneById($id)
     {
         return $this->zoneRepository->find($id);
+    }
+
+    /**
+     * @param Zone $zone
+     *
+     * @return Zone
+     */
+    public function updateZone(Zone $zone)
+    {
+        $this->entityManager->persist($zone);
+        $this->entityManager->flush();
+
+        return $zone;
     }
 
 }

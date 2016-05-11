@@ -227,6 +227,7 @@ return [
             'SharengoCore\Service\CartasiCsvAnalyzeService' => 'SharengoCore\Service\CartasiCsvAnalyzeServiceFactory',
             'SharengoCore\Service\ForeignDriversLicenseService' => 'SharengoCore\Service\ForeignDriversLicenseServiceFactory',
             'SharengoCore\Service\ValidateForeignDriversLicenseService' => 'SharengoCore\Service\ValidateForeignDriversLicenseServiceFactory',
+            'SharengoCore\Service\PostGisService' => 'SharengoCore\Service\PostGisServiceFactory',
             'SharengoCore\Service\ProcessPaymentsService' => 'SharengoCore\Service\ProcessPaymentsServiceFactory',
             'SharengoCore\Service\ProviderAuthenticatedCustomersService' => 'SharengoCore\Service\ProviderAuthenticatedCustomersServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',

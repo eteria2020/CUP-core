@@ -3,6 +3,8 @@
 namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use CrEOF\Spatial\PHP\Types\AbstractGeometry;
+use CrEOF\Spatial\DBAL\Types\GeometryType;
 
 /**
  * Zone
@@ -32,7 +34,7 @@ class Zone
     /**
      * @var string
      *
-     * @ORM\Column(name="area_invoice", type="string", nullable=false)
+     * @ORM\Column(name="area_invoice", type="geometry", nullable=false)
      */
     private $areaInvoice;
 
@@ -67,7 +69,7 @@ class Zone
     /**
      * @var string
      *
-     * @ORM\Column(name="area_use", type="string", nullable=false)
+     * @ORM\Column(name="area_use", type="geometry", nullable=false)
      */
     private $areaUse;
 
@@ -109,11 +111,11 @@ class Zone
     /**
      * Set areaInvoice
      *
-     * @param string $areaInvoice
+     * @param AbstractGeometry $areaInvoice
      *
      * @return Zone
      */
-    public function setAreaInvoice($areaInvoice)
+    public function setAreaInvoice(AbstractGeometry $areaInvoice)
     {
         $this->areaInvoice = $areaInvoice;
 
@@ -123,11 +125,24 @@ class Zone
     /**
      * Get areaInvoice
      *
-     * @return string
+     * @return AbstractGeometry
      */
     public function getAreaInvoice()
     {
         return $this->areaInvoice;
+    }
+
+    /**
+     * Get areaInvoice
+     *
+     * @return string (AbstractGeometry)
+     */
+    public function getAreaInvoiceJson()
+    {
+        if($this->areaInvoice instanceof AbstractGeometry){
+            return $this->areaInvoice->toJson();
+        }
+        return null;
     }
 
     /**
@@ -229,24 +244,37 @@ class Zone
     /**
      * Set areaUse
      *
-     * @param string $areaUse
+     * @param AbstractGeometry $areaUse
      *
      * @return Zone
      */
-    public function setAreaUse($areaUse)
+    public function setAreaUse(AbstractGeometry $areaUse)
     {
         $this->areaUse = $areaUse;
 
         return $this;
     }
-
+    
     /**
      * Get areaUse
      *
-     * @return string
+     * @return AbstractGeometry
      */
     public function getAreaUse()
     {
         return $this->areaUse;
+    }
+
+    /**
+     * Get areaUse
+     *
+     * @return string (AbstractGeometry)
+     */
+    public function getAreaUseJson()
+    {
+        if($this->areaUse instanceof AbstractGeometry){
+            return $this->areaUse->toJson();
+        }
+        return null;
     }
 }
