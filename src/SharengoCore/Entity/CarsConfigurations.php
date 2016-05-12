@@ -2,6 +2,10 @@
 
 namespace SharengoCore\Entity;
 
+// Internals
+use SharengoCore\Entity\Cars;
+use SharengoCore\Entity\Fleet;
+// Externals
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -61,14 +65,9 @@ class CarsConfigurations
     /**
      * @var string
      *
-     * @ORM\Column(name="value", type="text", nullable=false)
+     * @ORM\Column(name="value", type="text", nullable=true)
      */
     private $value;
-
-    public function __construct()
-    {
-        $this->trips = new ArrayCollection();
-    }
 
     /**
      * @param DoctrineHydrator
@@ -94,6 +93,19 @@ class CarsConfigurations
         return $this->id;
     }
 
+    /**
+     * Set id
+     *
+     * @param string $id
+     *
+     * @return CarsConfigurations
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * Get model
@@ -103,6 +115,20 @@ class CarsConfigurations
     public function getModel()
     {
         return $this->model;
+    }
+
+    /**
+     * Set model
+     *
+     * @param string $model
+     *
+     * @return CarsConfigurations
+     */
+    public function setModel($model)
+    {
+        $this->model = $model;
+
+        return $this;
     }
 
     /**
@@ -116,6 +142,20 @@ class CarsConfigurations
     }
 
     /**
+     * Set key
+     *
+     * @param string $key
+     *
+     * @return CarsConfigurations
+     */
+    public function setKey($key)
+    {
+        $this->key = $key;
+
+        return $this;
+    }
+
+    /**
      * Get value
      *
      * @return string
@@ -126,9 +166,23 @@ class CarsConfigurations
     }
 
     /**
+     * Set value
+     *
+     * @param string $value
+     *
+     * @return CarsConfigurations
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
+
+        return $this;
+    }
+
+    /**
      * Get fleet
      *
-     * @return \SharengoCore\Entity\Fleet
+     * @return Fleet
      */
     public function getFleet()
     {
@@ -136,9 +190,23 @@ class CarsConfigurations
     }
 
     /**
+     * Set fleet
+     *
+     * @param Fleet $fleet
+     *
+     * @return CarsConfigurations
+     */
+    public function setFleet(Fleet $fleet)
+    {
+        $this->fleet = $fleet;
+
+        return $this;
+    }
+
+    /**
      * Get car
      *
-     * @return \SharengoCore\Entity\Cars
+     * @return Cars
      */
     public function getCar()
     {
@@ -146,9 +214,23 @@ class CarsConfigurations
     }
 
     /**
+     * Set car
+     *
+     * @param Cars $car
+     *
+     * @return CarsConfigurations
+     */
+    public function setCar(Cars $car)
+    {
+        $this->car = $car;
+
+        return $this;
+    }
+
+    /**
      * Get  plate
      *
-     * @return \SharengoCore\Entity\Cars plate
+     * @return Cars plate
      */
     public function getCarPlate()
     {
@@ -162,7 +244,7 @@ class CarsConfigurations
     /**
      * Get name
      *
-     * @return \SharengoCore\Entity\Fleet name
+     * @return Fleet name
      */
     public function getFleetName()
     {
@@ -171,16 +253,6 @@ class CarsConfigurations
         } else {
             return null;
         }
-    }
-
-    /**
-     * Set value
-     *
-     * @param $value string
-     */
-    public function setValue($value)
-    {
-        $this->value = $value;
     }
 
     public function getPriority()
