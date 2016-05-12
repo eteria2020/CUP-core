@@ -128,9 +128,13 @@ class CarsConfigurationsService
     }
 
     public function save(CarsConfigurations $configuration, $value) {
-        $configuration->setValue($value);
+        if(!empty($value)) {
+            $configuration->setValue($value);
+        }
 
         $this->entityManager->persist($configuration);
         $this->entityManager->flush();
-    } 
+
+        return $configuration;
+    }
 }
