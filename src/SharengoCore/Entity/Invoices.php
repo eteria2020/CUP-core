@@ -625,6 +625,14 @@ class Invoices
     }
 
     /**
+     * @return string (Fleet name)
+     */
+    public function getFleetName()
+    {
+        return $this->fleet->getName();
+    }
+
+    /**
      * @return string
      */
     public function getFleetIntCode()
