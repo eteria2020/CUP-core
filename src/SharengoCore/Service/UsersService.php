@@ -80,12 +80,9 @@ class UsersService implements ValidatorServiceInterface
     {
         $password = $user->getPassword();
 
-        if(empty($password)) {
-
+        if (empty($password)) {
             $user->setPassword($pwd);
-
         } else {
-
             $bcrypt = new Bcrypt();
             $bcrypt->setCost($this->options->getPasswordCost());
             $user->setPassword($bcrypt->create($user->getPassword()));
