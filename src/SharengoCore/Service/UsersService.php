@@ -2,11 +2,13 @@
 
 namespace SharengoCore\Service;
 
+// Internals
+use SharengoCore\Entity\Webuser;
+use SharengoCore\Entity\Repository\WebuserRepository;
+// Externals
 use Doctrine\ORM\EntityManager;
 use Zend\Crypt\Password\Bcrypt;
 use ZfcUser\Options\UserServiceOptionsInterface;
-use SharengoCore\Entity\Webuser;
-
 
 class UsersService implements ValidatorServiceInterface
 {
@@ -15,23 +17,35 @@ class UsersService implements ValidatorServiceInterface
      */
     private $entityManager;
 
-    /** @var  Webuser */
-    private $userRepository;
-
     /**
      * @var UserServiceOptionsInterface
      */
     protected $options;
 
     /**
-     * @param EntityManager               $entityManager
+     * @var WebuserRepository
+     */
+    private $userRepository;
+
+    /** 
+     * @var DatatableServiceInterface
+     */
+    private $datatableService;
+
+    /**
+     * @param EntityManager $entityManager
      * @param UserServiceOptionsInterface $options
      */
-    public function __construct(EntityManager $entityManager, UserServiceOptionsInterface $options)
-    {
+    public function __construct(
+        EntityManager $entityManager,
+        UserServiceOptionsInterface $options,
+        WebuserRepository $userRepository,
+        DatatableServiceInterface $datatableService
+    ) {
         $this->entityManager = $entityManager;
-        $this->userRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Webuser');
         $this->options = $options;
+        $this->userRepository = $userRepository;
+        $this->datatableService = $datatableService;
     }
 
     /**
@@ -40,6 +54,11 @@ class UsersService implements ValidatorServiceInterface
     public function getListUsers()
     {
         return $this->userRepository->findAll();
+    }
+
+    public function getTotalUsers()
+    {
+        return $this->userRepository->getTotalUsers();
     }
 
     public function findUserById($userId)
@@ -76,5 +95,26 @@ class UsersService implements ValidatorServiceInterface
         $this->entityManager->flush();
 
         return $user;
+    }
+
+    public function getDataDataTable(array $filters = [], $count = false)
+    {
+        $webusers = $this->datatableService->getData('Webuser', $filters, $count);
+
+        if ($count) {
+            return $webusers;
+        }
+
+        return array_map(function (Webuser $webuser) {
+            return [
+                'e' => [
+                    'id' => $webuser->getId(),
+                    'displayName' => $webuser->getDisplayName(),
+                    'email' => $webuser->getEmail(),
+                    'role' => $webuser->getRole(),
+                ],
+                'button' => $webuser->getId()
+            ];
+        }, $webusers);
     }
 }
