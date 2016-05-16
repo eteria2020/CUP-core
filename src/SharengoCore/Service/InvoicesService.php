@@ -307,6 +307,9 @@ class InvoicesService
                     'name' => $invoice->getCustomer()->getName(),
                     'surname' => $invoice->getCustomer()->getSurname()
                 ],
+                'f' => [
+                    'name' => $invoice->getFleetName(),
+                ],
                 'link' => $invoice->getId()
             ];
         }, $invoices);
