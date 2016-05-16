@@ -24,8 +24,10 @@ class InvoicesServiceFactory implements FactoryInterface
 
         // decorate the query builder with the needed decorators
         $datatableService->setQueryBuilder(
-            new DatatableQueryBuilders\Customers(
-                new DatatableQueryBuilders\Basic()
+            new DatatableQueryBuilders\Fleets(
+                new DatatableQueryBuilders\Customers(
+                    new DatatableQueryBuilders\Basic()
+                )
             )
         );
 
