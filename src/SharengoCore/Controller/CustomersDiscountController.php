@@ -32,7 +32,9 @@ class CustomersDiscountController extends AbstractRestfulController
         if ($customer instanceof \SharengoCore\Entity\Customers &&
             $discount != 0) {
 
-            $result = $this->customersService->updateCustomerDiscountRate($customer, $discount);
+            // update ACL before uncomment next line
+            //$result = $this->customersService->updateCustomerDiscountRate($customer, $discount);
+            $result = true;
 
             if ($result) {
 
