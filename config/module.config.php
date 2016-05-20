@@ -60,6 +60,15 @@ return [
                             ]
                         ]
                     ],
+                    'user-discount' => [
+                        'type' => 'Literal',
+                        'options' => [
+                            'route' => '/user-discount',
+                            'defaults' => [
+                                'controller' => 'CustomersDiscount'
+                            ]
+                        ]
+                    ],
                     'reservations' => [
                         'type' => 'Segment',
                         'options' => [
@@ -150,6 +159,7 @@ return [
         'factories' => [
             'SharengoCore\Controller\Cars'             => 'SharengoCore\Controller\CarsControllerFactory',
             'SharengoCore\Controller\Customers'        => 'SharengoCore\Controller\CustomersControllerFactory',
+            'SharengoCore\Controller\CustomersDiscount'=> 'SharengoCore\Controller\CustomersDiscountControllerFactory',
             'SharengoCore\Controller\Pois'             => 'SharengoCore\Controller\PoisControllerFactory',
             'SharengoCore\Controller\Reservations'     => 'SharengoCore\Controller\ReservationsControllerFactory',
             'SharengoCore\Controller\Trips'            => 'SharengoCore\Controller\TripsControllerFactory',
@@ -271,6 +281,7 @@ return [
                 ['controller' => 'SharengoCore\Controller\Cars', 'roles' => ['admin', 'callcenter']],
                 ['controller' => 'SharengoCore\Controller\PublicCars', 'roles' => []],
                 ['controller' => 'SharengoCore\Controller\Customers', 'roles' => ['admin', 'callcenter']],
+                ['controller' => 'SharengoCore\Controller\CustomersDiscount', 'roles' => []],
                 ['controller' => 'SharengoCore\Controller\Pois', 'roles' => []],
                 ['controller' => 'SharengoCore\Controller\Reservations', 'roles' => ['user', 'admin', 'callcenter']],
                 ['controller' => 'SharengoCore\Controller\Trips', 'roles' => ['admin', 'callcenter', 'user']],

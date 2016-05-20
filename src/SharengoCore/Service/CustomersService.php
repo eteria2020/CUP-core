@@ -153,6 +153,10 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersRepository->findByCI('email', $email);
     }
 
+    public function findOneByEmail($email) {
+        return $this->customersRepository->findOneByEmail($email);
+    }
+
     public function findById($id)
     {
         return $this->customersRepository->findOneBy([
@@ -187,6 +191,21 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->entityManager->persist($customer);
         $this->entityManager->flush($customer);
+    }
+
+    /**
+     * @param Customers $customer
+     * @param $discount
+     * @return bool true if discount is updatable
+     */
+    public function updateCustomerDiscountRate(Customers $customer, $discount)
+    {
+        if ($customer->getDiscountRate() == 0) {
+            $this->setCustomerDiscountRate($customer, $discount);
+            return true;
+        }
+
+        return false;
     }
 
     public function setCustomerReprofilingOption(Customers $customer, $option)
