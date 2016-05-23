@@ -148,6 +148,11 @@ class CustomersBonusPackages
         return $this->validFrom;
     }
 
+    public function validFromOrToday()
+    {
+        return max(date_create(), $this->validFrom);
+    }
+
     /**
      * @return integer
      */
@@ -172,6 +177,15 @@ class CustomersBonusPackages
         $durationInterval = new \DateInterval('P' . $this->duration . 'D');
         $from = max(date_create(), $this->validFrom);
         return $from->add($durationInterval);
+    }
+
+    public function readableValidTo()
+    {
+        if ($this->validTo instanceof \DateTime) {
+            return $this->validTo->format('d-m-Y');
+        }
+
+        return 'per ' . $this->duration . ' gg';
     }
 
     /**
