@@ -146,6 +146,7 @@ class CarsService
                     'lastContact' => is_object($cars->getLastContact()) ? $cars->getLastContact()->format('d-m-Y H:i:s') : '',
                     'km' => $cars->getKm(),
                     'status' => $cars->getStatus(),
+                    'hidden' => $cars->getHidden(),
                 ],
                 'f' => [
                     'name' => $cars->getFleet()->getName(),
