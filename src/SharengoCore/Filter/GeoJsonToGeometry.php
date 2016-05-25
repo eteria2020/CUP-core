@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Filter;
 
+// Internals
+use SharengoCore\Exception\GeometryNotValidException;
 // Externals
 use Zend\Filter\AbstractFilter;
 use CrEOF\Spatial\PHP\Types\AbstractGeometry;
@@ -28,6 +30,7 @@ class GeoJsonToGeometry extends AbstractFilter
      * PostGis Polygon.
      *
      * @param string $geoJson
+     * @throws GeometryNotValidException
      * @return Geometry
      */
     public function filter($geoJson)
@@ -35,7 +38,7 @@ class GeoJsonToGeometry extends AbstractFilter
         $geomerty = $this->postGisService->getGeometryFromGeoJson($geoJson);
 
         if (! $geomerty instanceof AbstractGeometry) {
-            error_log("\nGeometryInterface Not Valid\n",0);//throw new GeometryNotValidException();
+            throw new GeometryNotValidException();
         }
 
         return $geomerty;
