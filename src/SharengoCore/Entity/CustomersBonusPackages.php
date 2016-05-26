@@ -101,6 +101,13 @@ class CustomersBonusPackages
     private $notes;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="text", nullable=true)
+     */
+    private $name;
+
+    /**
      * @return integer
      */
     public function getId()
@@ -212,9 +219,20 @@ class CustomersBonusPackages
         return $this->cost;
     }
 
+    /**
+     * @return string
+     */
     public function getNotes()
     {
         return $this->notes;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
