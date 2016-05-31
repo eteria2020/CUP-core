@@ -656,4 +656,14 @@ class CustomersService implements ValidatorServiceInterface
             'hash' => $hash
         ]);
     }
+
+    public function setPinToCustomer(Customers $customer, $key, $value)
+    {
+        $pins = json_decode($customer->getPin(), true);
+        $pins[$key] = $value;
+        $customer->setPin(json_encode($pins));
+
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
+    }
 }
