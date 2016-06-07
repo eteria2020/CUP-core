@@ -23,6 +23,12 @@ class ForeignDriversLicenseServiceFactory implements FactoryInterface
         /** @var DatatableServiceInterface **/
         $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
 
+        $datatableService->setQueryBuilder(
+            new DatatableQueryBuilders\Customers(
+                new DatatableQueryBuilders\Basic()
+            )
+        );
+
         return new ForeignDriversLicenseService(
             $renameUpload,
             $config['driversLicense'],
