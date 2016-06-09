@@ -16,11 +16,12 @@ class GeoJsonToGeometry extends AbstractFilter
     private $serviceLocator;
 
     /**
+     * @param array $options
      * @var PostGisService
      */
     private $postGisService;
-    
-    public function __construct($options)
+
+    public function __construct(array $options)
     {
         $this->postGisService = $options['postGisService'];
     }
