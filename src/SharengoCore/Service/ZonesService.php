@@ -19,13 +19,18 @@ class ZonesService
 
     private $zoneAlarmsRepository;
 
+    private $zoneGroupsRepository;
+
+    private $zonePricesRepository;
+
     /**
      * @var DatatableServiceInterface
      */
     private $datatableService;
 
     /**
-     * @param EntityManager               $entityManager
+     * @param EntityManager $entityManager
+     * @param DatatableServiceInterface $datatableService
      */
     public function __construct(
         EntityManager $entityManager,
@@ -102,12 +107,12 @@ class ZonesService
                 'e' => [
                     'id' => $zone->getId(),
                     'name' => $zone->getName(),
-                    'areaInvoice' => json_decode($zone->getAreaInvoiceJson(),true),
+                    'areaInvoice' => json_decode($zone->getAreaInvoiceJson(), true),
                     'active' => $zone->getActive(),
                     'hidden' => $zone->getHidden(),
                     'invoiceDescription' => $zone->getInvoiceDescription(),
                     'revGeo' => $zone->getRevGeo(),
-                    'areaUse' => json_decode($zone->getAreaUseJson(),true),
+                    'areaUse' => json_decode($zone->getAreaUseJson(), true),
                 ],
                 'button' => $zone->getId()
             ];
@@ -131,5 +136,4 @@ class ZonesService
 
         return $zone;
     }
-
 }

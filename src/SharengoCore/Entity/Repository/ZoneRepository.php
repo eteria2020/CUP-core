@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace SharengoCore\Entity\Repository;
 
@@ -20,14 +20,15 @@ class ZoneRepository extends EntityRepository
      *
      * @return array
      */
-    public function findZonesWithMapCoords($showHidden, $showOnlyActive) {
+    public function findZonesWithMapCoords($showHidden, $showOnlyActive)
+    {
         $em = $this->getEntityManager();
 
         $dql = 'SELECT
                     z.id,
                     z.name,
                     ST_AsGeoJson(z.areaInvoice) AS areaInvoice,
-                    ST_AsGeoJson(z.areaUse) AS areaUse 
+                    ST_AsGeoJson(z.areaUse) AS areaUse
                 FROM \SharengoCore\Entity\Zone z ';
 
         $where = '';
@@ -54,7 +55,8 @@ class ZoneRepository extends EntityRepository
      *
      * @return int
      */
-    public function getTotalZones() {
+    public function getTotalZones()
+    {
         $em = $this->getEntityManager();
         $query = $em->createQuery('SELECT COUNT(z.id) FROM \SharengoCore\Entity\Zone z');
         return $query->getSingleScalarResult();

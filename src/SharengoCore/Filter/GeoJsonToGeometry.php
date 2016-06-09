@@ -11,12 +11,6 @@ use CrEOF\Spatial\PHP\Types\AbstractGeometry;
 class GeoJsonToGeometry extends AbstractFilter
 {
     /**
-     * @var ServiceLocatorInterface
-     */
-    private $serviceLocator;
-
-    /**
-     * @param array $options
      * @var PostGisService
      */
     private $postGisService;
@@ -27,7 +21,7 @@ class GeoJsonToGeometry extends AbstractFilter
     }
 
     /**
-     * This filter convert a GeoJson string to a 
+     * This filter convert a GeoJson string to a
      * PostGis Polygon.
      *
      * @param string $geoJson

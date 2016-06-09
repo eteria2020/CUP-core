@@ -135,13 +135,14 @@ class Zone
     /**
      * Get areaInvoice
      *
-     * @return string (AbstractGeometry)
+     * @return string|null (AbstractGeometry)
      */
     public function getAreaInvoiceJson()
     {
-        if($this->areaInvoice instanceof AbstractGeometry){
+        if ($this->areaInvoice instanceof AbstractGeometry) {
             return $this->areaInvoice->toJson();
         }
+
         return null;
     }
 
@@ -254,7 +255,7 @@ class Zone
 
         return $this;
     }
-    
+
     /**
      * Get areaUse
      *
@@ -268,13 +269,14 @@ class Zone
     /**
      * Get areaUse
      *
-     * @return string (AbstractGeometry)
+     * @return string|null (AbstractGeometry)
      */
     public function getAreaUseJson()
     {
-        if($this->areaUse instanceof AbstractGeometry){
+        if ($this->areaUse instanceof AbstractGeometry) {
             return $this->areaUse->toJson();
         }
+
         return null;
     }
 }

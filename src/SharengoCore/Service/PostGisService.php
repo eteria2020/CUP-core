@@ -14,7 +14,7 @@ use CrEOF\Spatial\PHP\Types\AbstractGeometry;
 
 class PostGisService
 {
-    /** 
+    /**
      * @var EntityManager
      */
     private $entityManager;
@@ -32,6 +32,7 @@ class PostGisService
      * This method return an istance of AbstractGeometry from a
      * given JSON.
      *
+     * @param string $geoJson
      * @return AbstractGeometry
      */
     public function getGeometryFromGeoJson($geoJson)
@@ -51,6 +52,7 @@ class PostGisService
      * given GeomKML Fragment (do not accept a complete KML file).
      * (for more info see: http://postgis.net/docs/manual-2.2/ST_GeomFromKML.html)
      *
+     * @param string $geomKml
      * @return AbstractGeometry
      */
     public function getGeometryFromGeomKMLFragment($geomKml)
@@ -82,7 +84,7 @@ class PostGisService
 
         // Read and Convert KML to array.
         $data = $xmlReader->fromFile($geomKmlFile);
-        
+
         // Get the content data.
         $placemark = $data['Document']['Placemark'];
         $kmlGeometryFragment = [];
@@ -94,14 +96,14 @@ class PostGisService
         ];
 
         // Search for Geometries.
-        foreach($geometries as $geometry){
-            if(!empty($placemark[$geometry])){
+        foreach ($geometries as $geometry) {
+            if (!empty($placemark[$geometry])) {
                 $kmlGeometryFragment[$geometry] = $placemark[$geometry];
             }
         }
 
         // If no geometry has been found, Throw error.
-        if(empty($kmlGeometryFragment)){
+        if (empty($kmlGeometryFragment)) {
             throw new KMLFileNotValidException();
         }
 
@@ -109,10 +111,9 @@ class PostGisService
         $kmlWriter = new Kml();
 
         // Write and Convert array to KML Geometry Fragment
-        // (XML type without header or additional info) 
+        // (XML type without header or additional info)
         $xmlKmlGeometryFragmet = $kmlWriter->toString($kmlGeometryFragment);
 
         return $this->getGeometryFromGeomKMLFragment($xmlKmlGeometryFragmet);
     }
 }
-
