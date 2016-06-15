@@ -68,6 +68,26 @@ class CarsConfigurations
      * @ORM\Column(name="value", type="text", nullable=true)
      */
     private $value;
+    
+    /**
+     * @var string
+     */
+    const GLOBAL_TYPE = 'GLOBAL_TYPE';
+
+    /**
+     * @var string
+     */
+    const FLEET_TYPE = 'FLEET_TYPE';
+
+    /**
+     * @var string
+     */
+    const CAR_MODEL_TYPE = 'CAR_MODEL_TYPE';
+
+    /**
+     * @var string
+     */
+    const CAR_TYPE = 'CAR_TYPE';
 
     /**
      * @param DoctrineHydrator
@@ -255,17 +275,23 @@ class CarsConfigurations
         }
     }
 
+    /**
+     * Return the CarConfiguration priority type
+     * with constant defined in this class.
+     *
+     * @return string
+     */
     public function getPriority()
     {
         if ($this->getCarPlate() !== null) {
-            return 'Configurazione Specifica di un Auto';
+            return $this::CAR_TYPE;
         }
         if ($this->getModel() !== null) {
-            return 'Configurazione di un Modello di Auto';
+            return $this::CAR_MODEL_TYPE;
         }
         if ($this->getFleetName() !== null) {
-            return 'Configurazione di una Citta\'';
+            return $this::FLEET_TYPE;
         }
-        return 'Configurazione Globale';
+        return $this::GLOBAL_TYPE;
     }
 }
