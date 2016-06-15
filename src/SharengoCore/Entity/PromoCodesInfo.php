@@ -109,6 +109,15 @@ class PromoCodesInfo
      */
     private $discountPercentage;
 
+    /**
+     * if this flag is true, then the standard minutes bonus awarded on subscription
+     * should not be given to the customer
+     *
+     * @var bool
+     *
+     * @ORM\Column(name="no_standard_bonus", type="integer", nullable=false, options={"default" = FALSE})
+     */
+    private $noStandardBonus;
 
     /**
      * Get id
@@ -379,5 +388,13 @@ class PromoCodesInfo
     public function discountPercentage()
     {
         return $this->discountPercentage;
+    }
+
+    /**
+     * @return bool
+     */
+    public function noStandardBonus()
+    {
+        return $this->noStandardBonus;
     }
 }

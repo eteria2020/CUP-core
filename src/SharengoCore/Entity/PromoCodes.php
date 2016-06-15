@@ -169,4 +169,9 @@ class PromoCodes
     {
         return $this->promocodesinfo->discountPercentage();
     }
+
+    public function noStandardBonus()
+    {
+        return $this->promocodesinfo->noStandardBonus();
+    }
 }
