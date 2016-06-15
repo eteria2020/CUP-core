@@ -29,7 +29,7 @@ class CarsConfigurations
     private $id;
 
     /**
-     * @var \Fleet
+     * @var Fleet
      *
      * @ORM\ManyToOne(targetEntity="Fleet")
      * @ORM\JoinColumns({
@@ -46,7 +46,7 @@ class CarsConfigurations
     private $model;
 
     /**
-     * @var \Cars
+     * @var Cars
      *
      * @ORM\ManyToOne(targetEntity="Cars")
      * @ORM\JoinColumns({
@@ -228,13 +228,13 @@ class CarsConfigurations
     }
 
     /**
-     * Get  plate
+     * Get plate
      *
-     * @return Cars plate
+     * @return string|null plate
      */
     public function getCarPlate()
     {
-        if( isset($this->car) ){
+        if ($this->car instanceof Cars) {
             return $this->car->getPlate();
         } else {
             return null;
@@ -244,11 +244,11 @@ class CarsConfigurations
     /**
      * Get name
      *
-     * @return Fleet name
+     * @return string|null name
      */
     public function getFleetName()
     {
-        if( isset($this->fleet) ){
+        if ($this->fleet instanceof Fleet) {
             return $this->fleet->getName();
         } else {
             return null;
@@ -257,13 +257,13 @@ class CarsConfigurations
 
     public function getPriority()
     {
-        if ( $this->getCarPlate() !== null ){
+        if ($this->getCarPlate() !== null) {
             return 'Configurazione Specifica di un Auto';
         }
-        if ( $this->getModel() !== null ){
+        if ($this->getModel() !== null) {
             return 'Configurazione di un Modello di Auto';
         }
-        if ( $this->getFleetName() !== null ){
+        if ($this->getFleetName() !== null) {
             return 'Configurazione di una Citta\'';
         }
         return 'Configurazione Globale';

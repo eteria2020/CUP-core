@@ -2,8 +2,6 @@
 
 namespace SharengoCore\Entity\Repository;
 
-use Doctrine\ORM\Query\ResultSetMapping;
-
 /**
  * CarsConfigurationsRepository
  *
@@ -17,18 +15,5 @@ class CarsConfigurationsRepository extends \Doctrine\ORM\EntityRepository
         $em = $this->getEntityManager();
         $query = $em->createQuery('SELECT COUNT(cc.id) FROM \SharengoCore\Entity\CarsConfigurations cc');
         return $query->getSingleScalarResult();
-    }
-
-    public function findById($id)
-    {
-        $em = $this->getEntityManager();
-        $dql = 'SELECT cc
-            FROM \SharengoCore\Entity\CarsConfigurations cc
-            WHERE cc.id = :id';
-
-        $query = $em->createQuery($dql);
-        $query->setParameter('id', $id);
-
-        return $query->getResult();
     }
 }

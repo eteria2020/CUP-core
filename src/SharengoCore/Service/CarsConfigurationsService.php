@@ -4,16 +4,10 @@ namespace SharengoCore\Service;
 
 // Internals
 use SharengoCore\Entity\CarsConfigurations;
-use SharengoCore\Entity\Cars;
-use SharengoCore\Entity\Fleet;
 use SharengoCore\Entity\Repository\CarsConfigurationsRepository;
-use SharengoCore\Entity\Repository\CarsRepository;
-use SharengoCore\Entity\Repository\FleetRepository;
 use SharengoCore\Service\DatatableServiceInterface;
 // Externals
-use BjyAuthorize\Service\Authorize;
 use Doctrine\ORM\EntityManager;
-use Zend\Authentication\AuthenticationService as UserService;
 
 class CarsConfigurationsService
 {
@@ -28,47 +22,23 @@ class CarsConfigurationsService
     private $carsConfigurationsRepository;
 
     /**
-     * @var CarsRepository
-     */
-    private $carsRepository;
-
-    /**
-     * @var FleetsRepository
-     */
-    private $fleetsRepository;
-
-    /**
      * @var DatatableServiceInterface
      */
     private $datatableService;
 
     /**
-     * @var UserService
-     */
-    private $userService;
-
-    /**
      * @param EntityManager $entityManager
      * @param CarsConfigurationsRepository $carsConfigurationsRepository
-     * @param CarsRepository $carsRepository
-     * @param FleetsRepository $fleetsRepository
      * @param DatatableServiceInterface $datatableService
-     * @param UserService $userService
      */
     public function __construct(
         EntityManager $entityManager,
         CarsConfigurationsRepository $carsConfigurationsRepository,
-        CarsRepository $carsRepository,
-        FleetRepository $fleetsRepository,
-        DatatableServiceInterface $datatableService,
-        UserService $userService
+        DatatableServiceInterface $datatableService
     ) {
         $this->entityManager = $entityManager;
         $this->carsConfigurationsRepository = $carsConfigurationsRepository;
-        $this->carsRepository = $carsRepository;
-        $this->fleetsRepository = $fleetsRepository;
         $this->datatableService = $datatableService;
-        $this->userService = $userService;
     }
 
     /**
@@ -79,48 +49,6 @@ class CarsConfigurationsService
     public function getListCarsConfigurations()
     {
         return $this->carsConfigurationsRepository->findAll();
-    }
-
-    /**
-     * This method return an instance of Car, find by plate.
-     *
-     * @param string $carPlate
-     * @return Cars
-     */
-    public function getCar($carPlate)
-    {
-        return $this->carsRepository->find($carPlate);
-    }
-
-    /**
-     * This method return an array containing all the Cars.
-     *
-     * @return mixed
-     */
-    public function getCars()
-    {
-        return $this->carsRepository->findAll;
-    }
-
-    /**
-     * This method return an instance of Fleet, find by id.
-     *
-     * @param int $fleetId
-     * @return Fleet
-     */
-    public function getFleet($fleetId)
-    {
-        return $this->fleetsRepository->find($fleetId);
-    }
-
-    /**
-     * This method return an array containing all the Fleet.
-     *
-     * @return mixed
-     */
-    public function getFleets()
-    {
-        return $this->fleetsRepository->findAll();
     }
 
     /**
@@ -149,9 +77,9 @@ class CarsConfigurationsService
         return $this->carsConfigurationsRepository->find($carConfigurationId);
     }
 
-    public function getDataDataTable(array $as_filters = [], $count = false)
+    public function getDataDataTable(array $filters = [], $count = false)
     {
-        $carsConfigurations = $this->datatableService->getData('CarsConfigurations', $as_filters, $count);
+        $carsConfigurations = $this->datatableService->getData('CarsConfigurations', $filters, $count);
 
         if ($count) {
             return $carsConfigurations;
