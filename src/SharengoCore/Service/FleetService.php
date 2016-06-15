@@ -38,10 +38,15 @@ class FleetService
         return $query();
     }
 
-    public function getFleetsSelectorArray()
+    /**
+     * This method return an array of Fleets name, indexed with the object
+     * key "id", to be used with a ZF2 Form Select.
+     * With the first parameter for example you can specify frirst element/s.
+     *
+     * @param array $fleets The inital "empty" array object.
+     */
+    public function getFleetsSelectorArray(array $fleets = [])
     {
-        $fleets = [0 => '---'];
-
         foreach ($this->getAllFleets() as $fleet) {
             $fleets[$fleet->getId()] = $fleet->getName();
         }
