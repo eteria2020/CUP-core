@@ -153,7 +153,8 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersRepository->findByCI('email', $email);
     }
 
-    public function findOneByEmail($email) {
+    public function findOneByEmail($email)
+    {
         return $this->customersRepository->findOneByEmail($email);
     }
 
@@ -674,5 +675,12 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersRepository->findOneBy([
             'hash' => $hash
         ]);
+    }
+
+    public function retrieveOldDiscountCustomers()
+    {
+        $aYearAgo = date_create('-1 year');
+
+        return $this->customersRepository->findCustomersWithDiscountOlderThan($aYearAgo);
     }
 }

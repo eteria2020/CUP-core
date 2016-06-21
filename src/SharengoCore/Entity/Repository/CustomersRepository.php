@@ -123,4 +123,20 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+
+    public function findCustomersWithDiscountOlderThan(\DateTime $date)
+    {
+        $dql = "SELECT c FROM \SharengoCore\Entity\Customers c " .
+            "LEFT JOIN c.oldDiscounts od " .
+            "WHERE c.insertedTs <= :date " .
+            "OR c.insertedTs IS NULL " .
+            "GROUP BY c.id " .
+            "HAVING MAX(od.obsoleteFrom) IS NULL " .
+            "OR MAX(od.obsoleteFrom) <= :date ";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('date', $date);
+
+        return $query->getResult();
+    }
 }
