@@ -283,7 +283,7 @@ return [
                 ['controller' => 'SharengoCore\Controller\Cars', 'roles' => ['admin', 'callcenter']],
                 ['controller' => 'SharengoCore\Controller\PublicCars', 'roles' => []],
                 ['controller' => 'SharengoCore\Controller\Customers', 'roles' => ['admin', 'callcenter']],
-                ['controller' => 'SharengoCore\Controller\CustomersDiscount', 'roles' => []],
+                ['controller' => 'SharengoCore\Controller\CustomersDiscount', 'roles' => ['user']],
                 ['controller' => 'SharengoCore\Controller\Pois', 'roles' => []],
                 ['controller' => 'SharengoCore\Controller\Reservations', 'roles' => ['user', 'admin', 'callcenter']],
                 ['controller' => 'SharengoCore\Controller\Trips', 'roles' => ['admin', 'callcenter', 'user']],

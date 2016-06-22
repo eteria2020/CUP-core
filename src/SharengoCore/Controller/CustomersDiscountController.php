@@ -31,19 +31,15 @@ class CustomersDiscountController extends AbstractRestfulController
         // exists a customer with this email?
         if ($customer instanceof \SharengoCore\Entity\Customers &&
             $discount != 0) {
-
             // update ACL before uncomment next line
-            //$result = $this->customersService->updateCustomerDiscountRate($customer, $discount);
-            $result = true;
+            $result = $this->customersService->updateCustomerDiscountRate($customer, $discount);
 
             if ($result) {
-
                 return new JsonModel([
                     'response' => 'Discount updated'
                 ]);
 
             } else {
-
                 $this->response->setStatusCode(400);
 
                 return new JsonModel([
@@ -60,5 +56,4 @@ class CustomersDiscountController extends AbstractRestfulController
             'response' => 'Customer not found'
         ]);
     }
-
 }
