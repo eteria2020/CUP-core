@@ -426,6 +426,13 @@ class Customers
      */
     private $subscriptionPayments;
 
+    /**
+     * Bidirectional - One-To-Many (INVERSE SIDE)
+     *
+     * @ORM\OneToMany(targetEntity="OldCustomerDiscount", mappedBy="customer")
+     */
+    private $oldDiscounts;
+
 
     public function __construct()
     {
