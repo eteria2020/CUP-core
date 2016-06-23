@@ -1841,4 +1841,14 @@ class Customers
         }
         return false;
     }
+
+    /**
+     * @return bool
+     */
+    public function deservesNewDiscount()
+    {
+        return $this->discountRate == 0 && // has 0% discount
+            ($this->insertedTs >= date_create('18 april 2016') // registered after 18/04/2016
+            || !empty($this->oldDiscounts)); // has a discount already expired
+    }
 }

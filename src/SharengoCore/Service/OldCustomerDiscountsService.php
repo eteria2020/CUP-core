@@ -6,6 +6,8 @@ use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\OldCustomerDiscount;
 
 use Doctrine\ORM\EntityManager;
+use Zend\View\Helper\Url;
+use Zend\I18n\Translator\TranslatorInterface as Translator;
 
 class OldCustomerDiscountsService
 {
@@ -14,16 +16,44 @@ class OldCustomerDiscountsService
      */
     private $entityManager;
 
+    /**
+     * @var EmailService
+     */
+    private $emailService;
+
+    /**
+     * @var Url
+     */
+    private $urlHelper;
+
+    /**
+     * @var Translator
+     */
+    private $translator;
+
+    /**
+     * @var string
+     */
+    private $host;
+
     public function __construct(
-        EntityManager $entityManager
+        EntityManager $entityManager,
+        EmailService $emailService,
+        Url $urlHelper,
+        Translator $translator,
+        $host
     ) {
         $this->entityManager = $entityManager;
+        $this->emailService = $emailService;
+        $this->urlHelper = $urlHelper;
+        $this->translator = $translator;
+        $this->host = $host;
     }
 
     /**
      * @param Customers
      */
-    public function disableCustomerDiscount(Customers $customer, $persist = true)
+    public function disableCustomerDiscount(Customers $customer, $persist = true, $sendEmail = true)
     {
         $this->entityManager->beginTransaction();
 
@@ -38,11 +68,17 @@ class OldCustomerDiscountsService
 
             $customer->setDiscountRate(0);
 
-            if ($persist === true) {
+            if ($persist) {
                 $this->entityManager->persist($customer);
                 $this->entityManager->persist($oldDiscount);
 
                 $this->entityManager->flush();
+            }
+
+            if ($sendEmail && $customer->getFirstPaymentCompleted()) {
+                // we send the mail only to the customers who payed the first payment
+                // the others have their discount cancelled without notifications
+                $this->sendEmail($customer->getEmail(), $customer->getName());
             }
 
             $this->entityManager->commit();
@@ -51,5 +87,27 @@ class OldCustomerDiscountsService
 
             throw $e;
         }
+    }
+
+    private function sendEmail($email, $name)
+    {
+        $urlHelper = $this->urlHelper;
+
+        $content = sprintf(
+            file_get_contents(__DIR__.'/../../../view/emails/disable_discount_it-IT.html'),
+            $name,
+            $this->host . $urlHelper('login', [], ['translator' => $this->translator])
+        );
+
+        $attachments = [
+            'banner.jpg' => __DIR__.'/../../../../../public/images/banner_discount.jpg'
+        ];
+
+        $this->emailService->sendEmail(
+            $email,
+            'OGGI PUOI RICALCOLARE LO SCONTO CHE TI SPETTA',
+            $content,
+            $attachments
+        );
     }
 }

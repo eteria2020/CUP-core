@@ -10,7 +10,17 @@ class OldCustomerDiscountsServiceFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
+        $emailService = $serviceLocator->get('SharengoCore\Service\EmailService');
+        $urlHelper = $serviceLocator->get('viewhelpermanager')->get('url');
+        $translator = $serviceLocator->get('Translator');
+        $host = $serviceLocator->get('config')['website']['uri'];
 
-        return new OldCustomerDiscountsService($entityManager);
+        return new OldCustomerDiscountsService(
+            $entityManager,
+            $emailService,
+            $urlHelper,
+            $translator,
+            $host
+        );
     }
 }

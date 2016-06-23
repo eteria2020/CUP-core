@@ -128,8 +128,9 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
     {
         $dql = "SELECT c FROM \SharengoCore\Entity\Customers c " .
             "LEFT JOIN c.oldDiscounts od " .
-            "WHERE c.insertedTs <= :date " .
-            "OR c.insertedTs IS NULL " .
+            "WHERE c.discountRate > 0 ".
+            "AND (c.insertedTs <= :date " .
+            "OR c.insertedTs IS NULL) " .
             "GROUP BY c.id " .
             "HAVING MAX(od.obsoleteFrom) IS NULL " .
             "OR MAX(od.obsoleteFrom) <= :date ";
