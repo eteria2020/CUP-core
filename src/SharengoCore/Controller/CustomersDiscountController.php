@@ -22,6 +22,9 @@ class CustomersDiscountController extends AbstractRestfulController
 
     public function create($data)
     {
+        if (!$this->requestFromServer($this->request)) {
+            return $this->response->setStatusCode(403);
+        }
 
         $email = $data['email'];
         $discount = $data['discount'];

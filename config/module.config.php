@@ -171,7 +171,11 @@ return [
             'SharengoCore\Controller\Municipalities' => 'SharengoCore\Controller\MunicipalitiesControllerFactory',
         ],
     ],
-
+    'controller_plugins' => [
+        'invokables' => [
+            'RequestFromServer' => 'SharengoCore\Controller\Plugin\RequestFromServer',
+        ],
+    ],
     'service_manager' => [
         'invokables' => [
             'SharengoCore\Service\DatatableQueryBuilder' => 'SharengoCore\Service\DatatableQueryBuilders\Basic',
@@ -283,7 +287,7 @@ return [
                 ['controller' => 'SharengoCore\Controller\Cars', 'roles' => ['admin', 'callcenter']],
                 ['controller' => 'SharengoCore\Controller\PublicCars', 'roles' => []],
                 ['controller' => 'SharengoCore\Controller\Customers', 'roles' => ['admin', 'callcenter']],
-                ['controller' => 'SharengoCore\Controller\CustomersDiscount', 'roles' => ['user']],
+                ['controller' => 'SharengoCore\Controller\CustomersDiscount', 'roles' => []],
                 ['controller' => 'SharengoCore\Controller\Pois', 'roles' => []],
                 ['controller' => 'SharengoCore\Controller\Reservations', 'roles' => ['user', 'admin', 'callcenter']],
                 ['controller' => 'SharengoCore\Controller\Trips', 'roles' => ['admin', 'callcenter', 'user']],
