@@ -100,7 +100,7 @@ class OldCustomerDiscountsService
         );
 
         $attachments = [
-            'banner.jpg' => __DIR__.'/../../../../../public/images/banner_discount.jpg'
+            'banner.jpg' => $this->host . '/images/banner_discount.jpg'
         ];
 
         $this->emailService->sendEmail(
