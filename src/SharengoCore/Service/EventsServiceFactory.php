@@ -11,7 +11,8 @@ class EventsServiceFactory implements FactoryInterface
     {
         $documentManager = $serviceLocator->get('doctrine.documentmanager.odm_default');
         $repository = $documentManager->getRepository('\SharengoCore\Document\Events');
+        $eventsTypesService = $serviceLocator->get('SharengoCore\Service\EventsTypesService');
 
-        return new EventsService($repository);
+        return new EventsService($repository, $eventsTypesService);
     }
 }

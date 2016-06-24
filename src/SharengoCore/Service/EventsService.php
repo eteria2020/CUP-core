@@ -15,11 +15,17 @@ class EventsService
      */
     private $eventsRepository;
 
-    private $documentManager;
+    /**
+     * @var EventsTypesService
+     */
+    private $eventsTypesService;
 
-    public function __construct(EventsRepository $eventsRepository)
-    {
+    public function __construct(
+        EventsRepository $eventsRepository,
+        EventsTypesService $eventsTypesService
+    ) {
         $this->eventsRepository = $eventsRepository;
+        $this->eventsTypesService = $eventsTypesService;
     }
 
     /**
@@ -37,6 +43,13 @@ class EventsService
      */
     public function getEventsByTrip(Trips $trip)
     {
-        return $this->eventsRepository->getByTrip($trip);;
+        $events = $this->eventsRepository->getByTrip($trip);
+
+        foreach ($events as $event) {
+            $eventType = $this->eventsTypesService->mapEvent($event);
+            $event->setEventType($eventType);
+        }
+
+        return $events;
     }
 }
