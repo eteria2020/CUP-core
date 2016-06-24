@@ -42,7 +42,7 @@ class OldCustomerDiscount
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="obsolete_from", type="datetimetz", nullable=false)
+     * @ORM\Column(name="obsolete_from", type="datetime", nullable=false)
      */
     private $obsoleteFrom;
 
