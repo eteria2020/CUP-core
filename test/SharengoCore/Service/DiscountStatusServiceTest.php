@@ -15,8 +15,7 @@ class DiscountStatusServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->serviceManager = Bootstrap::getServiceManager();
 
-        $this->em = M::mock('Doctrine\Orm\EntityManager');
-        $this->em = M::mock('Doctrine\ORM\EntityManager');var_dump($this->em instanceof \Doctrine\ORM\EntityManagerInterface);
+        $this->em = M::mock('Doctrine\ORM\EntityManager');
         $this->serviceManager->setAllowOverride(true);
         $this->serviceManager->setService('doctrine.entitymanager.orm_default', $this->em);
 
