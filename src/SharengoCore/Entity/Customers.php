@@ -433,6 +433,13 @@ class Customers
      */
     private $oldDiscounts;
 
+    /**
+     * Bidirectional - One-To-One (INVERSE SIDE)
+     *
+     * @ORM\OneToOne(targetEntity="DiscountStatus", mappedBy="customer")
+     */
+    private $discountStatus;
+
 
     public function __construct()
     {
@@ -1850,5 +1857,33 @@ class Customers
         return $this->discountRate == 0 && // has 0% discount
             ($this->insertedTs >= date_create('18 april 2016') // registered after 18/04/2016
             || !$this->oldDiscounts->isEmpty()); // has a discount already expired
+    }
+
+    /**
+     * return bool
+     */
+    public function hasDiscountStatus()
+    {
+        return isset($this->discountStatus);
+    }
+
+    /**
+     * @return null|DiscountStatus
+     */
+    public function discountStatus()
+    {
+        return $this->discountStatus;
+    }
+
+    /**
+     * @return string
+     */
+    public function discountStatusValue()
+    {
+        if (!$this->hasDiscountStatus()) {
+            return '';
+        }
+
+        return $this->discountStatus->status();
     }
 }

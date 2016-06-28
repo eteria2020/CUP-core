@@ -235,6 +235,7 @@ return [
             'SharengoCore\Service\ProcessPaymentsService' => 'SharengoCore\Service\ProcessPaymentsServiceFactory',
             'SharengoCore\Service\ProviderAuthenticatedCustomersService' => 'SharengoCore\Service\ProviderAuthenticatedCustomersServiceFactory',
             'SharengoCore\Service\OldCustomerDiscountsService' => 'SharengoCore\Service\OldCustomerDiscountsServiceFactory',
+            'SharengoCore\Service\DiscountStatusService' => 'SharengoCore\Service\DiscountStatusServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
             'SharengoCore\Listener\DisableContractListener' => 'SharengoCore\Listener\DisableContractListenerFactory',
