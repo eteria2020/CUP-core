@@ -1804,7 +1804,7 @@ class Customers
      */
     public function payedSubscriptionAmount($defaultAmount)
     {
-        if (empty($this->subscriptionPayments)) {
+        if ($this->subscriptionPayments->isEmpty()) {
             return $this->getSubscriptionAmount($defaultAmount);
         }
 
