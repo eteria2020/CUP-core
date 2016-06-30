@@ -32,8 +32,7 @@ class CustomersDiscountController extends AbstractRestfulController
         $customer = $this->customersService->findOneByEmail($email);
 
         // exists a customer with this email?
-        if ($customer instanceof \SharengoCore\Entity\Customers &&
-            $discount != 0) {
+        if ($customer instanceof \SharengoCore\Entity\Customers) {
             // update ACL before uncomment next line
             $result = $this->customersService->updateCustomerDiscountRate($customer, $discount);
 
