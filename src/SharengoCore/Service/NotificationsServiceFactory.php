@@ -19,7 +19,11 @@ class NotificationsServiceFactory implements FactoryInterface
         $notificationsRepository = $entityManager->getRepository('\SharengoCore\Entity\Notifications');
 
         $datatableService->setQueryBuilder(
-            new DatatableQueryBuilders\Basic()
+            new DatatableQueryBuilders\NotificationsProtocols(
+                new DatatableQueryBuilders\NotificationsCategories(
+                    new DatatableQueryBuilders\Basic()
+                )
+            )
         );
 
         return new NotificationsService(

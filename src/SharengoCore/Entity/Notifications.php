@@ -115,6 +115,16 @@ class Notifications
     }
 
     /**
+     * Get destination
+     *
+     * @return string
+     */
+    public function getDestination()
+    {
+        return $this->destination;
+    }
+
+    /**
      * Get subject
      *
      * @return string
@@ -157,7 +167,7 @@ class Notifications
     /**
      * Get categoryName
      *
-     * @return string (NotificationsCategories->name)
+     * @return string (NotificationsCategories->name) | null
      */
     public function getCategoryName()
     {
@@ -168,16 +178,52 @@ class Notifications
     }
 
     /**
-     * Get protocolName
+     * Get protocolName slug
      *
-     * @return string (NotificationsProtocols->name)
+     * @return string (NotificationsProtocols->name slug) | null
+     */
+    public function getCategoryNameSlug()
+    {
+        if ($this->category instanceof NotificationsCategories){
+           return $this->category->getNameSlug();
+        }
+        return null;
+    }
+
+    /**
+     * Get protocolName slug
+     *
+     * @return string | null
+     */
+    public function getCategoryDefaultProtocolName()
+    {
+        if ($this->category instanceof NotificationsCategories){
+           return $this->category->getDefaultProtocolName();
+        }
+        return null;
+    }
+
+    /**
+     * Get categoryName
+     *
+     * @return string (NotificationsProtocols->name) | null
      */
     public function getProtocolName()
     {
         if ($this->protocol instanceof NotificationsProtocols){
-            return $this->protocol->getName();
+           return $this->protocol->getName();
         }
         return null;
+    }
+
+    /**
+     * Get meta
+     *
+     * @return array
+     */
+    public function getMeta()
+    {
+        return $this->meta;
     }
 
     /**

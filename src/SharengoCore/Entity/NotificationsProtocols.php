@@ -10,7 +10,7 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
  * NotificationsProtocols
  *
  * @ORM\Table(name="messages_transports")
-* @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\NotificationsProtocolsRepository")
  */
 class NotificationsProtocols
 {

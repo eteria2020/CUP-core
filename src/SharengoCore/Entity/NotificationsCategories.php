@@ -12,7 +12,7 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
  * NotificationsCategories
  *
  * @ORM\Table(name="messages_types")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\NotificationsCategoriesRepository")
  */
 class NotificationsCategories
 {
@@ -50,5 +50,28 @@ class NotificationsCategories
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Get name (slug)
+     *
+     * @return string
+     */
+    public function getNameSlug()
+    {
+        return str_replace(" ", "-", strtolower($this->getName()));
+    }
+
+    /**
+     * Get default NotificationsProtocols NotificationCategory name
+     *
+     * @return string | null
+     */
+    public function getDefaultProtocolName()
+    {
+        if ($this->defaultProtocol instanceof NotificationsProtocols){
+           return $this->defaultProtocol->getName();
+        }
+        return null;
     }
 }

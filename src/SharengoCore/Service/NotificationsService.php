@@ -63,7 +63,7 @@ class NotificationsService
                     'name' => $notifications->getCategoryName(),
                 ],
                 'np' => [
-                    'name' => $notifications->getProtocolName(),
+                    'name' => is_null($notifications->getProtocolName()) ? $notifications->getCategoryDefaultProtocolName() : $notifications->getProtocolName(),
                 ],
                 'button' => $notifications->getId(),
             ];
