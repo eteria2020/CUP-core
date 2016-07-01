@@ -110,4 +110,26 @@ class OldCustomerDiscountsService
             $attachments
         );
     }
+
+    public function notifyCustomer($customer)
+    {
+        $urlHelper = $this->urlHelper;
+
+        $content = sprintf(
+            file_get_contents(__DIR__.'/../../../view/emails/notify_disable_discount_it-IT.html'),
+            $customer->getName(),
+            $this->host . $urlHelper('login', [], ['translator' => $this->translator])
+        );
+
+        $attachments = [
+            'banner.jpg' => $this->host . '/images/banner_discount.jpg'
+        ];
+
+        $this->emailService->sendEmail(
+            $customer->getEmail(),
+            'TRA UNA SETTIMANA ...',
+            $content,
+            $attachments
+        );
+    }
 }
