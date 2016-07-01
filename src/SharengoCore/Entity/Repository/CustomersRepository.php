@@ -140,4 +140,20 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+
+    public function findCustomersWithDiscountOlderExactly(\DateTime $date)
+    {
+        $dql = "SELECT c FROM \SharengoCore\Entity\Customers c " .
+            "LEFT JOIN c.oldDiscounts od " .
+            "WHERE c.discountRate > 0 ".
+            "AND DATE_FORMAT(c.insertedTs, 'YYYY-MM-DD') = :date " .
+            "GROUP BY c.id " .
+            "HAVING MAX(od.obsoleteFrom) IS NULL " .
+            "OR MAX(od.obsoleteFrom) <= :date ";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('date', $date->format('Y-m-d'));
+
+        return $query->getResult();
+    }
 }

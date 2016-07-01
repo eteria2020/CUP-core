@@ -677,10 +677,10 @@ class CustomersService implements ValidatorServiceInterface
         ]);
     }
 
-    public function retrieveOldDiscountCustomers()
+    public function retrieveOneYearOldCustomers()
     {
         $aYearAgo = date_create('-1 year');
 
-        return $this->customersRepository->findCustomersWithDiscountOlderThan($aYearAgo);
+        return $this->customersRepository->findCustomersWithDiscountOlderExactly($aYearAgo);
     }
 }
