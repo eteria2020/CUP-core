@@ -688,6 +688,6 @@ class CustomersService implements ValidatorServiceInterface
     {
         $aYearButAWeekAgo = date_create('-1 year +1 week');
 
-        return $this->customersRepository->findCustomersWithDiscountOlderThan($aYearButAWeekAgo);
+        return $this->customersRepository->findCustomersWithDiscountOlderExactly($aYearButAWeekAgo);
     }
 }
