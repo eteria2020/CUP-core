@@ -113,21 +113,18 @@ class OldCustomerDiscountsService
 
     public function notifyCustomer($customer)
     {
-        $urlHelper = $this->urlHelper;
-
         $content = sprintf(
             file_get_contents(__DIR__.'/../../../view/emails/notify_disable_discount_it-IT.html'),
-            $customer->getName(),
-            $this->host . $urlHelper('login', [], ['translator' => $this->translator])
+            $customer->getName()
         );
 
         $attachments = [
-            'banner.jpg' => $this->host . '/images/banner_discount.jpg'
+            'banner.jpg' => $this->host . '/images/banner_notify_discount.jpg'
         ];
 
         $this->emailService->sendEmail(
             $customer->getEmail(),
-            'TRA UNA SETTIMANA ...',
+            'Tra una settimana ri-scopri lo sconto che ti spetta',
             $content,
             $attachments
         );

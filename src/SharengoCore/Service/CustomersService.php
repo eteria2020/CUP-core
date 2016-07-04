@@ -686,8 +686,8 @@ class CustomersService implements ValidatorServiceInterface
 
     public function retrieveCustomersWithDiscountOldInAWeek()
     {
-        $aYearAndAWeekAgo = date_create('-1 year -1 week');
+        $aYearButAWeekAgo = date_create('-1 year +1 week');
 
-        return $this->customersRepository->findCustomersWithDiscountOlderExactly($aYearAndAWeekAgo);
+        return $this->customersRepository->findCustomersWithDiscountOlderThan($aYearButAWeekAgo);
     }
 }
