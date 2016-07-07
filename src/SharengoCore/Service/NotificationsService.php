@@ -75,17 +75,14 @@ class NotificationsService
      * Return the set DateTime.
      *
      * @param Notifications $notification
-     * @return DateTime
+     * @param DateTime $acknolageDate
      */
-    public function acknowledge(Notifications $notification)
+    public function acknowledge(Notifications $notification, DateTime $acknolageDate)
     {
-        $now = date_create();
-        $notification->setAcknowledgeDate($now);
+        $notification->setAcknowledgeDate($acknolageDate);
 
         // persist and flush notification
         $this->entityManager->persist($notification);
         $this->entityManager->flush();
-
-        return $now;
     }
 }
