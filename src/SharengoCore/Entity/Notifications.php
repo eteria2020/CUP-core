@@ -24,6 +24,7 @@ class Notifications
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="SEQUENCE")
+     * @ORM\SequenceGenerator(sequenceName="messages_outbox_id_seq", allocationSize=1, initialValue=1)
      */
     private $id;
 
@@ -171,8 +172,8 @@ class Notifications
      */
     public function getCategoryName()
     {
-        if ($this->category instanceof NotificationsCategories){
-           return $this->category->getName();
+        if ($this->category instanceof NotificationsCategories) {
+            return $this->category->getName();
         }
         return null;
     }
@@ -184,8 +185,8 @@ class Notifications
      */
     public function getCategoryNameSlug()
     {
-        if ($this->category instanceof NotificationsCategories){
-           return $this->category->getNameSlug();
+        if ($this->category instanceof NotificationsCategories) {
+            return $this->category->getNameSlug();
         }
         return null;
     }
@@ -197,8 +198,8 @@ class Notifications
      */
     public function getCategoryDefaultProtocolName()
     {
-        if ($this->category instanceof NotificationsCategories){
-           return $this->category->getDefaultProtocolName();
+        if ($this->category instanceof NotificationsCategories) {
+            return $this->category->getDefaultProtocolName();
         }
         return null;
     }
@@ -210,8 +211,8 @@ class Notifications
      */
     public function getProtocolName()
     {
-        if ($this->protocol instanceof NotificationsProtocols){
-           return $this->protocol->getName();
+        if ($this->protocol instanceof NotificationsProtocols) {
+            return $this->protocol->getName();
         }
         return null;
     }
@@ -232,7 +233,7 @@ class Notifications
      * @param DateTime $acknowledgeDate
      * @return Notifications
      */
-    public function setAcknowledgeDate($acknowledgeDate)
+    public function setAcknowledgeDate(DateTime $acknowledgeDate)
     {
         $this->acknowledgeDate = $acknowledgeDate;
 

@@ -69,8 +69,8 @@ class NotificationsCategories
      */
     public function getDefaultProtocolName()
     {
-        if ($this->defaultProtocol instanceof NotificationsProtocols){
-           return $this->defaultProtocol->getName();
+        if ($this->defaultProtocol instanceof NotificationsProtocols) {
+            return $this->defaultProtocol->getName();
         }
         return null;
     }

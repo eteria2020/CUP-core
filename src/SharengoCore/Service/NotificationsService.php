@@ -42,7 +42,7 @@ class NotificationsService
         return $this->notificationsRepository->findOneById($id);
     }
 
-	public function getDataDataTable(array $filters = [], $count = false)
+    public function getDataDataTable(array $filters = [], $count = false)
     {
         $notifications = $this->datatableService->getData('Notifications', $filters, $count);
 
@@ -55,9 +55,15 @@ class NotificationsService
                 'e' => [
                     'id' => $notifications->getId(),
                     'subject' => $notifications->getSubject(),
-                    'submitDate' => ($notifications->getSubmitDate() instanceof DateTime) ? $notifications->getSubmitDate()->getTimestamp() : null,
-                    'sentDate' => ($notifications->getSentDate() instanceof DateTime) ? $notifications->getSentDate()->getTimestamp() : null,
-                    'acknowledgeDate' => ($notifications->getAcknowledgeDate() instanceof DateTime) ? $notifications->getAcknowledgeDate()->getTimestamp() : null,
+                    'submitDate' =>
+                        ($notifications->getSubmitDate() instanceof DateTime) ?
+                        $notifications->getSubmitDate()->getTimestamp() : null,
+                    'sentDate' =>
+                        ($notifications->getSentDate() instanceof DateTime) ?
+                        $notifications->getSentDate()->getTimestamp() : null,
+                    'acknowledgeDate' =>
+                        ($notifications->getAcknowledgeDate() instanceof DateTime) ?
+                        $notifications->getAcknowledgeDate()->getTimestamp() : null,
                 ],
                 'nc' => [
                     'name' => $notifications->getCategoryName(),
