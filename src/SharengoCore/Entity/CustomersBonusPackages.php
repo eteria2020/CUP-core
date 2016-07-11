@@ -108,6 +108,13 @@ class CustomersBonusPackages
     private $name;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="display_priority", type="integer", nullable=false)
+     */
+    private $displayPriority;
+
+    /**
      * @return integer
      */
     public function getId()

@@ -11,7 +11,7 @@ class CustomersBonusPackagesRepository extends \Doctrine\ORM\EntityRepository
         $dql = 'SELECT p
             FROM \SharengoCore\Entity\CustomersBonusPackages p
             WHERE p.buyableUntil > CURRENT_TIMESTAMP()
-            ORDER BY p.insertedTs DESC';
+            ORDER BY p.displayPriority DESC, p.minutes ASC';
 
         $query = $em->createQuery($dql);
 
