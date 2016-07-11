@@ -116,8 +116,8 @@ class EditTripsService
         Trips $trip,
         $notPayable,
         $endDate = null,
-        Webuser $webuser = null)
-    {
+        Webuser $webuser = null
+    ) {
         $trip->checkIfEditable($endDate);
 
         $this->entityManager->beginTransaction();
