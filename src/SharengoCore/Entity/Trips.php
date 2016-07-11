@@ -707,6 +707,16 @@ class Trips
     }
 
     /**
+     * Get Cars label
+     *
+     * @return string
+     */
+    public function getCarLabel()
+    {
+        return $this->car->getLabel();
+    }
+
+    /**
      * Set customer
      *
      * @param \SharengoCore\Entity\Customers $customer
@@ -728,6 +738,16 @@ class Trips
     public function getCustomer()
     {
         return $this->customer;
+    }
+
+    /**
+     * Get Customers Cards rfid
+     *
+     * @return string
+     */
+    public function getCustomerCardRfid()
+    {
+        return $this->customer->getCardRfid();
     }
 
     /**

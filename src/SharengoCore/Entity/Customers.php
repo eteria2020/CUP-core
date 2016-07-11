@@ -1555,6 +1555,17 @@ class Customers
         return $this->card;
     }
 
+
+    /**
+     * Get Cards rfid
+     *
+     * @return string
+     */
+    public function getCardRfid()
+    {
+        return $this->card->getRfid();
+    }
+
     /**
      * Get list of customer bonuses
      *
