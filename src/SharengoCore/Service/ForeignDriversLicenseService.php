@@ -148,21 +148,25 @@ class ForeignDriversLicenseService
             return [
                 'e' => [
                     'id' => $driversLicense->id(),
-                    'customer' => $driversLicense->customerId(),
-                    'customer_name' => $driversLicense->customerName(),
-                    'customer_surname' => $driversLicense->customerSurname(),
-                    'customer_address' => $driversLicense->customerAddress(),
-                    'customer_birthdate' => $driversLicense->customerBirthDate()->format('Y-m-d'),
-                    'customer_birthplace' => $driversLicense->customerBirthPlace(),
-                    'drivers_license_number' => $driversLicense->driversLicenseNumber(),
-                    'drivers_license_authority' => $driversLicense->driversLicenseAuthority(),
-                    'drivers_license_country' => $driversLicense->driversLicenseCountry(),
-                    'drivers_license_release_date' => $driversLicense->driversLicenseReleaseDate()->format('Y-m-d'),
-                    'drivers_license_name' => $driversLicense->driversLicenseName(),
-                    'drivers_license_categories' => $driversLicense->driversLicenseCategories(),
-                    'drivers_license_expire' => $driversLicense->driversLicenseExpire()->format('Y-m-d'),
+                    'customerName' => $driversLicense->customerName(),
+                    'customerSurname' => $driversLicense->customerSurname(),
+                    'customerAddress' => $driversLicense->customerAddress(),
+                    'customerBirthDate' => $driversLicense->customerBirthDate()->format('Y-m-d'),
+                    'customerBirthPlace' => $driversLicense->customerBirthPlace(),
+                    'driversLicenseNumber' => $driversLicense->driversLicenseNumber(),
+                    'driversLicenseAuthority' => $driversLicense->driversLicenseAuthority(),
+                    'driversLicenseCountry' => $driversLicense->driversLicenseCountry(),
+                    'driversLicenseReleaseDate' => $driversLicense->driversLicenseReleaseDate()->format('Y-m-d'),
+                    'driversLicenseName' => $driversLicense->driversLicenseName(),
+                    'driversLicenseCategories' => $driversLicense->driversLicenseCategories(),
+                    'driversLicenseExpire' => $driversLicense->driversLicenseExpire()->format('Y-m-d'),
                     'valid' => $driversLicense->valid(),
                     'first_time' => $driversLicense->isFirstTime()
+                ],
+                'cu' => [
+                    'id' => $driversLicense->customerId(),
+                    'email' => $driversLicense->getCustomerEmail(),
+                    'mobile' => $driversLicense->getCustomerMobile(),
                 ]
             ];
         }, $customers);

@@ -243,6 +243,26 @@ class ForeignDriversLicenseUpload
         return $this->customer->getId();
     }
 
+    /**
+     * Get customerEmail
+     *
+     * @return string
+     */
+    public function getCustomerEmail()
+    {
+        return $this->customer->getEmail();
+    }
+
+    /**
+     * Get customerMobile
+     *
+     * @return string
+     */
+    public function getCustomerMobile()
+    {
+        return $this->customer->getMobile();
+    }
+
     public function customerName()
     {
         return $this->customerName;
