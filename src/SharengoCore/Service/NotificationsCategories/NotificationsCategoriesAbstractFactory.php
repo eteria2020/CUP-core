@@ -24,11 +24,14 @@ class NotificationsCategoriesAbstractFactory
         $this->serviceLocator = $serviceLocator;
     }
 
-    public function createServiceWithName($name) {
+    public function createServiceWithName($name)
+    {
         // Create a ReflectionClass to check if the $name implements the required interface.
         $reflectionClass = new ReflectionClass($name);
 
-        if (!class_exists($name) || !$reflectionClass->implementsInterface("SharengoCore\Service\NotificationsCategories\NotificationsCategoriesInterface")) {
+        if (!class_exists($name) ||
+            !$reflectionClass->implementsInterface("SharengoCore\Service\NotificationsCategories\NotificationsCategoriesInterface")
+        ) {
             throw new NotificationsServiceNotFoundException;
         }
 
