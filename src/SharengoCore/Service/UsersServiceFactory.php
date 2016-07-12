@@ -14,8 +14,8 @@ class UsersServiceFactory implements FactoryInterface
         $options = $serviceLocator->get('zfcuser_module_options');
         $userRepository = $entityManager->getRepository('\SharengoCore\Entity\Webuser');
 
-        /* @var $datatableService SharengoCore\Service\DatatableServiceInterface */
-        $datatableService = $serviceLocator->get('SharengoCore\Service\DatatableService');
+        /** @var DatatableServiceInterface **/
+        $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
 
         $datatableService->setQueryBuilder(
             new DatatableQueryBuilders\Basic()

@@ -35,6 +35,8 @@ class UsersService implements ValidatorServiceInterface
     /**
      * @param EntityManager $entityManager
      * @param UserServiceOptionsInterface $options
+     * @param WebuserRepository $userRepository
+     * @param DatatableServiceInterface $datatableService
      */
     public function __construct(
         EntityManager $entityManager,
@@ -73,6 +75,7 @@ class UsersService implements ValidatorServiceInterface
 
     /**
      * @param Webuser $user
+     * @param string|null $pwd
      *
      * @return Webuser
      */
