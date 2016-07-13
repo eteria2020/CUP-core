@@ -34,11 +34,24 @@ class DriversLicenseValidationService
 
     /**
      * @param Customers $customer
+     * @return [DriversLicenseValidation]
+     */
+    public function getByCustomer(Customers $customer)
+    {
+        return $this->repository->findByCustomer($customer);
+    }
+
+    /**
+     * @param Customers $customer
      * @param Response $response
+     * @param boolean|null $saveToDb
      * @return DriversLicenseValidation
      */
-    public function addFromResponse(Customers $customer, Response $response)
-    {
+    public function addFromResponse(
+        Customers $customer,
+        Response $response,
+        $saveToDb = true
+    ) {
         $validation = new DriversLicenseValidation(
             $customer,
             $response->valid(),
@@ -46,8 +59,10 @@ class DriversLicenseValidationService
             $response->message()
         );
 
-        $this->entityManager->persist($validation);
-        $this->entityManager->flush();
+        if ($saveToDb) {
+            $this->entityManager->persist($validation);
+            $this->entityManager->flush();
+        }
 
         return $validation;
     }
