@@ -2,7 +2,8 @@
 
 namespace SharengoCore\Service;
 
-use MvLabsDriversLicenseValidation\Response;
+use MvLabsDriversLicenseValidation\Response\Response;
+use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\DriversLicenseValidation;
 use SharengoCore\Entity\Repository\DriversLicenseValidationRepository;
 
@@ -72,10 +73,16 @@ class DriversLicenseValidationService
      * @param boolean $valid
      * @param string $code
      * @param string $message
+     * @param boolean|null $saveToDb
      * @return DriversLicenseValidation
      */
-    public function addFromData(Customers $customer, $valid, $code, $message)
-    {
+    public function addFromData(
+        Customers $customer,
+        $valid,
+        $code,
+        $message,
+        $saveToDb = true
+    ) {
         $validation = new DriversLicenseValidation(
             $customer,
             $valid,
@@ -83,8 +90,10 @@ class DriversLicenseValidationService
             $message
         );
 
-        $this->entityManager->persist($validation);
-        $this->entityManager->flush();
+        if ($saveToDb) {
+            $this->entityManager->persist($validation);
+            $this->entityManager->flush();
+        }
 
         return $validation;
     }

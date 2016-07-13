@@ -2,8 +2,6 @@
 
 namespace SharengoCore\Entity;
 
-use MvLabsDriversLicenseValidation\Response;
-
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -71,10 +69,10 @@ class DriversLicenseValidation
     public function __construct(Customers $customer, $valid, $code, $message)
     {
         $this->customer = $customer;
-        $this->valid = $this->setValid($valid);
-        $this->code = $this->setCode($code);
-        $this->message = $this->setMessage($message);
-        $this->generatedTs = $this->setGeneratedTs(date_create());
+        $this->setValid($valid);
+        $this->setCode($code);
+        $this->setMessage($message);
+        $this->setGeneratedTs(date_create());
     }
 
     /**
