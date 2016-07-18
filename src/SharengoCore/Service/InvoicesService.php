@@ -344,7 +344,7 @@ class InvoicesService
         $amounts = [];
 
         // calculate amounts
-        $iva = (integer) ($amount / (100 + $this->ivaPercentage) * $this->ivaPercentage);
+        $iva = $this->ivaFromTotal($amount);
         $total = $amount - $iva;
 
         // format amounts
@@ -379,14 +379,11 @@ class InvoicesService
         $reasons,
         $amount
     ) {
+        $reasons = $this->parseReasons($reasons);
+
         $amounts = [
-            'sum' => [
-                'iva' => $this->parseDecimal(0),
-                'total' => $this->parseDecimal($amount),
-                'grand_total' => $this->parseDecimal($amount),
-                'grand_total_cents' => $amount
-                ],
-            'iva' => 0
+            'sum' => $this->calculateAmountsWithTaxesFromTotal($amount),
+            'iva' => $this->ivaPercentage
         ];
 
         return Invoices::createInvoiceForExtraOrPenalty(
@@ -396,6 +393,50 @@ class InvoicesService
             $reasons,
             $amounts
         );
+    }
+
+    /**
+     * Removes iva from each row.
+     * The rows are formatted as [[[description][amount]]]
+     * Older rows have a different format but they do not need to be accounted
+     * for because the invoices have already been generated.
+     *
+     * @param mixed[] $reasons
+     * @return mixed[]
+     */
+    private function parseReasons($reasons)
+    {
+        $parsedReasons = [];
+
+        foreach ($reasons as $key1 => $value1) {
+            $amount = $this->amountFromFormattedString($value1[1][0]);
+            $amount = $this->parseDecimal($amount - $this->ivaFromTotal($amount)) . ' €';
+            $parsedReasons[] = [[$value1[0][0]],[$amount]];
+        }
+
+        return $parsedReasons;
+    }
+
+    /**
+     * Gets the iva from the total
+     *
+     * @param integer $total
+     * @return integer
+     */
+    private function ivaFromTotal($total)
+    {
+        return (integer) ($total / (100 + $this->ivaPercentage) * $this->ivaPercentage);
+    }
+
+    /**
+     * Removes € symbol and space and converts to integer amount
+     *
+     * @param string $formattedAmount
+     * @return integer
+     */
+    private function amountFromFormattedString($formattedAmount)
+    {
+        return floor(floatval(substr($formattedAmount, 0, strlen($formattedAmount - 2))) * 100);
     }
 
     /**

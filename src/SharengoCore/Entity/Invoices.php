@@ -424,8 +424,7 @@ class Invoices
                         'right'
                     ]
                 ]
-            ],
-            'bottom_note' => 'Escluso da IVA ai sensi dell’articolo 15 del D.P.R. 633/1972'
+            ]
         ]);
 
         return $invoice;
