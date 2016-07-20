@@ -46,6 +46,7 @@ class DriversLicenseValidationService
      * @param Customers $customer
      * @param Response $response
      * @param mixed[] $data
+     * @param boolean $isFromScript
      * @param boolean|null $saveToDb
      * @return DriversLicenseValidation
      */
@@ -53,6 +54,7 @@ class DriversLicenseValidationService
         Customers $customer,
         Response $response,
         array $data,
+        $isFromScript = false,
         $saveToDb = true
     ) {
         $validation = new DriversLicenseValidation(
@@ -60,7 +62,8 @@ class DriversLicenseValidationService
             $response->valid(),
             $response->code(),
             $response->message(),
-            $data
+            $data,
+            $isFromScript
         );
 
         if ($saveToDb) {
@@ -77,6 +80,7 @@ class DriversLicenseValidationService
      * @param string $code
      * @param string $message
      * @param mixed[] $data
+     * @param boolean $isFromScript
      * @param boolean|null $saveToDb
      * @return DriversLicenseValidation
      */
@@ -86,6 +90,7 @@ class DriversLicenseValidationService
         $code,
         $message,
         array $data,
+        $isFromScript = false,
         $saveToDb = true
     ) {
         $validation = new DriversLicenseValidation(
@@ -93,7 +98,8 @@ class DriversLicenseValidationService
             $valid,
             $code,
             $message,
-            $data
+            $data,
+            $isFromScript
         );
 
         if ($saveToDb) {
