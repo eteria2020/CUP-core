@@ -48,6 +48,7 @@ class DriversLicenseValidationService
      * @param mixed[] $data
      * @param boolean $isFromScript
      * @param boolean|null $saveToDb
+     * @param boolean $clear clears EntityManager after flush()
      * @return DriversLicenseValidation
      */
     public function addFromResponse(
@@ -55,21 +56,19 @@ class DriversLicenseValidationService
         Response $response,
         array $data,
         $isFromScript = false,
-        $saveToDb = true
+        $saveToDb = true,
+        $clear = false
     ) {
-        $validation = new DriversLicenseValidation(
+        $validation = $this->addFromData(
             $customer,
             $response->valid(),
             $response->code(),
             $response->message(),
             $data,
-            $isFromScript
+            $isFromScript,
+            $saveToDb,
+            $clear
         );
-
-        if ($saveToDb) {
-            $this->entityManager->persist($validation);
-            $this->entityManager->flush();
-        }
 
         return $validation;
     }
@@ -82,6 +81,7 @@ class DriversLicenseValidationService
      * @param mixed[] $data
      * @param boolean $isFromScript
      * @param boolean|null $saveToDb
+     * @param boolean $clear clears EntityManager after flush()
      * @return DriversLicenseValidation
      */
     public function addFromData(
@@ -91,7 +91,8 @@ class DriversLicenseValidationService
         $message,
         array $data,
         $isFromScript = false,
-        $saveToDb = true
+        $saveToDb = true,
+        $clear = false
     ) {
         $validation = new DriversLicenseValidation(
             $customer,
@@ -105,6 +106,9 @@ class DriversLicenseValidationService
         if ($saveToDb) {
             $this->entityManager->persist($validation);
             $this->entityManager->flush();
+            if ($clear) {
+                $this->entityManager->clear();
+            }
         }
 
         return $validation;
