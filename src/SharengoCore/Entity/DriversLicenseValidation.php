@@ -54,6 +54,13 @@ class DriversLicenseValidation
     private $message;
 
     /**
+     * @var array
+     *
+     * @ORM\Column(name="data", type="json_array", nullable=false)
+     */
+    private $data;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="generated_ts", type="datetime", nullable=false)
@@ -65,13 +72,20 @@ class DriversLicenseValidation
      * @param boolean $valid
      * @param string $code
      * @param string $message
+     * @param mixed[] $data
      */
-    public function __construct(Customers $customer, $valid, $code, $message)
-    {
+    public function __construct(
+        Customers $customer,
+        $valid,
+        $code,
+        $message,
+        array $data
+    ) {
         $this->customer = $customer;
         $this->setValid($valid);
         $this->setCode($code);
         $this->setMessage($message);
+        $this->setData($data);
         $this->setGeneratedTs(date_create());
     }
 
@@ -129,6 +143,22 @@ class DriversLicenseValidation
     private function setMessage($message)
     {
         $this->message = $message;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param mixed[] $data
+     */
+    private function setData(array $data)
+    {
+        $this->data = $data;
     }
 
     /**

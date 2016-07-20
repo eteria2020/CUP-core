@@ -45,19 +45,22 @@ class DriversLicenseValidationService
     /**
      * @param Customers $customer
      * @param Response $response
+     * @param mixed[] $data
      * @param boolean|null $saveToDb
      * @return DriversLicenseValidation
      */
     public function addFromResponse(
         Customers $customer,
         Response $response,
+        array $data,
         $saveToDb = true
     ) {
         $validation = new DriversLicenseValidation(
             $customer,
             $response->valid(),
             $response->code(),
-            $response->message()
+            $response->message(),
+            $data
         );
 
         if ($saveToDb) {
@@ -73,6 +76,7 @@ class DriversLicenseValidationService
      * @param boolean $valid
      * @param string $code
      * @param string $message
+     * @param mixed[] $data
      * @param boolean|null $saveToDb
      * @return DriversLicenseValidation
      */
@@ -81,13 +85,15 @@ class DriversLicenseValidationService
         $valid,
         $code,
         $message,
+        array $data,
         $saveToDb = true
     ) {
         $validation = new DriversLicenseValidation(
             $customer,
             $valid,
             $code,
-            $message
+            $message,
+            $data
         );
 
         if ($saveToDb) {
