@@ -94,7 +94,7 @@ class CarrefourService
             $customer,
             $this->pcConfig['minutes'],
             $this->pcConfig['description'],
-            $this->pcConfig['validTo']
+            $this->pcConfig['validFor']
         );
 
         $carrefourUsedCode = new CarrefourUsedCode(
