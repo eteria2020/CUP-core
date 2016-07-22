@@ -4,7 +4,7 @@ namespace SharengoCore\Exception;
 
 class CodeTooLongException extends \InvalidArgumentException
 {
-    protected $message = 'The code is too long. 24 characters max.';
+    protected $message = 'The code is too long.';
 
     /**
      * @param integer|null $length

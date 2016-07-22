@@ -61,8 +61,8 @@ class CarrefourService
     }
 
     /**
-     * Checks wether the code is a dynamically generated valid code.
-     * (At the moment only Carrefour codes are available)
+     * Checks wether the code is a dynamically generated valid code and
+     * generates a CarrefourUsedCode.
      *
      * @param Customers $customer
      * @param string $code
@@ -76,6 +76,15 @@ class CarrefourService
             $customer,
             $code
         );
+    }
+
+    /**
+     * @param string $code
+     * @return boolean
+     */
+    public function isValid($code)
+    {
+        return $this->checkCarrefourCode($code, false);
     }
 
     /**
@@ -94,14 +103,14 @@ class CarrefourService
             $this->pcConfig['description'],
             $this->pcConfig['validFor']
         );
-        $this->entityManager->persist($carrefourUsedCode);
+        $this->entityManager->persist($customersBonus);
 
         $carrefourUsedCode = new CarrefourUsedCode(
             $customer,
             $customersBonus,
             $code
         );
-        $this->entityManager->persist($customersBonus);
+        $this->entityManager->persist($carrefourUsedCode);
 
         $this->entityManager->flush();
 
@@ -120,10 +129,12 @@ class CarrefourService
      * 6-7 Month and year. The list is in the config.
      *
      * @param string $code
+     * @param boolean $throwExceptions
+     * @return boolean
      * @throws NotAValidCodeException
      * @throws CodeAlreadyUsedException
      */
-    private function checkCarrefourCode($code)
+    private function checkCarrefourCode($code, $throwExceptions = true)
     {
         // Check if the code is a valid Carrefour code
         $pieces = explode('-', $code);
@@ -138,15 +149,24 @@ class CarrefourService
             intval($pieces[4]) >= 1 &&
             intval($pieces[4]) <= 31 &&
             in_array($pieces[6] . $pieces[5], $this->pcConfig['dates'])) {
+            // the format is correct, proceed
 
         } else {
-            throw new NotAValidCodeException();
+            if ($throwExceptions) {
+                throw new NotAValidCodeException();
+            }
+            return false;
         }
 
         // Check if the code has already been used
         $carrefourUsedCode = $this->getByCode($code);
         if ($carrefourUsedCode instanceof CarrefourUsedCode) {
-            throw new CodeAlreadyUsedException();
+            if ($throwExceptions) {
+                throw new CodeAlreadyUsedException();
+            }
+            return false;
         }
+
+        return true;
     }
 }
