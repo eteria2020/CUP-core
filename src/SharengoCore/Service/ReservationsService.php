@@ -2,30 +2,30 @@
 
 namespace SharengoCore\Service;
 
-use SharengoCore\Entity\Cars;
-use SharengoCore\Entity\Customers;
+// Internals
 use SharengoCore\Entity\Repository\ReservationsRepository;
 use SharengoCore\Entity\Reservations;
+use SharengoCore\Entity\Cars;
 use SharengoCore\Service\CustomersService;
 use SharengoCore\Service\DatatableServiceInterface;
-
+use SharengoCore\Entity\Customers;
+// Externals
 use Doctrine\ORM\EntityManager;
 use Zend\Mvc\I18n\Translator;
 
 class ReservationsService
 {
+
     /**
      * @const integer
      */
     const MAX_RESERVATIONS = 1;
-
     /**
      * @const integer
      */
     const SYS_RESERVATION_LENGTH = -1;
-
     /**
-     * @var ReservationsRepository
+     * @var  ReservationsRepository
      */
     private $reservationsRepository;
 
@@ -43,11 +43,11 @@ class ReservationsService
      * @var EntityManager
      */
     private $entityManager;
-
     /**
      * @var Translator
      */
     private $translator;
+
 
     /**
      * @param ReservationsRepository $reservationsRepository
@@ -69,63 +69,36 @@ class ReservationsService
         $this->translator = $translator;
     }
 
-    /**
-     * @param array|null $filters
-     * @return Reservations[]
-     */
     public function getListReservationsFiltered($filters = [])
     {
         return $this->reservationsRepository->findBy($filters);
     }
 
-    /**
-     * @param string $plate
-     * @return Reservations[]
-     */
     public function getActiveReservationsByCar($plate)
     {
         return $this->reservationsRepository->findActiveReservationsByCar($plate);
     }
 
-    /**
-     * @param Customers $customer
-     * @return Reservations[]
-     */
     public function getActiveReservationsByCustomer($customer)
     {
         return $this->reservationsRepository->findActiveReservationsByCustomer($customer);
     }
 
-    /**
-     * @param Customers $customer
-     * @return boolean
-     */
     public function hasActiveReservationsByCustomer($customer)
     {
         return count($this->getActiveReservationsByCustomer($customer)) >= self::MAX_RESERVATIONS;
     }
 
-    /**
-     * @return integer
-     */
     public function getTotalReservations()
     {
         return $this->reservationsRepository->getTotalReservations();
     }
 
-    /**
-     * @return Reservations[]
-     */
     public function getReservationsToDelete()
     {
         return $this->reservationsRepository->findReservationsToDelete();
     }
 
-    /**
-     * @param array|null $as_filters
-     * @param boolean|null $count
-     * @return mixed[]|integer
-     */
     public function getDataDataTable(array $as_filters = [], $count = false)
     {
         $reservations = $this->datatableService->getData('Reservations', $as_filters, $count);
@@ -149,48 +122,26 @@ class ReservationsService
         }, $reservations);
     }
 
-    /**
-     * @param string $plate
-     * @return mixed[]
-     */
     public function getMaintenanceReservation($plate)
     {
-        return $this->reservationsRepository->findOneBy([
-            'car' => $plate,
-            'length' => -1,
-            'customer' => null
-        ]);
+        return $this->reservationsRepository->findOneBy(array('car' => $plate,
+                                                              'length' => -1,
+                                                              'customer' => null));
     }
 
-    /**
-     * @param Cars $car
-     * @param boolean $saveToDb
-     * @return Reservations
-     */
-    public function createMaintenanceReservation(Cars $car, $saveToDb = true)
-    {
-        // Get all maintainers codes
-        $maintainersCardCodes = $this->customersService->getListMaintainersCards();
+    public function createMaintenanceReservation(Cars $car) {
 
-        // Create single json string with all maintainer's card codes
+        $maintainersCardCodes = $this->customersService->getListMaintainersCards();
         $cardsArray = [];
         foreach ($maintainersCardCodes as $cardCode) {
             array_push($cardsArray, $cardCode['1']);
         }
         $cardsString = json_encode($cardsArray);
 
-        // Create the reservation
-        $reservation = Reservations::createMaintenanceReservation(
-            $car,
-            $cardsString
-        );
+        $reservation = Reservations::createMaintenanceReservation($car, $cardsString);
+        $this->entityManager->persist($reservation);
+        $this->entityManager->flush();
 
-        if ($saveToDb) {
-            $this->entityManager->persist($reservation);
-            $this->entityManager->flush();
-        }
-
-        return $reservation;
     }
 
     /**
@@ -227,8 +178,8 @@ class ReservationsService
     }
 
     /**
-     * @param Customers $customer
-     * @param integer $id
+     * @param  Customers $customer
+     * @param  integer $id
      * @return boolean returns true if successful, returns false otherwise
      */
     public function removeCustomerReservationWithId(Customers $customer, $id)
@@ -250,8 +201,11 @@ class ReservationsService
 
                 return true;
             }
+
         }
 
         return false;
+
     }
+
 }
