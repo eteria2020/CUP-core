@@ -47,7 +47,7 @@ class CarrefourUsedCode
     /**
      * @var string
      *
-     * @ORM\Column(name="code", type="string", nullable=false)
+     * @ORM\Column(name="code", type="string", length=24, nullable=false)
      */
     private $code;
 

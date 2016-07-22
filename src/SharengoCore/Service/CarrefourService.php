@@ -82,13 +82,11 @@ class CarrefourService
      * @param Customers $customer
      * @param CustomersBonus $customersBonus
      * @param string $code
-     * @param boolean $saveToDb
      * @return CarrefourUsedCode
      */
     private function add(
         Customers $customer,
-        $code,
-        $saveToDb = true
+        $code
     ) {
         $customersBonus = CustomersBonus::createBonus(
             $customer,
@@ -96,18 +94,16 @@ class CarrefourService
             $this->pcConfig['description'],
             $this->pcConfig['validFor']
         );
+        $this->entityManager->persist($carrefourUsedCode);
 
         $carrefourUsedCode = new CarrefourUsedCode(
             $customer,
             $customersBonus,
             $code
         );
+        $this->entityManager->persist($customersBonus);
 
-        if ($saveToDb) {
-            $this->entityManager->persist($carrefourUsedCode);
-            $this->entityManager->persist($customersBonus);
-            $this->entityManager->flush();
-        }
+        $this->entityManager->flush();
 
         return $carrefourUsedCode;
     }
@@ -134,13 +130,13 @@ class CarrefourService
         if (count($pieces) == 7 &&
             $pieces[0] == '0' &&
             array_key_exists($pieces[1], $this->pcConfig['shops']) &&
-            $pieces[2] >= 1 &&
-            $pieces[2] <= 99 &&
+            intval($pieces[2]) >= 1 &&
+            intval($pieces[2]) <= 99 &&
             strlen($pieces[3]) == 4 &&
             intval($pieces[3]) >= 1 &&
             intval($pieces[3]) <= 9999 &&
-            $pieces[4] >= 1 &&
-            $pieces[4] <= 31 &&
+            intval($pieces[4]) >= 1 &&
+            intval($pieces[4]) <= 31 &&
             in_array($pieces[6] . $pieces[5], $this->pcConfig['dates'])) {
 
         } else {
