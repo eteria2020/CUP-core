@@ -79,12 +79,47 @@ class CarrefourService
     }
 
     /**
+     * Maximum length is of 24 characters (also restricted in db).
+     * Format: 0-AAAA-BBB-CCCC-dd-mm-yy (7 pieces divided by a - ).
+     *
+     * 1 Fixed number. This will always be a 0.
+     * 2 Shop code. The list is in the config.
+     * 3 Number of the cash register. Valid from 1 to 99.
+     * 4 Number of the receipt. Valid from 0001 to 9999.
+     * 5 Number of the day. Valid from 1 to 31.
+     * 6-7 Month and year. The list is in the config.
+     *
      * @param string $code
      * @return boolean
+     * @throws NotAValidCodeException
+     * @throws CodeAlreadyUsedException
      */
-    public function isValid($code)
+    public function checkCarrefourCode($code)
     {
-        return $this->checkCarrefourCode($code, false);
+        // Check if the code is a valid Carrefour code
+        $pieces = explode('-', $code);
+        if (count($pieces) == 7 &&
+            $pieces[0] == '0' &&
+            array_key_exists($pieces[1], $this->pcConfig['shops']) &&
+            intval($pieces[2]) >= 1 &&
+            intval($pieces[2]) <= 99 &&
+            strlen($pieces[3]) == 4 &&
+            intval($pieces[3]) >= 1 &&
+            intval($pieces[3]) <= 9999 &&
+            intval($pieces[4]) >= 1 &&
+            intval($pieces[4]) <= 31 &&
+            in_array($pieces[6] . $pieces[5], $this->pcConfig['dates'])) {
+            // the format is correct, proceed
+
+        } else {
+            throw new NotAValidCodeException();
+        }
+
+        // Check if the code has already been used
+        $carrefourUsedCode = $this->getByCode($code);
+        if ($carrefourUsedCode instanceof CarrefourUsedCode) {
+            throw new CodeAlreadyUsedException();
+        }
     }
 
     /**
@@ -115,58 +150,5 @@ class CarrefourService
         $this->entityManager->flush();
 
         return $carrefourUsedCode;
-    }
-
-    /**
-     * Maximum length is of 24 characters (also restricted in db).
-     * Format: 0-AAAA-BBB-CCCC-dd-mm-yy (7 pieces divided by a - ).
-     *
-     * 1 Fixed number. This will always be a 0.
-     * 2 Shop code. The list is in the config.
-     * 3 Number of the cash register. Valid from 1 to 99.
-     * 4 Number of the receipt. Valid from 0001 to 9999.
-     * 5 Number of the day. Valid from 1 to 31.
-     * 6-7 Month and year. The list is in the config.
-     *
-     * @param string $code
-     * @param boolean $throwExceptions
-     * @return boolean
-     * @throws NotAValidCodeException
-     * @throws CodeAlreadyUsedException
-     */
-    private function checkCarrefourCode($code, $throwExceptions = true)
-    {
-        // Check if the code is a valid Carrefour code
-        $pieces = explode('-', $code);
-        if (count($pieces) == 7 &&
-            $pieces[0] == '0' &&
-            array_key_exists($pieces[1], $this->pcConfig['shops']) &&
-            intval($pieces[2]) >= 1 &&
-            intval($pieces[2]) <= 99 &&
-            strlen($pieces[3]) == 4 &&
-            intval($pieces[3]) >= 1 &&
-            intval($pieces[3]) <= 9999 &&
-            intval($pieces[4]) >= 1 &&
-            intval($pieces[4]) <= 31 &&
-            in_array($pieces[6] . $pieces[5], $this->pcConfig['dates'])) {
-            // the format is correct, proceed
-
-        } else {
-            if ($throwExceptions) {
-                throw new NotAValidCodeException();
-            }
-            return false;
-        }
-
-        // Check if the code has already been used
-        $carrefourUsedCode = $this->getByCode($code);
-        if ($carrefourUsedCode instanceof CarrefourUsedCode) {
-            if ($throwExceptions) {
-                throw new CodeAlreadyUsedException();
-            }
-            return false;
-        }
-
-        return true;
     }
 }
