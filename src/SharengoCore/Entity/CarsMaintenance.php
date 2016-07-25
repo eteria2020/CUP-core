@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Entity;
 
+use SharengoCore\Exception\MaintenanceEndTsAlreadySetException;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="cars_maintenance", indexes={@ORM\Index(name="IDX_41AB4A8BAE35528C", columns={"car_plate"}), @ORM\Index(name="IDX_41AB4A8B49279951", columns={"webuser_id"})})
  * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CarsMaintenanceRepository")
-
+ *
  */
 class CarsMaintenance
 {
@@ -64,6 +65,13 @@ class CarsMaintenance
      * })
      */
     private $webuser;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="end_ts", type="datetime", nullable=true)
+     */
+    private $endTs = null;
 
 
     /**
@@ -190,5 +198,26 @@ class CarsMaintenance
     public function getWebuser()
     {
         return $this->webuser;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getEndTs()
+    {
+        return $this->endTs();
+    }
+
+    /**
+     * @param \DateTime|null $endTs
+     * @throws MaintenanceEndTsAlreadySetException
+     */
+    public function setEndTs(\DateTime $endTs = null)
+    {
+        if ($this->getEndTs() instanceof \DateTime) {
+            throw new MaintenanceEndTsAlreadySetException();
+        }
+
+        $this->endTs = $endTs;
     }
 }

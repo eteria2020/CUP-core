@@ -8,6 +8,9 @@ namespace SharengoCore\Entity\Repository;
  */
 class ReservationsRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @return integer
+     */
     public function getTotalReservations()
     {
         $em = $this->getEntityManager();
@@ -15,6 +18,10 @@ class ReservationsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getSingleScalarResult();
     }
 
+    /**
+     * @param string $plate
+     * @return Reservations[]
+     */
     public function findActiveReservationsByCar($plate)
     {
         $em = $this->getEntityManager();
@@ -25,6 +32,10 @@ class ReservationsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    /**
+     * @param Customers $customer
+     * @return Reservations[]
+     */
     public function findActiveReservationsByCustomer($customer)
     {
         $em = $this->getEntityManager();
@@ -35,6 +46,9 @@ class ReservationsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    /**
+     * @return Reservations[]
+     */
     public function findReservationsToDelete()
     {
         $em = $this->getEntityManager();
@@ -53,5 +67,4 @@ class ReservationsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
-
 }

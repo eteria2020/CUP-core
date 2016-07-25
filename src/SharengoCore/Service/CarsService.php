@@ -2,17 +2,16 @@
 
 namespace SharengoCore\Service;
 
-// Internals
 use SharengoCore\Entity\Cars;
 use SharengoCore\Entity\CarsMaintenance;
 use SharengoCore\Entity\Repository\CarsRepository;
 use SharengoCore\Entity\Repository\CarsDamagesRepository;
-use SharengoCore\Entity\Repository\FleetRepository;
 use SharengoCore\Entity\Repository\CarsMaintenanceRepository;
+use SharengoCore\Entity\Repository\FleetRepository;
 use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\ReservationsService;
 use SharengoCore\Utility\CarStatus;
-// Externals
+
 use BjyAuthorize\Service\Authorize;
 use Doctrine\ORM\EntityManager;
 use Zend\Authentication\AuthenticationService as UserService;
@@ -20,28 +19,44 @@ use Zend\Mvc\I18n\Translator;
 
 class CarsService
 {
-    /** @var EntityManager */
+    /**
+     * @var EntityManager
+     */
     private $entityManager;
 
-    /** @var CarsRepository */
+    /**
+     * @var CarsRepository
+     */
     private $carsRepository;
 
-    /** @var CarsMaintenance */
+    /**
+     * @var CarsMaintenanceRepository
+     */
     private $carsMaintenanceRepository;
 
-    /** @var FleetsRepository */
+    /**
+     * @var FleetsRepository
+     */
     private $fleetsRepository;
 
-    /** @var DatatableServiceInterface */
+    /**
+     * @var DatatableServiceInterface
+     */
     private $datatableService;
 
-    /** @var UserService */
+    /**
+     * @var UserService
+     */
     private $userService;
 
-    /** @var ReservationsService */
+    /**
+     * @var ReservationsService
+     */
     private $reservationsService;
 
-    /** @var Translator */
+    /**
+     * @var Translator
+     */
     private $translator;
 
     /**
@@ -75,51 +90,78 @@ class CarsService
         $this->translator = $translator;
     }
 
-
     /**
-     * @return mixed
+     * @return Cars[]
      */
     public function getListCars()
     {
         return $this->carsRepository->findAll();
     }
 
+    /**
+     * @return Fleets[]
+     */
     public function getFleets()
     {
         return $this->fleetsRepository->findAll();
     }
 
+    /**
+     * @param integer $fleetId
+     * @return Fleet
+     */
     public function getFleet($fleetId)
     {
         return $this->fleetsRepository->find($fleetId);
     }
 
+    /**
+     * @return integer
+     */
     public function getTotalCars()
     {
         return $this->carsRepository->getTotalCars();
     }
 
+    /**
+     * @param array|null $filters
+     * @return Cars[]
+     */
     public function getListCarsFiltered($filters = [])
     {
         return $this->carsRepository->findBy($filters, ['plate' => 'ASC']);
     }
 
+    /**
+     * @return Cars[]
+     */
     public function getCarsEligibleForAlarmCheck()
     {
         return $this->carsRepository->findCarsEligibleForAlarmCheck();
     }
 
+    /**
+     * @return Cars[]
+     */
     public function getPublicCars()
     {
         return $this->carsRepository->findPublicCars();
     }
 
+    /**
+     * @param string $plate
+     * @return Cars
+     */
     public function getCarByPlate($plate)
     {
-
         return $this->carsRepository->find($plate);
     }
 
+    /**
+     * @param array|null $as_filters
+     * @param boolean $count
+     * @return mixed|integer
+     */
     public function getDataDataTable(array $as_filters = [], $count = false)
     {
         $cars = $this->datatableService->getData('Cars', $as_filters, $count);
@@ -164,6 +206,11 @@ class CarsService
         }, $cars);
     }
 
+    /**
+     * @param Cars $cars
+     * @param boolean|null $defaultData
+     * @return Cars[]
+     */
     public function saveData(Cars $cars, $defaultData = true)
     {
         $cars->setPlate(strtoupper($cars->getPlate()));
@@ -179,6 +226,11 @@ class CarsService
         return $cars;
     }
 
+    /**
+     * @param Cars $car
+     * @param string $lastStatus
+     * @param mixed[] $postData
+     */
     public function updateCar(Cars $car, $lastStatus, $postData)
     {
         $location = !empty($postData['location']) ? $postData['location'] : null;
@@ -227,6 +279,15 @@ class CarsService
                         if (null != $maintenanceReservation) {
                             $maintenanceReservation->setActive(false);
                             $maintenanceReservation->setTosend(true);
+
+                            // Update CarsMaintenance endTs if necessary
+                            $maintenance = $this->getLastCarsMaintenance($car->getPlate());
+                            if ($maintenance instanceof CarsMaintenance &&
+                                (!$maintenance->getEndTs() instanceof \DateTime)) {
+
+                                $maintenance->setEndTs(date_create());
+                                $this->entityManager->persist($maintenance);
+                            }
                         }
                     }
                     break;
@@ -239,9 +300,13 @@ class CarsService
         }
 
         $this->entityManager->flush();
-
     }
 
+    /**
+     * @param Cars $car
+     * @param array|null $damages
+     * @return Cars
+     */
     public function updateDamages(Cars $car, array $damages = null)
     {
         $car->setDamages($damages);
@@ -250,12 +315,19 @@ class CarsService
         return $car;
     }
 
+    /**
+     * @param Cars $car
+     */
     public function deleteCar(Cars $car)
     {
         $this->entityManager->remove($car);
         $this->entityManager->flush();
     }
 
+    /**
+     * @param string $status
+     * @return array
+     */
     public function getStatusCarAvailable($status)
     {
 
@@ -280,9 +352,12 @@ class CarsService
         }
 
         return [];
-
     }
 
+    /**
+     * @param string $plate
+     * @return CarsMaintenance
+     */
     public function getLastCarsMaintenance($plate)
     {
         return $this->carsMaintenanceRepository->findLastCarsMaintenance($plate);
@@ -297,6 +372,9 @@ class CarsService
         return !$this->carsRepository->checkCarInFleetZones($car);
     }
 
+    /**
+     * @return CarsDamages
+     */
     public function getDamagesList()
     {
         return $this->carsDamagesRepository->findAll();
