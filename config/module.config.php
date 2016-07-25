@@ -241,6 +241,7 @@ return [
             'SharengoCore\Service\NotificationsCategories\NotificationsCategoriesAbstractFactory' => 'SharengoCore\Service\NotificationsCategories\NotificationsCategoriesAbstractFactoryFactory',
             'SharengoCore\Service\NotificationsProtocolsService' => 'SharengoCore\Service\NotificationsProtocolsServiceFactory',
             'SharengoCore\Service\NotificationsCategories\SOSCategoryService' => 'SharengoCore\Service\NotificationsCategories\SOSCategoryServiceFactory',
+            'SharengoCore\Service\CarrefourService' => 'SharengoCore\Service\CarrefourServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
             'SharengoCore\Listener\DisableContractListener' => 'SharengoCore\Listener\DisableContractListenerFactory',
