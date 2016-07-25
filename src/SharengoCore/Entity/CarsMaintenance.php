@@ -205,7 +205,7 @@ class CarsMaintenance
      */
     public function getEndTs()
     {
-        return $this->endTs();
+        return $this->endTs;
     }
 
     /**
