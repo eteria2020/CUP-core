@@ -8,13 +8,12 @@ use SharengoCore\Entity\Repository\CarsRepository;
 use SharengoCore\Entity\Repository\CarsDamagesRepository;
 use SharengoCore\Entity\Repository\CarsMaintenanceRepository;
 use SharengoCore\Entity\Repository\FleetRepository;
+use SharengoCore\Entity\Webuser;
 use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\ReservationsService;
 use SharengoCore\Utility\CarStatus;
 
-use BjyAuthorize\Service\Authorize;
 use Doctrine\ORM\EntityManager;
-use Zend\Authentication\AuthenticationService as UserService;
 use Zend\Mvc\I18n\Translator;
 
 class CarsService
@@ -45,11 +44,6 @@ class CarsService
     private $datatableService;
 
     /**
-     * @var UserService
-     */
-    private $userService;
-
-    /**
      * @var ReservationsService
      */
     private $reservationsService;
@@ -65,7 +59,6 @@ class CarsService
      * @param CarsMaintenance $carsMaintenanceRepository
      * @param FleetsRepository $fleetsRepository
      * @param DatatableServiceInterface $datatableService
-     * @param UserService $userService
      * @param Translator $translator
      */
     public function __construct(
@@ -75,7 +68,6 @@ class CarsService
         CarsDamagesRepository $carsDamagesRepository,
         FleetRepository $fleetsRepository,
         DatatableServiceInterface $datatableService,
-        UserService $userService,
         ReservationsService $reservationsService,
         Translator $translator
     ) {
@@ -85,7 +77,6 @@ class CarsService
         $this->carsDamagesRepository = $carsDamagesRepository;
         $this->fleetsRepository = $fleetsRepository;
         $this->datatableService = $datatableService;
-        $this->userService = $userService;
         $this->reservationsService = $reservationsService;
         $this->translator = $translator;
     }
@@ -230,8 +221,9 @@ class CarsService
      * @param Cars $car
      * @param string $lastStatus
      * @param mixed[] $postData
+     * @param Webuser $webuser
      */
-    public function updateCar(Cars $car, $lastStatus, $postData)
+    public function updateCar(Cars $car, $lastStatus, $postData, Webuser $webuser)
     {
         $location = !empty($postData['location']) ? $postData['location'] : null;
 
@@ -242,7 +234,7 @@ class CarsService
             $carsMaintenance->setLocation($location);
             $carsMaintenance->setNotes($postData['note']);
             $carsMaintenance->setUpdateTs(new \DateTime());
-            $carsMaintenance->setWebuser($this->userService->getIdentity());
+            $carsMaintenance->setWebuser($webuser);
             $this->entityManager->persist($carsMaintenance);
         }
 
@@ -282,9 +274,9 @@ class CarsService
 
                             // Update CarsMaintenance endTs if necessary
                             $maintenance = $this->getLastCarsMaintenance($car->getPlate());
-                            if ($maintenance instanceof CarsMaintenance &&
-                                (!$maintenance->getEndTs() instanceof \DateTime)) {
+                            if ($maintenance instanceof CarsMaintenance && !$maintenance->isEnded()) {
 
+                                $maintenance->setEndWebuser($webuser);
                                 $maintenance->setEndTs(date_create());
                                 $this->entityManager->persist($maintenance);
                             }
