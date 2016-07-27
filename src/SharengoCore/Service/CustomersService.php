@@ -188,11 +188,12 @@ class CustomersService implements ValidatorServiceInterface
     }
 
     /**
+     * @param \DateTime $date
      * @return Customers[]
      */
-    public function getAllForBirthdayBonusAssignement()
+    public function getAllForBirthdayBonusAssignement(\DateTime $date)
     {
-        return $this->customersRepository->findAllForBirthdayBonusAssignement();
+        return $this->customersRepository->findAllForBirthdayBonusAssignement($date);
     }
 
     // the following methods have all the same structure, it stinks... need to refactor

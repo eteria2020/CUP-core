@@ -188,12 +188,14 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * This method return the Customers who's birthday is tomorrow and that do
-     * NOT already have a CustomersBonus assigned for it
+     * This method returns the Customers who's birthday is in the day specified
+     * by the $date parameter and that DO NOT already have a CustomersBonus
+     * assigned for it
      *
+     * @param \DateTime $date
      * @return Customers[]
      */
-    public function findAllForBirthdayBonusAssignement()
+    public function findAllForBirthdayBonusAssignement(\DateTime $date)
     {
         $em = $this->getEntityManager();
 
@@ -210,7 +212,6 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
             )";
 
         $query = $em->createQuery($dql);
-        $date = date_create('tomorrow');
         $query->setParameter('birthdayParam', $date->format('m-d'));
         $date = $date->format('Y-m-d');
         $query->setParameter('fromParam', $date . ' 00:00:00');
