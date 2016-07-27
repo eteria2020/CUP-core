@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity;
 
 use SharengoCore\Exception\MaintenanceEndTsAlreadySetException;
+use SharengoCore\Exception\MaintenanceEndWebuserAlreadySetException;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -65,6 +66,16 @@ class CarsMaintenance
      * })
      */
     private $webuser;
+
+    /**
+     * @var \Webuser
+     *
+     * @ORM\ManyToOne(targetEntity="Webuser")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="end_webuser_id", referencedColumnName="id")
+     * })
+     */
+    private $endWebuser;
 
     /**
      * @var \DateTime
@@ -201,6 +212,27 @@ class CarsMaintenance
     }
 
     /**
+     * @return Webuser|null
+     */
+    public function getEndWebuser()
+    {
+        return $this->endWebuser;
+    }
+
+    /**
+     * @param Webuser|null $webuser
+     * @throws MaintenanceEndWebuserAlreadySetException
+     */
+    public function setEndWebuser(Webuser $endWebuser = null)
+    {
+        if ($this->getEndWebuser() instanceof Webuser) {
+            throw new MaintenanceEndWebuserAlreadySetException();
+        }
+
+        $this->endWebuser = $endWebuser;
+    }
+
+    /**
      * @return \DateTime|null
      */
     public function getEndTs()
@@ -219,5 +251,14 @@ class CarsMaintenance
         }
 
         $this->endTs = $endTs;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isEnded()
+    {
+        return $this->getEndWebuser() instanceof Webuser ||
+            $this->getEndTs() instanceof \DateTime;
     }
 }

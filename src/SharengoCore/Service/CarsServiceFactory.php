@@ -20,7 +20,6 @@ class CarsServiceFactory implements FactoryInterface
         $carsDamagesRepository = $entityManager->getRepository('\SharengoCore\Entity\CarsDamages');
         $fleetsRepository = $entityManager->getRepository('\SharengoCore\Entity\Fleet');
         $carsMaintenanceRepository = $entityManager->getRepository('\SharengoCore\Entity\CarsMaintenance');
-        $userService = $serviceLocator->get('zfcuser_auth_service');
         $reservationsService = $serviceLocator->get('SharengoCore\Service\ReservationsService');
 
         $languageService = $serviceLocator->get('LanguageService');
@@ -41,7 +40,6 @@ class CarsServiceFactory implements FactoryInterface
             $carsDamagesRepository,
             $fleetsRepository,
             $datatableService,
-            $userService,
             $reservationsService,
             $translator
         );
