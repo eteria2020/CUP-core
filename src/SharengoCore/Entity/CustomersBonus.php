@@ -136,18 +136,29 @@ class CustomersBonus
      * @param int $total
      * @param string $description
      * @param string $validTo
+     * @param string|null $validFrom
+     * @param string|null $type
      * @return CustomersBonus
      */
-    public static function createBonus($customer, $total, $description, $validTo)
-    {
+    public static function createBonus(
+        Customers $customer,
+        $total,
+        $description,
+        $validTo,
+        $validFrom = null,
+        $type = null
+    ) {
         $bonus = new CustomersBonus();
         $bonus->setCustomer($customer);
         $bonus->setInsertTs(date_create());
         $bonus->setTotal($total);
         $bonus->setResidual($total);
-        $bonus->setValidFrom(date_create());
+        $bonus->setValidFrom(date_create($validFrom));
         $bonus->setValidTo(date_create($validTo));
         $bonus->setDescription($description);
+        if ($type !== null) {
+            $bonus->setType($type);
+        }
 
         return $bonus;
     }

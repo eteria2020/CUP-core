@@ -37,6 +37,13 @@ class FreeFares
     private $description;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="active", type="boolean", nullable=false)
+     */
+    private $active;
+
+    /**
      * Get id
      *
      * @return integer
@@ -78,5 +85,13 @@ class FreeFares
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isActive()
+    {
+        return $this->active;
     }
 }
