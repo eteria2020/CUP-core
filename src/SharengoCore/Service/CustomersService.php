@@ -392,7 +392,12 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersBonusRepository->checkUsedPromoCode($customers, $promoCode);
     }
 
-    public function validatePromoCode(Customers $customer, PromoCodes $promoCode)
+    /**
+     * @param Customers $customer
+     * @param  PromoCodes|null $promoCode
+     * @throws BonusAssignmentException
+     */
+    public function validatePromoCode(Customers $customer, PromoCodes $promoCode = null)
     {
         if (is_null($promoCode)) {
             throw new BonusAssignmentException($this->translator->translate('Codice promo non valido.'));
@@ -412,6 +417,10 @@ class CustomersService implements ValidatorServiceInterface
         $this->addBonusFromWebUser($customer, $customerBonus);
     }
 
+    /**
+     * @param Customers $customer
+     * @param PromoCodes|null $promoCode
+     */
     public function addBonusFromPromoCode(Customers $customer, PromoCodes $promoCode = null)
     {
         $this->validatePromoCode($customer, $promoCode);
