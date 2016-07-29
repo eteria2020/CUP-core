@@ -80,14 +80,14 @@ class CarrefourService
 
     /**
      * Maximum length is of 24 characters (also restricted in db).
-     * Format: 0-AAAA-BBB-CCCC-dd-mm-yy (7 pieces divided by a - ).
+     * Format: AAAA-BBB-CCCC-dd-mm-yy (6 pieces divided by a - ). It may also be
+     * preceded by a 0-.
      *
-     * 1 Fixed number. This will always be a 0.
-     * 2 Shop code. The list is in the config.
-     * 3 Number of the cash register. Valid from 1 to 99.
-     * 4 Number of the receipt. Valid from 0001 to 9999.
-     * 5 Number of the day. Valid from 1 to 31.
-     * 6-7 Month and year. The list is in the config.
+     * 1 Shop code. The list is in the config.
+     * 2 Number of the cash register. Valid from 1 to 99.
+     * 3 Number of the receipt. Valid from 0001 to 9999.
+     * 4 Number of the day. Valid from 1 to 31.
+     * 5-6 Month and year. The list is in the config.
      *
      * @param string $code
      * @return boolean
@@ -98,17 +98,22 @@ class CarrefourService
     {
         // Check if the code is a valid Carrefour code
         $pieces = explode('-', $code);
-        if (count($pieces) == 7 &&
-            $pieces[0] == '0' &&
-            array_key_exists($pieces[1], $this->pcConfig['shops']) &&
+
+        // Remove prefix if it's equal to 0
+        if (count($pieces) == 7 && $pieces[0] == '0') {
+            $pieces = array_splice($pieces, 1);
+        }
+
+        if (count($pieces) == 6 &&
+            array_key_exists($pieces[0], $this->pcConfig['shops']) &&
+            intval($pieces[1]) >= 1 &&
+            intval($pieces[1]) <= 99 &&
+            strlen($pieces[2]) == 4 &&
             intval($pieces[2]) >= 1 &&
-            intval($pieces[2]) <= 99 &&
-            strlen($pieces[3]) == 4 &&
+            intval($pieces[2]) <= 9999 &&
             intval($pieces[3]) >= 1 &&
-            intval($pieces[3]) <= 9999 &&
-            intval($pieces[4]) >= 1 &&
-            intval($pieces[4]) <= 31 &&
-            in_array($pieces[6] . $pieces[5], $this->pcConfig['dates'])) {
+            intval($pieces[3]) <= 31 &&
+            in_array($pieces[5] . $pieces[4], $this->pcConfig['dates'])) {
             // the format is correct, proceed
 
         } else {
