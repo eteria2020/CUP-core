@@ -238,7 +238,12 @@ class Trips
      */
     private $fleet;
 
-
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="pin_type", type="text", nullable=true)
+     */
+    private $pinType;
 
     /**
      * Get id
@@ -1037,5 +1042,13 @@ class Trips
                 throw new EditTripNotDateTimeException();
             }
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getPinType()
+    {
+        return $this->pinType;
     }
 }
