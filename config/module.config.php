@@ -225,6 +225,7 @@ return [
             'SharengoCore\Service\RecapService' => 'SharengoCore\Service\RecapServiceFactory',
             'SharengoCore\Service\CustomerNoteService' => 'SharengoCore\Service\CustomerNoteServiceFactory',
             'SharengoCore\Service\ConfigurationsService' => 'SharengoCore\Service\ConfigurationsServiceFactory',
+            'SharengoCore\Service\CarsConfigurationsService' => 'SharengoCore\Service\CarsConfigurationsServiceFactory',
             'SharengoCore\Service\ZonesService' => 'SharengoCore\Service\ZonesServiceFactory',
             'SharengoCore\Service\CustomerDeactivationService' => 'SharengoCore\Service\CustomerDeactivationServiceFactory',
             'SharengoCore\Service\MunicipalitiesService' => 'SharengoCore\Service\MunicipalitiesServiceFactory',
