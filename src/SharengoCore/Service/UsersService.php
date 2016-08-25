@@ -27,7 +27,7 @@ class UsersService implements ValidatorServiceInterface
      */
     private $userRepository;
 
-    /** 
+    /**
      * @var DatatableServiceInterface
      */
     private $datatableService;
