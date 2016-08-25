@@ -110,8 +110,9 @@ class CarsConfigurationsService
      * @param string $value
      * @return CarsConfigurations
      */
-    public function save(CarsConfigurations $carConfiguration, $value) {
-        if(!empty($value)) {
+    public function save(CarsConfigurations $carConfiguration, $value)
+    {
+        if (!empty($value)) {
             $carConfiguration->setValue($value);
         }
 
