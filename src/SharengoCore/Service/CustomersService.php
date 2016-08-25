@@ -2,30 +2,42 @@
 
 namespace SharengoCore\Service;
 
+use Cartasi\Service\CartasiContractsService;
+use SharengoCore\Entity\Cards;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonus;
 use SharengoCore\Entity\PromoCodes;
 use SharengoCore\Entity\Repository\CustomersBonusRepository;
-use SharengoCore\Entity\Cards;
+use SharengoCore\Entity\Repository\CustomersRepository;
+use SharengoCore\Exception\BonusAssignmentException;
 use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 use SharengoCore\Service\TripPaymentsService;
-use SharengoCore\Exception\BonusAssignmentException;
 
-use Cartasi\Service\CartasiContractsService;
-
-use Zend\Authentication\AuthenticationService as UserService;
 use Doctrine\ORM\EntityManager;
+use Zend\Authentication\AuthenticationService as UserService;
 use Zend\Mvc\I18n\Translator;
 
 class CustomersService implements ValidatorServiceInterface
 {
+    /**
+     * @var mixed
+     */
     private $validatorEmail;
 
+    /**
+     * @var mixed
+     */
     private $validatorTaxCode;
 
+    /**
+     * @var EntityManager
+     */
     private $entityManager;
 
+    /**
+     * @var CustomersRepository
+     */
     private $customersRepository;
 
     /**
@@ -173,6 +185,15 @@ class CustomersService implements ValidatorServiceInterface
     public function findByDriversLicense($driversLicense)
     {
         return $this->customersRepository->findByCI('driverLicense', $driversLicense);
+    }
+
+    /**
+     * @param \DateTime $date
+     * @return Customers[]
+     */
+    public function getAllForBirthdayBonusAssignement(\DateTime $date)
+    {
+        return $this->customersRepository->findAllForBirthdayBonusAssignement($date);
     }
 
     // the following methods have all the same structure, it stinks... need to refactor
