@@ -68,7 +68,7 @@ class CarsConfigurations
      * @ORM\Column(name="value", type="text", nullable=true)
      */
     private $value;
-    
+
     /**
      * @var string
      */
