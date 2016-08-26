@@ -68,11 +68,12 @@ class CustomerDeactivationService
 
     /**
      * @param Customers $customer
+     * @param string|null $reason
      * @return bool
      */
-    public function hasActiveDeactivations(Customers $customer)
+    public function hasActiveDeactivations(Customers $customer, $reason = null)
     {
-        $allActive = $this->getAllActive($customer);
+        $allActive = $this->getAllActive($customer, $reason);
 
         return !empty($allActive);
     }
