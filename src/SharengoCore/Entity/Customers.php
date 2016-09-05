@@ -1834,4 +1834,11 @@ class Customers
         }
         return false;
     }
+
+    public function disableCompanyPin()
+    {
+        $pins = json_decode($this->pin, true);
+        $pins['companyPinDisabled'] = true;
+        $this->pin = json_encode($pins);
+    }
 }

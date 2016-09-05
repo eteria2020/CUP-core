@@ -666,4 +666,11 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->persist($customer);
         $this->entityManager->flush();
     }
+
+    public function disableCustomerFromBusinessTrips(Customers $customer)
+    {
+        $customer->disableCompanyPin();
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
+    }
 }
