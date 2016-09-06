@@ -180,6 +180,13 @@ class Trips
      * @ORM\Column(name="is_accounted", type="boolean", nullable=false, options={"default" = FALSE})
      */
     private $isAccounted = false;
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="bonus_computed", type="boolean", nullable=false, options={"default" = FALSE})
+     */
+    private $bonusComputed = false;
 
     /**
      * @var boolean if true the cost was already computed and the trip will be
@@ -952,6 +959,27 @@ class Trips
     {
         $this->parent = $parent;
         return $this;
+    }
+        
+    /**
+     * sets the trip as bonus computed
+     *
+     * @param boolean $bonusComputed
+     * @return Trips
+     */
+    public function setBonusComputed($bonusComputed)
+    {
+        $this->bonusComputed = $bonusComputed;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getBonusComputed()
+    {
+        return $this->bonusComputed;
     }
 
     /**
