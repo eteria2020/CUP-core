@@ -182,7 +182,8 @@ class Trips
     private $isAccounted = false;
     
     /**
-     * @var boolean
+     * @var boolean if true the bonus (area, ...) was already computed and the trip will be
+     *      exluded from the bonus computation script
      *
      * @ORM\Column(name="bonus_computed", type="boolean", nullable=false, options={"default" = FALSE})
      */

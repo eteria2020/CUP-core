@@ -76,6 +76,30 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getSingleScalarResult();
     }
+    
+    /**
+     * @param Cars
+     * @return bool whether the car is or not inside the zones bonus associated to its fleet
+     */
+    public function checkCarInBonusZones($car)
+    {
+        $em = $this->getEntityManager();
+
+        $sql = "SELECT coalesce(bool_or(zb.geo @> point(c.longitude, c.latitude)), false) AS is_in
+            FROM cars c
+            JOIN fleets f ON f.id = c.fleet_id
+            JOIN zone_bonus_fleets zbf ON zbf.fleet_id = f.id
+            JOIN zone_bonus zb ON zb.id = zbf.zone_bonus_id AND zb.active = TRUE
+            WHERE c.plate = :plate";
+
+        $rsm = new ResultSetMapping;
+        $rsm->addScalarResult('is_in', 'isIn', 'boolean');
+
+        $query = $em->createNativeQuery($sql, $rsm);
+        $query->setParameter('plate', $car->getPlate());
+
+        return $query->getSingleScalarResult();
+    }
 
     public function findReservedPlates()
     {
