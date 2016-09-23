@@ -18,6 +18,7 @@ use Doctrine\ORM\EntityManager;
 use Zend\Authentication\AuthenticationService as UserService;
 use Zend\Mvc\I18n\Translator;
 
+
 class CustomersService implements ValidatorServiceInterface
 {
     /**
@@ -719,5 +720,16 @@ class CustomersService implements ValidatorServiceInterface
         $aYearButAWeekAgo = date_create('-1 year +1 week');
 
         return $this->customersRepository->findCustomersWithDiscountOlderExactly($aYearButAWeekAgo);
+    }
+    
+    /**
+     * @param Customers $customer
+     * @param DateTime $date
+     * @param string $type
+     * @return CustomersBonus[]
+     */
+    public function getBonusesForCustomerIdAndDateInsertionAndType(Customers $customer, \DateTime $date, $type)
+    {
+        return $this->customersBonusRepository->getBonusesForCustomerIdAndDateInsertionAndType($customer, $date, $type);    
     }
 }

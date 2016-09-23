@@ -22,6 +22,8 @@ class ZonesService
     private $zoneGroupsRepository;
 
     private $zonePricesRepository;
+    
+    private $zoneBonusRepository;
 
     /**
      * @var DatatableServiceInterface
@@ -41,6 +43,7 @@ class ZonesService
         $this->zoneAlarmsRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZoneAlarms');
         $this->zoneGroupsRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZoneGroups');
         $this->zonePricesRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZonePrices');
+        $this->zoneBonusRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZoneBonus');
         $this->datatableService = $datatableService;
     }
 
@@ -71,7 +74,27 @@ class ZonesService
     {
         return $this->zonePricesRepository->findAll();
     }
-
+    
+    public function getListZonesBonus()
+    {
+        return $this->zoneBonusRepository->findAllActive();
+    }
+    
+    public function getListZonesBonusByFleet($fleet)
+    {
+        $bonusAreas = $this->zoneBonusRepository->findAllActiveByFleet($fleet);        
+        
+//        $bonusAreasByFleet = array();
+//        foreach ($bonusAreas as $bonusArea) {
+//            if (in_array($fleet_id, $zoneGroup->getFleetsId()))
+//            {
+//                $bonusAreasByFleet[] = $bonusArea;
+//            }
+//        }
+        
+        return $bonusAreas;
+    }
+    
     /**
      *  This method return a list of zone name for every
      *  zone group.
@@ -135,5 +158,24 @@ class ZonesService
         $this->entityManager->flush();
 
         return $zone;
+    }
+    
+    /**
+     * @param array $zonesBonus, $longitude, $latitude
+     * @return SharengoCore\Entity\ZoneBonus[]
+     */
+    public function checkPointInBonusZones(array $zonesBonus, $longitude, $latitude)
+    {
+        $zonesBonus_touched = array();
+        foreach ($zonesBonus as $zoneBonus)
+        {
+            $inside = $this->zoneBonusRepository->findBonusZonesByCoordinatesAndFleet($zoneBonus, $longitude, $latitude);
+            
+            var_dump($inside);
+            
+            if ($inside)
+                $zonesBonus_touched[] = $zoneBonus;
+        }
+        return $zonesBonus_touched;
     }
 }

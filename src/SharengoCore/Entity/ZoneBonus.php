@@ -39,31 +39,31 @@ class ZoneBonus
     /**
      * @var SharengoCore\Entity\Fleet[]
      *
-     * @ORM\ManyToMany(targetEntity="Fleet", mappedBy="ZoneBonus")
+     * @ORM\ManyToMany(targetEntity="Fleet", mappedBy="zoneBonus")
      */
     private $fleets;
 
     /**
-     * @var $string
+     * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
      */
     private $description;
     
     /**
-     * @var $string
+     * @var string
      *
      * @ORM\Column(name="bonus_type", type="text", nullable=false)
      */
     private $bonusType;
     
     /**
-     * @var $string
+     * @var string
      *
      * @ORM\Column(name="conditions", type="text", nullable=true)
      */
     private $conditions;
-
+    
     /**
      * @return integer
      */
@@ -182,7 +182,7 @@ class ZoneBonus
     {
         return $this->active;
     }
-
+    
     /**
      * Get description
      *

@@ -23,7 +23,7 @@ class Fleet
      * @ORM\SequenceGenerator(sequenceName="fleet_id_seq", allocationSize=1, initialValue=1)
      */
     private $id;
-
+   
     /**
      * @var string
      *
@@ -86,15 +86,32 @@ class Fleet
      * @ORM\ManyToMany(targetEntity="ZoneAlarms", inversedBy="fleets")
      * @ORM\JoinTable(
      *  name="zone_alarms_fleets",
-     *  joinColumns={
+     *  inverseJoinColumns={
      *      @ORM\JoinColumn(name="zone_alarm_id", referencedColumnName="id")
      *  },
-     *  inverseJoinColumns={
+     *  joinColumns={
      *      @ORM\JoinColumn(name="fleet_id", referencedColumnName="id")
-     *  }
+     *  }    
      * )
      */
     private $zoneAlarms;
+    
+    
+    /**
+     * @var ZoneAlarms[]
+     *
+     * @ORM\ManyToMany(targetEntity="ZoneBonus", inversedBy="fleets")
+     * @ORM\JoinTable(
+     *  name="zone_bonus_fleets",
+     *  inverseJoinColumns={
+     *      @ORM\JoinColumn(name="zone_bonus_id", referencedColumnName="id")
+     *  },
+     *  joinColumns={
+     *      @ORM\JoinColumn(name="fleet_id", referencedColumnName="id")
+     *  }    
+     * )
+     */
+    private $zoneBonus;
 
 
     public function __construct($code, $name, $latitude, $longitude, $zoomLevel, $isDefault = false)

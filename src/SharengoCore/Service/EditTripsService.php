@@ -154,7 +154,7 @@ class EditTripsService
             $this->entityManager->rollback();
             throw $e;
         }
-    }
+    }   
 
     /**
      * This method is called if TripPaymentTries are present for the trip.
@@ -204,6 +204,17 @@ class EditTripsService
             $trip->setTimestampEnd($endDate);
         }
 
+        $this->entityManager->persist($trip);
+    }
+    
+    /**
+     * @param Trips $trip
+     * @param boolean $bonusComputed
+     */
+    public function doEditTripBonusComputed(Trips $trip, $bonusComputed)
+    {
+        $trip->setBonusComputed($bonusComputed);
+        
         $this->entityManager->persist($trip);
     }
 

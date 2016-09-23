@@ -51,4 +51,39 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+    
+    /**
+     * returns the bonuses for customer, date and type
+     * @param Customers $customer
+     * @param DateTime $date
+     * @param string $type
+     * @return CustomersBonus[]
+     */
+    public function getBonusesForCustomerIdAndDateInsertionAndType(Customers $customer, \DateTime $date, $type)
+    {
+        $em = $this->getEntityManager();
+        $dql = 'SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb '.
+            'WHERE cb.validFrom >= :date1 '.
+            'AND cb.validFrom < :date2 '.
+            'AND cb.type = :type '.
+            'AND cb.customer = :customer';
+            //'ORDER BY cb.validTo ASC';
+        
+        //var_dump($dql);
+        
+        $date1 = $date->format('Y-m-d');
+        $dateTo = new \DateTime($date1);
+        $date2 = $dateTo->add(new \DateInterval('P1D'))->format('Y-m-d');
+        
+        //var_dump($date1);
+        //var_dump($date2);
+
+        $query = $em->createQuery($dql);        
+        $query->setParameter('date1', $date1);
+        $query->setParameter('date2', $date2);
+        $query->setParameter('type', $type);
+        $query->setParameter('customer', $customer);
+
+        return $query->getResult();
+    }
 }
