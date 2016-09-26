@@ -29,4 +29,20 @@ class PromoCodesRepository extends \Doctrine\ORM\EntityRepository
 
     }
 
+    public function getPromoCodeByPromocodeInfo($promoCodeInfoId) {
+        $em = $this->getEntityManager();
+
+        var_dump($promoCodeInfoId);
+        $dql = 'SELECT pc
+                FROM \SharengoCore\Entity\Promocodes pc
+                WHERE pc.promocodesinfo = :promocodesinfo';
+
+        $query = $em->createQuery($dql)
+                ->setMaxResults(1);
+
+        $query->setParameter('promocodesinfo', $promoCodeInfoId);
+
+        return $query->getSingleResult ();
+    }
+
 }
