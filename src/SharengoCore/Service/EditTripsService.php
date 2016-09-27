@@ -216,6 +216,7 @@ class EditTripsService
         $trip->setBonusComputed($bonusComputed);
         
         $this->entityManager->persist($trip);
+        $this->entityManager->flush();
     }
 
     /**

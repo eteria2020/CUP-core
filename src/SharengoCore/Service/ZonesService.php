@@ -77,7 +77,7 @@ class ZonesService
     
     public function getListZonesBonus()
     {
-        return $this->zoneBonusRepository->findAllActive();
+        return $this->zoneBonusRepository->findAll();
     }
     
     public function getListZonesBonusByFleet($fleet)

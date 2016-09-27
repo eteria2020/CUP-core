@@ -93,9 +93,10 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
     public function findTripsForBonusComputation()
     {
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
-            "WHERE t.isAccounted = true ". //only trips that were already processed by the accounting trips
-            "AND t.bonusComputed = false ". //only trips that were not already processed by the bonus computing script
+            "WHERE ". //t.isAccounted = true ". //only trips that were already processed by the accounting trips
+            "t.bonusComputed = false ". //only trips that were not already processed by the bonus computing script
             "AND t.parkSeconds > 0 ". //only trips with parking time
+            "AND t.timestampEnd IS NOT NULL ".
             "ORDER BY t.timestampEnd ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
