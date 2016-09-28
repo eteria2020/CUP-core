@@ -91,11 +91,12 @@ class PromoCodesOnceService
         $result= FALSE;
 
         $this->logger->setOutputEnvironment(Logger::OUTPUT_ON);
-        //$this->logger->setOutputType(Logger::TYPE_CONSOLE);
-        $this->logger->setOutputType(Logger::OUTPUT_DEV);
+        $this->logger->setOutputType(Logger::TYPE_CONSOLE);
 
-        $promocode = strtoupper($promocode);
-         $promoCodesOnce = $this->getByPromoCode($promocode);
+        //$this->logger->setOutputType(Logger::OUTPUT_DEV);
+
+        $promocodeUpper = strtoupper($promocode);
+         $promoCodesOnce = $this->getByPromoCode($promocodeUpper);
          if($promoCodesOnce!==NULL){                    // find promocode once
 
             if($promoCodesOnce->getUsedTs()===NULL) {   // promocode not used
@@ -123,7 +124,6 @@ class PromoCodesOnceService
          } else {
             $this->logger->log("promo code once ".$promocode." not found\n");
          }
-
         return $result;
     }
 
@@ -135,8 +135,11 @@ class PromoCodesOnceService
     {
         $result= FALSE;
 
-        $promocode = strtoupper($promocode);
-        $promoCodesOnce = $this->getByPromoCode($promocode);
+        $this->logger->setOutputEnvironment(Logger::OUTPUT_ON);
+        $this->logger->setOutputType(Logger::TYPE_CONSOLE);
+
+        $promocodeUpper = strtoupper($promocode);
+        $promoCodesOnce = $this->getByPromoCode($promocodeUpper);
         if($promoCodesOnce!==NULL){                    // find promocode once
 
             if($promoCodesOnce->getUsedTs()===NULL) {   // promocode not used
@@ -168,7 +171,6 @@ class PromoCodesOnceService
              $this->logger->log("promo code once ".$promocode." not found\n");
              throw new PromoCodeOnceNotFound();
         }
-
         return $result;
     }
 
@@ -178,24 +180,14 @@ class PromoCodesOnceService
      * @return PromoCodesOnce
      */
     public function usePromoCode($customer, $promocode) {
-        $promocode = strtoupper($promocode);
-        $promoCodesOnce = $this->pcoRepository->findByPromoCode($promocode);
+        $promocodeUpper = strtoupper($promocode);
+        $promoCodesOnce = $this->pcoRepository->findByPromoCode($promocodeUpper);
 
         if($promoCodesOnce!==NULL){
             $promoCodeInfo = $promoCodesOnce->getPromoCodesInfo();
 
             $promoCode = $this->pcRepository->getPromoCodeByPromocodeInfo($promoCodeInfo->getId());
-
-//            $customersBonus = CustomersBonus::createBonus(
-//                    $customer,
-//                    $promoCodeInfo->getMinutes(),
-//                    $promoCode->getDescription(),
-//                    $promoCodeInfo->getValidTo()->format('Y-m-d H:i:s'),
-//                    $promoCodeInfo->getValidFrom()->format('Y-m-d H:i:s')
-//                    );
-
              $customersBonus = CustomersBonus::createFromPromoCode($promoCode);
-
             $this->customersService->addBonus($customer, $customersBonus);
 
             $promoCodesOnce->setCustomer($customer);

@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class PromoCodesOnce {
 
     /**
-     * @var int
+     * @var int $id
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
@@ -23,7 +23,7 @@ class PromoCodesOnce {
     private $id;
 
     /**
-     * @var int
+     * @var int $promocodesinfo
      *
      * @ORM\ManyToOne(targetEntity="PromoCodesInfo")
      * @ORM\JoinColumns({
@@ -33,7 +33,7 @@ class PromoCodesOnce {
     private $promocodesinfo;
 
     /**
-     * @var string
+     * @var string $promocode
      *
      * @ORM\Column(name="promocode", type="string", nullable=false, unique=true)
      */
