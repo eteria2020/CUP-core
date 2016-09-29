@@ -82,17 +82,9 @@ class ZonesService
     
     public function getListZonesBonusByFleet($fleet)
     {
-        $bonusAreas = $this->zoneBonusRepository->findAllActiveByFleet($fleet);        
+        $bonusAreas = $this->zoneBonusRepository->findAllActiveByFleet($fleet);
         
-//        $bonusAreasByFleet = array();
-//        foreach ($bonusAreas as $bonusArea) {
-//            if (in_array($fleet_id, $zoneGroup->getFleetsId()))
-//            {
-//                $bonusAreasByFleet[] = $bonusArea;
-//            }
-//        }
-        
-        return $bonusAreas;
+	    return $bonusAreas;
     }
     
     /**
@@ -170,8 +162,6 @@ class ZonesService
         foreach ($zonesBonus as $zoneBonus)
         {
             $inside = $this->zoneBonusRepository->findBonusZonesByCoordinatesAndFleet($zoneBonus, $longitude, $latitude);
-            
-            var_dump($inside);
             
             if ($inside)
                 $zonesBonus_touched[] = $zoneBonus;

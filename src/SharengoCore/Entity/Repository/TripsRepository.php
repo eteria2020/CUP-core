@@ -83,20 +83,18 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
     }
     
     /**
-     * selects the trips that are already accounted but still need to be
-     * processed for the cost computation
-     * At the moment this means that the trip isAccounted but has not a linked
-     * record in the trip_payments table
+     * selects the trips that need to be
+     * processed for the bonus computation
      *
      * @return Trips[]
      */
     public function findTripsForBonusComputation()
     {
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
-            "WHERE ". //t.isAccounted = true ". //only trips that were already processed by the accounting trips
-            "t.bonusComputed = false ". //only trips that were not already processed by the bonus computing script
+            //t.isAccounted = true ". //only trips that were already processed by the accounting trips
+            "WHERE t.bonusComputed = false ". //only trips that were not already processed by the bonus computing script
             "AND t.parkSeconds > 0 ". //only trips with parking time
-            "AND t.timestampEnd IS NOT NULL ".
+            "AND t.timestampEnd IS NOT NULL ". //only trips finished
             "ORDER BY t.timestampEnd ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);

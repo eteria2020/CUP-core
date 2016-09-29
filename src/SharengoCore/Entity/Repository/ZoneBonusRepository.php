@@ -55,16 +55,7 @@ class ZoneBonusRepository extends \Doctrine\ORM\EntityRepository
     {    
         $em = $this->getEntityManager();
 
-//        $sql = "SELECT coalesce(bool_or(za.geo @> point(c.longitude, c.latitude)), false) AS is_in
-//            FROM cars c
-//            JOIN fleets f ON f.id = c.fleet_id
-//            JOIN zone_alarms_fleets zaf ON zaf.fleet_id = f.id
-//            JOIN zone_alarms za ON za.id = zaf.zone_alarm_id AND za.active = TRUE
-//            WHERE c.plate = :plate";
-
-        $sql = "SELECT coalesce(
-            bool_or(zb.geo @> point(:longitude, :latitude)), false
-            ) AS is_in
+        $sql = "SELECT coalesce(bool_or(zb.geo @> point(:longitude, :latitude)), false) AS is_in
             FROM zone_bonus zb
             WHERE zb.active = true
             AND zb.id = :zb_id";
