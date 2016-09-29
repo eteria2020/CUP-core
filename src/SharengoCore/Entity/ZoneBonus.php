@@ -49,21 +49,21 @@ class ZoneBonus
      * @ORM\Column(name="description", type="text", nullable=true)
      */
     private $description;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="bonus_type", type="text", nullable=false)
      */
     private $bonusType;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="conditions", type="text", nullable=true)
      */
     private $conditions;
-    
+
     /**
      * @return integer
      */
@@ -110,7 +110,7 @@ class ZoneBonus
     {
         return $this->geo;
     }
-    
+
     /**
      * Set bonusType
      *
@@ -134,7 +134,7 @@ class ZoneBonus
     {
         return $this->bonusType;
     }
-    
+
     /**
      * Set conditions
      *
@@ -182,7 +182,7 @@ class ZoneBonus
     {
         return $this->active;
     }
-    
+
     /**
      * Get description
      *

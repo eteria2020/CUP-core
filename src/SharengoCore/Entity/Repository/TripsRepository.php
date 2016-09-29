@@ -81,7 +81,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
-    
+
     /**
      * selects the trips that need to be
      * processed for the bonus computation

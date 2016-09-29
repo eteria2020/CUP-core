@@ -22,7 +22,7 @@ class ZonesService
     private $zoneGroupsRepository;
 
     private $zonePricesRepository;
-    
+
     private $zoneBonusRepository;
 
     /**
@@ -74,19 +74,17 @@ class ZonesService
     {
         return $this->zonePricesRepository->findAll();
     }
-    
+
     public function getListZonesBonus()
     {
         return $this->zoneBonusRepository->findAll();
     }
-    
+
     public function getListZonesBonusByFleet($fleet)
     {
-        $bonusAreas = $this->zoneBonusRepository->findAllActiveByFleet($fleet);
-        
-	    return $bonusAreas;
+        return $this->zoneBonusRepository->findAllActiveByFleet($fleet);
     }
-    
+
     /**
      *  This method return a list of zone name for every
      *  zone group.
@@ -151,7 +149,7 @@ class ZonesService
 
         return $zone;
     }
-    
+
     /**
      * @param array $zonesBonus, $longitude, $latitude
      * @return SharengoCore\Entity\ZoneBonus[]
@@ -162,7 +160,7 @@ class ZonesService
         foreach ($zonesBonus as $zoneBonus)
         {
             $inside = $this->zoneBonusRepository->findBonusZonesByCoordinatesAndFleet($zoneBonus, $longitude, $latitude);
-            
+
             if ($inside)
                 $zonesBonus_touched[] = $zoneBonus;
         }

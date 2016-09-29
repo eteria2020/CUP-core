@@ -721,7 +721,7 @@ class CustomersService implements ValidatorServiceInterface
 
         return $this->customersRepository->findCustomersWithDiscountOlderExactly($aYearButAWeekAgo);
     }
-    
+
     /**
      * @param Customers $customer
      * @param DateTime $date
@@ -730,6 +730,6 @@ class CustomersService implements ValidatorServiceInterface
      */
     public function getBonusesForCustomerIdAndDateInsertionAndType(Customers $customer, \DateTime $date, $type)
     {
-        return $this->customersBonusRepository->getBonusesForCustomerIdAndDateInsertionAndType($customer, $date, $type);    
+        return $this->customersBonusRepository->getBonusesForCustomerIdAndDateInsertionAndType($customer, $date, $type);
     }
 }

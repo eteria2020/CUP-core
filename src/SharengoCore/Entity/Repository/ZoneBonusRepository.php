@@ -29,7 +29,7 @@ class ZoneBonusRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
-    
+
     /**
      * @return SharengoCore\Entity\ZoneBonus[]
      */
@@ -41,18 +41,18 @@ class ZoneBonusRepository extends \Doctrine\ORM\EntityRepository
             FROM \SharengoCore\Entity\ZoneBonus z
             WHERE z.active = true
             AND :fleet MEMBER OF z.fleets";
-        
+
         $query = $em->createQuery($dql);
         $query->setParameter('fleet', $fleet);
 
         return $query->getResult();
     }
-    
+
     /**
      * @return bool whether the point is or not inside the bonus zone
      */
     public function findBonusZonesByCoordinatesAndFleet(\SharengoCore\Entity\ZoneBonus $zoneBonus, $longitude, $latitude)
-    {    
+    {
         $em = $this->getEntityManager();
 
         $sql = "SELECT coalesce(bool_or(zb.geo @> point(:longitude, :latitude)), false) AS is_in
@@ -62,7 +62,7 @@ class ZoneBonusRepository extends \Doctrine\ORM\EntityRepository
 
         $rsm = new ResultSetMapping;
         $rsm->addScalarResult('is_in', 'isIn', 'boolean');
-        
+
         $query = $em->createNativeQuery($sql, $rsm);
         $query->setParameter('longitude', $longitude);
         $query->setParameter('latitude', $latitude);
