@@ -182,12 +182,12 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         FROM \SharengoCore\Entity\Trips t
         WHERE t.customer = :customer
         AND t.timestampEnd IS NOT NULL
-        AND t.timestampEnd - t.timestampBeginning >= :fiveMinutes
+        AND t.timestampEnd - t.timestampBeginning >= :oneMinute
         ORDER BY t.timestampBeginning DESC";
 
         $query = $em->createQuery($dql);
         $query->setParameter('customer', $customer);
-        $query->setParameter('fiveMinutes', '00:05:00');
+        $query->setParameter('oneMinute', '00:01:00');
 
         return $query->getResult();
     }
@@ -288,7 +288,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         WHERE cu.goldList = false
         AND e.payable = true AND
         e.timestampEnd IS NOT NULL AND
-        (e.timestampEnd - e.timestampBeginning) >= (DATE_ADD(CURRENT_TIMESTAMP(), 300, 'second') - CURRENT_TIMESTAMP()) AND
+        (e.timestampEnd - e.timestampBeginning) >= (DATE_ADD(CURRENT_TIMESTAMP(), 60, 'second') - CURRENT_TIMESTAMP()) AND
         tp.payedSuccessfullyAt IS NULL ";
 
         $query = $em->createQuery($dql);
