@@ -91,9 +91,8 @@ class PromoCodesOnceService
         $result= FALSE;
 
         $this->logger->setOutputEnvironment(Logger::OUTPUT_ON);
-        $this->logger->setOutputType(Logger::TYPE_CONSOLE);
-
-        //$this->logger->setOutputType(Logger::OUTPUT_DEV);
+        $this->logger->setOutputType(Logger::OUTPUT_DEV);
+        //$this->logger->setOutputType(Logger::TYPE_CONSOLE);
 
         $promocodeUpper = strtoupper($promocode);
          $promoCodesOnce = $this->getByPromoCode($promocodeUpper);
