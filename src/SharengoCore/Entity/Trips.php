@@ -900,7 +900,7 @@ class Trips
         $minutes = $this->getDurationMinutes();
 
         return !$this->customer->getGoldList() &&
-               $minutes >= 5;
+               $minutes >= 1;
     }
 
     public function getDurationMinutes()
