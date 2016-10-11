@@ -197,6 +197,7 @@ return [
             'SharengoCore\Service\PoisService' => 'SharengoCore\Service\PoisServiceFactory',
             'SharengoCore\Service\ReservationsService' => 'SharengoCore\Service\ReservationsServiceFactory',
             'SharengoCore\Service\PromoCodesService' => 'SharengoCore\Service\PromoCodesServiceFactory',
+            'SharengoCore\Service\PromoCodesOnceService' => 'SharengoCore\Service\PromoCodesOnceServiceFactory',
             'SharengoCore\Service\CardsService' => 'SharengoCore\Service\CardsServiceFactory',
             'SharengoCore\Service\BonusService' => 'SharengoCore\Service\BonusServiceFactory',
             'SharengoCore\Service\AccountTripsService' => 'SharengoCore\Service\AccountTripsServiceFactory',
