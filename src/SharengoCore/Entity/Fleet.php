@@ -86,10 +86,10 @@ class Fleet
      * @ORM\ManyToMany(targetEntity="ZoneAlarms", inversedBy="fleets")
      * @ORM\JoinTable(
      *  name="zone_alarms_fleets",
-     *  inverseJoinColumns={
+     *  joinColumns={
      *      @ORM\JoinColumn(name="zone_alarm_id", referencedColumnName="id")
      *  },
-     *  joinColumns={
+     *  inverseJoinColumns={
      *      @ORM\JoinColumn(name="fleet_id", referencedColumnName="id")
      *  }
      * )
