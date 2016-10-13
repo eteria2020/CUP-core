@@ -23,6 +23,8 @@ class ZonesService
 
     private $zonePricesRepository;
 
+    private $zoneBonusRepository;
+
     /**
      * @var DatatableServiceInterface
      */
@@ -41,6 +43,7 @@ class ZonesService
         $this->zoneAlarmsRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZoneAlarms');
         $this->zoneGroupsRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZoneGroups');
         $this->zonePricesRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZonePrices');
+        $this->zoneBonusRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZoneBonus');
         $this->datatableService = $datatableService;
     }
 
@@ -70,6 +73,16 @@ class ZonesService
     public function getListZonesPrices()
     {
         return $this->zonePricesRepository->findAll();
+    }
+
+    public function getListZonesBonus()
+    {
+        return $this->zoneBonusRepository->findAll();
+    }
+
+    public function getListZonesBonusByFleet($fleet)
+    {
+        return $this->zoneBonusRepository->findAllActiveByFleet($fleet);
     }
 
     /**
@@ -135,5 +148,22 @@ class ZonesService
         $this->entityManager->flush();
 
         return $zone;
+    }
+
+    /**
+     * @param array $zonesBonus, $longitude, $latitude
+     * @return SharengoCore\Entity\ZoneBonus[]
+     */
+    public function checkPointInBonusZones(array $zonesBonus, $longitude, $latitude)
+    {
+        $zonesBonus_touched = array();
+        foreach ($zonesBonus as $zoneBonus)
+        {
+            $inside = $this->zoneBonusRepository->findBonusZonesByCoordinatesAndFleet($zoneBonus, $longitude, $latitude);
+
+            if ($inside)
+                $zonesBonus_touched[] = $zoneBonus;
+        }
+        return $zonesBonus_touched;
     }
 }

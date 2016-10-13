@@ -82,6 +82,25 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    /**
+     * selects the trips that need to be
+     * processed for the bonus computation
+     *
+     * @return Trips[]
+     */
+    public function findTripsForBonusComputation()
+    {
+        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
+            //t.isAccounted = true ". //only trips that were already processed by the accounting trips
+            "WHERE t.bonusComputed = false ". //only trips that were not already processed by the bonus computing script
+            "AND t.parkSeconds > 0 ". //only trips with parking time
+            "AND t.timestampEnd IS NOT NULL ". //only trips finished
+            "ORDER BY t.timestampEnd ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        return $query->getResult();
+    }
+
     public function findCustomerTripsToBeAccounted(Customers $customer)
     {
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".

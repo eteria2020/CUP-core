@@ -100,6 +100,25 @@ class BonusService
 
         return $bonus;
     }
+    
+    /**
+     * @param Customers $customer
+     * @param integer $bonus_to_assign
+     * @param string $bonus_type
+     * @param string $description
+     * @param string $validTo
+     * @param string $valFrom
+     * @return Bonus
+     */
+    public function createBonusForCustomerFromData(Customers $customer, $bonus_to_assign, $bonus_type, $description, $validTo, $valFrom)
+    {
+        $bonus = Bonus::createBonus($customer, $bonus_to_assign, $description, $validTo, $valFrom, $bonus_type);
+
+        $this->entityManager->persist($bonus);
+        $this->entityManager->flush();
+
+        return $bonus;
+    }
 
     /**
      * @param integer $id

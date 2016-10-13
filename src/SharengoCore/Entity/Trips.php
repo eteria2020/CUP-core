@@ -182,6 +182,14 @@ class Trips
     private $isAccounted = false;
 
     /**
+     * @var boolean if true the bonus (area, ...) was already computed and the trip will be
+     *      exluded from the bonus computation script
+     *
+     * @ORM\Column(name="bonus_computed", type="boolean", nullable=false, options={"default" = FALSE})
+     */
+    private $bonusComputed = false;
+
+    /**
      * @var boolean if true the cost was already computed and the trip will be
      *      exluded from the cost computation script (it could happen that for
      *      old trips the cost was computed but the flag is still false)
@@ -952,6 +960,27 @@ class Trips
     {
         $this->parent = $parent;
         return $this;
+    }
+
+    /**
+     * sets the trip as bonus computed
+     *
+     * @param boolean $bonusComputed
+     * @return Trips
+     */
+    public function setBonusComputed($bonusComputed)
+    {
+        $this->bonusComputed = $bonusComputed;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getBonusComputed()
+    {
+        return $this->bonusComputed;
     }
 
     /**

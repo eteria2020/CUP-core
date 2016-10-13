@@ -5,12 +5,12 @@ namespace SharengoCore\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * ZoneAlarms
+ * ZoneBonus
  *
- * @ORM\Table(name="zone_alarms")
- * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\ZoneAlarmsRepository")
+ * @ORM\Table(name="zone_bonus")
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\ZoneBonusRepository")
  */
-class ZoneAlarms
+class ZoneBonus
 {
     /**
      * @var integer
@@ -18,14 +18,14 @@ class ZoneAlarms
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="SEQUENCE")
-     * @ORM\SequenceGenerator(sequenceName="zone_alarms_id_seq", allocationSize=1, initialValue=1)
+     * @ORM\SequenceGenerator(sequenceName="zone_bonus_id_seq", allocationSize=1, initialValue=1)
      */
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="geo", type="string", nullable=false)
+     * @ORM\Column(name="geo", type="text", nullable=false)
      */
     private $geo;
 
@@ -39,16 +39,30 @@ class ZoneAlarms
     /**
      * @var SharengoCore\Entity\Fleet[]
      *
-     * @ORM\ManyToMany(targetEntity="Fleet", mappedBy="zoneAlarms")
+     * @ORM\ManyToMany(targetEntity="Fleet", mappedBy="zoneBonus")
      */
     private $fleets;
 
     /**
-     * @var $string
+     * @var string
      *
-     * @ORM\Column(name="description", type="string", nullable=true)
+     * @ORM\Column(name="description", type="text", nullable=true)
      */
     private $description;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="bonus_type", type="text", nullable=false)
+     */
+    private $bonusType;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="conditions", type="text", nullable=true)
+     */
+    private $conditions;
 
     /**
      * @return integer
@@ -78,7 +92,7 @@ class ZoneAlarms
      *
      * @param string $geo
      *
-     * @return ZoneAlarms
+     * @return ZoneBonus
      */
     public function setGeo($geo)
     {
@@ -98,11 +112,59 @@ class ZoneAlarms
     }
 
     /**
+     * Set bonusType
+     *
+     * @param string $bonusType
+     *
+     * @return ZoneBonus
+     */
+    public function setBonusType($bonusType)
+    {
+        $this->bonusType = $bonusType;
+
+        return $this;
+    }
+
+    /**
+     * Get bonusType
+     *
+     * @return string
+     */
+    public function getBonusType()
+    {
+        return $this->bonusType;
+    }
+
+    /**
+     * Set conditions
+     *
+     * @param string $conditions
+     *
+     * @return ZoneBonus
+     */
+    public function setConditions($conditions)
+    {
+        $this->conditions = $conditions;
+
+        return $this;
+    }
+
+    /**
+     * Get conditions
+     *
+     * @return string
+     */
+    public function getConditions()
+    {
+        return $this->conditions;
+    }
+
+    /**
      * Set active
      *
      * @param boolean $active
      *
-     * @return ZoneAlarms
+     * @return ZoneBonus
      */
     public function setActive($active)
     {
@@ -136,7 +198,7 @@ class ZoneAlarms
      *
      * @param \SharengoCore\Entity\Fleet $fleet
      *
-     * @return ZoneAlarms
+     * @return ZoneBonus
      */
     public function addFleet(\SharengoCore\Entity\Fleet $fleet)
     {

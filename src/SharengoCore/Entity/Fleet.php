@@ -97,6 +97,23 @@ class Fleet
     private $zoneAlarms;
 
 
+    /**
+     * @var ZoneAlarms[]
+     *
+     * @ORM\ManyToMany(targetEntity="ZoneBonus", inversedBy="fleets")
+     * @ORM\JoinTable(
+     *  name="zone_bonus_fleets",
+     *  inverseJoinColumns={
+     *      @ORM\JoinColumn(name="zone_bonus_id", referencedColumnName="id")
+     *  },
+     *  joinColumns={
+     *      @ORM\JoinColumn(name="fleet_id", referencedColumnName="id")
+     *  }
+     * )
+     */
+    private $zoneBonus;
+
+
     public function __construct($code, $name, $latitude, $longitude, $zoomLevel, $isDefault = false)
     {
         $this->code = $code;

@@ -209,6 +209,18 @@ class EditTripsService
 
     /**
      * @param Trips $trip
+     * @param boolean $bonusComputed
+     */
+    public function doEditTripBonusComputed(Trips $trip, $bonusComputed)
+    {
+        $trip->setBonusComputed($bonusComputed);
+
+        $this->entityManager->persist($trip);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @param Trips $trip
      */
     private function deleteTripBills(Trips $trip)
     {
