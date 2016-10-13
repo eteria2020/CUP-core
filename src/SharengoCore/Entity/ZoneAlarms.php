@@ -25,7 +25,7 @@ class ZoneAlarms
     /**
      * @var string
      *
-     * @ORM\Column(name="geo", type="text", nullable=false)
+     * @ORM\Column(name="geo", type="string", nullable=false)
      */
     private $geo;
 
@@ -46,7 +46,7 @@ class ZoneAlarms
     /**
      * @var $string
      *
-     * @ORM\Column(name="description", type="text", nullable=true)
+     * @ORM\Column(name="description", type="string", nullable=true)
      */
     private $description;
 

@@ -23,7 +23,7 @@ class Fleet
      * @ORM\SequenceGenerator(sequenceName="fleet_id_seq", allocationSize=1, initialValue=1)
      */
     private $id;
-   
+
     /**
      * @var string
      *
@@ -91,12 +91,12 @@ class Fleet
      *  },
      *  joinColumns={
      *      @ORM\JoinColumn(name="fleet_id", referencedColumnName="id")
-     *  }    
+     *  }
      * )
      */
     private $zoneAlarms;
-    
-    
+
+
     /**
      * @var ZoneAlarms[]
      *
@@ -108,7 +108,7 @@ class Fleet
      *  },
      *  joinColumns={
      *      @ORM\JoinColumn(name="fleet_id", referencedColumnName="id")
-     *  }    
+     *  }
      * )
      */
     private $zoneBonus;
