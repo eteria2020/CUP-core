@@ -157,7 +157,7 @@ class TripCostComputerService
         $freeFare = new FreeFares();
         $freeFare->setConditions('{"customer":{"gender":"female"},"time":{"from":"01:00","to":"06:00"}}');
 
-        $this->freeFareRepository->shouldReceive('findAll')->andReturn([$freeFare]);
+        $this->freeFareRepository->shouldReceive('findAllActive')->andReturn([$freeFare]);
 
         $this->bonusRepository->shouldReceive('getBonusesForTrip')->andReturn([$bonus]);
 
