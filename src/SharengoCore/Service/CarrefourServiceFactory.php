@@ -13,11 +13,13 @@ class CarrefourServiceFactory implements FactoryInterface
         $repository = $entityManager->getRepository('\SharengoCore\Entity\CarrefourUsedCode');
         $config = $serviceLocator->get('Config');
         $pcConfig = $config['carrefour'];
+        $pcMarketConfig = $config['carrefourMarket'];
 
         return new CarrefourService(
             $entityManager,
             $repository,
-            $pcConfig
+            $pcConfig,
+            $pcMarketConfig
         );
     }
 }
