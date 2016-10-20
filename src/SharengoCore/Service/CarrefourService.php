@@ -28,6 +28,11 @@ class CarrefourService
     private $pcConfig;
 
     /**
+     * @var mixed[]
+     */
+    private $pcMarketConfig;
+
+    /**
      * @param EntityManager $entityManager
      * @param CarrefourUsedCodeRepository $repository
      * @param mixed[] $pcConfig
@@ -35,11 +40,13 @@ class CarrefourService
     public function __construct(
         EntityManager $entityManager,
         CarrefourUsedCodeRepository $repository,
-        array $pcConfig
+        array $pcConfig,
+        array $pcMarketConfig
     ) {
         $this->entityManager = $entityManager;
         $this->repository = $repository;
         $this->pcConfig = $pcConfig;
+        $this->pcMarketConfig = $pcMarketConfig;
     }
 
     /**
@@ -137,11 +144,21 @@ class CarrefourService
         Customers $customer,
         $code
     ) {
+        $minutes = $this->pcConfig['minutes'];
+        $description = $this->pcConfig['description'];
+        $validFor = $this->pcConfig['validFor'];
+
+        if($this->isMarket($code)){
+            $minutes = $this->pcMarketConfig['minutes'];
+            $description = $this->pcMarketConfig['description'];
+            $validFor = $this->pcMarketConfig['validFor'];
+        }
+
         $customersBonus = CustomersBonus::createBonus(
             $customer,
-            $this->pcConfig['minutes'],
-            $this->pcConfig['description'],
-            $this->pcConfig['validFor']
+            $minutes,
+            $description,
+            $validFor
         );
         $this->entityManager->persist($customersBonus);
 
@@ -155,5 +172,22 @@ class CarrefourService
         $this->entityManager->flush();
 
         return $carrefourUsedCode;
+    }
+
+    /**
+     * @param string $code
+     * @return CarrefourUsedCode
+     */
+    private function isMarket($code){
+        $result = FALSE;
+
+        try {
+            $pieces = explode('-', $code);
+            if(array_key_exists($pieces[0], $this->pcMarketConfig['shops'])) {
+                $result = TRUE;
+            }
+        } catch (Exception $ex) {}
+
+        return $result;
     }
 }
