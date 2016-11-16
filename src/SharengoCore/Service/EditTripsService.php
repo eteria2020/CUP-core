@@ -10,6 +10,7 @@ use SharengoCore\Entity\TripPaymentsCanceled;
 use SharengoCore\Entity\TripPaymentTriesCanceled;
 use SharengoCore\Entity\Webuser;
 use SharengoCore\Exception\EditTripDeniedException;
+use SharengoCore\Exception\EditTripDeniedForScriptException;
 
 use Doctrine\ORM\EntityManager;
 
@@ -61,6 +62,11 @@ class EditTripsService
     private $customersService;
 
     /**
+     * @var PaymentScriptRunsService
+     */
+    private $paymentScriptRunsService;
+
+    /**
      * @param EntityManager $entityManager
      * @param TripBillsRepository $tripBillsRepository
      * @param TripFreeFaresRepository $tripFreeFaresRepository
@@ -80,7 +86,8 @@ class EditTripsService
         TripCostService $tripCostService,
         TripPaymentsService $tripPaymentsService,
         TripPaymentTriesService $tripPaymentTriesService,
-        CustomersService $customersService
+        CustomersService $customersService,
+        PaymentScriptRunsService $paymentScriptRunsService
     ) {
         $this->entityManager = $entityManager;
         $this->tripBillsRepository = $tripBillsRepository;
@@ -91,6 +98,7 @@ class EditTripsService
         $this->tripPaymentsService = $tripPaymentsService;
         $this->tripPaymentTriesService = $tripPaymentTriesService;
         $this->customersService = $customersService;
+        $this->paymentScriptRunsService = $paymentScriptRunsService;
     }
 
     /**
@@ -118,7 +126,7 @@ class EditTripsService
         $endDate = null,
         Webuser $webuser = null
     ) {
-        $trip->checkIfEditable($endDate);
+        $this->checkIfEditable($trip, $endDate);
 
         $this->entityManager->beginTransaction();
 
@@ -154,6 +162,15 @@ class EditTripsService
             $this->entityManager->rollback();
             throw $e;
         }
+    }
+
+    private function checkIfEditable(Trips $trip, $endDate)
+    {
+        if ($this->paymentScriptRunsService->isScriptRunning() && $trip->getTripPayment() !== null) {
+            throw new EditTripDeniedForScriptException();
+        }
+
+        $trip->checkIfEditable($endDate);
     }
 
     /**
