@@ -20,7 +20,7 @@ class PaymentScriptRunsService
     {
         $statement = $this->connection->executeQuery(
             'INSERT INTO payment_script_runs (start_ts) VALUES (:start) RETURNING id',
-            ['start' => date_create()]
+            ['start' => date_create()->format('Y-m-d H:i:s')]
         );
 
         return $statement->fetchColumn();
@@ -28,12 +28,10 @@ class PaymentScriptRunsService
 
     public function scriptEnded($id)
     {
-        $statement = $this->connection->update(
-            'UPDATE payment_script_runs SET end_ts = :end WHERE id = :id',
-            [
-                'end' => date_create(),
-                'id' => $id
-            ]
+        $this->connection->update(
+            'payment_script_runs',
+            ['end_ts' => date_create()->format('Y-m-d H:i:s')],
+            ['id' => $id]
         );
     }
 
