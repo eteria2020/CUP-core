@@ -245,6 +245,7 @@ return [
             'SharengoCore\Service\NotificationsCategories\SOSCategoryService' => 'SharengoCore\Service\NotificationsCategories\SOSCategoryServiceFactory',
             'SharengoCore\Service\CarrefourService' => 'SharengoCore\Service\CarrefourServiceFactory',
             'SharengoCore\Service\DriversLicenseValidationService' => 'SharengoCore\Service\DriversLicenseValidationServiceFactory',
+            'SharengoCore\Service\PaymentScriptRunsService' => 'SharengoCore\Service\PaymentScriptRunsServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
             'SharengoCore\Listener\DisableContractListener' => 'SharengoCore\Listener\DisableContractListenerFactory',
