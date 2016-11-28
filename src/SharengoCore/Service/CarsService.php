@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Cars;
 use SharengoCore\Entity\CarsMaintenance;
+use SharengoCore\Entity\Fleet;
 use SharengoCore\Entity\Repository\CarsRepository;
 use SharengoCore\Entity\Repository\CarsDamagesRepository;
 use SharengoCore\Entity\Repository\CarsMaintenanceRepository;
@@ -137,6 +138,23 @@ class CarsService
     public function getPublicCars()
     {
         return $this->carsRepository->findPublicCars();
+    }
+
+    public function getPublicFreeCarsByFleet(Fleet $fleet)
+    {
+        return array_map(function (Cars $cars) {
+            return [
+                'plate' => $cars->getPlate(),
+                'label' => $cars->getLabel(),
+                'battery' => $cars->getBattery(),
+                'km' => $cars->getKm(),
+                'status' => $cars->getStatus(),
+                'intCleanliness' => $cars->getIntCleanliness(),
+                'extCleanliness' => $cars->getExtCleanliness(),
+                'latitude' => $cars->getLatitude(),
+                'longitude' => $cars->getLongitude()
+            ];
+        }, $this->carsRepository->findPublicFreeCarsByFleet($fleet));
     }
 
     /**
