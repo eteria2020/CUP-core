@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use Doctrine\ORM\EntityManager;
 use SharengoCore\Entity\Pois;
+use SharengoCore\Entity\Fleet;
 use SharengoCore\Entity\Repository\PoisRepository;
 
 class PoisService
@@ -54,6 +55,23 @@ class PoisService
     public function getPoiById($id)
     {
         return $this->poisRepository->find($id);
+    }
+
+    public function getPublicPoisByFleet(Fleet $fleet){
+        return array_map(function (Pois $poi) {
+            return [
+                'id' => $poi->getId(),
+                'type' => $poi->getType(),
+                'code' => $poi->getCode(),
+                'name' => $poi->getName(),
+                'address' => $poi->getAddress(),
+                'town' => $poi->getTown(),
+                'zipCode' => $poi->getZipCode(),
+                'province' => $poi->getProvince(),
+                'latitude' => $poi->getLat(),
+                'longitude' => $poi->getLon()
+            ];
+        }, $this->poisRepository->findByFleet($fleet));
     }
 
     public function saveData(Pois $poi, $update = false)

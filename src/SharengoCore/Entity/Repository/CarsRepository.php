@@ -53,6 +53,38 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    public function findPublicFreeCarsByFleet($fleet)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT c
+        FROM \SharengoCore\Entity\Cars c
+        LEFT JOIN c.fleet f
+        WHERE c.status = 'operative'
+        AND c NOT IN (
+            SELECT DISTINCT c1
+            FROM \SharengoCore\Entity\Trips t
+            JOIN t.car c1
+            WHERE t.timestampEnd IS NULL
+        )
+        AND c NOT IN (
+            SELECT DISTINCT c2
+            FROM \SharengoCore\Entity\Reservations r
+            JOIN r.car c2
+            WHERE r.active = true
+        )
+        AND c.active = true
+        AND c.hidden = false
+        AND c.longitude != 0
+        AND c.latitude != 0
+        AND f = :fleet";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('fleet', $fleet);
+
+        return $query->getResult();
+    }
+
     /**
      * @param Cars
      * @return bool whether the car is or not inside the zones associated to its fleet
