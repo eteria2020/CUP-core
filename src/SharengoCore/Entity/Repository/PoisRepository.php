@@ -23,7 +23,7 @@ class PoisRepository extends EntityRepository
 
         $dql = "SELECT p
         FROM \SharengoCore\Entity\Pois p
-        LEFT JOIN \SharengoCore\Entity\Fleet f WITH p.town = f.name
+        LEFT JOIN \SharengoCore\Entity\Fleet f WITH LOWER(p.town) = LOWER(f.name)
         WHERE f = :fleet";
 
         $query = $em->createQuery($dql);
