@@ -61,11 +61,11 @@ final class UploadedDriversLicenseMailSender implements SharedListenerAggregateI
     {
         $this->emailService->sendEmail(
             $this->notifyTo,
-            'SHARENGO - nuovo upload patente straniera ' .
+            'SHARENGO - nuovo upload documento straniero ' .
             $customer->getId() . ' - ' . $customer->getName() . ' ' . $customer->getSurname(),
             'Il cliente ' . $customer->getName() . ' ' . $customer->getSurname() .
             ' con id ' . $customer->getId() .
-            ' ha effettuato il caricamento di una copia della sua patente ' .
+            ' ha effettuato il caricamento di una copia della sua licenza di guida ' .
             'straniera. E\' necessario procedere alla validazione manuale'
         );
     }
