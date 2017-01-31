@@ -101,6 +101,32 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    /**
+     * selects the trips that need to be
+     * processed for the bonus computation
+     *
+     * @return Trips[]
+     */
+    public function findTripsForBonusParkComputation($datestamp)
+    {   
+        $dateStart = date_create($datestamp.' 00:00:00');
+        $dateEnd = date_create($datestamp.' 23:59:59');
+        
+            $dql =  "SELECT t FROM \SharengoCore\Entity\Trips t ".
+            //t.isAccounted = true ". //only trips that were already processed by the accounting trips
+            //"WHERE t.bonusComputed = false ". //only trips that were not already processed by the bonus computing script
+            //"AND t.parkSeconds > 0 ". //only trips with parking time
+            "WHERE t.timestampEnd >= :dateStart AND t.timestampEnd <= :dateEnd ".
+            "AND t.timestampEnd IS NOT NULL ". //only trips finished
+            "AND t.longitudeEnd > 0 AND t.latitudeEnd > 0 ".
+            "ORDER BY t.timestampEnd ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('dateStart', date_sub($dateStart, date_interval_create_from_date_string('1 days')));
+        $query->setParameter('dateEnd', date_sub($dateEnd, date_interval_create_from_date_string('1 days')));
+        return $query->getResult();
+    }
+    
     public function findCustomerTripsToBeAccounted(Customers $customer)
     {
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
