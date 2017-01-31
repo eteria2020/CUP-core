@@ -35,11 +35,13 @@ class TripFaresService
      * @param int $tripMinutes includes the parking minutes
      * @param int $parkMinutes
      */
-    private function tripCost(Fares $fare, $tripMinutes, $parkMinutes)
+    private function tripCost(Fares $fare, $tripMinutes, $parkMinutes, $discountPercentage)
     {
+        $discount =(100 - $discountPercentage) / 100;
+        
         return min(
-            $this->minutesToEuros($fare, $tripMinutes),
-            $this->minutesToEuros($fare, $tripMinutes - $parkMinutes) + $parkMinutes * $fare->getParkCostPerMinute()
+            $this->minutesToEuros($fare, $tripMinutes) * $discount,
+            ($this->minutesToEuros($fare, $tripMinutes - $parkMinutes) * $discount) + ($parkMinutes * $fare->getParkCostPerMinute())
         );
     }
 
@@ -54,6 +56,6 @@ class TripFaresService
      */
     public function userTripCost(Fares $fare, $tripMinutes, $parkMinutes, $discountPercentage)
     {
-        return round($this->tripCost($fare, $tripMinutes, $parkMinutes) * (100 - $discountPercentage) / 100);
+        return round($this->tripCost($fare, $tripMinutes, $parkMinutes, $discountPercentage));
     }
 }
