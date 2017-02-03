@@ -29,13 +29,14 @@ class TripFaresService
     }
 
     /**
-     * computes the cost of a trip considering the minutes of parking
+     * computes the cost of a trip considering the minutes of parking, 
+     * but apply the discont only trip minutes (no parking)
      *
      * @param Fares $fare
      * @param int $tripMinutes includes the parking minutes
      * @param int $parkMinutes
      */
-    private function tripCost(Fares $fare, $tripMinutes, $parkMinutes, $discountPercentage)
+    private function tripCostNoParkingDiscount(Fares $fare, $tripMinutes, $parkMinutes, $discountPercentage)
     {
         $discount =(100 - $discountPercentage) / 100;
         
@@ -56,6 +57,6 @@ class TripFaresService
      */
     public function userTripCost(Fares $fare, $tripMinutes, $parkMinutes, $discountPercentage)
     {
-        return round($this->tripCost($fare, $tripMinutes, $parkMinutes, $discountPercentage));
+        return round($this->tripCostNoParkingDiscount($fare, $tripMinutes, $parkMinutes, $discountPercentage));
     }
 }
