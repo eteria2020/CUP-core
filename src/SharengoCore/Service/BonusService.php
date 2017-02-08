@@ -128,4 +128,14 @@ class BonusService
     {
         return $this->bonusRepository->findOneById($id);
     }
+    
+    /** 
+     *  @param string $carplate
+     *  @param integer $customer
+     *  @return Bonus
+     */
+    public function verifyBonusPoisAssigned($carplate, $customer)
+    {
+        return $this->bonusRepository->getBonusPoisAssigned($carplate, $customer);
+    }
 }

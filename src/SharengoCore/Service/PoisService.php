@@ -74,6 +74,17 @@ class PoisService
         }, $this->poisRepository->findByFleet($fleet));
     }
 
+    public function checkPointInDigitalIslands($fleet, $latitude, $longitude, $radius){
+        
+            $inside = $this->poisRepository->verifyPoisBonusPark($fleet, $latitude, $longitude, $radius);
+
+            if (count($inside) == 0) {
+                return false;
+            } else {
+                return true;
+            }
+    }
+    
     public function saveData(Pois $poi, $update = false)
     {
         if(!$update){

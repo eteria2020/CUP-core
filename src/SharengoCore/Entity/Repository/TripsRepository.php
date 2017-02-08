@@ -103,8 +103,9 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
 
     /**
      * selects the trips that need to be
-     * processed for the bonus computation
-     *
+     * processed for the bonus computation park
+     * at a given date
+     * 
      * @return Trips[]
      */
     public function findTripsForBonusParkComputation($datestamp)
@@ -114,10 +115,9 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         
             $dql =  "SELECT t FROM \SharengoCore\Entity\Trips t ".
             //t.isAccounted = true ". //only trips that were already processed by the accounting trips
-            //"WHERE t.bonusComputed = false ". //only trips that were not already processed by the bonus computing script
-            //"AND t.parkSeconds > 0 ". //only trips with parking time
-            "WHERE t.timestampEnd >= :dateStart AND t.timestampEnd <= :dateEnd ".
+            "WHERE t.timestampEnd >= :dateStart AND t.timestampEnd <= :dateEnd ". //date
             "AND t.timestampEnd IS NOT NULL ". //only trips finished
+            "AND t.batteryEnd IS NOT NULL AND t.batteryEnd < 25 ". //battery level end trip
             "AND t.longitudeEnd > 0 AND t.latitudeEnd > 0 ".
             "ORDER BY t.timestampEnd ASC";
 
