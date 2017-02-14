@@ -105,16 +105,16 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
      * selects the trips that need to be
      * processed for the bonus computation park
      * at a given date
-     * 
+     *
      * @return Trips[]
      */
     public function findTripsForBonusParkComputation($datestamp)
-    {   
+    {
         $dateStart = date_create($datestamp.' 00:00:00');
         $dateEnd = date_create($datestamp.' 23:59:59');
-        
+
             $dql =  "SELECT t FROM \SharengoCore\Entity\Trips t ".
-                    "LEFT JOIN \SharengoCore\Entity\TripPayments tp  WITH t.id = tp.trip ".
+                    "LEFT JOIN \SharengoCore\Entity\TripPayments tp WITH t.id = tp.trip ".
                     "WHERE t.timestampEnd >= :dateStart AND t.timestampEnd <= :dateEnd ". //date
                     "AND tp.status = :status ".
                     "AND t.timestampEnd IS NOT NULL ". //only trips finished
@@ -128,7 +128,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('dateEnd', date_sub($dateEnd, date_interval_create_from_date_string('1 days')));
         return $query->getResult();
     }
-    
+
     public function findCustomerTripsToBeAccounted(Customers $customer)
     {
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
