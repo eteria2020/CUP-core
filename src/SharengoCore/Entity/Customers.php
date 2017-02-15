@@ -426,6 +426,20 @@ class Customers
      */
     private $subscriptionPayments;
 
+    /**
+     * Bidirectional - One-To-Many (INVERSE SIDE)
+     *
+     * @ORM\OneToMany(targetEntity="OldCustomerDiscount", mappedBy="customer")
+     */
+    private $oldDiscounts;
+
+    /**
+     * Bidirectional - One-To-One (INVERSE SIDE)
+     *
+     * @ORM\OneToOne(targetEntity="DiscountStatus", mappedBy="customer")
+     */
+    private $discountStatus;
+
 
     public function __construct()
     {
@@ -1541,6 +1555,17 @@ class Customers
         return $this->card;
     }
 
+
+    /**
+     * Get Cards rfid
+     *
+     * @return string
+     */
+    public function getCardRfid()
+    {
+        return $this->card->getRfid();
+    }
+
     /**
      * Get list of customer bonuses
      *
@@ -1790,7 +1815,7 @@ class Customers
      */
     public function payedSubscriptionAmount($defaultAmount)
     {
-        if (empty($this->subscriptionPayments)) {
+        if ($this->subscriptionPayments->isEmpty()) {
             return $this->getSubscriptionAmount($defaultAmount);
         }
 
@@ -1849,5 +1874,43 @@ class Customers
         $pins['companyPinDisabled'] = false;
         $pins['disabledReason'] = '';
         $this->pin = json_encode($pins);
+    }
+
+    /**
+     * @return bool
+     */
+    public function deservesNewDiscount()
+    {
+        return $this->discountRate == 0 && // has 0% discount
+            ($this->insertedTs >= date_create('18 april 2016') // registered after 18/04/2016
+            || !$this->oldDiscounts->isEmpty()); // has a discount already expired
+    }
+
+    /**
+     * return bool
+     */
+    public function hasDiscountStatus()
+    {
+        return isset($this->discountStatus);
+    }
+
+    /**
+     * @return null|DiscountStatus
+     */
+    public function discountStatus()
+    {
+        return $this->discountStatus;
+    }
+
+    /**
+     * @return string
+     */
+    public function discountStatusValue()
+    {
+        if (!$this->hasDiscountStatus()) {
+            return '';
+        }
+
+        return $this->discountStatus->status();
     }
 }

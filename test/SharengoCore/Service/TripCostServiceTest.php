@@ -25,6 +25,11 @@ class TripCostServiceTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+
     public function parkMinutesProvider()
     {
         return [

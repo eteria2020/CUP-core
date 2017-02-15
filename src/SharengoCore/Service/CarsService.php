@@ -2,46 +2,56 @@
 
 namespace SharengoCore\Service;
 
-// Internals
 use SharengoCore\Entity\Cars;
 use SharengoCore\Entity\CarsMaintenance;
+use SharengoCore\Entity\Fleet;
 use SharengoCore\Entity\Repository\CarsRepository;
 use SharengoCore\Entity\Repository\CarsDamagesRepository;
-use SharengoCore\Entity\Repository\FleetRepository;
 use SharengoCore\Entity\Repository\CarsMaintenanceRepository;
+use SharengoCore\Entity\Repository\FleetRepository;
+use SharengoCore\Entity\Webuser;
 use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\ReservationsService;
 use SharengoCore\Utility\CarStatus;
-// Externals
-use BjyAuthorize\Service\Authorize;
+
 use Doctrine\ORM\EntityManager;
-use Zend\Authentication\AuthenticationService as UserService;
 use Zend\Mvc\I18n\Translator;
 
 class CarsService
 {
-    /** @var EntityManager */
+    /**
+     * @var EntityManager
+     */
     private $entityManager;
 
-    /** @var CarsRepository */
+    /**
+     * @var CarsRepository
+     */
     private $carsRepository;
 
-    /** @var CarsMaintenance */
+    /**
+     * @var CarsMaintenanceRepository
+     */
     private $carsMaintenanceRepository;
 
-    /** @var FleetsRepository */
+    /**
+     * @var FleetsRepository
+     */
     private $fleetsRepository;
 
-    /** @var DatatableServiceInterface */
+    /**
+     * @var DatatableServiceInterface
+     */
     private $datatableService;
 
-    /** @var UserService */
-    private $userService;
-
-    /** @var ReservationsService */
+    /**
+     * @var ReservationsService
+     */
     private $reservationsService;
 
-    /** @var Translator */
+    /**
+     * @var Translator
+     */
     private $translator;
 
     /**
@@ -50,7 +60,6 @@ class CarsService
      * @param CarsMaintenance $carsMaintenanceRepository
      * @param FleetsRepository $fleetsRepository
      * @param DatatableServiceInterface $datatableService
-     * @param UserService $userService
      * @param Translator $translator
      */
     public function __construct(
@@ -60,7 +69,6 @@ class CarsService
         CarsDamagesRepository $carsDamagesRepository,
         FleetRepository $fleetsRepository,
         DatatableServiceInterface $datatableService,
-        UserService $userService,
         ReservationsService $reservationsService,
         Translator $translator
     ) {
@@ -70,56 +78,99 @@ class CarsService
         $this->carsDamagesRepository = $carsDamagesRepository;
         $this->fleetsRepository = $fleetsRepository;
         $this->datatableService = $datatableService;
-        $this->userService = $userService;
         $this->reservationsService = $reservationsService;
         $this->translator = $translator;
     }
 
-
     /**
-     * @return mixed
+     * @return Cars[]
      */
     public function getListCars()
     {
         return $this->carsRepository->findAll();
     }
 
+    /**
+     * @return Fleets[]
+     */
     public function getFleets()
     {
         return $this->fleetsRepository->findAll();
     }
 
+    /**
+     * @param integer $fleetId
+     * @return Fleet
+     */
     public function getFleet($fleetId)
     {
         return $this->fleetsRepository->find($fleetId);
     }
 
+    /**
+     * @return integer
+     */
     public function getTotalCars()
     {
         return $this->carsRepository->getTotalCars();
     }
 
+    /**
+     * @param array|null $filters
+     * @return Cars[]
+     */
     public function getListCarsFiltered($filters = [])
     {
         return $this->carsRepository->findBy($filters, ['plate' => 'ASC']);
     }
 
+    /**
+     * @return Cars[]
+     */
     public function getCarsEligibleForAlarmCheck()
     {
         return $this->carsRepository->findCarsEligibleForAlarmCheck();
     }
 
+    /**
+     * @return Cars[]
+     */
     public function getPublicCars()
     {
         return $this->carsRepository->findPublicCars();
     }
 
+    public function getPublicFreeCarsByFleet(Fleet $fleet)
+    {
+        return array_map(function (Cars $cars) {
+            return [
+                'plate' => $cars->getPlate(),
+                'label' => $cars->getLabel(),
+                'battery' => $cars->getBattery(),
+                'km' => $cars->getKm(),
+                'status' => $cars->getStatus(),
+                'intCleanliness' => $cars->getIntCleanliness(),
+                'extCleanliness' => $cars->getExtCleanliness(),
+                'latitude' => $cars->getLatitude(),
+                'longitude' => $cars->getLongitude()
+            ];
+        }, $this->carsRepository->findPublicFreeCarsByFleet($fleet));
+    }
+
+    /**
+     * @param string $plate
+     * @return Cars
+     */
     public function getCarByPlate($plate)
     {
-
         return $this->carsRepository->find($plate);
     }
 
+    /**
+     * @param array|null $as_filters
+     * @param boolean $count
+     * @return mixed|integer
+     */
     public function getDataDataTable(array $as_filters = [], $count = false)
     {
         $cars = $this->datatableService->getData('Cars', $as_filters, $count);
@@ -146,6 +197,7 @@ class CarsService
                     'lastContact' => is_object($cars->getLastContact()) ? $cars->getLastContact()->format('d-m-Y H:i:s') : '',
                     'km' => $cars->getKm(),
                     'status' => $cars->getStatus(),
+                    'hidden' => $cars->getHidden(),
                 ],
                 'f' => [
                     'name' => $cars->getFleet()->getName(),
@@ -163,6 +215,11 @@ class CarsService
         }, $cars);
     }
 
+    /**
+     * @param Cars $cars
+     * @param boolean|null $defaultData
+     * @return Cars[]
+     */
     public function saveData(Cars $cars, $defaultData = true)
     {
         $cars->setPlate(strtoupper($cars->getPlate()));
@@ -178,7 +235,13 @@ class CarsService
         return $cars;
     }
 
-    public function updateCar(Cars $car, $lastStatus, $postData)
+    /**
+     * @param Cars $car
+     * @param string $lastStatus
+     * @param mixed[] $postData
+     * @param Webuser $webuser
+     */
+    public function updateCar(Cars $car, $lastStatus, $postData, Webuser $webuser)
     {
         $location = !empty($postData['location']) ? $postData['location'] : null;
 
@@ -189,7 +252,7 @@ class CarsService
             $carsMaintenance->setLocation($location);
             $carsMaintenance->setNotes($postData['note']);
             $carsMaintenance->setUpdateTs(new \DateTime());
-            $carsMaintenance->setWebuser($this->userService->getIdentity());
+            $carsMaintenance->setWebuser($webuser);
             $this->entityManager->persist($carsMaintenance);
         }
 
@@ -226,6 +289,15 @@ class CarsService
                         if (null != $maintenanceReservation) {
                             $maintenanceReservation->setActive(false);
                             $maintenanceReservation->setTosend(true);
+
+                            // Update CarsMaintenance endTs if necessary
+                            $maintenance = $this->getLastCarsMaintenance($car->getPlate());
+                            if ($maintenance instanceof CarsMaintenance && !$maintenance->isEnded()) {
+
+                                $maintenance->setEndWebuser($webuser);
+                                $maintenance->setEndTs(date_create());
+                                $this->entityManager->persist($maintenance);
+                            }
                         }
                     }
                     break;
@@ -238,9 +310,13 @@ class CarsService
         }
 
         $this->entityManager->flush();
-
     }
 
+    /**
+     * @param Cars $car
+     * @param array|null $damages
+     * @return Cars
+     */
     public function updateDamages(Cars $car, array $damages = null)
     {
         $car->setDamages($damages);
@@ -249,12 +325,19 @@ class CarsService
         return $car;
     }
 
+    /**
+     * @param Cars $car
+     */
     public function deleteCar(Cars $car)
     {
         $this->entityManager->remove($car);
         $this->entityManager->flush();
     }
 
+    /**
+     * @param string $status
+     * @return array
+     */
     public function getStatusCarAvailable($status)
     {
 
@@ -279,9 +362,12 @@ class CarsService
         }
 
         return [];
-
     }
 
+    /**
+     * @param string $plate
+     * @return CarsMaintenance
+     */
     public function getLastCarsMaintenance($plate)
     {
         return $this->carsMaintenanceRepository->findLastCarsMaintenance($plate);
@@ -296,6 +382,9 @@ class CarsService
         return !$this->carsRepository->checkCarInFleetZones($car);
     }
 
+    /**
+     * @return CarsDamages
+     */
     public function getDamagesList()
     {
         return $this->carsDamagesRepository->findAll();

@@ -60,6 +60,15 @@ return [
                             ]
                         ]
                     ],
+                    'user-discount' => [
+                        'type' => 'Literal',
+                        'options' => [
+                            'route' => '/user-discount',
+                            'defaults' => [
+                                'controller' => 'CustomersDiscount'
+                            ]
+                        ]
+                    ],
                     'reservations' => [
                         'type' => 'Segment',
                         'options' => [
@@ -150,6 +159,7 @@ return [
         'factories' => [
             'SharengoCore\Controller\Cars'             => 'SharengoCore\Controller\CarsControllerFactory',
             'SharengoCore\Controller\Customers'        => 'SharengoCore\Controller\CustomersControllerFactory',
+            'SharengoCore\Controller\CustomersDiscount'=> 'SharengoCore\Controller\CustomersDiscountControllerFactory',
             'SharengoCore\Controller\Pois'             => 'SharengoCore\Controller\PoisControllerFactory',
             'SharengoCore\Controller\Reservations'     => 'SharengoCore\Controller\ReservationsControllerFactory',
             'SharengoCore\Controller\Trips'            => 'SharengoCore\Controller\TripsControllerFactory',
@@ -161,7 +171,11 @@ return [
             'SharengoCore\Controller\Municipalities' => 'SharengoCore\Controller\MunicipalitiesControllerFactory',
         ],
     ],
-
+    'controller_plugins' => [
+        'invokables' => [
+            'RequestFromServer' => 'SharengoCore\Controller\Plugin\RequestFromServer',
+        ],
+    ],
     'service_manager' => [
         'invokables' => [
             'SharengoCore\Service\DatatableQueryBuilder' => 'SharengoCore\Service\DatatableQueryBuilders\Basic',
@@ -183,6 +197,7 @@ return [
             'SharengoCore\Service\PoisService' => 'SharengoCore\Service\PoisServiceFactory',
             'SharengoCore\Service\ReservationsService' => 'SharengoCore\Service\ReservationsServiceFactory',
             'SharengoCore\Service\PromoCodesService' => 'SharengoCore\Service\PromoCodesServiceFactory',
+            'SharengoCore\Service\PromoCodesOnceService' => 'SharengoCore\Service\PromoCodesOnceServiceFactory',
             'SharengoCore\Service\CardsService' => 'SharengoCore\Service\CardsServiceFactory',
             'SharengoCore\Service\BonusService' => 'SharengoCore\Service\BonusServiceFactory',
             'SharengoCore\Service\AccountTripsService' => 'SharengoCore\Service\AccountTripsServiceFactory',
@@ -211,14 +226,26 @@ return [
             'SharengoCore\Service\RecapService' => 'SharengoCore\Service\RecapServiceFactory',
             'SharengoCore\Service\CustomerNoteService' => 'SharengoCore\Service\CustomerNoteServiceFactory',
             'SharengoCore\Service\ConfigurationsService' => 'SharengoCore\Service\ConfigurationsServiceFactory',
+            'SharengoCore\Service\CarsConfigurationsService' => 'SharengoCore\Service\CarsConfigurationsServiceFactory',
             'SharengoCore\Service\ZonesService' => 'SharengoCore\Service\ZonesServiceFactory',
             'SharengoCore\Service\CustomerDeactivationService' => 'SharengoCore\Service\CustomerDeactivationServiceFactory',
             'SharengoCore\Service\MunicipalitiesService' => 'SharengoCore\Service\MunicipalitiesServiceFactory',
             'SharengoCore\Service\CartasiCsvAnalyzeService' => 'SharengoCore\Service\CartasiCsvAnalyzeServiceFactory',
             'SharengoCore\Service\ForeignDriversLicenseService' => 'SharengoCore\Service\ForeignDriversLicenseServiceFactory',
             'SharengoCore\Service\ValidateForeignDriversLicenseService' => 'SharengoCore\Service\ValidateForeignDriversLicenseServiceFactory',
+            'SharengoCore\Service\PostGisService' => 'SharengoCore\Service\PostGisServiceFactory',
             'SharengoCore\Service\ProcessPaymentsService' => 'SharengoCore\Service\ProcessPaymentsServiceFactory',
             'SharengoCore\Service\ProviderAuthenticatedCustomersService' => 'SharengoCore\Service\ProviderAuthenticatedCustomersServiceFactory',
+            'SharengoCore\Service\OldCustomerDiscountsService' => 'SharengoCore\Service\OldCustomerDiscountsServiceFactory',
+            'SharengoCore\Service\DiscountStatusService' => 'SharengoCore\Service\DiscountStatusServiceFactory',
+            'SharengoCore\Service\NotificationsService' => 'SharengoCore\Service\NotificationsServiceFactory',
+            'SharengoCore\Service\NotificationsCategoriesService' => 'SharengoCore\Service\NotificationsCategoriesServiceFactory',
+            'SharengoCore\Service\NotificationsCategories\NotificationsCategoriesAbstractFactory' => 'SharengoCore\Service\NotificationsCategories\NotificationsCategoriesAbstractFactoryFactory',
+            'SharengoCore\Service\NotificationsProtocolsService' => 'SharengoCore\Service\NotificationsProtocolsServiceFactory',
+            'SharengoCore\Service\NotificationsCategories\SOSCategoryService' => 'SharengoCore\Service\NotificationsCategories\SOSCategoryServiceFactory',
+            'SharengoCore\Service\CarrefourService' => 'SharengoCore\Service\CarrefourServiceFactory',
+            'SharengoCore\Service\DriversLicenseValidationService' => 'SharengoCore\Service\DriversLicenseValidationServiceFactory',
+            'SharengoCore\Service\PaymentScriptRunsService' => 'SharengoCore\Service\PaymentScriptRunsServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
             'SharengoCore\Listener\DisableContractListener' => 'SharengoCore\Listener\DisableContractListenerFactory',
@@ -271,6 +298,7 @@ return [
                 ['controller' => 'SharengoCore\Controller\Cars', 'roles' => ['admin', 'callcenter']],
                 ['controller' => 'SharengoCore\Controller\PublicCars', 'roles' => []],
                 ['controller' => 'SharengoCore\Controller\Customers', 'roles' => ['admin', 'callcenter']],
+                ['controller' => 'SharengoCore\Controller\CustomersDiscount', 'roles' => []],
                 ['controller' => 'SharengoCore\Controller\Pois', 'roles' => []],
                 ['controller' => 'SharengoCore\Controller\Reservations', 'roles' => ['user', 'admin', 'callcenter']],
                 ['controller' => 'SharengoCore\Controller\Trips', 'roles' => ['admin', 'callcenter', 'user']],

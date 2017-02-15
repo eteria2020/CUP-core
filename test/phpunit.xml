@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="bootstrap.php" colors="true">
+<phpunit bootstrap="bootstrap.php" colors="true" stopOnError="true">
     <testsuites>
         <testsuite name="Core Test Suite">
             <directory suffix="Test.php">./SharengoCore/Service</directory>
+            <directory suffix="Test.php">./SharengoCore/Entity</directory>
         </testsuite>
     </testsuites>
 </phpunit>

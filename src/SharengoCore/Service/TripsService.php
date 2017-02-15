@@ -334,6 +334,14 @@ class TripsService
     }
 
     /**
+     * retrieves all the trips that we need to process to compute the bonuses
+     */
+    public function getTripsForBonusComputation()
+    {
+        return $this->tripRepository->findTripsForBonusComputation();
+    }
+
+    /**
      * @param Customers $customer
      * @return mixed
      */

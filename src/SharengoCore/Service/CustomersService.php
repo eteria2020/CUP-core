@@ -2,30 +2,43 @@
 
 namespace SharengoCore\Service;
 
+use Cartasi\Service\CartasiContractsService;
+use SharengoCore\Entity\Cards;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonus;
 use SharengoCore\Entity\PromoCodes;
 use SharengoCore\Entity\Repository\CustomersBonusRepository;
-use SharengoCore\Entity\Cards;
+use SharengoCore\Entity\Repository\CustomersRepository;
+use SharengoCore\Exception\BonusAssignmentException;
 use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 use SharengoCore\Service\TripPaymentsService;
-use SharengoCore\Exception\BonusAssignmentException;
 
-use Cartasi\Service\CartasiContractsService;
-
-use Zend\Authentication\AuthenticationService as UserService;
 use Doctrine\ORM\EntityManager;
+use Zend\Authentication\AuthenticationService as UserService;
 use Zend\Mvc\I18n\Translator;
+
 
 class CustomersService implements ValidatorServiceInterface
 {
+    /**
+     * @var mixed
+     */
     private $validatorEmail;
 
+    /**
+     * @var mixed
+     */
     private $validatorTaxCode;
 
+    /**
+     * @var EntityManager
+     */
     private $entityManager;
 
+    /**
+     * @var CustomersRepository
+     */
     private $customersRepository;
 
     /**
@@ -153,6 +166,11 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersRepository->findByCI('email', $email);
     }
 
+    public function findOneByEmail($email)
+    {
+        return $this->customersRepository->findOneByEmail($email);
+    }
+
     public function findById($id)
     {
         return $this->customersRepository->findOneBy([
@@ -168,6 +186,15 @@ class CustomersService implements ValidatorServiceInterface
     public function findByDriversLicense($driversLicense)
     {
         return $this->customersRepository->findByCI('driverLicense', $driversLicense);
+    }
+
+    /**
+     * @param \DateTime $date
+     * @return Customers[]
+     */
+    public function getAllForBirthdayBonusAssignement(\DateTime $date)
+    {
+        return $this->customersRepository->findAllForBirthdayBonusAssignement($date);
     }
 
     // the following methods have all the same structure, it stinks... need to refactor
@@ -187,6 +214,21 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->entityManager->persist($customer);
         $this->entityManager->flush($customer);
+    }
+
+    /**
+     * @param Customers $customer
+     * @param $discount
+     * @return bool true if discount is updatable
+     */
+    public function updateCustomerDiscountRate(Customers $customer, $discount)
+    {
+        if ($customer->getDiscountRate() == 0) {
+            $this->setCustomerDiscountRate($customer, $discount);
+            return true;
+        }
+
+        return false;
     }
 
     public function setCustomerReprofilingOption(Customers $customer, $option)
@@ -372,7 +414,12 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersBonusRepository->checkUsedPromoCode($customers, $promoCode);
     }
 
-    public function validatePromoCode(Customers $customer, PromoCodes $promoCode)
+    /**
+     * @param Customers $customer
+     * @param  PromoCodes|null $promoCode
+     * @throws BonusAssignmentException
+     */
+    public function validatePromoCode(Customers $customer, PromoCodes $promoCode = null)
     {
         if (is_null($promoCode)) {
             throw new BonusAssignmentException($this->translator->translate('Codice promo non valido.'));
@@ -392,6 +439,10 @@ class CustomersService implements ValidatorServiceInterface
         $this->addBonusFromWebUser($customer, $customerBonus);
     }
 
+    /**
+     * @param Customers $customer
+     * @param PromoCodes|null $promoCode
+     */
     public function addBonusFromPromoCode(Customers $customer, PromoCodes $promoCode = null)
     {
         $this->validatePromoCode($customer, $promoCode);
@@ -665,5 +716,30 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->entityManager->persist($customer);
         $this->entityManager->flush();
+    }
+
+    public function retrieveOneYearOldCustomers()
+    {
+        $aYearAgo = date_create('-1 year');
+
+        return $this->customersRepository->findCustomersWithDiscountOlderThan($aYearAgo);
+    }
+
+    public function retrieveCustomersWithDiscountOldInAWeek()
+    {
+        $aYearButAWeekAgo = date_create('-1 year +1 week');
+
+        return $this->customersRepository->findCustomersWithDiscountOlderExactly($aYearButAWeekAgo);
+    }
+
+    /**
+     * @param Customers $customer
+     * @param DateTime $date
+     * @param string $type
+     * @return CustomersBonus[]
+     */
+    public function getBonusesForCustomerIdAndDateInsertionAndType(Customers $customer, \DateTime $date, $type)
+    {
+        return $this->customersBonusRepository->getBonusesForCustomerIdAndDateInsertionAndType($customer, $date, $type);
     }
 }

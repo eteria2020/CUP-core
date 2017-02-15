@@ -2,12 +2,12 @@
 
 namespace SharengoCore\Service;
 
+use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonus as Bonus;
 use SharengoCore\Entity\CustomersBonusPackages as BonusPackages;
-use SharengoCore\Entity\Trips;
-use SharengoCore\Entity\Customers;
-use SharengoCore\Utils\Interval;
 use SharengoCore\Entity\Repository\CustomersBonusRepository as BonusRepository;
+use SharengoCore\Entity\Trips;
+use SharengoCore\Utils\Interval;
 
 use Doctrine\ORM\EntityManager;
 
@@ -23,6 +23,10 @@ class BonusService
      */
     private $bonusRepository;
 
+    /**
+     * @param EntityManager $entityManager
+     * @param BonusRepository $bonusRepository
+     */
     public function __construct(
         EntityManager $entityManager,
         BonusRepository $bonusRepository
@@ -96,7 +100,30 @@ class BonusService
 
         return $bonus;
     }
+    
+    /**
+     * @param Customers $customer
+     * @param integer $bonus_to_assign
+     * @param string $bonus_type
+     * @param string $description
+     * @param string $validTo
+     * @param string $valFrom
+     * @return Bonus
+     */
+    public function createBonusForCustomerFromData(Customers $customer, $bonus_to_assign, $bonus_type, $description, $validTo, $valFrom)
+    {
+        $bonus = Bonus::createBonus($customer, $bonus_to_assign, $description, $validTo, $valFrom, $bonus_type);
 
+        $this->entityManager->persist($bonus);
+        $this->entityManager->flush();
+
+        return $bonus;
+    }
+
+    /**
+     * @param integer $id
+     * @return CustomersBonus|null
+     */
     public function getBonusFromId($id)
     {
         return $this->bonusRepository->findOneById($id);

@@ -82,6 +82,25 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    /**
+     * selects the trips that need to be
+     * processed for the bonus computation
+     *
+     * @return Trips[]
+     */
+    public function findTripsForBonusComputation()
+    {
+        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
+            //t.isAccounted = true ". //only trips that were already processed by the accounting trips
+            "WHERE t.bonusComputed = false ". //only trips that were not already processed by the bonus computing script
+            "AND t.parkSeconds > 0 ". //only trips with parking time
+            "AND t.timestampEnd IS NOT NULL ". //only trips finished
+            "ORDER BY t.timestampEnd ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        return $query->getResult();
+    }
+
     public function findCustomerTripsToBeAccounted(Customers $customer)
     {
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
@@ -182,12 +201,12 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         FROM \SharengoCore\Entity\Trips t
         WHERE t.customer = :customer
         AND t.timestampEnd IS NOT NULL
-        AND t.timestampEnd - t.timestampBeginning >= :fiveMinutes
+        AND t.timestampEnd - t.timestampBeginning >= :oneMinute
         ORDER BY t.timestampBeginning DESC";
 
         $query = $em->createQuery($dql);
         $query->setParameter('customer', $customer);
-        $query->setParameter('fiveMinutes', '00:05:00');
+        $query->setParameter('oneMinute', '00:01:00');
 
         return $query->getResult();
     }
@@ -288,7 +307,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         WHERE cu.goldList = false
         AND e.payable = true AND
         e.timestampEnd IS NOT NULL AND
-        (e.timestampEnd - e.timestampBeginning) >= (DATE_ADD(CURRENT_TIMESTAMP(), 300, 'second') - CURRENT_TIMESTAMP()) AND
+        (e.timestampEnd - e.timestampBeginning) >= (DATE_ADD(CURRENT_TIMESTAMP(), 60, 'second') - CURRENT_TIMESTAMP()) AND
         tp.payedSuccessfullyAt IS NULL ";
 
         $query = $em->createQuery($dql);

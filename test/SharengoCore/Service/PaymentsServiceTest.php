@@ -36,6 +36,11 @@ class PaymentsServiceTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+
     public function testUnpayableConsequences()
     {
         $consequencesMethod = new \ReflectionMethod('SharengoCore\Service\PaymentsService', 'unpayableConsequences');

@@ -33,9 +33,9 @@ class TripCostComputerServiceTest extends \PHPUnit_Framework_TestCase
 
         $faresRepository->shouldReceive('findOne')->andReturn($fare);
         $entityManager->shouldReceive('getRepository')->with('\SharengoCore\Entity\Fares')->andReturn($faresRepository);
-        if (!$this->serviceManager->has('doctrine.entitymanager.orm_default')) {
-            $this->serviceManager->setService('doctrine.entitymanager.orm_default', $entityManager);
-        }
+
+        $this->serviceManager->setAllowOverride(true);
+        $this->serviceManager->setService('doctrine.entitymanager.orm_default', $entityManager);
 
         $url = \Mockery::mock('Zend\View\Helper\Url');
         $this->serviceManager->get('ViewHelperManager')->setService('Url', $url);

@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * Pois
@@ -99,6 +100,14 @@ class Pois
      */
     private $update;
 
+    /**
+     * @param DoctrineHydrator $hydrator
+     * @return mixed
+     */
+    public function toArray(DoctrineHydrator $hydrator)
+    {
+        return $hydrator->extract($this);
+    }
 
     /**
      * Get id

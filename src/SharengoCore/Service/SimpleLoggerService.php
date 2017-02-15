@@ -19,12 +19,12 @@ class SimpleLoggerService implements LoggerInterface
     const ENV_DEV = 'development';
 
     /**
-     * @var string   defines what kind of output to use
+     * @var string defines what kind of output to use
      */
     private $outputType;
 
     /**
-     * @var string   defines the environment (development | production)
+     * @var string defines the environment (development | production)
      */
     private $environment;
 

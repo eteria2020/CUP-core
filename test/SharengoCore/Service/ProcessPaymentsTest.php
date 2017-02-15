@@ -26,6 +26,11 @@ class ProcessPaymentsTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function tearDown()
+    {
+        M::close();
+    }
+
     public function testProcessPaymentsOk()
     {
         $trip = new Trips();

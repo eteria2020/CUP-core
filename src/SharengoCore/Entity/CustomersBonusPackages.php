@@ -101,6 +101,20 @@ class CustomersBonusPackages
     private $notes;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="text", nullable=true)
+     */
+    private $name;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="display_priority", type="integer", nullable=false)
+     */
+    private $displayPriority;
+
+    /**
      * @return integer
      */
     public function getId()
@@ -148,6 +162,11 @@ class CustomersBonusPackages
         return $this->validFrom;
     }
 
+    public function validFromOrToday()
+    {
+        return max(date_create(), $this->validFrom);
+    }
+
     /**
      * @return integer
      */
@@ -174,6 +193,15 @@ class CustomersBonusPackages
         return $from->add($durationInterval);
     }
 
+    public function readableValidTo()
+    {
+        if ($this->validTo instanceof \DateTime) {
+            return $this->validTo->format('d-m-Y');
+        }
+
+        return 'per ' . $this->duration . ' gg';
+    }
+
     /**
      * @return \DateTime
      */
@@ -198,9 +226,20 @@ class CustomersBonusPackages
         return $this->cost;
     }
 
+    /**
+     * @return string
+     */
     public function getNotes()
     {
         return $this->notes;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**

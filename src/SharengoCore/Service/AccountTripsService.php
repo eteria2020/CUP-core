@@ -128,7 +128,7 @@ class AccountTripsService
      */
     private function applyFreeFares(Trips $trip)
     {
-        $freeFares = $this->freeFaresRepository->findAll();
+        $freeFares = $this->freeFaresRepository->findAllActive();
 
         $trips = [$trip];
 
@@ -211,7 +211,7 @@ class AccountTripsService
      *
      * @param Trips[] $trips
      * @param Bonus $bonus
-     * 
+     *
      */
     private function applyBonus(array $trips, Bonus $bonus)
     {

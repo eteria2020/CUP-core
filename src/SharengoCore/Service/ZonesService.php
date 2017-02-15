@@ -2,8 +2,11 @@
 
 namespace SharengoCore\Service;
 
-use Doctrine\ORM\EntityManager;
+// Internals
 use SharengoCore\Entity\Zone;
+use SharengoCore\Entity\Repository\ZonesRepository;
+// Externals
+use Doctrine\ORM\EntityManager;
 
 class ZonesService
 {
@@ -16,16 +19,40 @@ class ZonesService
 
     private $zoneAlarmsRepository;
 
+    private $zoneGroupsRepository;
+
+    private $zonePricesRepository;
+
+    private $zoneBonusRepository;
+
     /**
-     * @param EntityManager               $entityManager
+     * @var DatatableServiceInterface
      */
-    public function __construct(EntityManager $entityManager)
-    {
+    private $datatableService;
+
+    /**
+     * @param EntityManager $entityManager
+     * @param DatatableServiceInterface $datatableService
+     */
+    public function __construct(
+        EntityManager $entityManager,
+        DatatableServiceInterface $datatableService
+    ) {
         $this->entityManager = $entityManager;
         $this->zoneRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Zone');
         $this->zoneAlarmsRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZoneAlarms');
         $this->zoneGroupsRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZoneGroups');
         $this->zonePricesRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZonePrices');
+        $this->zoneBonusRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ZoneBonus');
+        $this->datatableService = $datatableService;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTotalZones()
+    {
+        return $this->zoneRepository->getTotalZones();
     }
 
     /**
@@ -48,6 +75,16 @@ class ZonesService
         return $this->zonePricesRepository->findAll();
     }
 
+    public function getListZonesBonus()
+    {
+        return $this->zoneBonusRepository->findAll();
+    }
+
+    public function getListZonesBonusByFleet($fleet)
+    {
+        return $this->zoneBonusRepository->findAllActiveByFleet($fleet);
+    }
+
     /**
      *  This method return a list of zone name for every
      *  zone group.
@@ -68,5 +105,65 @@ class ZonesService
             $zoneGroup->setZonesListText(implode(', ', $zoneList));
         }
         return $zoneGroups;
+    }
+
+    public function getDataDataTable(array $as_filters = [], $count = false)
+    {
+        $zones = $this->datatableService->getData('Zone', $as_filters, $count);
+
+        if ($count) {
+            return $zones;
+        }
+
+        return array_map(function (Zone $zone) {
+            return [
+                'e' => [
+                    'id' => $zone->getId(),
+                    'name' => $zone->getName(),
+                    'areaInvoice' => json_decode($zone->getAreaInvoiceJson(), true),
+                    'active' => $zone->getActive(),
+                    'hidden' => $zone->getHidden(),
+                    'invoiceDescription' => $zone->getInvoiceDescription(),
+                    'revGeo' => $zone->getRevGeo(),
+                    'areaUse' => json_decode($zone->getAreaUseJson(), true),
+                ],
+                'button' => $zone->getId()
+            ];
+        }, $zones);
+    }
+
+    public function getZoneById($id)
+    {
+        return $this->zoneRepository->find($id);
+    }
+
+    /**
+     * @param Zone $zone
+     *
+     * @return Zone
+     */
+    public function updateZone(Zone $zone)
+    {
+        $this->entityManager->persist($zone);
+        $this->entityManager->flush();
+
+        return $zone;
+    }
+
+    /**
+     * @param array $zonesBonus, $longitude, $latitude
+     * @return SharengoCore\Entity\ZoneBonus[]
+     */
+    public function checkPointInBonusZones(array $zonesBonus, $longitude, $latitude)
+    {
+        $zonesBonus_touched = array();
+        foreach ($zonesBonus as $zoneBonus)
+        {
+            $inside = $this->zoneBonusRepository->findBonusZonesByCoordinatesAndFleet($zoneBonus, $longitude, $latitude);
+
+            if ($inside)
+                $zonesBonus_touched[] = $zoneBonus;
+        }
+        return $zonesBonus_touched;
     }
 }

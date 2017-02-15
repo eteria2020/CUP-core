@@ -11,8 +11,21 @@ class UsersServiceFactory implements FactoryInterface
     {
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
-        $I_options = $serviceLocator->get('zfcuser_module_options');
+        $options = $serviceLocator->get('zfcuser_module_options');
+        $userRepository = $entityManager->getRepository('\SharengoCore\Entity\Webuser');
 
-        return new UsersService($entityManager, $I_options);
+        /** @var DatatableServiceInterface **/
+        $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
+
+        $datatableService->setQueryBuilder(
+            new DatatableQueryBuilders\Basic()
+        );
+
+        return new UsersService(
+            $entityManager,
+            $options,
+            $userRepository,
+            $datatableService
+        );
     }
 }
