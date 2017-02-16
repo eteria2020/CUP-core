@@ -14,8 +14,11 @@
         "mockery/mockery": "^0.9.4"
     },
     "autoload": {
-        "psr-0": {
-            "SharengoCore": "src/"
+        "classmap": [
+            "./Module.php"
+        ],
+        "psr-4": {
+            "SharengoCore\\": "src/"
         }
     }
 }

@@ -1860,6 +1860,22 @@ class Customers
         return false;
     }
 
+    public function disableCompanyPin($reason)
+    {
+        $pins = json_decode($this->pin, true);
+        $pins['companyPinDisabled'] = true;
+        $pins['disabledReason'] = $reason;
+        $this->pin = json_encode($pins);
+    }
+
+    public function enableCompanyPin()
+    {
+        $pins = json_decode($this->pin, true);
+        $pins['companyPinDisabled'] = false;
+        $pins['disabledReason'] = '';
+        $this->pin = json_encode($pins);
+    }
+
     /**
      * @return bool
      */
