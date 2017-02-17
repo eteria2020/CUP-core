@@ -344,9 +344,9 @@ class TripsService
     /**
      * retrieves all the trips that we need to process to compute the bonuses park islands
      */
-    public function getTripsForBonusParkComputation($datestamp)
+    public function getTripsForBonusParkComputation($datestamp,$carplate)
     {
-        return $this->tripRepository->findTripsForBonusParkComputation($datestamp);
+        return $this->tripRepository->findTripsForBonusParkComputation($datestamp, $carplate);
     }
     
     /**

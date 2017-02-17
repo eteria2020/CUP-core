@@ -108,7 +108,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
      *
      * @return Trips[]
      */
-    public function findTripsForBonusParkComputation($datestamp)
+    public function findTripsForBonusParkComputation($datestamp, $carplate)
     {
         $dateStart = date_create($datestamp.' 00:00:00');
         $dateEnd = date_create($datestamp.' 23:59:59');
@@ -116,8 +116,11 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
             $dql =  "SELECT t FROM \SharengoCore\Entity\Trips t ".
                     "LEFT JOIN \SharengoCore\Entity\TripPayments tp WITH t.id = tp.trip ".
                     "WHERE t.timestampEnd >= :dateStart AND t.timestampEnd <= :dateEnd ". //date
-                    "AND t.fleet != 3". //no fleet Rome
-                    "AND tp.status = :status ".
+                    "AND t.fleet = 1 "; //only Milan
+           if (($carplate != 'all') && (strlen($carplate) == 7)) {
+                    $dql .= "AND t.car = :carplate ";
+           }
+           $dql .=  "AND tp.status = :status ".
                     "AND t.timestampEnd IS NOT NULL ". //only trips finished
                     "AND t.batteryEnd IS NOT NULL AND t.batteryEnd < 25 ". //battery level end trip
                     "AND t.longitudeEnd > 0 AND t.latitudeEnd > 0 ".
@@ -127,6 +130,9 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('status', "invoiced");
         $query->setParameter('dateStart', date_sub($dateStart, date_interval_create_from_date_string('1 days')));
         $query->setParameter('dateEnd', date_sub($dateEnd, date_interval_create_from_date_string('1 days')));
+        if (($carplate != 'all') && (strlen($carplate) == 7)){
+            $query->setParameter('carplate', $carplate);
+        }
         return $query->getResult();
     }
 
