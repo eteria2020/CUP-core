@@ -135,6 +135,26 @@ class CustomerDeactivationService
         );
     }
 
+        /**
+     * Deactivate Customer that has an invalid driver's license
+     *
+     * @param Customers $customer
+     * @param \DateTime|null $startTs
+     */
+    public function deactivateForExpiredDriversLicense(
+        Customers $customer,
+        \DateTime $startTs = null
+    ) {
+        $details = $this->getDriverLicenceDetails($customer);
+
+        $this->deactivate(
+            $customer,
+            CustomerDeactivation::EXPIRED_DRIVERS_LICENSE,
+            $details,
+            $startTs
+        );
+    }
+    
     /**
      * Deactivate Customer that was disabled by Webuser
      *
