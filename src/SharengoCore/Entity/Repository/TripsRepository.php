@@ -116,6 +116,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
             $dql =  "SELECT t FROM \SharengoCore\Entity\Trips t ".
                     "LEFT JOIN \SharengoCore\Entity\TripPayments tp WITH t.id = tp.trip ".
                     "WHERE t.timestampEnd >= :dateStart AND t.timestampEnd <= :dateEnd ". //date
+                    "AND t.fleet != 3". //no fleet Rome
                     "AND tp.status = :status ".
                     "AND t.timestampEnd IS NOT NULL ". //only trips finished
                     "AND t.batteryEnd IS NOT NULL AND t.batteryEnd < 25 ". //battery level end trip
