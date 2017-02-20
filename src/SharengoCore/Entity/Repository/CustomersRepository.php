@@ -219,4 +219,24 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+    
+        /**
+     * This method returns the Customers with expired drive license at current date
+     *
+     * @return Customers[]
+     */
+    public function findAllCustomersWithExpireLicense(){
+        
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT c
+            FROM \SharengoCore\Entity\Customers c
+            WHERE c.enabled = TRUE AND c.driverLicenseExpire < CURRENT_DATE() 
+            AND c.goldList = FALSE AND c.maintainer = FALSE 
+            ORDER BY c.id ASC";
+
+        $query = $em->createQuery($dql);
+        return $query->getResult();
+        
+    }
 }
