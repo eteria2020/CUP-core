@@ -81,16 +81,15 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
-    public function getBonusPoisAssigned($carplate, $customer)
+    public function getBonusPoisAssigned($carplate)
     {
         $time = date_create(date("Y-m-d H:i:s"));
         $dql =  "SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb ".
                 "WHERE cb.insertTs >= :time ".
-                "AND cb.customer = :customer AND SUBSTRING(cb.description, 52 ,7) = :carplate"; //with substring get last 7 char (carplate)
+                "AND SUBSTRING(cb.description, 52 ,7) = :carplate"; //with substring get last 7 char (carplate)
         $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameter('time',  date_sub($time, date_interval_create_from_date_string('20 hours')));
+        $query->setParameter('time',  date_sub($time, date_interval_create_from_date_string('24 hours')));
         $query->setParameter('carplate', $carplate);
-        $query->setParameter('customer', $customer);
         return $query->getResult();
     }
 }

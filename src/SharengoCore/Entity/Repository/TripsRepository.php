@@ -117,8 +117,8 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
                     "LEFT JOIN \SharengoCore\Entity\TripPayments tp WITH t.id = tp.trip ".
                     "WHERE t.timestampEnd >= :dateStart AND t.timestampEnd <= :dateEnd ". //date
                     "AND t.fleet = 1 "; //only Milan
-           if (($carplate != 'all') && (strlen($carplate) == 7)) {
-                    $dql .= "AND t.car = :carplate ";
+           if (($carplate != 'all')) {
+                    $dql .= "AND t.car IN ('DD30908', 'EG35685', 'EG35649') ";
            }
            $dql .=  "AND tp.status = :status ".
                     "AND t.timestampEnd IS NOT NULL ". //only trips finished
@@ -130,9 +130,6 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('status', "invoiced");
         $query->setParameter('dateStart', date_sub($dateStart, date_interval_create_from_date_string('1 days')));
         $query->setParameter('dateEnd', date_sub($dateEnd, date_interval_create_from_date_string('1 days')));
-        if (($carplate != 'all') && (strlen($carplate) == 7)){
-            $query->setParameter('carplate', $carplate);
-        }
         return $query->getResult();
     }
 
