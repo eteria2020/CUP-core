@@ -111,8 +111,10 @@ class CarrefourService
             $pieces = array_splice($pieces, 1);
         }
 
+        $shops_array = array_merge($this->pcConfig['shops'], $this->pcMarketConfig['shops']);
+
         if (count($pieces) == 6 &&
-            array_key_exists($pieces[0], $this->pcConfig['shops']) &&
+            array_key_exists($pieces[0], $shops_array) &&
             intval($pieces[1]) >= 1 &&
             intval($pieces[1]) <= 99 &&
             strlen($pieces[2]) == 4 &&
