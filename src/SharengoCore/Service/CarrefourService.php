@@ -77,6 +77,7 @@ class CarrefourService
      */
     public function addFromCode(Customers $customer, $code)
     {
+        $code = $this->normalize($code);
         $this->checkCarrefourCode($code);
 
         return $this->add(
@@ -103,6 +104,10 @@ class CarrefourService
      */
     public function checkCarrefourCode($code)
     {
+        $code = $this->normalize($code);
+        if($code===null){
+            throw new NotAValidCodeException();
+        }
         // Check if the code is a valid Carrefour code
         $pieces = explode('-', $code);
 
@@ -146,6 +151,8 @@ class CarrefourService
         Customers $customer,
         $code
     ) {
+        $code = $this->normalize($code);
+
         $minutes = $this->pcConfig['minutes'];
         $description = $this->pcConfig['description'];
         $validFor = $this->pcConfig['validFor'];
@@ -192,4 +199,36 @@ class CarrefourService
 
         return $result;
     }
+
+    /**
+     * @param string $code
+     * @return normalize
+     */
+    private function normalize($code){
+        $result = null;
+
+        try {
+            $pieces = explode('-', $code);
+            if(count($pieces)==6){
+                $pieces[0] = str_pad ($pieces[0], 4, "0", STR_PAD_LEFT);
+                $pieces[1] = str_pad ($pieces[1], 3, "0", STR_PAD_LEFT);
+                $pieces[2] = str_pad ($pieces[2], 4, "0", STR_PAD_LEFT);
+                $pieces[3] = str_pad ($pieces[3], 2, "0", STR_PAD_LEFT);
+                $pieces[4] = str_pad ($pieces[4], 2, "0", STR_PAD_LEFT);
+                $pieces[5] = str_pad ($pieces[5], 2, "0", STR_PAD_LEFT);
+
+                $result = $pieces[0] . '-' .
+                        $pieces[1] . '-' .
+                        $pieces[2] . '-' .
+                        $pieces[3] . '-' .
+                        $pieces[4] . '-' .
+                        $pieces[5];
+            }
+        } catch (Exception $ex) {
+            $result = null;
+        }
+
+        return $result;
+    }
+
 }
