@@ -116,10 +116,8 @@ class CarrefourService
             $pieces = array_splice($pieces, 1);
         }
 
-        $shops_array = array_merge($this->pcConfig['shops'], $this->pcMarketConfig['shops']);
-
         if (count($pieces) == 6 &&
-            array_key_exists($pieces[0], $shops_array) &&
+            $this->isValidShop($pieces[0]) &&
             intval($pieces[1]) >= 1 &&
             intval($pieces[1]) <= 99 &&
             strlen($pieces[2]) == 4 &&
@@ -226,6 +224,31 @@ class CarrefourService
             }
         } catch (Exception $ex) {
             $result = null;
+        }
+
+        return $result;
+    }
+
+    /*
+     * Check if $shop is in Carrefour Express shop list or in Carrefour Market shop list
+     */
+    private function isValidShop($shop){
+        $result = false;
+
+        foreach($this->pcConfig['shops'] as $key => $value) {
+            if($shop==strval($key)){
+                $result = true;
+                break;
+            }
+        }
+
+        if(!$result){
+            foreach($this->pcMarketConfig['shops'] as $key => $value) {
+                if($shop==strval($key)){
+                    $result = true;
+                    break;
+                }
+            }
         }
 
         return $result;
