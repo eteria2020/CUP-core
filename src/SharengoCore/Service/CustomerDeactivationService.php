@@ -135,8 +135,8 @@ class CustomerDeactivationService
         );
     }
 
-        /**
-     * Deactivate Customer that has an invalid driver's license
+     /**
+     * Deactivate Customer that has an expired driver's license
      *
      * @param Customers $customer
      * @param \DateTime|null $startTs
