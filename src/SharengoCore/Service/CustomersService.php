@@ -732,4 +732,8 @@ class CustomersService implements ValidatorServiceInterface
     {
         return $this->customersBonusRepository->getBonusesForCustomerIdAndDateInsertionAndType($customer, $date, $type);
     }
+    
+    public function getCustomersExpiredLicense() {
+        return $this->customersRepository->findAllCustomersWithExpireLicense();
+    }
 }

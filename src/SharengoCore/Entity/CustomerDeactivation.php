@@ -33,6 +33,11 @@ class CustomerDeactivation
      * @var string
      */
     const DISABLED_BY_WEBUSER = 'DISABLED_BY_WEBUSER';
+    
+    /**
+     * @var string
+     */
+    const EXPIRED_DRIVERS_LICENSE = 'EXPIRED_DRIVERS_LICENSE';
 
     /**
      * @var integer
@@ -170,6 +175,9 @@ class CustomerDeactivation
                 break;
             case self::DISABLED_BY_WEBUSER:
                 return 'Disabilitato manualmente';
+                break;
+            case self::EXPIRED_DRIVERS_LICENSE:
+                return 'Patente scaduta';
                 break;
         }
     }
