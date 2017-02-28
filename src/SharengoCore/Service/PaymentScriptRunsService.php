@@ -50,4 +50,21 @@ class PaymentScriptRunsService
         return $lastRun['end_ts'] === null &&
             (date_create_from_format('Y-m-d H:i:s', $lastRun['start_ts']) >= date_create('-4 hours'));
     }
+
+    /** Method returns the status of the script pay invoice
+     *
+     * @return boolean
+     */
+    public function isRunning()
+    {
+        $lastRun = $this->connection->fetchAll(
+            "select * from payment_script_runs where now()-start_ts <'24:00:00' and end_ts is null"
+        );
+
+        if (empty($lastRun)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
