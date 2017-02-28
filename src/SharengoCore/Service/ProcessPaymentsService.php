@@ -69,9 +69,9 @@ class ProcessPaymentsService
                 );
             } catch (WrongPaymentException $e) {
                 $this->logger->log( date_create()->format('H:i:s').";payment error;".$tripPayment->getId() . "\n");
+                $this->logger->log($e->getMessage(). "\n");
                 // if we are not able to process a payment we skip the followings
                 //break;
-                continue;
             }
         }
 
