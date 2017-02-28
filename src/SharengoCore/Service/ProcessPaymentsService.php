@@ -60,7 +60,7 @@ class ProcessPaymentsService
 
         foreach ($tripPayments as $tripPayment) {
             try {
-                $this->logger->log("Processing payment for trip payment " . $tripPayment->getId() . "\n");
+                $this->logger->log( date_create()->format('H:i:s').";processing payment;".$tripPayment->getId() . "\n");
                 $this->paymentsService->tryPayment(
                     $tripPayment,
                     $avoidEmails,
@@ -68,8 +68,10 @@ class ProcessPaymentsService
                     $avoidPersistance
                 );
             } catch (WrongPaymentException $e) {
+                $this->logger->log( date_create()->format('H:i:s').";payment error;".$tripPayment->getId() . "\n");
+                $this->logger->log($e->getMessage(). "\n");
                 // if we are not able to process a payment we skip the followings
-                break;
+                //break;
             }
         }
 
@@ -82,4 +84,6 @@ class ProcessPaymentsService
     {
         $this->logger = $logger;
     }
+
+
 }
