@@ -203,6 +203,41 @@ class CustomersBonus
         return $bonus;
     }
 
+     /**
+     * @param Customers $customer
+     * @param CustomersBonusPackages $bonusPackage
+     * @return CustomersBonus
+     */
+    public static function createFromWomenBonusPackage(
+        Customers $customer,
+        CustomersBonusPackages $bonusPackage
+    ) {
+        $now = date("Y-m-d");
+        $validFrom = date_create($now.' 01:00:00');
+        $validTo = date_create($now.' 05:00:00');
+        
+        $hour = date("G");
+        
+        if ( intval($hour) >= 5 ) {
+            //add 1 day to now in case of purchase after the 5am
+            $validFrom = date_add($validFrom, date_interval_create_from_date_string('1 days'));
+            $validTo = date_add($validTo, date_interval_create_from_date_string('1 days'));
+        }
+        
+        $bonus = new CustomersBonus();
+        $bonus->setCustomer($customer)
+            ->setInsertTs(date_create())
+            ->setTotal($bonusPackage->getMinutes())
+            ->setResidual($bonusPackage->getMinutes())
+            ->setType($bonusPackage->getType())
+            ->setValidFrom($validFrom)
+            ->setDurationDays($bonusPackage->getDuration())
+            ->setValidTo($validTo)
+            ->setDescription($bonusPackage->getDescription());
+
+        return $bonus;
+    }
+    
     /**
      * Get id
      *

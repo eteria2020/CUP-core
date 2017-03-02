@@ -44,7 +44,12 @@ class BuyCustomerBonusPackage
             $cartasiResponse = $this->payments->sendPaymentRequest($customer, $package->getCost());
 
             if ($cartasiResponse->getCompletedCorrectly()) {
-                $bonus = $package->generateCustomerBonus($customer);
+                if ($package->getCode()=="WOMEN") { //check if package women
+                    $bonus = $package->generateCustomerWomenBonus($customer);
+                } else {
+                    $bonus = $package->generateCustomerBonus($customer);
+                }
+                //$bonus = $package->generateCustomerBonus($customer);
                 $bonusPayment = new BonusPackagePayment(
                     $customer,
                     $bonus,

@@ -250,4 +250,13 @@ class CustomersBonusPackages
     {
         return CustomersBonus::createFromBonusPackage($customer, $this);
     }
+    
+    /**
+     * @param Customers $customer
+     * @return CustomersBonus
+     */
+    public function generateCustomerWomenBonus(Customers $customer)
+    {
+        return CustomersBonus::createFromWomenBonusPackage($customer, $this);
+    }
 }
