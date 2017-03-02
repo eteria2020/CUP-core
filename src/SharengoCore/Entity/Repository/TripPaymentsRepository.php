@@ -60,7 +60,7 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         if ($customer instanceof Customers) {
             $dql .= 'AND c = :customer ';
         }
-        if (beginningParam !== null){
+        if ($timestampEndParam !== null){
             $dql .= 'AND t.timestampEnd >= :timestampEndParam ';
         }
 
