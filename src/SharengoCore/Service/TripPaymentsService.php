@@ -163,9 +163,9 @@ class TripPaymentsService
      *  customer
      * @return PersistentCollection
      */
-    public function getTripPaymentsForPayment(Customers $customer = null)
+    public function getTripPaymentsForPayment(Customers $customer = null, $timestampEndParam = null)
     {
-        return $this->tripPaymentsRepository->findTripPaymentsForPayment($customer);
+        return $this->tripPaymentsRepository->findTripPaymentsForPayment($customer, $timestampEndParam);
     }
 
     public function getTripPaymentsForUserPayment(Customers $customer)
@@ -177,9 +177,9 @@ class TripPaymentsService
      * @param Customers $customer
      * @return TripPayments | null
      */
-    public function getFirstTripPaymentNotPayedByCustomer(Customers $customer)
+    public function getFirstTripPaymentNotPayedByCustomer(Customers $customer, $timestampEndParam = null)
     {
-        return $this->tripPaymentsRepository->findFirstTripPaymentNotPayedByCustomer($customer);
+        return $this->tripPaymentsRepository->findFirstTripPaymentNotPayedByCustomer($customer, $timestampEndParam);
     }
 
     /**

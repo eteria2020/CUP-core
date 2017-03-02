@@ -47,7 +47,7 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
      * @param Customers $customer optional parameter to filter the results by
      *  customer
      */
-    public function findTripPaymentsForPayment(Customers $customer = null)
+    public function findTripPaymentsForPayment(Customers $customer = null, $timestampEndParam = null)
     {
         $em = $this->getEntityManager();
 
@@ -60,6 +60,11 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         if ($customer instanceof Customers) {
             $dql .= 'AND c = :customer ';
         }
+        if ($timestampEndParam !== null){
+            $dql .= 'AND t.timestampEnd >= :timestampEndParam ';
+        }
+
+        $dql .= ' ORDER BY t.timestampBeginning ASC';
 
         $query = $em->createQuery($dql);
 
@@ -70,6 +75,10 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
             $query->setParameter('customer', $customer);
         }
 
+        if ($timestampEndParam !== null){
+            $query->setParameter('timestampEndParam', date_create($timestampEndParam));
+        }
+ 
         return $query->getResult();
     }
 
