@@ -116,7 +116,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
             $dql =  "SELECT t FROM \SharengoCore\Entity\Trips t ".
                     "LEFT JOIN \SharengoCore\Entity\TripPayments tp WITH t.id = tp.trip ".
                     "WHERE t.timestampEnd >= :dateStart AND t.timestampEnd <= :dateEnd ". //date
-                    "AND t.fleet = 1 "; //only Milan
+                    "AND t.fleet != 3 "; //only Milan & Florence
            if (($carplate != 'all')) {
                     $dql .= "AND t.car IN ('DD30908', 'EG35685', 'EG35649') ";
            }

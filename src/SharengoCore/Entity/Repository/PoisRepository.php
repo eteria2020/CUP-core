@@ -39,12 +39,12 @@ class PoisRepository extends EntityRepository
         $sql = "SELECT pois.id as id FROM pois ".
                 "LEFT JOIN fleets ON (LOWER(pois.town) = LOWER(fleets.name)) ".
                 "WHERE fleets.id=:fleet ";
-                if($fleet == 1){ 
+                //if($fleet == 1 || $fleet == 2 ) {
                     $sql .= "AND LOWER(pois.type) = LOWER('Isole Digitali') ";
-                }
-                if ($fleet == 3) {
-                    $sql .= "AND LOWER(pois.type) != LOWER('Stazione ENEL Drive') ";
-                }
+                //}
+                //if ($fleet == 3) {
+                //    $sql .= "AND LOWER(pois.type) != LOWER('Stazione ENEL Drive') ";
+                //}
         $sql .="AND ST_Distance_Sphere(ST_MakePoint(:longitude, :latitude), ST_MakePoint(pois.lon,pois.lat)) < :radius";
         
         /*$dql =  "SELECT p FROM \SharengoCore\Entity\Pois p ".
