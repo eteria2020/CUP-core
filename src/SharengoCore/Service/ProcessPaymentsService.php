@@ -4,6 +4,8 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Listener\PaymentEmailListener;
 use SharengoCore\Listener\NotifyCustomerPayListener;
+use SharengoCore\Service\TripPaymentsService;
+use SharengoCore\Service\CustomerDeactivationService;
 use Cartasi\Exception\WrongPaymentException;
 
 use Zend\EventManager\EventManager;
@@ -35,18 +37,32 @@ class ProcessPaymentsService
      */
     private $paymentsService;
 
+    /**
+     * @var TripPaymentsService
+     */
+    private $tripPaymentsService;
+
+    /**
+     * @var CustomerDeactivationService
+     */
+    private $customerDeactivationService;
+
     public function __construct(
         EventManager $eventManager,
         LoggerInterface $logger,
         PaymentEmailListener $paymentEmailListener,
         NotifyCustomerPayListener $notifyCustomerPayListener,
-        PaymentsService $paymentsService
+        PaymentsService $paymentsService,
+        TripPaymentsService $tripPaymentsService,
+        CustomerDeactivationService $customerDeactivationService
     ) {
         $this->eventManager = $eventManager;
         $this->logger = $logger;
         $this->paymentEmailListener = $paymentEmailListener;
         $this->notifyCustomerPayListener = $notifyCustomerPayListener;
         $this->paymentsService = $paymentsService;
+        $this->tripPaymentsService = $tripPaymentsService;
+        $this->customerDeactivationService = $customerDeactivationService;
     }
 
     public function processPayments(
@@ -78,6 +94,37 @@ class ProcessPaymentsService
         $this->eventManager->trigger('processPaymentsCompleted', $this, [
             'avoidEmails' => $avoidEmails
         ]);
+    }
+
+   public function processCustomersEnabledAfterReProcess(
+        $tripPayments,
+        $avoidEmails = true,
+        $avoidCartasi = true,
+        $avoidPersistance = true
+    ) {
+        $this->eventManager->getSharedManager()->attachAggregate($this->paymentEmailListener);
+        $this->eventManager->getSharedManager()->attachAggregate($this->notifyCustomerPayListener);
+
+        // extract list of customers belog of trip payments worng
+        $arrayOfCustomers = array();
+        foreach ($tripPayments as $tripPayment) {
+            if (!array_key_exists( $tripPayment->getCustomer()->getId(), $arrayOfCustomers)) {
+                $arrayOfCustomers[$tripPayment->getCustomer()->getId()]= $tripPayment->getCustomer();
+            }
+        }
+
+        foreach ($arrayOfCustomers as $customer) {
+            //error_log(print_r("customer ".$customer->getId()." ". count($this->tripPaymentsService->getTripPaymentsWrong($customer, '-275 days')), TRUE));
+            if(count($this->tripPaymentsService->getTripPaymentsWrong($customer, '-2 days'))===0){
+                // if customer haven't wrong payments in last 2 days
+                error_log(print_r("customer ".$customer->getId()." reactivate", TRUE));
+                $webuser = $this->usersService->findUserById(12); 
+                $this->customerDeactivationService->reactivateCustomer($customer, $webuser, "reactivation from retry wrong payments", date_create());
+                break; //TODO: only debug 
+            } else {
+                error_log(print_r("customer ".$customer->getId()." stay deactivated", TRUE));
+            }
+        }
     }
 
     public function setLogger(LoggerInterface $logger)

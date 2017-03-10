@@ -15,13 +15,17 @@ class ProcessPaymentsServiceFactory implements FactoryInterface
         $paymentEmailListener = $serviceLocator->get('SharengoCore\Listener\PaymentEmailListener');
         $notifyCustomerPayListener = $serviceLocator->get('SharengoCore\Listener\NotifyCustomerPayListener');
         $paymentsService = $serviceLocator->get('SharengoCore\Service\PaymentsService');
+        $tripPaymentsService = $serviceLocator->get('SharengoCore\Service\TripPaymentsService');
+        $customerDeactivationService = $serviceLocator->get('SharengoCore\Service\CustomerDeactivationService');
 
         return new ProcessPaymentsService(
             $eventManager,
             $logger,
             $paymentEmailListener,
             $notifyCustomerPayListener,
-            $paymentsService
+            $paymentsService,
+            $tripPaymentsService,
+            $customerDeactivationService
         );
     }
 }
