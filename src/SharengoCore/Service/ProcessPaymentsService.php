@@ -131,7 +131,7 @@ class ProcessPaymentsService
         $arrayOfCustomers = array();
         foreach ($tripPayments as $tripPayment) {
             if (!array_key_exists( $tripPayment->getCustomer()->getId(), $arrayOfCustomers)) {
-                $arrayOfCustomers[$tripPayment->getCustomer()->getId()]= $tripPayment->getCustomer();
+                $arrayOfCustomers[$tripPayment->getCustomer()->getId()] = $tripPayment->getCustomer();
             }
         }
 
