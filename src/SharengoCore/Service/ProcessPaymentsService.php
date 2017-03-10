@@ -7,6 +7,7 @@ use SharengoCore\Listener\NotifyCustomerPayListener;
 use SharengoCore\Service\TripPaymentsService;
 use SharengoCore\Service\CustomerDeactivationService;
 use SharengoCore\Service\UsersService;
+use SharengoCore\Service\CustomersService;
 
 use Cartasi\Exception\WrongPaymentException;
 
@@ -54,6 +55,11 @@ class ProcessPaymentsService
      */
     private  $usersService;
 
+    /**
+     * @var CustomersService
+     */
+    private  $customersService;
+
     public function __construct(
         EventManager $eventManager,
         LoggerInterface $logger,
@@ -62,7 +68,8 @@ class ProcessPaymentsService
         PaymentsService $paymentsService,
         TripPaymentsService $tripPaymentsService,
         CustomerDeactivationService $customerDeactivationService,
-        UsersService $usersService
+        UsersService $usersService,
+        CustomersService $customersService
     ) {
         $this->eventManager = $eventManager;
         $this->logger = $logger;
@@ -72,6 +79,7 @@ class ProcessPaymentsService
         $this->tripPaymentsService = $tripPaymentsService;
         $this->customerDeactivationService = $customerDeactivationService;
         $this->usersService = $usersService;
+        $this->customersService = $customersService;
     }
 
     public function processPayments(
@@ -105,14 +113,19 @@ class ProcessPaymentsService
         ]);
     }
 
-   public function processCustomersEnabledAfterReProcess(
+    /*
+     * After re-processing wrong payment we try to enabled the customer that was disabled.
+     * To enable a customer we do:
+     * - put true the enabled record
+     * - put true the able_payment record
+     * - set end_ts into customer_deactivations table
+     */
+   public function processCustomersDisabledAfterReProcess(
         $tripPayments,
         $avoidEmails = true,
         $avoidCartasi = true,
         $avoidPersistance = true
     ) {
-        $this->eventManager->getSharedManager()->attachAggregate($this->paymentEmailListener);
-        $this->eventManager->getSharedManager()->attachAggregate($this->notifyCustomerPayListener);
 
         // extract list of customers belog of trip payments worng
         $arrayOfCustomers = array();
@@ -122,16 +135,17 @@ class ProcessPaymentsService
             }
         }
 
+        $this->logger->log(date_create()->format('H:i:s').";INF;processCustomersDisabledAfterReProcess;count($arrayOfCustomers);" . count($arrayOfCustomers) . "\n");
         foreach ($arrayOfCustomers as $customer) {
             //error_log(print_r("customer ".$customer->getId()." ". count($this->tripPaymentsService->getTripPaymentsWrong($customer, '-275 days')), TRUE));
-            if(count($this->tripPaymentsService->getTripPaymentsWrong($customer, '-2 days'))===0){
-                // if customer haven't wrong payments in last 2 days
-                error_log(print_r("customer ".$customer->getId()." reactivate", TRUE));
+            if(count($this->tripPaymentsService->getTripPaymentsWrong($customer, '-3 days'))===0){
+                $this->logger->log(date_create()->format('H:i:s').";INF;processCustomersDisabledAfterReProcess;" . $customer->getId() . ";enabled\n");
                 $webuser = $this->usersService->findUserById(12);
-                $this->customerDeactivationService->reactivateCustomer($customer, $webuser, "reactivation from retry wrong payments", date_create());
+                $this->customersService->enableCustomerPayment($customer);
+                $this->customerDeactivationService->reactivateCustomer($customer, $webuser, "customer enabled from retry wrong payments process", date_create());
                 break; //TODO: only debug
             } else {
-                error_log(print_r("customer ".$customer->getId()." stay deactivated", TRUE));
+                $this->logger->log(date_create()->format('H:i:s').";INF;processCustomersDisabledAfterReProcess;" . $customer->getId() . ";disabled\n");
             }
         }
     }
@@ -140,6 +154,4 @@ class ProcessPaymentsService
     {
         $this->logger = $logger;
     }
-
-
 }
