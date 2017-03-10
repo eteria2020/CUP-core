@@ -6,6 +6,8 @@ use SharengoCore\Listener\PaymentEmailListener;
 use SharengoCore\Listener\NotifyCustomerPayListener;
 use SharengoCore\Service\TripPaymentsService;
 use SharengoCore\Service\CustomerDeactivationService;
+use SharengoCore\Service\UsersService;
+
 use Cartasi\Exception\WrongPaymentException;
 
 use Zend\EventManager\EventManager;
@@ -47,6 +49,11 @@ class ProcessPaymentsService
      */
     private $customerDeactivationService;
 
+    /**
+     * @var UsersService
+     */
+    private  $usersService;
+
     public function __construct(
         EventManager $eventManager,
         LoggerInterface $logger,
@@ -54,7 +61,8 @@ class ProcessPaymentsService
         NotifyCustomerPayListener $notifyCustomerPayListener,
         PaymentsService $paymentsService,
         TripPaymentsService $tripPaymentsService,
-        CustomerDeactivationService $customerDeactivationService
+        CustomerDeactivationService $customerDeactivationService,
+        UsersService $usersService
     ) {
         $this->eventManager = $eventManager;
         $this->logger = $logger;
@@ -63,6 +71,7 @@ class ProcessPaymentsService
         $this->paymentsService = $paymentsService;
         $this->tripPaymentsService = $tripPaymentsService;
         $this->customerDeactivationService = $customerDeactivationService;
+        $this->usersService = $usersService;
     }
 
     public function processPayments(
@@ -118,9 +127,9 @@ class ProcessPaymentsService
             if(count($this->tripPaymentsService->getTripPaymentsWrong($customer, '-2 days'))===0){
                 // if customer haven't wrong payments in last 2 days
                 error_log(print_r("customer ".$customer->getId()." reactivate", TRUE));
-                $webuser = $this->usersService->findUserById(12); 
+                $webuser = $this->usersService->findUserById(12);
                 $this->customerDeactivationService->reactivateCustomer($customer, $webuser, "reactivation from retry wrong payments", date_create());
-                break; //TODO: only debug 
+                break; //TODO: only debug
             } else {
                 error_log(print_r("customer ".$customer->getId()." stay deactivated", TRUE));
             }
