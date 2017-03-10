@@ -93,7 +93,7 @@ class ProcessPaymentsService
 
         foreach ($tripPayments as $tripPayment) {
             try {
-                $this->logger->log( date_create()->format('H:i:s').";processing payment;".$tripPayment->getId() . "\n");
+                $this->logger->log( date_create()->format('H:i:s').";INF;processPayments;tripPayment->getId;".$tripPayment->getId() . "\n");
                 $this->paymentsService->tryPayment(
                     $tripPayment,
                     $avoidEmails,
@@ -101,7 +101,7 @@ class ProcessPaymentsService
                     $avoidPersistance
                 );
             } catch (WrongPaymentException $e) {
-                $this->logger->log( date_create()->format('H:i:s').";payment error;".$tripPayment->getId() . "\n");
+                $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;tripPayment->getId;".$tripPayment->getId() . "\n");
                 $this->logger->log($e->getMessage(). "\n");
                 // if we are not able to process a payment we skip the followings
                 //break;
@@ -135,7 +135,7 @@ class ProcessPaymentsService
             }
         }
 
-        $this->logger->log(date_create()->format('H:i:s').";INF;processCustomersDisabledAfterReProcess;count($arrayOfCustomers);" . count($arrayOfCustomers) . "\n");
+        $this->logger->log(date_create()->format('H:i:s').";INF;processCustomersDisabledAfterReProcess;count(arrayOfCustomers);" . count($arrayOfCustomers) . "\n");
         foreach ($arrayOfCustomers as $customer) {
             //error_log(print_r("customer ".$customer->getId()." ". count($this->tripPaymentsService->getTripPaymentsWrong($customer, '-275 days')), TRUE));
             if(count($this->tripPaymentsService->getTripPaymentsWrong($customer, '-3 days'))===0){
@@ -145,7 +145,7 @@ class ProcessPaymentsService
                 $this->customerDeactivationService->reactivateCustomer($customer, $webuser, "customer enabled from retry wrong payments process", date_create());
                 break; //TODO: only debug
             } else {
-                $this->logger->log(date_create()->format('H:i:s').";INF;processCustomersDisabledAfterReProcess;" . $customer->getId() . ";disabled\n");
+                $this->logger->log(date_create()->format('H:i:s').";INF;processCustomersDisabledAfterReProcess;" . $customer->getId() . ";stay disabled\n");
             }
         }
     }
