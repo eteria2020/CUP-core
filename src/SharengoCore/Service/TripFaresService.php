@@ -47,6 +47,21 @@ class TripFaresService
     }
 
     /**
+     * computes the cost of a trip considering the minutes of parking
+     *
+     * @param Fares $fare
+     * @param int $tripMinutes includes the parking minutes
+     * @param int $parkMinutes
+     */
+    private function tripCost(Fares $fare, $tripMinutes, $parkMinutes)
+    {
+        return min(
+            $this->minutesToEuros($fare, $tripMinutes),
+            $this->minutesToEuros($fare, $tripMinutes - $parkMinutes) + $parkMinutes * $fare->getParkCostPerMinute()
+        );
+    }
+    
+    /**
      * computes the cost of a trip considering the percentage of discount for a
      * given user
      *
@@ -57,6 +72,7 @@ class TripFaresService
      */
     public function userTripCost(Fares $fare, $tripMinutes, $parkMinutes, $discountPercentage)
     {
-        return round($this->tripCostNoParkingDiscount($fare, $tripMinutes, $parkMinutes, $discountPercentage));
+        //return round($this->tripCostNoParkingDiscount($fare, $tripMinutes, $parkMinutes, $discountPercentage));
+        return round($this->tripCost($fare, $tripMinutes, $parkMinutes) * (100 - $discountPercentage) / 100);
     }
 }
