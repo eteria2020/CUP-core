@@ -95,7 +95,7 @@ class ReservationsController extends AbstractRestfulController
                     if (!$this->reservationsService->hasActiveReservationsByCustomer($user)) {
 
                         if (!$this->reservationsService->reserveCarForCustomer($car, $user)) {
-                            $reason = "L'auto è già occupata";
+                            $reason = "L'auto è già occupata o hai superato il numero di prenotazioni.";
                             $status = 210;
                         } else {
                             $reason = "Prenotazione effettuata";

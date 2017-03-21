@@ -78,7 +78,17 @@ class ReservationsService
     {
         return $this->reservationsRepository->findActiveReservationsByCar($plate);
     }
-
+    
+    public function getReservations4h($customer, $plate)
+    {
+        return $this->reservationsRepository->findReservations4h($customer, $plate);
+    }
+    
+    public function getReservationsArchive4h($customer, $plate)
+    {
+        return $this->reservationsRepository->findReservationsArchive4h($customer, $plate);
+    }
+    
     public function getActiveReservationsByCustomer($customer)
     {
         return $this->reservationsRepository->findActiveReservationsByCustomer($customer);
@@ -154,7 +164,7 @@ class ReservationsService
      */
     public function reserveCarForCustomer(Cars $car, Customers $customer)
     {
-        if (count($this->getActiveReservationsByCar($car->getPlate())) == 0) {
+        if (count($this->getActiveReservationsByCar($car->getPlate())) == 0 && count($this->getReservations4h($customer->getId(), $car->getPlate())) == 0 && count($this->getReservationsArchive4h($customer->getId(), $car->getPlate())) == 0) {
             // get card from user
             $card = $customer->getCard();
             $card = json_encode(($card !== null) ? [$card->getCode()] : []);
@@ -166,7 +176,7 @@ class ReservationsService
                     ->setCustomer($customer)
                     ->setBeginningTs(date_create())
                     ->setActive(true)
-                    ->setLength(1800)
+                    ->setLength(1200)
                     ->setToSend(true)
                     ->setCards($card);
 

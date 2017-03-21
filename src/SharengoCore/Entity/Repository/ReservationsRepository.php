@@ -31,7 +31,42 @@ class ReservationsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+    
+    /**
+     * @param string $plate
+     * @return Reservations[]
+     */
+    
+    public function findReservations4h($customer, $car)
+    {   
+        $time = date_create(date("Y-m-d H:i:s"));
+        $em = $this->getEntityManager();
+        //SELECT car_plate FROM reservations WHERE car_plate=$2 AND customer_id=$1 AND ts >= (now() - interval '4' hour)) 
+        $query = $em->createQuery("SELECT t FROM \SharengoCore\Entity\Reservations t WHERE t.customer = :id AND t.car = :car AND t.ts >= :time");
+        $query->setParameter('id', $customer);
+        $query->setParameter('car', $car);
+        $query->setParameter('time',  date_sub($time, date_interval_create_from_date_string('4 hours')));
+        return $query->getResult();
+    }
+    
+        /**
+     * @param string $plate
+     * @return Reservations[]
+     */
+    
+    public function findReservationsArchive4h($customer, $car)
+    {   
+        $time = date_create(date("Y-m-d H:i:s"));
+        $em = $this->getEntityManager();
+        //SELECT car_plate FROM reservations_archive WHERE car_plate=$2 AND customer_id=$1 AND ts >= (now() - interval '4' hour)
+        $query = $em->createQuery("SELECT t FROM \SharengoCore\Entity\ReservationsArchive t WHERE t.customer = :id AND t.car = :car AND t.ts >= :time");
+        $query->setParameter('id', $customer);
+        $query->setParameter('car', $car);
+        $query->setParameter('time',  date_sub($time, date_interval_create_from_date_string('4 hours')));
 
+        return $query->getResult();
+    }
+    
     /**
      * @param Customers $customer
      * @return Reservations[]
