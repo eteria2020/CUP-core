@@ -143,7 +143,6 @@ class ProcessPaymentsService
                 $webuser = $this->usersService->findUserById(12);
                 $this->customersService->enableCustomerPayment($customer);
                 $this->customerDeactivationService->reactivateCustomer($customer, $webuser, "customer enabled from retry wrong payments process", date_create());
-                break; //TODO: only debug
             } else {
                 $this->logger->log(date_create()->format('H:i:s').";INF;processCustomersDisabledAfterReProcess;" . $customer->getId() . ";stay disabled\n");
             }
