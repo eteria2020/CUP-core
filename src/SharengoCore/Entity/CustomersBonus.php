@@ -214,7 +214,7 @@ class CustomersBonus
     ) {
         $now = date("Y-m-d");
         $validFrom = date_create($now.' 01:00:00');
-        $validTo = date_create($now.' 05:00:00');
+        $validTo = date_create($now.' 06:00:00');
         
         $hour = date("G");
         
