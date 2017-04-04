@@ -8,6 +8,8 @@ use Zend\Mail\Transport\FileOptions;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
+use SharengoCore\Entity\Repository\MailsRepository as MailsRepository;
+
 class EmailServiceFactory implements FactoryInterface
 {
     public function createService(ServiceLocatorInterface $serviceLocator)
@@ -17,7 +19,8 @@ class EmailServiceFactory implements FactoryInterface
         $emailSettings = $config['emailSettings'];
 
         $emailTransport = Factory::create($transportConfig);
-
-        return new EmailService($emailTransport, $emailSettings);
+        $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
+        $mailsRepository = $entityManager->getRepository('\SharengoCore\Entity\Mails');
+        return new EmailService($emailTransport, $emailSettings, $mailsRepository);
     }
 }

@@ -6,6 +6,7 @@ use Zend\Mail\Message;
 use Zend\Mail\Transport\TransportInterface;
 use Zend\Mime;
 use Zend\Mvc\I18n\Translator;
+use SharengoCore\Entity\Repository\MailsRepository as MailsRepository;
 
 class EmailService
 {
@@ -13,6 +14,11 @@ class EmailService
      * @var \Zend\Mail\Transport\TransportInterface
      */
     private $emailTransport;
+    
+     /**
+     * @var \SharengoCore\Entity\Repository\MailsRepository
+     */
+    private $mailsRepository;
 
     /**
      * @var array
@@ -21,9 +27,11 @@ class EmailService
 
     public function __construct(
         TransportInterface $emailTransport,
+        MailsRepository $mailsRepository,        
         array $emailSettings
     ) {
         $this->emailTransport = $emailTransport;
+        $this->mailsRepository = $mailsRepository;
         $this->emailSettings = $emailSettings;
     }
 
