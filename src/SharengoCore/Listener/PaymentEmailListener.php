@@ -88,20 +88,22 @@ final class PaymentEmailListener implements SharedListenerAggregateInterface
      */
     private function notifyCustomerOfWrongPayment(Customers $customer)
     {
+        $mail = $this->emailService->getMail(5, $customer->getLanguage());
         $content = sprintf(
-            file_get_contents(__DIR__.'/../../../view/emails/wrong-payment-it_IT.html'),
+            $mail->getContent(),
+            //file_get_contents(__DIR__.'/../../../view/emails/wrong-payment-it_IT.html'),
             $customer->getName(),
             $customer->getSurname()
         );
 
         $attachments = [
-            'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
-            'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
+            //'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
+            //'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
         ];
 
         $this->emailService->sendEmail(
             $customer->getEmail(),
-            'SHARENGO - ERRORE NEL PAGAMENTO',
+            $mail->getSubject(), //'SHARENGO - ERRORE NEL PAGAMENTO',
             $content,
             $attachments
         );

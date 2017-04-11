@@ -1,4 +1,5 @@
 <?php
+
 namespace SharengoCore\Entity;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
@@ -53,12 +54,21 @@ class Mails
     /**
      * @var integer
      *
-     * @ORM\Column(name="type", type="integer", nullable=false)
+     * @ORM\Column(name="category", type="integer", nullable=false)
      */
-    private $type;
-
+    private $category;
     
-        /**
+    
+    /**
+     * @param DoctrineHydrator $hydrator
+     * @return mixed
+     */
+    public function toArray(DoctrineHydrator $hydrator)
+    {
+        return $hydrator->extract($this);
+    }
+    
+    /**
      * Get id
      *
      * @return integer
@@ -165,27 +175,27 @@ class Mails
     }
 
     /**
-     * Set type
+     * Set category
      *
-     * @param integer $type
+     * @param integer $category
      *
      * @return Mails
      */
-    public function setType($type)
+    public function setCategory($category)
     {
-        $this->type = $type;
+        $this->type = $category;
 
         return $this;
     }
 
     /**
-     * Get type
+     * Get category
      *
      * @return integer
      */
-    public function getType()
+    public function getCategory()
     {
-        return $this->type;
+        return $this->category;
     }
 
 }

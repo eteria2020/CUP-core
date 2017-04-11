@@ -3,25 +3,25 @@
 namespace SharengoCore\Entity\Repository;
 
 // Externals
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\ResultSetMapping;
 // Internals
 use SharengoCore\Entity\Mails;
 
-class MailsRepository extends EntityRepository
+class MailsRepository extends \Doctrine\ORM\EntityRepository
 {
-        public function findMails($type,$language)
+    public function findMails($category, $language)
     {
         $em = $this->getEntityManager();
 
         $dql = "SELECT m
         FROM \SharengoCore\Entity\Mails m
-        WHERE type = :type AND language = :language";
+        WHERE m.category = :category AND m.language = :language
+        AND m.enable = TRUE";
 
         $query = $em->createQuery($dql);
-        $query->setParameter('type', $type);
+        $query->setParameter('category', $category);
         $query->setParameter('language', $language);
-
+        $query->setMaxResults(1);
         return $query->getResult();
     }
 }
