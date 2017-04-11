@@ -2,29 +2,47 @@
 
 namespace SharengoCore\Service;
 
+use Doctrine\ORM\EntityManager;
 use Zend\Mail\Message;
 use Zend\Mail\Transport\TransportInterface;
 use Zend\Mime;
 use Zend\Mvc\I18n\Translator;
+use SharengoCore\Entity\Mails;
+use SharengoCore\Entity\Customers;
+
+use SharengoCore\Entity\Repository\MailsRepository;
 
 class EmailService
 {
     /**
+     * @var EntityManager
+     */
+    private $entityManager;
+    /**
      * @var \Zend\Mail\Transport\TransportInterface
      */
     private $emailTransport;
-
+    
     /**
      * @var array
      */
     private $emailSettings;
-
+    
+     /**
+     * @var MailsRepository
+     */
+    private $mailsRepository;
+    
     public function __construct(
-        TransportInterface $emailTransport,
-        array $emailSettings
+        EntityManager $entityManager,
+        TransportInterface $emailTransport,   
+        array $emailSettings,  
+        MailsRepository $mailsRepository
     ) {
+        $this->entityManager = $entityManager;
         $this->emailTransport = $emailTransport;
         $this->emailSettings = $emailSettings;
+        $this->mailsRepository = $mailsRepository;
     }
 
     /**
@@ -78,4 +96,24 @@ class EmailService
 
         $this->emailTransport->send($mail);
     }
+    
+    /*
+     * get Mail from database
+     *
+     * @param integer $category
+     * @param string $language
+     * 
+     * return Mails $mail
+     */
+    
+    public function getMail($category, $language) {
+        $mail = $this->mailsRepository->findMails($category, $language);
+        $find = count($mail);
+        
+        if ($find == 0) { 
+            $mail = $this->mailsRepository->findMails($category, "it");
+        }
+        return $mail[0];
+    }
+
 }

@@ -571,20 +571,23 @@ class CustomersService implements ValidatorServiceInterface
      */
     private function sendEnabledNotification(Customers $customer)
     {
+        $mail = $this->emailService->getMail(7, $customer->getLanguage());
         $content = sprintf(
-            file_get_contents(__DIR__.'/../../../view/emails/re-enable-customer-it_IT.html'),
+            $mail->getContent(),
+            //file_get_contents(__DIR__.'/../../../view/emails/re-enable-customer-it_IT.html'),
             $customer->getName(),
             $customer->getSurname()
         );
 
         $attachments = [
-            'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
-            'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
+        //    'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
+        //    'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
         ];
 
         $this->emailService->sendEmail(
             $customer->getEmail(),
-            $this->translator->translate('SHARENGO - RIABILITAZIONE UTENTE'),
+            $mail->getSubject(),
+            //$this->translator->translate('SHARENGO - RIABILITAZIONE UTENTE'),
             $content,
             $attachments
         );
