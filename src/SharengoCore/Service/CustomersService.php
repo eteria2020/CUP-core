@@ -573,7 +573,7 @@ class CustomersService implements ValidatorServiceInterface
     {
         $mail = $this->emailService->getMail(7, $customer->getLanguage());
         $content = sprintf(
-            $mail-getContent(),
+            $mail->getContent(),
             //file_get_contents(__DIR__.'/../../../view/emails/re-enable-customer-it_IT.html'),
             $customer->getName(),
             $customer->getSurname()
