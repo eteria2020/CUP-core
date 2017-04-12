@@ -91,11 +91,12 @@ final class PaymentEmailListener implements SharedListenerAggregateInterface
         $mail = $this->emailService->getMail(5, $customer->getLanguage());
         $content = sprintf(
             $mail->getContent(),
-            //file_get_contents(__DIR__.'/../../../view/emails/wrong-payment-it_IT.html'),
-            $customer->getName(),
-            $customer->getSurname()
+            $customer->getName()
         );
-
+        
+        //$customer->getSurname()
+        //file_get_contents(__DIR__.'/../../../view/emails/wrong-payment-it_IT.html'),
+        
         $attachments = [
             //'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
             //'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'

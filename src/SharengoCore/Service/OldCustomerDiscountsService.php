@@ -78,7 +78,7 @@ class OldCustomerDiscountsService
             if ($sendEmail && $customer->getFirstPaymentCompleted()) {
                 // we send the mail only to the customers who payed the first payment
                 // the others have their discount cancelled without notifications
-                $this->sendEmail($customer->getEmail(), $customer->getName());
+                $this->sendEmail($customer->getEmail(), $customer->getName(), $customer->getLanguage());
             }
 
             $this->entityManager->commit();
@@ -89,23 +89,22 @@ class OldCustomerDiscountsService
         }
     }
 
-    private function sendEmail($email, $name)
+    private function sendEmail($email, $name, $language)
     {
         $urlHelper = $this->urlHelper;
-
+        $mail = $this->emailService->getMail(18, $language);
         $content = sprintf(
-            file_get_contents(__DIR__.'/../../../view/emails/disable_discount_it-IT.html'),
-            $name,
-            $this->host . $urlHelper('login', [], ['translator' => $this->translator])
+            $mail->getContent(),
+            $name
         );
-
+        //file_get_contents(__DIR__.'/../../../view/emails/disable_discount_it-IT.html'),
         $attachments = [
-            'banner.jpg' => $this->host . '/images/banner_discount.jpg'
+            //'banner.jpg' => $this->host . '/images/banner_discount.jpg'
         ];
 
         $this->emailService->sendEmail(
             $email,
-            'OGGI PUOI RICALCOLARE LO SCONTO CHE TI SPETTA',
+            $mail->getSubject(), //'OGGI PUOI RICALCOLARE LO SCONTO CHE TI SPETTA',
             $content,
             $attachments
         );
@@ -113,18 +112,19 @@ class OldCustomerDiscountsService
 
     public function notifyCustomer($customer)
     {
+        $mail = $this->emailService->getMail(17, $language);
         $content = sprintf(
-            file_get_contents(__DIR__.'/../../../view/emails/notify_disable_discount_it-IT.html'),
+            $mail->getContent(),
             $customer->getName()
         );
-
+        //file_get_contents(__DIR__.'/../../../view/emails/notify_disable_discount_it-IT.html'),
         $attachments = [
-            'banner.jpg' => $this->host . '/images/banner_notify_discount.jpg'
+            //'banner.jpg' => $this->host . '/images/banner_notify_discount.jpg'
         ];
 
         $this->emailService->sendEmail(
             $customer->getEmail(),
-            'Tra una settimana ri-scopri lo sconto che ti spetta',
+            $mail->getSubject(), //'Tra una settimana ri-scopri lo sconto che ti spetta',
             $content,
             $attachments
         );
