@@ -53,20 +53,21 @@ final class ForeignDriverLicenseValidListener implements SharedListenerAggregate
     public function sendEmailToCustomer(EventInterface $e)
     {
         $customer = $e->getParam('customer');
+        $mail = $this->emailService->getMail(2, $customer->getLanguage());
         $content = sprintf(
-            file_get_contents(__DIR__.'/../../../view/emails/foreign-driver-license-validated-it_IT.html'),
-            $customer->getName(),
-            $customer->getSurname()
+            $mail->getContent(),
+            $customer->getName() 
         );
-
+        //$customer->getSurname()
+        //file_get_contents(__DIR__.'/../../../view/emails/foreign-driver-license-validated-it_IT.html'),
         $attachments = [
-            'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
-            'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
+            //'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
+            //'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
         ];
 
         $this->emailService->sendEmail(
             $customer->getEmail(),
-            'SHARENGO - La tua patente è stata validata',
+            $mail->getSubject(), //'SHARENGO - La tua patente è stata validata',
             $content,
             $attachments
         );
