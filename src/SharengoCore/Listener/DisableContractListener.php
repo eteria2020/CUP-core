@@ -53,22 +53,22 @@ final class DisableContractListener implements SharedListenerAggregateInterface
 
     private function sendCustomerNotification(Customers $customer)
     {
-        // TODO: FIX THESE DATA
-
+        // TODO: FIX THESE DATA 
+        $this->emailService->getMail(6, $customer->getLanguage());
         $content = sprintf(
-            file_get_contents(__DIR__.'/../../../view/emails/disabled_contract_it-IT.html'),
-            $customer->getName(),
-            $customer->getSurname()
+            $mail->getContent(),
+            $customer->getName() 
         );
-
+        //file_get_contents(__DIR__.'/../../../view/emails/disabled_contract_it-IT.html'),
+        //$customer->getSurname()
         $attachments = [
-            'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
-            'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
+            //'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
+            //'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
         ];
 
         $this->emailService->sendEmail(
             $customer->getEmail(),
-            'SHARENGO - Disabilitazione carta di credito',
+            $mail->getSubject(),//'SHARENGO - Disabilitazione carta di credito',
             $content,
             $attachments
         );

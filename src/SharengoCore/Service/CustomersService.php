@@ -494,10 +494,10 @@ class CustomersService implements ValidatorServiceInterface
     public function disableForLatePayment($customers, $persist = true, $sendEmails = true)
     {
         // notification email attachments
-        $attachments = [
+        /*$attachments = [
             'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
             'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
-        ];
+        ];*/
 
         foreach ($customers as $customer) {
             // disable the customer
@@ -514,7 +514,7 @@ class CustomersService implements ValidatorServiceInterface
             }
 
             // send an email notification
-            $content = sprintf(
+            /*$content = sprintf(
                 file_get_contents(__DIR__.'/../../../view/emails/late-payment-it_IT.html'),
                 $customer->getName(),
                 $customer->getSurname()
@@ -528,8 +528,8 @@ class CustomersService implements ValidatorServiceInterface
                     $this->translator->translate('SHARENGO - NOTIFICA DI DISABILITAZIONE'),
                     $content,
                     $attachments
-                );
-            }
+                ); 
+            }*/
         }
     }
 
@@ -571,20 +571,23 @@ class CustomersService implements ValidatorServiceInterface
      */
     private function sendEnabledNotification(Customers $customer)
     {
+        $mail = $this->emailService->getMail(7, $customer->getLanguage());
         $content = sprintf(
-            file_get_contents(__DIR__.'/../../../view/emails/re-enable-customer-it_IT.html'),
+            $mail->getContent(),
+            //file_get_contents(__DIR__.'/../../../view/emails/re-enable-customer-it_IT.html'),
             $customer->getName(),
             $customer->getSurname()
         );
 
         $attachments = [
-            'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
-            'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
+        //    'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
+        //    'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
         ];
 
         $this->emailService->sendEmail(
             $customer->getEmail(),
-            $this->translator->translate('SHARENGO - RIABILITAZIONE UTENTE'),
+            $mail->getSubject(),
+            //$this->translator->translate('SHARENGO - RIABILITAZIONE UTENTE'),
             $content,
             $attachments
         );
