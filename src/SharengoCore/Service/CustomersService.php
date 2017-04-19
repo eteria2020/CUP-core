@@ -711,6 +711,16 @@ class CustomersService implements ValidatorServiceInterface
         ]);
     }
 
+    public function setPinToCustomer(Customers $customer, $key, $value)
+    {
+        $pins = json_decode($customer->getPin(), true);
+        $pins[$key] = $value;
+        $customer->setPin(json_encode($pins));
+
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
+    }
+
     public function retrieveOneYearOldCustomers()
     {
         $aYearAgo = date_create('-1 year');

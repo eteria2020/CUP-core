@@ -74,13 +74,13 @@ final class NotifyCustomerPayListener implements SharedListenerAggregateInterfac
 
     public function sendEmailToCustomers(EventInterface $e)
     {
-        $avoidEmails = $e->getParams()['avoidEmails'];
+        /*$avoidEmails = $e->getParams()['avoidEmails'];
 
         if (!$avoidEmails) {
             foreach ($this->tripPaymentsByCustomer as $customerTrips) {
                 $this->notifyCustomerHeHasToPay($customerTrips['customer']);
             }
-        }
+        }*/
     }
 
     /**
