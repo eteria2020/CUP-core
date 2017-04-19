@@ -112,7 +112,7 @@ class OldCustomerDiscountsService
 
     public function notifyCustomer($customer)
     {
-        $mail = $this->emailService->getMail(17, $language);
+        $mail = $this->emailService->getMail(17, $customer->getLanguage());
         $content = sprintf(
             $mail->getContent(),
             $customer->getName()
