@@ -54,7 +54,7 @@ final class DisableContractListener implements SharedListenerAggregateInterface
     private function sendCustomerNotification(Customers $customer)
     {
         // TODO: FIX THESE DATA 
-        $this->emailService->getMail(6, $customer->getLanguage());
+        $mail = $this->emailService->getMail(6, $customer->getLanguage());
         $content = sprintf(
             $mail->getContent(),
             $customer->getName() 
