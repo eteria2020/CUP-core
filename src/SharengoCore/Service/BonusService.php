@@ -131,11 +131,21 @@ class BonusService
     
     /** 
      *  @param string $carplate
-     *  @param integer $customer
      *  @return Bonus
      */
     public function verifyBonusPoisAssigned($carplate)
     {
         return $this->bonusRepository->getBonusPoisAssigned($carplate);
     }
+    
+    /** 
+     *  @param string $carplate
+     *  @param integer $customer
+     *  @return Bonus
+     */
+    public function verifyWomenBonus($customer)
+    {
+        return $this->bonusRepository->getWomenBonusPackage($customer);
+    }
+    
 }
