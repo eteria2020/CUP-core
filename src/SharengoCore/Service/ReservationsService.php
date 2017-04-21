@@ -176,7 +176,7 @@ class ReservationsService
                     ->setCustomer($customer)
                     ->setBeginningTs(date_create())
                     ->setActive(true)
-                    ->setLength(1200)
+                    ->setLength(1800)
                     ->setToSend(true)
                     ->setCards($card);
 
