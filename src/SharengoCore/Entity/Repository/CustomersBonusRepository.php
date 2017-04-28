@@ -94,16 +94,19 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
     }
     
     public function getWomenBonusPackage($customer) {
-        $time = date_create(date("Y-m-d H:i:s"));
+        $now = date("Y-m-d");
+        $timeStart = date_create($now. "00:00:00");
+        $timeEnd = date_create($now. "23:59:59");
         
         $em = $this->getEntityManager();
         $dql = "SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb ".
-                "WHERE cb.insertTs >= :time ".
-                "AND cb.customer = :customer AND cb.type = 'PacchettoDonne' "; //with substring get last 7 char (carplate)
+                "WHERE cb.insertTs >= :timeStart AND cb.insertTs <= :timeEnd ".
+                "AND cb.customer = :customer AND cb.description = 'Night Voucher da 30 minuti' ";
         $query = $em->createQuery($dql);
-        $query->setParameter('time', date_sub($time, date_interval_create_from_date_string('1 months')));
+        $query->setParameter('timeStart', $timeStart);
+        $query->setParameter('timeEnd', $timeEnd);
         $query->setParameter('customer', $customer);
-
+        
         return $query->getResult();
     }
 }
