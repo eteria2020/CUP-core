@@ -100,6 +100,24 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         return $query->getResult();
     }
+        /**
+     * selects the trips that need to be
+     * processed for the extra fares
+     *
+     * @return Trips[]
+     */
+    public function findTripsForExtraFareComputation()
+    {
+        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
+            "WHERE CURRENT_TIMESTAMP() - t.beginningTx <= :oneDay ". //only trips that beginningTx in the last 24 houres
+            "AND t.payable = TRUE ". //only trips payable
+            "AND t.endTx IS NOT NULL ". //only trips finished
+            "ORDER BY t.endTx ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('oneDay', '24:00:00');
+        return $query->getResult();
+    }
 
     /**
      * selects the trips that need to be
@@ -344,5 +362,19 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
 
         $query = $em->createQuery($dql);
         return $query->getSingleScalarResult();
+    }
+
+    public function updateTripsAdrress(Trips $trip, $addressBeginning, $addressEnd){
+        $dql = "UPDATE \SharengoCore\Entity\Trips t ".
+            "SET t.addressBeginning = :addressBeginning, ".
+            "t.addressEnd = :addressEnd ".
+            "WHERE t = :trip";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('addressBeginning', $addressBeginning);
+        $query->setParameter('addressEnd', $addressEnd);
+        $query->setParameter('trip', $trip);
+
+        return $query->execute();
     }
 }

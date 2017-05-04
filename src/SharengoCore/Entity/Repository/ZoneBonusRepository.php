@@ -49,6 +49,31 @@ class ZoneBonusRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
+     * @return SharengoCore\Entity\ZoneBonus[]
+     */
+    public function findAllActiveByBonusTypeFeet($bonusType, $fleet=null)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT z
+            FROM \SharengoCore\Entity\ZoneBonus z
+            WHERE z.active = true
+            AND z.bonusType = :bonus_type";
+
+        if($fleet!==null){
+            $dql .= " AND :fleet MEMBER OF z.fleets";
+        }
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('bonus_type', $bonusType);
+
+        if($fleet!==null){
+            $query->setParameter('fleet', $fleet);
+        }
+        return $query->getResult();
+    }
+
+    /**
      * @return bool whether the point is or not inside the bonus zone
      */
     public function findBonusZonesByCoordinatesAndFleet(\SharengoCore\Entity\ZoneBonus $zoneBonus, $longitude, $latitude)

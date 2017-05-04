@@ -30,6 +30,10 @@ class TripPaymentsService
      */
     private $entityManager;
 
+     /**
+     * @var FaresService
+     */
+    private $faresService;
 
     /**
      * @param TripPaymentsRepository $tripPaymentsRepository
@@ -39,11 +43,13 @@ class TripPaymentsService
     public function __construct(
         TripPaymentsRepository $tripPaymentsRepository,
         DatatableServiceInterface $datatableService,
-        EntityManager $entityManager
+        EntityManager $entityManager,
+        FaresService $faresService
     ) {
         $this->tripPaymentsRepository = $tripPaymentsRepository;
         $this->datatableService = $datatableService;
         $this->entityManager = $entityManager;
+        $this->faresService = $faresService;
     }
 
     /**
@@ -229,4 +235,20 @@ class TripPaymentsService
     {
         return $this->tripPaymentsRepository->findFailedByCustomer($customer);
     }
+
+    public function setExtraFare(Trips $trip, $extraFareAmount)
+    {
+         $tripPayment = $this->tripPaymentsRepository->findTripPaymentForTrip($trip);
+         if(isset($tripPayment))
+         {// if trip payment exist, add extra fare
+            $totalCost = $tripPayment->getTotalCost();
+            $tripPayment->setTotalCost($totalCost + $extraFareAmount);
+         } else {   // else, trip payments dosn't exist, create a new
+            $fare = $this->faresService->getFare();
+            $tripPayment = new TripPayments($trip, $fare, 0, 0 ,0, $extraFareAmount); 
+         }
+
+        $this->entityManager->persist($tripPayment);
+        $this->entityManager->flush();
+    }    
 }

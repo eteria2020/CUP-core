@@ -12,6 +12,7 @@ use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\WebUser;
 use SharengoCore\Service\CommandsService;
 use SharengoCore\Service\CustomersService;
+use SharengoCore\Service\LocationService;
 // Externals
 use Zend\Mvc\I18n\Translator;
 use Zend\View\Helper\Url;
@@ -47,10 +48,16 @@ class TripsService
      * @var CommandsService
      */
     private $commandsService;
+
     /**
      * @var Translator
      */
     private $translator;
+
+    /**
+     * @var LocationService
+     */
+    private $locationService;
 
     /**
      * @param EntityRepository $tripRepository
@@ -60,6 +67,7 @@ class TripsService
      * @param CustomersService $customersService
      * @param CommandsService $commandsService
      * @param Translator $translator
+     * @param LocationService $locationService
      */
     public function __construct(
         TripsRepository $tripRepository,
@@ -68,7 +76,8 @@ class TripsService
         Url $urlHelper,
         CustomersService $customersService,
         CommandsService $commandsService,
-        Translator $translator
+        Translator $translator,
+        LocationService $locationService
     ) {
         $this->tripRepository = $tripRepository;
         $this->datatableService = $datatableService;
@@ -77,6 +86,7 @@ class TripsService
         $this->customersService = $customersService;
         $this->commandsService = $commandsService;
         $this->translator = $translator;
+        $this->locationService =$locationService;
     }
 
     /**
@@ -342,6 +352,14 @@ class TripsService
     }
 
     /**
+     * retrieves all the trips that we need to process to extra fares
+     */
+    public function getTripsForExtraFareComputation()
+    {
+        return $this->tripRepository->findTripsForExtraFareComputation();
+    }
+
+    /**
      * retrieves all the trips that we need to process to compute the bonuses park islands
      */
     public function getTripsForBonusParkComputation($datestamp,$carplate)
@@ -409,5 +427,35 @@ class TripsService
     public function getTripsNotPayedData()
     {
         return $this->tripRepository->findTripsNotPayedData();
+    }
+
+    public function setAddressByGeocode(Trips $trip, $dryRun = false, $addressBeginningPostfix = "", $addressEndPostfix = ""){
+        $result = null;
+
+        if(isset($trip)){
+            $delay = 100000; // half second in microseconds
+
+            $addressBeginning = $this->locationService->getAddressFromCoordinates(
+                $trip->getLatitudeBeginning(),
+                $trip->getLongitudeBeginning()
+            );
+            $trip->setAddressBeginning($addressBeginning);
+
+            $addressEnd = $this->locationService->getAddressFromCoordinates(
+                $trip->getLatitudeEnd(),
+                $trip->getLongitudeEnd()
+            );
+            $trip->setAddressEnd($addressEnd);
+
+            if (!$dryRun) {
+                $result = $this->tripRepository->updateTripsAdrress($trip, 
+                    $addressBeginning.$addressBeginningPostfix, 
+                    $addressEnd.$addressEndPostfix);
+            }
+
+            usleep($delay);
+        }
+
+        return $result;
     }
 }
