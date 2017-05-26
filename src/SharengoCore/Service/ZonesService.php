@@ -85,9 +85,9 @@ class ZonesService
         return $this->zoneBonusRepository->findAllActiveByFleet($fleet);
     }
 
-    public function getListZonesBonusByBonusTypeFeet($bonusType, $fleet)
+    public function getListZonesBonusForExtraFare($bonusType)
     {
-        return $this->zoneBonusRepository->findAllActiveByBonusTypeFeet($bonusType, $fleet);
+        return $this->zoneBonusRepository->findAllActiveZonesBonusForExtraFare($bonusType, null);
     }
 
     /**

@@ -51,13 +51,14 @@ class ZoneBonusRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @return SharengoCore\Entity\ZoneBonus[]
      */
-    public function findAllActiveByBonusTypeFeet($bonusType, $fleet=null)
+    public function findAllActiveZonesBonusForExtraFare($bonusType, $fleet=null)
     {
         $em = $this->getEntityManager();
 
         $dql = "SELECT z
             FROM \SharengoCore\Entity\ZoneBonus z
             WHERE z.active = true
+            AND z.cost NOT NULL
             AND z.bonusType = :bonus_type";
 
         if($fleet!==null){
