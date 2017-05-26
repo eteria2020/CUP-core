@@ -231,8 +231,7 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
 
         $dql = "SELECT c
             FROM \SharengoCore\Entity\Customers c
-            WHERE c.enabled = TRUE AND c.driverLicenseExpire < CURRENT_DATE() 
-            AND c.goldList = FALSE AND c.maintainer = FALSE 
+            WHERE c.enabled = TRUE AND c.driverLicenseExpire < CURRENT_DATE()  
             ORDER BY c.id ASC";
 
         $query = $em->createQuery($dql);
