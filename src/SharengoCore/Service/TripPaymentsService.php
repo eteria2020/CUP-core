@@ -250,5 +250,5 @@ class TripPaymentsService
 
         $this->entityManager->persist($tripPayment);
         $this->entityManager->flush();
-    }    
+    }
 }
