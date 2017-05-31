@@ -4,7 +4,7 @@ namespace SharengoCore\Entity\Repository;
 
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Trips;
-
+use Doctrine\ORM\Query\ResultSetMapping;
 /**
  * TripsRepository
  *
@@ -106,26 +106,33 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
      *
      * @return Trips[]
      */
-    public function findTripsForExtraFareComputation()
+    public function findTripsForExtraFareToBePayed()
     {
-//        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
-//            "WHERE CURRENT_TIMESTAMP() - t.beginningTx <= :oneDay ". //only trips that beginningTx in the last 24 houres
-//            "AND t.payable = TRUE ". //only trips payable
-//            "AND t.endTx IS NOT NULL ". //only trips finished
-//            "ORDER BY t.endTx ASC";
-
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
             "INNER JOIN t.tripPayment tp ".
-            "WHERE ".
-            "tp.status = :status ".
-            "AND CURRENT_TIMESTAMP() - t.beginningTx <= :oneDay ". //only trips that beginningTx in the last 24 houres
-            //"AND t.payable = TRUE ". //only trips payable
-            //"AND t.endTx IS NOT NULL ". //only trips finished
+            "WHERE tp.status = :status ".
+            "AND t.beginningTx > :midnight ". //only trips that beginningTx from midnight
             "ORDER BY t.endTx ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('status', 'to_be_payed');
-        $query->setParameter('oneDay', '24:00:00');
+        $query->setParameter('midnight', date_create()->format('Y-m-d').' 00:00:00');
+
+        return $query->getResult();
+    }
+
+    public function findTripsForExtraFareNullTripPayments()
+    {
+        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
+            "LEFT JOIN t.tripPayment tp ".
+            "WHERE tp.id IS NULL ".
+            "AND t.endTx IS NOT NULL ".
+            "AND t.beginningTx > :midnight ". //only trips that beginningTx from midnight
+            "ORDER BY t.endTx ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('midnight', date_create()->format('Y-m-d').' 00:00:00');
+
         return $query->getResult();
     }
 
