@@ -108,13 +108,23 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
      */
     public function findTripsForExtraFareComputation()
     {
+//        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
+//            "WHERE CURRENT_TIMESTAMP() - t.beginningTx <= :oneDay ". //only trips that beginningTx in the last 24 houres
+//            "AND t.payable = TRUE ". //only trips payable
+//            "AND t.endTx IS NOT NULL ". //only trips finished
+//            "ORDER BY t.endTx ASC";
+
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
-            "WHERE CURRENT_TIMESTAMP() - t.beginningTx <= :oneDay ". //only trips that beginningTx in the last 24 houres
-            "AND t.payable = TRUE ". //only trips payable
-            "AND t.endTx IS NOT NULL ". //only trips finished
+            "INNER JOIN t.tripPayment tp ".
+            "WHERE ".
+            "tp.status = :status ".
+            "AND CURRENT_TIMESTAMP() - t.beginningTx <= :oneDay ". //only trips that beginningTx in the last 24 houres
+            //"AND t.payable = TRUE ". //only trips payable
+            //"AND t.endTx IS NOT NULL ". //only trips finished
             "ORDER BY t.endTx ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('status', 'to_be_payed');
         $query->setParameter('oneDay', '24:00:00');
         return $query->getResult();
     }
@@ -147,7 +157,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('status', "invoiced");
         $query->setParameter('dateStart', date_sub($dateStart, date_interval_create_from_date_string('1 days')));
-        $query->setParameter('dateEnd', date_sub($dateEnd, date_interval_create_from_date_string('1 days')));
+//        $query->setParameter('dateEnd', date_sub($dateEnd, date_interval_create_from_date_string('1 days')));
         return $query->getResult();
     }
 

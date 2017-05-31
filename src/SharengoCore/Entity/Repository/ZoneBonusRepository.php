@@ -58,7 +58,7 @@ class ZoneBonusRepository extends \Doctrine\ORM\EntityRepository
         $dql = "SELECT z
             FROM \SharengoCore\Entity\ZoneBonus z
             WHERE z.active = true
-            AND z.cost NOT NULL";
+            AND z.cost IS NOT NULL";
 
         if($bonusType!==null){
             $dql .= " AND z.bonusType = :bonus_type";
