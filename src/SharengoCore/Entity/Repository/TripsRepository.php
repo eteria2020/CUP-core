@@ -4,7 +4,7 @@ namespace SharengoCore\Entity\Repository;
 
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Trips;
-use Doctrine\ORM\Query\ResultSetMapping;
+
 /**
  * TripsRepository
  *
