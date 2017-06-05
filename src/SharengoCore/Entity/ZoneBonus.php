@@ -65,6 +65,13 @@ class ZoneBonus
     private $conditions;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="cost", type="integer", nullable=true)
+     */
+    private $cost;
+
+    /**
      * @return integer
      */
     public function getId()
@@ -140,7 +147,7 @@ class ZoneBonus
      *
      * @param string $conditions
      *
-     * @return ZoneBonus
+     * @return string
      */
     public function setConditions($conditions)
     {
@@ -157,6 +164,30 @@ class ZoneBonus
     public function getConditions()
     {
         return $this->conditions;
+    }
+
+    /**
+     * Set conditions
+     *
+     * @param integer $cost
+     *
+     * @return integer
+     */
+    public function setCost($cost)
+    {
+        $this->cost = $cost;
+
+        return $this;
+    }
+
+    /**
+     * Get cost
+     *
+     * @return integer
+     */
+    public function getCost()
+    {
+        return $this->cost;
     }
 
     /**

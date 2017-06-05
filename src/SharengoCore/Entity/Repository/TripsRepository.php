@@ -100,6 +100,41 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         return $query->getResult();
     }
+        /**
+     * selects the trips that need to be
+     * processed for the extra fares
+     *
+     * @return Trips[]
+     */
+    public function findTripsForExtraFareToBePayed()
+    {
+        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
+            "INNER JOIN t.tripPayment tp ".
+            "WHERE tp.status = :status ".
+            "AND t.beginningTx > :midnight ". //only trips that beginningTx from midnight
+            "ORDER BY t.endTx ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('status', 'to_be_payed');
+        $query->setParameter('midnight', date_create()->format('Y-m-d').' 00:00:00');
+
+        return $query->getResult();
+    }
+
+    public function findTripsForExtraFareNullTripPayments()
+    {
+        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
+            "LEFT JOIN t.tripPayment tp ".
+            "WHERE tp.id IS NULL ".
+            "AND t.endTx IS NOT NULL ".
+            "AND t.beginningTx > :midnight ". //only trips that beginningTx from midnight
+            "ORDER BY t.endTx ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('midnight', date_create()->format('Y-m-d').' 00:00:00');
+
+        return $query->getResult();
+    }
 
     /**
      * selects the trips that need to be
@@ -129,7 +164,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('status', "invoiced");
         $query->setParameter('dateStart', date_sub($dateStart, date_interval_create_from_date_string('1 days')));
-        $query->setParameter('dateEnd', date_sub($dateEnd, date_interval_create_from_date_string('1 days')));
+//        $query->setParameter('dateEnd', date_sub($dateEnd, date_interval_create_from_date_string('1 days')));
         return $query->getResult();
     }
 
@@ -344,5 +379,19 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
 
         $query = $em->createQuery($dql);
         return $query->getSingleScalarResult();
+    }
+
+    public function updateTripsAdrress(Trips $trip, $addressBeginning, $addressEnd){
+        $dql = "UPDATE \SharengoCore\Entity\Trips t ".
+            "SET t.addressBeginning = :addressBeginning, ".
+            "t.addressEnd = :addressEnd ".
+            "WHERE t = :trip";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('addressBeginning', $addressBeginning);
+        $query->setParameter('addressEnd', $addressEnd);
+        $query->setParameter('trip', $trip);
+
+        return $query->execute();
     }
 }

@@ -25,10 +25,13 @@ class TripPaymentsServiceFactory implements FactoryInterface
             )
         );
 
+        $faresService = $serviceLocator->get('SharengoCore\Service\FaresService');
+
         return new TripPaymentsService(
             $tripPaymentsRepository,
             $datatableService,
-            $entityManager
+            $entityManager,
+            $faresService
         );
     }
 }
