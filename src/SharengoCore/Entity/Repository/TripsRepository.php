@@ -111,7 +111,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
             "INNER JOIN t.tripPayment tp ".
             "WHERE tp.status = :status ".
-            "AND t.beginningTx > :midnight ". //only trips that beginningTx from midnight
+            "AND t.endTx > :midnight ". //only trips that endTx from midnight
             "ORDER BY t.endTx ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -128,7 +128,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
             "WHERE tp.id IS NULL ".
             "AND t.payable = true ".
             "AND t.endTx IS NOT NULL ".
-            "AND t.beginningTx > :midnight ". //only trips that beginningTx from midnight
+            "AND t.endTx > :midnight ". //only trips that endTx from midnight
             "ORDER BY t.endTx ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
