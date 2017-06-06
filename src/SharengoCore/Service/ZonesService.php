@@ -166,8 +166,10 @@ class ZonesService
         {
             $inside = $this->zoneBonusRepository->findBonusZonesByCoordinatesAndFleet($zoneBonus, $longitude, $latitude);
 
-            if ($inside)
+            if ($inside){
                 $zonesBonus_touched[] = $zoneBonus;
+            }
+
         }
         return $zonesBonus_touched;
     }
