@@ -126,6 +126,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
             "LEFT JOIN t.tripPayment tp ".
             "WHERE tp.id IS NULL ".
+            "AND t.payable = true ".
             "AND t.endTx IS NOT NULL ".
             "AND t.beginningTx > :midnight ". //only trips that beginningTx from midnight
             "ORDER BY t.endTx ASC";
