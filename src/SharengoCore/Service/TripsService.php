@@ -356,9 +356,10 @@ class TripsService
      */
     public function getTripsForExtraFareComputation()
     {
-        $result = array_merge($this->tripRepository->findTripsForExtraFareToBePayed(), 
-                $this->tripRepository->findTripsForExtraFareNullTripPayments());
-        return $result;
+        return $this->tripRepository->findTripsForExtraFareToBePayed();
+//        $result = array_merge($this->tripRepository->findTripsForExtraFareToBePayed(), 
+//                $this->tripRepository->findTripsForExtraFareNullTripPayments());
+//        return $result;
     }
 
     /**
