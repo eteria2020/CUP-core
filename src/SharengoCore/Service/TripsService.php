@@ -441,12 +441,22 @@ class TripsService
                 $trip->getLatitudeBeginning(),
                 $trip->getLongitudeBeginning()
             );
+
+            if(is_null($addressBeginning)){
+                $addressBeginning="";
+            }
+
             $trip->setAddressBeginning($addressBeginning);
 
             $addressEnd = $this->locationService->getAddressFromCoordinates(
                 $trip->getLatitudeEnd(),
                 $trip->getLongitudeEnd()
             );
+
+            if(is_null($addressEnd)){
+                $addressEnd="";
+            }
+
             $trip->setAddressEnd($addressEnd);
 
             if (!$dryRun) {
