@@ -33,13 +33,14 @@ class ZoneBonusRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @return SharengoCore\Entity\ZoneBonus[]
      */
-    public function findAllActiveByFleet($fleet)
+    public function findAllActiveNoCostByFleet($fleet)
     {
         $em = $this->getEntityManager();
 
         $dql = "SELECT z
             FROM \SharengoCore\Entity\ZoneBonus z
             WHERE z.active = true
+            AND z.cost IS NULL
             AND :fleet MEMBER OF z.fleets";
 
         $query = $em->createQuery($dql);
