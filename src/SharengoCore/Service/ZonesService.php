@@ -82,7 +82,7 @@ class ZonesService
 
     public function getListZonesBonusByFleet($fleet)
     {
-        return $this->zoneBonusRepository->findAllActiveByFleet($fleet);
+        return $this->zoneBonusRepository->findAllActiveNoCostByFleet($fleet);
     }
 
     public function getListZonesBonusForExtraFare($bonusType = null, $fleet = null)
