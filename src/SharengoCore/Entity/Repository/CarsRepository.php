@@ -168,7 +168,8 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
                     round(extract('epoch' from (now() - MAX(t.timestamp_end))) / 60) as ts_end
                 FROM trips t
                 JOIN cars c ON t.car_plate = c.plate
-                WHERE t.timestamp_end IS NOT NULL
+                WHERE t.timestamp_end IS NOT NULL AND 
+                t.customer_id NOT IN (SELECT id FROM customers WHERE maintainer = TRUE GROUP BY id) 
                 GROUP BY c.plate
                 ORDER BY c.plate ASC
             ) sub_q";
