@@ -2,11 +2,11 @@
 
 namespace SharengoCore\Service;
 
-use SharengoCore\Entity\Queries\AllPenalties;
+use SharengoCore\Entity\Queries\AllAddBonus;
 
 use Doctrine\ORM\EntityManager;
 
-class PenaltiesService
+class AddBonusService
 {
     /**
      * @var EntityManager $entityManager
@@ -23,12 +23,19 @@ class PenaltiesService
     }
 
     /**
-     * @return Penalties[]
+     * @return Array[]
      */
-    public function getAllPenalties()
+    public function getAllAddBonus()
     {
-        $query = new AllPenalties($this->entityManager);
+        $query = new AllAddBonus($this->entityManager);
+        $ret = [];
+        $addBonuses = $query();
+        
+        foreach ($addBonuses as $addBonus){
+            $ret[$addBonus->getDescription()] = $addBonus->getDescription();
 
-        return $query();
+        }
+        
+        return $ret;
     }
 }
