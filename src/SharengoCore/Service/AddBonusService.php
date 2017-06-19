@@ -29,6 +29,7 @@ class AddBonusService
     {
         $query = new AllAddBonus($this->entityManager);
         $ret = [];
+        $ret['']='---';
         $addBonuses = $query();
         
         foreach ($addBonuses as $addBonus){
