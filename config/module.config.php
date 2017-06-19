@@ -215,6 +215,7 @@ return [
             'SharengoCore\Service\EditTripsService' => 'SharengoCore\Service\EditTripsServiceFactory',
             'SharengoCore\Service\ExtraPaymentsService' => 'SharengoCore\Service\ExtraPaymentsServiceFactory',
             'SharengoCore\Service\PenaltiesService' => 'SharengoCore\Service\PenaltiesServiceFactory',
+            'SharengoCore\Service\AddBonusService' => 'SharengoCore\Service\AddBonusServiceFactory',
             'SharengoCore\Service\DisableContractService' => 'SharengoCore\Service\DisableContractServiceFactory',
             'SharengoCore\Service\EventsService' => 'SharengoCore\Service\EventsServiceFactory',
             'SharengoCore\Service\EventsTypesService' => 'SharengoCore\Service\EventsTypesServiceFactory',
