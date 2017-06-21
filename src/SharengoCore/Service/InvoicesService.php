@@ -436,7 +436,7 @@ class InvoicesService
      */
     private function amountFromFormattedString($formattedAmount)
     {
-        return floor(floatval(substr($formattedAmount, 0, strlen($formattedAmount - 2))) * 100);
+        return floor(floatval(substr($formattedAmount, 0, strlen($formattedAmount)-3)) * 100);
     }
 
     /**
