@@ -179,6 +179,11 @@ class TripPaymentsService
         return $this->tripPaymentsRepository->findTripPaymentsWrong($customer, $timestampEndParam);
     }
 
+    public function getTripPaymentsToBePayedAndWrong(Customers $customer = null, $timestampEndParam = null)
+    {
+        return $this->tripPaymentsRepository->findTripPaymentsToBePayedAndWrong($customer, $timestampEndParam);
+    }
+
     public function getTripPaymentsForUserPayment(Customers $customer)
     {
         return $this->tripPaymentsRepository->findTripPaymentsForUserPayment($customer);

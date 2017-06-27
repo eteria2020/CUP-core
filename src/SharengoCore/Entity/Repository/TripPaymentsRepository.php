@@ -117,6 +117,46 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    public function findTripPaymentsToBePayedAndWrong(Customers $customer = null, $timestampEndParam = null)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT t FROM SharengoCore\Entity\Trips t '.
+            'JOIN t.tripPayment tp '.
+            'JOIN t.customer c '.
+            'WHERE t.payable = true AND tp.status IN (:status_to_be_payed, :status_wrong) ';
+
+//        $dql = 'SELECT tp FROM SharengoCore\Entity\TripPayments tp '.
+//            'JOIN tp.trip t '.
+//            'JOIN t.customer c '.
+//            'WHERE tp.status IN (:status_to_be_payed, :status_wrong) ';
+
+        if ($customer instanceof Customers) {
+            $dql .= 'AND c = :customer ';
+        }
+        if ($timestampEndParam !== null){
+            $dql .= 'AND t.timestampEnd >= :timestampEndParam ';
+        }
+
+        $dql .= ' ORDER BY t.timestampBeginning ASC';
+
+        $query = $em->createQuery($dql);
+
+        $query->setParameter('status_to_be_payed', TripPayments::STATUS_TO_BE_PAYED);
+        $query->setParameter('status_wrong', TripPayments::STATUS_WRONG_PAYMENT);
+        //$query->setParameter('midnight', date_create('midnight'));
+
+        if ($customer instanceof Customers) {
+            $query->setParameter('customer', $customer);
+        }
+
+        if ($timestampEndParam !== null){
+            $query->setParameter('timestampEndParam', date_create($timestampEndParam));
+        }
+ 
+        return $query->getResult();
+    }
+
     public function findTripPaymentsForUserPayment($customer)
     {
         $em = $this->getEntityManager();
