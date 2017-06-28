@@ -395,4 +395,22 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->execute();
     }
+
+    public function findPreviousTrip(Trips $trip)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT t 
+        FROM \SharengoCore\Entity\Trips t
+        WHERE t.car = :plate 
+        AND t.timestampBeginning < (SELECT tr.timestampBeginning FROM \SharengoCore\Entity\Trips tr WHERE tr.id = :tripId) 
+        AND t.customer NOT IN (SELECT c.id FROM \SharengoCore\Entity\Customers c WHERE c.maintainer = TRUE) 
+        ORDER BY t.timestampBeginning DESC";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('tripId', $trip->getId());
+        $query->setParameter('plate', $trip->getCar()->getPlate());
+        $query->setMaxResults(1);
+        return $query->getResult();
+    }
 }
