@@ -117,19 +117,21 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
-    public function findTripPaymentsToBePayedAndWrong(Customers $customer = null, $timestampEndParam = null)
+    /**
+     * 
+     * @param Customers $customer
+     * @param type $timestampEndParam
+     * @return type
+     */
+        public function findTripPaymentsToBePayedAndWrong(Customers $customer = null, $timestampEndParam = null)
     {
         $em = $this->getEntityManager();
 
-        $dql = 'SELECT t FROM SharengoCore\Entity\Trips t '.
-            'JOIN t.tripPayment tp '.
+        $dql = 'SELECT tp FROM SharengoCore\Entity\TripPayments tp '.
+            'JOIN tp.trip t '.
             'JOIN t.customer c '.
-            'WHERE t.payable = true AND tp.status IN (:status_to_be_payed, :status_wrong) ';
-
-//        $dql = 'SELECT tp FROM SharengoCore\Entity\TripPayments tp '.
-//            'JOIN tp.trip t '.
-//            'JOIN t.customer c '.
-//            'WHERE tp.status IN (:status_to_be_payed, :status_wrong) ';
+            'WHERE t.payable = true '.
+            'AND tp.status IN (:status_to_be_payed, :status_wrong) ';
 
         if ($customer instanceof Customers) {
             $dql .= 'AND c = :customer ';

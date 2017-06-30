@@ -251,8 +251,6 @@ class PaymentsService
      *
      * @param Customers $customer
      * @param Trips[] $trips
-     * @param Webuser $webuser
-     * @param boolean $avoidDisableUser
      * @return CartasiResponse
      */
     public function tryTripPaymentGroup(
