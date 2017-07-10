@@ -384,6 +384,20 @@ class Customers
      * @ORM\Column(name="privacy_condition", type="boolean", nullable=false)
      */
     private $privacyCondition = false;
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="privacy_information", type="boolean", nullable=false)
+     */
+    private $privacyInformation = false;
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="newsletter", type="boolean", nullable=false)
+     */
+    private $newsletter = false;
 
     /**
      * @var boolean false if a payment failed for the customer
@@ -1702,10 +1716,46 @@ class Customers
     /**
      * @param boolean $privacyCondition
      * @return Customers
-     */
+     */ 
     public function setPrivacyCondition($privacyCondition)
     {
         $this->privacyCondition = $privacyCondition;
+        return $this;
+    }
+    
+    /**
+     * @return boolean
+     */
+    public function getPrivacyInformation()
+    {
+        return $this->privacyInformation;
+    }
+    
+    /**
+     * @param boolean $privacyInformation
+     * @return Customers
+     */
+    public function setPrivacyInformation($privacyInformation)
+    {
+        $this->privacyInformation = $privacyInformation;
+        return $this;
+    }
+    
+    /**
+     * @return boolean
+     */
+    public function getNewsletter()
+    {
+        return $this->newsletter;
+    }
+    
+    /**
+     * @param boolean $newsletter
+     * @return Customers
+     */
+    public function setNewsletter($newsletter)
+    {
+        $this->newsletter = $newsletter;
         return $this;
     }
 

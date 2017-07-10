@@ -611,6 +611,16 @@ class CustomersService implements ValidatorServiceInterface
 
     /**
      * @param Customers $customer
+     * @return boolean
+     */
+    public function getPaymentsToBePayedAndWrong(Customers $customer){
+
+        return $this->tripPaymentsService->getTripPaymentsToBePayedAndWrong($customer);
+
+    }
+
+    /**
+     * @param Customers $customer
      * @return string
      */
     public function getExportDataForCustomer($customer)
