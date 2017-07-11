@@ -166,7 +166,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('status', "invoiced");
         $query->setParameter('dateStart', date_sub($dateStart, date_interval_create_from_date_string('1 days')));
-//        $query->setParameter('dateEnd', date_sub($dateEnd, date_interval_create_from_date_string('1 days')));
+        $query->setParameter('dateEnd', date_sub($dateEnd, date_interval_create_from_date_string('1 days')));
         return $query->getResult();
     }
 
