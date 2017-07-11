@@ -404,6 +404,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         FROM \SharengoCore\Entity\Trips t
         WHERE t.car = :plate 
         AND t.timestampBeginning < (SELECT tr.timestampBeginning FROM \SharengoCore\Entity\Trips tr WHERE tr.id = :tripId) 
+        AND t.payable = true 
         AND t.customer NOT IN (SELECT c.id FROM \SharengoCore\Entity\Customers c WHERE c.maintainer = TRUE) 
         ORDER BY t.timestampBeginning DESC";
 
