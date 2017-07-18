@@ -170,11 +170,13 @@ class FreeFaresService
 
             $check = $this->tripsRepository->findPreviousTrip($trip)[0];
 
-            if ($trip->getTimestampBeginning()->diff($check->getTimestampEnd(), true)->format('%i') >= 2880 ) {
+            $minutes = $carConditions['hour'] * 60;
+
+            if (($trip->getBatteryBeginning() > $carConditions['soc']) && ($trip->getTimestampBeginning()->diff($check->getTimestampEnd(), true)->format('%i') > $minutes)) {
 
                 $start = $trip->getTimestampBeginning();
                 $end = clone $start;
-                $end->modify('+' . $carConditions['minutes'] . ' minutes');
+                $end->modify('+' . $carConditions['value'] . ' minutes');
                 $carInterval = new Interval($start, $end);
 
                 foreach ($intervals as $interval) {
