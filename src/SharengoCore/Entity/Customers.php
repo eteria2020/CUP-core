@@ -176,20 +176,6 @@ class Customers {
     /**
      * @var string
      *
-     * @ORM\Column(name="job_type", type="text", nullable=true)
-     */
-    private $jobType;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="how_to_know", type="text", nullable=true)
-     */
-    private $howToKnow;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="fax", type="text", nullable=true)
      */
     private $fax;
@@ -917,50 +903,6 @@ class Customers {
     
     /**
      * Set jobType
-     *
-     * @param string $jobType
-     *
-     * @return Customers
-     */
-    public function setJobType($jobType) {
-        $this->jobType = $jobType;
-
-        return $this;
-    }
-
-    /**
-     * Get jobType
-     *
-     * @return string
-     */
-    public function getJobType() {
-        return $this->jobType;
-    }
-
-    /**
-     * Set howToKnow
-     *
-     * @param string $howToKnow
-     *
-     * @return Customers
-     */
-    public function setHowToKnow($howToKnow) {
-        $this->howToKnow = $howToKnow;
-
-        return $this;
-    }
-
-    /**
-     * Get howToKnow
-     *
-     * @return string
-     */
-    public function getHowToKnow() {
-        return $this->howToKnow;
-    }
-    
-    /**
-     * Set job_type
      *
      * @param string $jobType
      *
