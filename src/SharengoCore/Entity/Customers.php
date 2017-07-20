@@ -157,6 +157,21 @@ class Customers
      * @ORM\Column(name="phone", type="text", nullable=true)
      */
     private $phone;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="job_type", type="string", length=255, nullable=true)
+     */
+    private $jobType;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="how_to_know", type="string", length=255, nullable=true)
+     */
+    private $howToKnow;
 
     /**
      * @var string
@@ -933,7 +948,52 @@ class Customers
     {
         return $this->phone;
     }
+    
+    
+    /**
+     * Set jobType
+     *
+     * @param string $jobType
+     *
+     * @return Customers
+     */
+    public function setJobType($jobType) {
+        $this->jobType = $jobType;
 
+        return $this;
+    }
+
+    /**
+     * Get jobType
+     *
+     * @return string
+     */
+    public function getJobType() {
+        return $this->jobType;
+    }
+
+    /**
+     * Set howToKnow
+     *
+     * @param string $howToKnow
+     *
+     * @return Customers
+     */
+    public function setHowToKnow($howToKnow) {
+        $this->howToKnow = $howToKnow;
+
+        return $this;
+    }
+
+    /**
+     * Get howToKnow
+     *
+     * @return string
+     */
+    public function getHowToKnow() {
+        return $this->howToKnow;
+    }
+    
     /**
      * Set mobile
      *
