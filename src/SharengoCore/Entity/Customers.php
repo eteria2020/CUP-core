@@ -158,6 +158,12 @@ class Customers {
      */
     private $phone;
     
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="mobile", type="text", nullable=true)
+     */
+    private $mobile;
     
     /**
      * @var string
