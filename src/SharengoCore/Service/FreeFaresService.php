@@ -159,7 +159,7 @@ class FreeFaresService
 
     /**
      * @param Intervals[] $intervals
-     * @param array $carConditions has keys type and  minutes
+     * @param array $carConditions has keys type, hour  minutes
      * @param Trips $trip
      * @return Intervals[]
      */
@@ -169,10 +169,12 @@ class FreeFaresService
         if ($carConditions['type'] == 'nouse'){
 
             $check = $this->tripsRepository->findPreviousTrip($trip)[0];
-
             $minutes = $carConditions['hour'] * 60;
 
-            if (($trip->getBatteryBeginning() > $carConditions['soc']) && ($trip->getTimestampBeginning()->diff($check->getTimestampEnd(), true)->format('%i') > $minutes)) {
+            $tripsInterval = $trip->getTimestampBeginning()->diff($check->getTimestampEnd(), true);
+            $checkMinutes = ($tripsInterval->days * 24 * 60) + ($tripsInterval->h * 60) + $tripsInterval->i;
+
+            if (($trip->getBatteryBeginning() > $carConditions['soc']) && ($checkMinutes > $minutes)) {
 
                 $start = $trip->getTimestampBeginning();
                 $end = clone $start;
