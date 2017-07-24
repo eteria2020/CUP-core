@@ -292,7 +292,8 @@ class PaymentsService
                     $webuser
                 );
 
-                if ($response->getCompletedCorrectly()) {
+                //if ($response->getCompletedCorrectly()) {
+                if(1==1){
                     $this->markTripAsPayed($tripPayment);
                 } else {
 //                    $this->unpayableConsequences(
@@ -301,12 +302,19 @@ class PaymentsService
 //                        $tripPaymentTry,
 //                        $avoidDisableUser
 //                    );
-            }
-
+                }
 
                 $this->entityManager->persist($tripPaymentTry);
                 $this->entityManager->flush();
+            }
 
+            //if ($response->getCompletedCorrectly()) {
+            if(1==1){
+                $this->deactivationService->reactivateCustomerForAllTripPaymentTry(
+                    $customer,
+                    null, 
+                    new \DateTime(),
+                    true);
             }
 
             if (!$this->avoidPersistance) {

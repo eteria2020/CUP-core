@@ -293,6 +293,35 @@ class CustomerDeactivationService
     }
 
     /**
+     * Remove all deactivations with reason FAILED_PAYMENT
+     * @param Customers $customer
+     * @param Webuser $webuser
+     * @param \DateTime $endTs
+     */
+    public function reactivateCustomerForAllTripPaymentTry(
+        Customers $customer,
+        Webuser $webuser = null,
+        \DateTime $endTs = null,
+        $sendEmail = true
+    ) {
+        $customerDeactivations = $this->getAllActive($customer, CustomerDeactivation::FAILED_PAYMENT);
+        $details = [
+            'note' => 'Reactivated from manually payment'
+        ];
+
+        if (is_array($customerDeactivations)) {
+            foreach($customerDeactivations as $deactivation) {
+                $this->reactivate($deactivation, $details, $endTs, $webuser, $sendEmail);
+            }
+        } else {
+            if(!empty($customerDeactivations)){
+                $this->reactivate($customerDeactivations, $details, $endTs, $webuser, $sendEmail);
+            }
+        }
+
+    }
+
+    /**
      * Close the CustomerDeactivation when a BonusPackagePayment is successfully
      * completed
      *
