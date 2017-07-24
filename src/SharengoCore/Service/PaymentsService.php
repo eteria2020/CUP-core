@@ -253,7 +253,7 @@ class PaymentsService
      * @param Trips[] $trips
      * @return CartasiResponse
      */
-    public function tryTripPaymentGroup(
+    public function tryTripPaymentMulti(
         Customers $customer,
         array $trips
     ) {
@@ -283,23 +283,25 @@ class PaymentsService
 
         try {
 
-            $tripPayment = $trip->getTripPayment();
-            $tripPaymentTry = $this->tripPaymentTriesService->generateTripPaymentTry(
-                $tripPayment,
-                $response->getOutcome(),
-                $response->getTransaction(),
-                $webuser
-            );
+            foreach ($trips as $trip) {
+                $tripPayment = $trip->getTripPayment();
+                $tripPaymentTry = $this->tripPaymentTriesService->generateTripPaymentTry(
+                    $tripPayment,
+                    $response->getOutcome(),
+                    $response->getTransaction(),
+                    $webuser
+                );
 
-            if ($response->getCompletedCorrectly()) {
-                $this->markTripAsPayed($tripPayment);
-            } else {
+                if ($response->getCompletedCorrectly()) {
+                    $this->markTripAsPayed($tripPayment);
+                } else {
 //                    $this->unpayableConsequences(
 //                        $customer,
 //                        $tripPayment,
 //                        $tripPaymentTry,
 //                        $avoidDisableUser
 //                    );
+            }
 
 
                 $this->entityManager->persist($tripPaymentTry);
