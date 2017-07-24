@@ -293,7 +293,8 @@ class CustomerDeactivationService
     }
 
     /**
-     * Remove all deactivations with reason FAILED_PAYMENT
+     * Remove all deactivations with reason FAILED_PAYMENT. 
+     * If this is the only reason, the customer will be enabled.
      * @param Customers $customer
      * @param Webuser $webuser
      * @param \DateTime $endTs
