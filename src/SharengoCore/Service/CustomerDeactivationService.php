@@ -294,12 +294,13 @@ class CustomerDeactivationService
 
     /**
      * Remove all deactivations with reason FAILED_PAYMENT. 
-     * If this is the only reason, the customer will be enabled.
+     * If this is the only reason, the customer will be enabled, instead stay disabled.
      * @param Customers $customer
      * @param Webuser $webuser
      * @param \DateTime $endTs
+     * @param bool $sendEmail
      */
-    public function reactivateCustomerForAllTripPaymentTry(
+    public function reactivateCustomerForFailedPayment(
         Customers $customer,
         Webuser $webuser = null,
         \DateTime $endTs = null,

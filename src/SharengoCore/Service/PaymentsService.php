@@ -292,8 +292,7 @@ class PaymentsService
                     $webuser
                 );
 
-                //if ($response->getCompletedCorrectly()) {
-                if(1==1){
+                if ($response->getCompletedCorrectly()) {
                     $this->markTripAsPayed($tripPayment);
                 } else {
 //                    $this->unpayableConsequences(
@@ -308,9 +307,8 @@ class PaymentsService
                 $this->entityManager->flush();
             }
 
-            //if ($response->getCompletedCorrectly()) {
-            if(1==1){
-                $this->deactivationService->reactivateCustomerForAllTripPaymentTry(
+            if ($response->getCompletedCorrectly()) {
+                $this->deactivationService->reactivateCustomerForFailedPayment(
                     $customer,
                     null, 
                     new \DateTime(),
