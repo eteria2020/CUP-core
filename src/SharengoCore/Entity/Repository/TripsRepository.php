@@ -4,6 +4,7 @@ namespace SharengoCore\Entity\Repository;
 
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Trips;
+use SharengoCore\Entity\TripPayments;
 
 /**
  * TripsRepository
@@ -115,7 +116,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
             "ORDER BY t.endTx ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameter('status', 'to_be_payed');
+        $query->setParameter('status', TripPayments::STATUS_TO_BE_PAYED);
         $query->setParameter('midnight', date_create()->format('Y-m-d').' 00:00:00');
 
         return $query->getResult();
@@ -395,4 +396,46 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->execute();
     }
+
+    /**
+     * @param Customer|null $customer
+     * @param datetime|null $timestampEndParam
+     * @return Trip[]
+     */
+    public function findTripsToBePayedAndWrong(Customers $customer = null, $timestampEndParam = null)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT t FROM SharengoCore\Entity\Trips t '.
+            'JOIN t.tripPayment tp '.
+            'JOIN t.customer c '.
+            'WHERE t.payable = true '.
+            'AND tp.status IN (:status_to_be_payed, :status_wrong) ';
+
+        if ($customer instanceof Customers) {
+            $dql .= 'AND c = :customer ';
+        }
+        if ($timestampEndParam !== null){
+            $dql .= 'AND t.timestampEnd >= :timestampEndParam ';
+        }
+
+        $dql .= ' ORDER BY t.timestampBeginning ASC';
+
+        $query = $em->createQuery($dql);
+
+        $query->setParameter('status_to_be_payed', TripPayments::STATUS_TO_BE_PAYED);
+        $query->setParameter('status_wrong', TripPayments::STATUS_WRONG_PAYMENT);
+        //$query->setParameter('midnight', date_create('midnight'));
+
+        if ($customer instanceof Customers) {
+            $query->setParameter('customer', $customer);
+        }
+
+        if ($timestampEndParam !== null){
+            $query->setParameter('timestampEndParam', date_create($timestampEndParam));
+        }
+ 
+        return $query->getResult();
+    }
+
 }

@@ -246,6 +246,89 @@ class PaymentsService
     }
 
     /**
+     * tries to pay a set of trips and
+     * writes in database, for each trip, a record in the trip_payment_tries table
+     *
+     * @param Customers $customer
+     * @param Trips[] $trips
+     * @return CartasiResponse
+     */
+    public function tryTripPaymentMulti(
+        Customers $customer,
+        array $trips
+    ) {
+        $webuser = null;
+        $avoidDisableUser = false;
+        $this->avoidCartasi = false;
+        $this->avoidPersistance = false;
+
+        $response = null;
+        $totalCost = 0;
+
+        foreach ($trips as $trip) {
+             $totalCost += $trip->getTripPayment()->getTotalCost();
+        }
+
+        if (!$this->cartasiContractService->hasCartasiContract($customer)) {
+            return $response;
+        }
+
+        $response = $this->cartasiCustomerPayments->sendPaymentRequest(
+            $customer,
+            $totalCost,
+            $this->avoidCartasi
+        );
+
+        $this->entityManager->beginTransaction();
+
+        try {
+
+            foreach ($trips as $trip) {
+                $tripPayment = $trip->getTripPayment();
+                $tripPaymentTry = $this->tripPaymentTriesService->generateTripPaymentTry(
+                    $tripPayment,
+                    $response->getOutcome(),
+                    $response->getTransaction(),
+                    $webuser
+                );
+
+                if ($response->getCompletedCorrectly()) {
+                    $this->markTripAsPayed($tripPayment);
+                } else {
+//                    $this->unpayableConsequences(
+//                        $customer,
+//                        $tripPayment,
+//                        $tripPaymentTry,
+//                        $avoidDisableUser
+//                    );
+                }
+
+                $this->entityManager->persist($tripPaymentTry);
+                $this->entityManager->flush();
+            }
+
+            if ($response->getCompletedCorrectly()) {
+                $this->deactivationService->reactivateCustomerForFailedPayment(
+                    $customer,
+                    null, 
+                    new \DateTime(),
+                    true);
+            }
+
+            if (!$this->avoidPersistance) {
+                $this->entityManager->commit();
+            } else {
+                $this->entityManager->rollback();
+            }
+        } catch (\Exception $e) {
+            $this->entityManager->rollback();
+            throw $e;
+        }
+
+        return $response;
+    }
+
+    /**
      * @param TripsPayments $tripPayment
      */
     private function markTripAsPayed(TripPayments $tripPayment)

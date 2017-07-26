@@ -13,6 +13,7 @@ use SharengoCore\Exception\BonusAssignmentException;
 use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 use SharengoCore\Service\TripPaymentsService;
+use SharengoCore\Service\TripService;
 
 use Doctrine\ORM\EntityManager;
 use Zend\Authentication\AuthenticationService as UserService;
@@ -76,6 +77,11 @@ class CustomersService implements ValidatorServiceInterface
      */
     private $tripPaymentsService;
 
+        /**
+     * @var TripsRepository
+     */
+    private $tripsRepository;
+
     /**
      * @var string website base url
      */
@@ -121,6 +127,7 @@ class CustomersService implements ValidatorServiceInterface
         $this->cartasiContractsService = $cartasiContractsService;
         $this->tripPaymentsService = $tripPaymentsService;
         $this->url = $url;
+        $this->tripsRepository = $this->entityManager->getRepository('SharengoCore\Entity\Trips');
     }
 
     /**
@@ -607,6 +614,38 @@ class CustomersService implements ValidatorServiceInterface
             }
         }
         return false;
+    }
+
+    /**
+     * @param Customers $customer
+     * @param Trips[] Arry of Trips
+     * @return int Total cost of trips
+     */
+    public function getTripsToBePayedAndWrong(Customers $customer, &$trips){
+
+        $result =0;
+        $trips = $this->tripsRepository->findTripsToBePayedAndWrong($customer);
+
+        foreach($trips as $trip) {
+            $result += $trip->getTripPayment()->getTotalCost();
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param Customers $customer
+     * @return int
+     */
+    public function getPaymentsToBePayedAndWrongTotalCost(Customers $customer){
+        $result =0;
+        $tripPaymentsToBePayedAndWrong = $this->tripPaymentsService->getTripPaymentsToBePayedAndWrong($customer);
+
+        foreach($tripPaymentsToBePayedAndWrong as $trip) {
+            $result =+ $trip->getTripPayment()->getTotalCost();
+        }
+
+        return $result;
     }
 
     /**
