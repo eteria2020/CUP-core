@@ -179,7 +179,6 @@ return [
     'service_manager' => [
         'invokables' => [
             'SharengoCore\Service\DatatableQueryBuilder' => 'SharengoCore\Service\DatatableQueryBuilders\Basic',
-            'SharengoCore\Service\FreeFaresService' => 'SharengoCore\Service\FreeFaresService',
             'SharengoCore\Service\TripFaresService' => 'SharengoCore\Service\TripFaresService',
             'SharengoCore\Service\LocationService' => 'SharengoCore\Service\LocationService',
             'SharengoCore\Service\BlackHoleLogger' => 'SharengoCore\Service\BlackHoleLogger',
@@ -247,6 +246,7 @@ return [
             'SharengoCore\Service\CarrefourService' => 'SharengoCore\Service\CarrefourServiceFactory',
             'SharengoCore\Service\DriversLicenseValidationService' => 'SharengoCore\Service\DriversLicenseValidationServiceFactory',
             'SharengoCore\Service\PaymentScriptRunsService' => 'SharengoCore\Service\PaymentScriptRunsServiceFactory',
+            'SharengoCore\Service\FreeFaresService' => 'SharengoCore\Service\FreeFaresServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
             'SharengoCore\Listener\DisableContractListener' => 'SharengoCore\Listener\DisableContractListenerFactory',

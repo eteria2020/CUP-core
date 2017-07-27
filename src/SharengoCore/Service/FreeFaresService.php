@@ -1,7 +1,9 @@
 <?php
 
 namespace SharengoCore\Service;
+use Doctrine\ORM\EntityManager;
 
+use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\FreeFares;
 use SharengoCore\Entity\Customers;
@@ -9,6 +11,23 @@ use SharengoCore\Utils\Interval;
 
 class FreeFaresService
 {
+
+    private $entityManager;
+
+    /**
+     * @var TripsRepository
+     */
+    private $tripsRepository;
+
+    public function __construct(
+        TripsRepository $tripsRepository,
+        EntityManager $entityManager
+    )
+    {
+        $this->tripsRepository = $tripsRepository;
+        $this->entityManager = $entityManager;
+    }
+
     /**
      * Returns the intervals given by the intersection between the trip and the
      * free fare conditions
@@ -24,6 +43,10 @@ class FreeFaresService
         $tripInterval = new Interval($trip->getTimestampBeginning(), $trip->getTimestampEnd());
 
         $intervals = [$tripInterval];
+
+        if(isset($conditions['car'])) {
+            $intervals = $this->filterCar($intervals, $trip, $conditions['car']);
+        }
 
         if (isset($conditions['customer'])) {
             $intervals = $this->filterCustomer($intervals, $trip->getCustomer(), $conditions['customer']);
@@ -131,6 +154,42 @@ class FreeFaresService
             }
         }
 
+        return $newIntervals;
+    }
+
+    /**
+     * @param Intervals[] $intervals
+     * @param array $carConditions has keys type, hour  minutes
+     * @param Trips $trip
+     * @return Intervals[]
+     */
+    private function filterCar(array $intervals, Trips $trip, array $carConditions)
+    {
+        $newIntervals = [];
+        if ($carConditions['type'] == 'nouse'){
+
+            $check = $this->tripsRepository->findPreviousTrip($trip)[0];
+            $minutes = $carConditions['hour'] * 60;
+
+            $tripsInterval = $trip->getTimestampBeginning()->diff($check->getTimestampEnd(), true);
+            $checkMinutes = ($tripsInterval->days * 24 * 60) + ($tripsInterval->h * 60) + $tripsInterval->i;
+
+            if (($trip->getBatteryBeginning() > $carConditions['soc']) && ($checkMinutes > $minutes)) {
+
+                $start = $trip->getTimestampBeginning();
+                $end = clone $start;
+                $end->modify('+' . $carConditions['value'] . ' minutes');
+                $carInterval = new Interval($start, $end);
+
+                foreach ($intervals as $interval) {
+                    $intersection = $interval->intersection($carInterval);
+
+                    if ($intersection) {
+                        $newIntervals[] = $intersection;
+                    }
+                }
+            }
+        }
         return $newIntervals;
     }
 }
