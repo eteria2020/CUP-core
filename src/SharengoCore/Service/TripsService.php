@@ -470,4 +470,23 @@ class TripsService
 
         return $result;
     }
+
+    /**
+     * Return the array and the total cost of the trips in status 'to_be_pay' and 'wrong'
+     * 
+     * @param Customers $customer Customer
+     * @param Trips[] $trips Array of trips
+     * @return int Return total cost of trips
+     */
+    public function getTripsToBePayedAndWrong(Customers $customer, &$trips){
+
+        $result =0;
+        $trips = $this->tripRepository->findTripsToBePayedAndWrong($customer);
+
+        foreach($trips as $trip) {
+            $result += $trip->getTripPayment()->getTotalCost();
+        }
+
+        return $result;
+    }
 }
