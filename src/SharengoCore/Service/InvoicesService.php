@@ -425,7 +425,11 @@ class InvoicesService
      */
     private function ivaFromTotal($total)
     {
-        return (integer) round($total / (100 + $this->ivaPercentage) * $this->ivaPercentage);
+        $taxRate = $this->$ivaPercentage / 100;
+        $priceWithoutTax = round($total / ( 1 + $taxRate));
+        $iva = (integer) round($priceWithoutTax * $taxRate);
+
+        return $iva;
     }
 
     /**
