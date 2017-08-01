@@ -418,14 +418,18 @@ class InvoicesService
     }
 
     /**
-     * Gets the iva from the total
+     * Gets the iva (cents of euro) from the total (cents of euro) 
      *
      * @param integer $total
-     * @return integer
+     * @return integer $iva
      */
     private function ivaFromTotal($total)
     {
-        return (integer) round($total / (100 + $this->ivaPercentage) * $this->ivaPercentage);
+        $taxRate = $this->ivaPercentage / 100;
+        $priceWithoutTax = round($total / ( 1 + $taxRate));
+        $iva = (integer) round($priceWithoutTax * $taxRate);
+
+        return $iva;
     }
 
     /**
