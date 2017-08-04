@@ -220,7 +220,7 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
     
-        /**
+     /**
      * This method returns the Customers with expired drive license at current date
      *
      * @return Customers[]
@@ -238,4 +238,36 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
         
     }
+
+    /**
+     * 
+     * Find customers by mobile number
+     * 
+     * @param string $value    mobile number 
+     * @return Customers[]     customers list with the same mobile number
+     */    
+    public function findByMobile($value)
+    {
+        $em = $this->getEntityManager();
+        $query = $em->createQuery('SELECT c FROM \SharengoCore\Entity\Customers c WHERE c.mobile = :value');
+        $query->setParameter('value', $value);
+        return $query->getResult();
+    }
+
+    /**
+     * 
+     * Check if mobile number already exists
+     *
+     * @param string $mobile    mobile number
+     * @return int              0 = not found
+     *                          1 = found
+     */
+    public function checkMobileNumber($mobile)
+    {
+        $sql = "SELECT sng_checkmobile('".$mobile."')";
+        $query = $this->getEntityManager()->getConnection()->query($sql);
+        $row = $query->fetch();
+        return $row["sng_checkmobile"];        
+    }
+ 
 }
