@@ -257,10 +257,11 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
     /**
      * 
      * Check if mobile number already exists
+     * The function compares values from right to left to evaluate the mobiles without dial code
      *
      * @param string $mobile    mobile number
      * @return int              0 = not found
-     *                          1 = found
+     *                         >0 = found
      */
     public function checkMobileNumber($mobile)
     {
