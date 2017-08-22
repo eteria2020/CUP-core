@@ -6,8 +6,10 @@ use Cartasi\Service\CartasiContractsService;
 use SharengoCore\Entity\Cards;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonus;
+use SharengoCore\Entity\CustomersPoints;
 use SharengoCore\Entity\PromoCodes;
 use SharengoCore\Entity\Repository\CustomersBonusRepository;
+use SharengoCore\Entity\Repository\CustomersPointsRepository;
 use SharengoCore\Entity\Repository\CustomersRepository;
 use SharengoCore\Exception\BonusAssignmentException;
 use SharengoCore\Service\DatatableServiceInterface;
@@ -46,6 +48,11 @@ class CustomersService implements ValidatorServiceInterface
      * @var CustomersBonusRepository
      */
     private $customersBonusRepository;
+    
+    /**
+     * @var CustomersPointsRepository
+     */
+    private $customersPointsRepository;
 
     /**
      * @var UserService
@@ -118,6 +125,7 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager = $entityManager;
         $this->customersRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Customers');
         $this->customersBonusRepository = $this->entityManager->getRepository('\SharengoCore\Entity\CustomersBonus');
+        $this->customersPointsRepository = $this->entityManager->getRepository('\SharengoCore\Entity\CustomersPoints');
         $this->userService = $userService;
         $this->datatableService = $datatableService;
         $this->cardsService = $cardsService;
@@ -360,6 +368,16 @@ class CustomersService implements ValidatorServiceInterface
 
         return $bonus;
     }
+    
+    public function addPoint(Customers $customer, CustomersPoints $point)
+    {
+        $point->setCustomer($customer);
+
+        $this->entityManager->persist($point);
+        $this->entityManager->flush();
+
+        return $point;
+    }
 
     public function getAllBonus(Customers $customer)
     {
@@ -367,10 +385,22 @@ class CustomersService implements ValidatorServiceInterface
             'customer' => $customer
         ]);
     }
+    
+    public function getAllPoints(Customers $customer)
+    {
+        return $this->customersPointsRepository->findBy([
+            'customer' => $customer
+        ]);
+    }
 
     public function findBonus($bonus)
     {
         return $this->customersBonusRepository->find($bonus);
+    }
+    
+    public function findPoint($point)
+    {
+        return $this->customersPointsRepository->find($point);
     }
 
     /**
@@ -472,6 +502,17 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->addBonus($customer, $bonus);
     }
+    
+    public function addPointFromWebUser(Customers $customer, CustomersPoints $point)
+    {
+        $point->setType('promo');
+        $point->setResidual($point->getTotal());
+        $point->setInsertTs(date_create());
+        $point->setWebuser($this->userService->getIdentity());
+
+        $this->addPoint($customer, $point);
+    }
+    
 
     public function removeBonus(CustomersBonus $customerBonus)
     {

@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * CustomersPoints
  *
  * @ORM\Table(name="customers_points")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CustomersPointsRepository")
  */
 class CustomersPoints
 {
@@ -37,11 +37,14 @@ class CustomersPoints
     private $customer;
 
     /**
-     * @var integer
+     * @var \Webuser
      *
-     * @ORM\Column(name="webuser_id", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="Webuser")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="webuser_id", referencedColumnName="id", nullable=true)
+     * })
      */
-    private $webuserId;
+    private $webuser;
 
     /**
      * @var boolean
@@ -121,11 +124,14 @@ class CustomersPoints
     private $description;
 
     /**
-     * @var integer
+     * @var \PromoCodes
      *
-     * @ORM\Column(name="promocode_id", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="PromoCodes")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="promocode_id", referencedColumnName="id", nullable=true)
+     * })
      */
-    private $promocodeId;
+    private $promocode;
 
     /**
      * @var integer
@@ -176,12 +182,13 @@ class CustomersPoints
     }
 
     /**
-     * Get webuserId
+     * Get webuser
      *
-     * @return integer
+     * @return Webuser
      */
-    function getWebuserId() {
-        return $this->webuserId;
+    public function getWebuser()
+    {
+        return $this->webuser;
     }
 
     /**
@@ -284,12 +291,13 @@ class CustomersPoints
     }
 
     /**
-     * Get promocodeId
+     * Get promocode
      *
-     * @return integer
+     * @return Promocodes
      */
-    function getPromocodeId() {
-        return $this->promocodeId;
+    public function getPromocode()
+    {
+        return $this->promocode;
     }
 
     /**
@@ -336,16 +344,38 @@ class CustomersPoints
         $this->customer = $customer;
     }
 
-    function setWebuserId($webuserId) {
-        $this->webuserId = $webuserId;
+    /**
+     * Set webuser
+     *
+     * @param Webuser $webuser
+     *
+     * @return CustomersBonus
+     */
+    public function setWebuser(Webuser $webuser = null)
+    {
+        $this->webuser = $webuser;
+
+        return $this;
     }
+    
+    
 
     function setActive($active) {
         $this->active = $active;
     }
 
-    function setInsertTs(\DateTime $insertTs) {
+    /**
+     * Set insertTs
+     *
+     * @param \DateTime $insertTs
+     *
+     * @return CustomersBonus
+     */
+    public function setInsertTs($insertTs)
+    {
         $this->insertTs = $insertTs;
+
+        return $this;
     }
 
     function setUpdateTs(\DateTime $updateTs) {
@@ -356,12 +386,33 @@ class CustomersPoints
         $this->total = $total;
     }
 
-    function setResidual($residual) {
+    /**
+     * Set residual
+     *
+     * @param integer $residual
+     *
+     * @return CustomersBonus
+     */
+    public function setResidual($residual)
+    {
         $this->residual = $residual;
+        $this->touch();
+
+        return $this;
     }
 
-    function setType($type) {
+    /**
+     * Set type
+     *
+     * @param string $type
+     *
+     * @return CustomersBonus
+     */
+    public function setType($type)
+    {
         $this->type = $type;
+
+        return $this;
     }
 
     function setOperator($operator) {
@@ -384,8 +435,18 @@ class CustomersPoints
         $this->description = $description;
     }
 
-    function setPromocodeId($promocodeId) {
-        $this->promocodeId = $promocodeId;
+    /**
+     * Set promocode
+     *
+     * @param Promocodes $promocode
+     *
+     * @return CustomersBonus
+     */
+    public function setPromocode(PromoCodes $promocode = null)
+    {
+        $this->promocode = $promocode;
+
+        return $this;
     }
 
     function setPackageId($packageId) {
@@ -404,7 +465,31 @@ class CustomersPoints
         $this->invoicedAt = $invoicedAt;
     }
     
+    public function impliesSubscriptionDiscount()
+    {
+        return null != $this->findDiscountedSubscriptionAmount();
+    }
     
+    public function findDiscountedSubscriptionAmount()
+    {
+        if (null != $this->getPromocode()) {
+            $promoCodeInfo = $this->getPromocode()->getPromocodesinfo();
+            $overriddenSubscriptionCost = $promoCodeInfo->getOverriddenSubscriptionCost();
+
+            if (null !=  $overriddenSubscriptionCost &&
+                is_numeric($overriddenSubscriptionCost)) {
+                return $overriddenSubscriptionCost;
+            }
+        }
+
+        return null;
+    }
+    
+    public function canBeDeleted()
+    {
+        return $this->getTotal() == $this->getResidual() &&
+               !$this->impliesSubscriptionDiscount();
+    }
     
 }
 
