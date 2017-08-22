@@ -349,6 +349,13 @@ class Customers
      * @ORM\OneToMany(targetEntity="CustomersBonus", mappedBy="customer")
      */
     private $customersbonuses;
+    
+    /**
+     * Bidirectional - One-To-Many (INVERSE SIDE)
+     *
+     * @ORM\OneToMany(targetEntity="CustomersPoints", mappedBy="customer")
+     */
+    private $customerspoints;
 
     /**
      * @var boolean
@@ -1575,6 +1582,11 @@ class Customers
     {
         return $this->customersbonuses;
     }
+    
+    public function getPoints()
+    {
+        return $this->customerspoints;
+    }
 
     public function getValidBonuses()
     {
@@ -1591,12 +1603,39 @@ class Customers
         return $validBonuses;
 
     }
+    
+    public function getValidPoints()
+    {
+        $validPoints = [];
+
+        foreach ($this->getPoints() as $points) {
+            if ($points->getActive() &&
+                (null == $points->getValidFrom() || $points->getValidFrom() <= new \DateTime()) &&
+                (null == $points->getValidTo() || $points->getValidTo() >= new \DateTime())) {
+                $validPoints[] = $points;
+            }
+        }
+
+        return $validPoints;
+
+    }
 
     public function getTotalBonuses()
     {
         $total = 0;
         foreach ($this->getValidBonuses() as $bonus) {
             $total += $bonus->getTotal();
+        }
+
+        return $total;
+
+    }
+    
+    public function getTotalPoints()
+    {
+        $total = 0;
+        foreach ($this->getValidPoints() as $points) {
+            $total += $points->getTotal();
         }
 
         return $total;
@@ -1613,10 +1652,26 @@ class Customers
         return $total;
 
     }
+    
+    public function getResidualPoints()
+    {
+        $total = 0;
+        foreach ($this->getValidPoints() as $points) {
+            $total += $points->getResidual();
+        }
+
+        return $total;
+
+    }
 
     public function getUsedBonuses()
     {
         return $this->getTotalBonuses() - $this->getResidualBonuses();
+    }
+    
+    public function getUsedPoints()
+    {
+        return $this->getTotalPoints() - $this->getResidualPoints();
     }
 
     /**

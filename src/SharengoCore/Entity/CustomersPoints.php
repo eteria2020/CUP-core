@@ -1,6 +1,8 @@
 <?php
 
+namespace SharengoCore\Entity;
 
+use SharengoCore\Exception\NonPositiveIntegerException;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -22,12 +24,17 @@ class CustomersPoints
      */
     private $id;
 
+    
+    
     /**
-     * @var integer
+     * @var \Customers
      *
-     * @ORM\Column(name="customer_id", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Customers")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="customer_id", referencedColumnName="id", nullable=false)
+     * })
      */
-    private $customerId;
+    private $customer;
 
     /**
      * @var integer
@@ -160,12 +167,12 @@ class CustomersPoints
     }
 
     /**
-     * Get customerId
+     * Get customer
      *
      * @return integer
      */
-    function getCustomerId() {
-        return $this->customerId;
+    function getCustomer() {
+        return $this->customer;
     }
 
     /**
@@ -325,8 +332,8 @@ class CustomersPoints
         $this->id = $id;
     }
 
-    function setCustomerId($customerId) {
-        $this->customerId = $customerId;
+    function setCustomer($customer) {
+        $this->customer = $customer;
     }
 
     function setWebuserId($webuserId) {
