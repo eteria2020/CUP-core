@@ -1591,7 +1591,7 @@ class Customers
     public function getValidBonuses()
     {
         $validBonuses = [];
-
+        
         foreach ($this->getBonuses() as $bonus) {
             if ($bonus->getActive() &&
                 (null == $bonus->getValidFrom() || $bonus->getValidFrom() <= new \DateTime()) &&
@@ -1607,12 +1607,34 @@ class Customers
     public function getValidPoints()
     {
         $validPoints = [];
-
+        
         foreach ($this->getPoints() as $points) {
             if ($points->getActive() &&
                 (null == $points->getValidFrom() || $points->getValidFrom() <= new \DateTime()) &&
                 (null == $points->getValidTo() || $points->getValidTo() >= new \DateTime())) {
                 $validPoints[] = $points;
+            }
+        }
+
+        return $validPoints;
+
+    }
+    
+    
+    public function getValidPointsCurrentMonth()
+    {
+        $validPoints = [];
+
+        $firstDateThisMonth = new \DateTime('first day of this month 00:00:00');
+        $firstDateNextMonth = new \DateTime('first day of next month 00:00:00');
+        
+        foreach ($this->getPoints() as $points) {
+            if ($points->getActive() &&
+                (null == $points->getValidFrom() || $points->getValidFrom() <= new \DateTime()) &&
+                (null == $points->getValidTo() || $points->getValidTo() >= new \DateTime())) {
+                    if($points->getInsertTs() >= $firstDateThisMonth && $points->getInsertTs() < $firstDateNextMonth){
+                        $validPoints[] = $points;
+                    }
             }
         }
 
@@ -1635,6 +1657,17 @@ class Customers
     {
         $total = 0;
         foreach ($this->getValidPoints() as $points) {
+            $total += $points->getTotal();
+        }
+
+        return $total;
+
+    }
+    
+    public function getTotalPointsCurrentMonth()
+    {
+        $total = 0;
+        foreach ($this->getValidPointsCurrentMonth() as $points) {
             $total += $points->getTotal();
         }
 
