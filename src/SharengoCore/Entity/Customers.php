@@ -1690,7 +1690,7 @@ class Customers
     {
         $total = 0;
         foreach ($this->getValidPoints() as $points) {
-            $total += $points->getResidual();
+            $total += $points->getTotal();
         }
 
         return $total;
