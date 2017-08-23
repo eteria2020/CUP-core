@@ -525,6 +525,18 @@ class CustomersService implements ValidatorServiceInterface
 
         return false;
     }
+    
+    public function removePoint(CustomersPoints $customerPoint)
+    {
+        if ($customerPoint->canBeDeleted()) {
+            $this->entityManager->remove($customerPoint);
+            $this->entityManager->flush();
+
+            return true;
+        }
+
+        return false;
+    }
 
     public function retrieveLatePayers()
     {
