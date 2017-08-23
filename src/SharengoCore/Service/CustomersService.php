@@ -505,8 +505,9 @@ class CustomersService implements ValidatorServiceInterface
     
     public function addPointFromWebUser(Customers $customer, CustomersPoints $point)
     {
-        $point->setType('promo');
-        $point->setResidual($point->getTotal());
+        $point->setType('webPromo');
+        //$point->setResidual($point->getTotal());
+        $point->setResidual(0);
         $point->setInsertTs(date_create());
         $point->setWebuser($this->userService->getIdentity());
 
