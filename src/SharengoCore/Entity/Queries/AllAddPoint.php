@@ -6,6 +6,6 @@ final class AllAddPoint extends Query
 {
     protected function dql()
     {
-        return 'SELECT a FROM \SharengoCore\Entity\AddBonus a';
+        return "SELECT a FROM \SharengoCore\Entity\AddBonus a WHERE a.type='point'";
     }
 }
