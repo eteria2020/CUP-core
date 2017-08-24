@@ -4,7 +4,6 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersPoints as Point;
-//use SharengoCore\Entity\CustomersBonusPackages as BonusPackages;
 use SharengoCore\Entity\Repository\CustomersPointsRepository as PointRepository;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Utils\Interval;
@@ -19,7 +18,7 @@ class PointService
     private $entityManager;
 
     /**
-     * @var BonusRepository
+     * @var PointRepository
      */
     private $pointRepository;
 

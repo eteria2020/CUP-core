@@ -15,12 +15,12 @@ use Doctrine\ORM\Mapping as ORM;
 class CustomersPoints
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="SEQUENCE")
-     * @ORM\SequenceGenerator(sequenceName="customers_points_id_seq", allocationSize=1, initialValue=1)
+     * @ORM\SequenceGenerator(sequenceName="customerspoints_id_seq", allocationSize=1, initialValue=1)
      */
     private $id;
 
@@ -51,7 +51,7 @@ class CustomersPoints
      *
      * @ORM\Column(name="active", type="boolean", nullable=false)
      */
-    private $active;
+    private $active = true;
 
     /**
      * @var \DateTime
@@ -487,8 +487,18 @@ class CustomersPoints
     
     public function canBeDeleted()
     {
-        return $this->getTotal() == $this->getResidual() &&
-               !$this->impliesSubscriptionDiscount();
+        /*return $this->getTotal() == $this->getResidual() &&
+               !$this->impliesSubscriptionDiscount();*/
+        
+        return !$this->impliesSubscriptionDiscount();
+    }
+    
+    /**
+     * Updates the updateTs
+     */
+    private function touch()
+    {
+        $this->updateTs = date_create();
     }
     
 }
