@@ -67,11 +67,14 @@ class OldCustomerDiscountsService
             );
 
             $customer->setDiscountRate(0);
+            $discountStatus = $customer->discountStatus();
+            $discountStatus = $discountStatus->updateStatus('0|0');
 
             if ($persist) {
                 $this->entityManager->persist($customer);
                 $this->entityManager->persist($oldDiscount);
-
+                $this->entityManager->persist($discountStatus);
+                
                 $this->entityManager->flush();
             }
 
