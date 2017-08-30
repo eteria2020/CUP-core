@@ -842,4 +842,8 @@ class CustomersService implements ValidatorServiceInterface
     public function getCustomersExpiredLicense() {
         return $this->customersRepository->findAllCustomersWithExpireLicense();
     }
+    
+    public function getCustomersRunYesterday($dateYesterdayStart, $dateTodayStart){
+        return $this->customersPointsRepository->getCustomersRunYesterday($dateYesterdayStart, $dateTodayStart);
+    }
 }

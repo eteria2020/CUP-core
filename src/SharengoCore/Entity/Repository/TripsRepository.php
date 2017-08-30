@@ -23,6 +23,53 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+    
+    public function getTripsByCustomerForAddPointYesterday($customerId, $dateYesterdayStart, $dateTodayStart) {
+        
+        $em = $this->getEntityManager();
+        
+        $dql = 'SELECT t '
+               . 'FROM \SharengoCore\Entity\Trips t '
+               . 'WHERE t.timestampBeginning >= :dateYesterdayStart '
+               . 'AND t.timestampEnd < :dateTodayStart '
+               . 'AND t.customer = :customerId';
+        
+        $dql2 = 'SELECT t '
+               . 'FROM \SharengoCore\Entity\Trips t '
+               . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
+               . 'WHERE c.id > 27500'
+               . 'order by c.id';
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('dateYesterdayStart', $dateYesterdayStart);
+        $query->setParameter('dateTodayStart', $dateTodayStart);
+        $query->setParameter('customerId', $customerId);
+        
+        return $query->getResult();
+    }
+    
+    public function getTripsByCustomerForAddPointMonth($customerId, $dateCurrentMonthStart, $dateNextMonthStart) {
+        $em = $this->getEntityManager();
+        
+        $dql = 'SELECT t '
+               . 'FROM \SharengoCore\Entity\Trips t '
+               . 'WHERE t.timestampBeginning >= :dateCurrentMonthStart '
+               . 'AND t.timestampEnd < :dateNextMonthStart '
+               . 'AND t.customer = :customerId';
+        
+        $dql2 = 'SELECT t '
+               . 'FROM \SharengoCore\Entity\Trips t '
+               . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
+               . 'WHERE c.id > 27500'
+               . 'order by c.id';
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('dateCurrentMonthStart', $dateCurrentMonthStart);
+        $query->setParameter('dateNextMonthStart', $dateNextMonthStart);
+        $query->setParameter('customerId', $customerId);
+        
+        return $query->getResult();
+    }
 
     public function findTripsByPlateNotEnded($plate)
     {
