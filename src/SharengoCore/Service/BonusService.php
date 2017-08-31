@@ -139,13 +139,21 @@ class BonusService
     }
     
     /** 
-     *  @param string $carplate
-     *  @param integer $customer
+     *  @param Customers $customer
      *  @return Bonus
      */
-    public function verifyWomenBonus($customer)
+    public function verifyWomenBonusPackage($customer)
     {
         return $this->bonusRepository->getWomenBonusPackage($customer);
+    }
+
+    /**
+     *  @param Customers $customer
+     *  @return Bonus
+     */
+    public function verifyWelcomeBonusPackage($customer)
+    {
+        return $this->bonusRepository->getWelcomeBonusPackage($customer);
     }
     
 }
