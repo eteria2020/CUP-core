@@ -1683,7 +1683,6 @@ class Customers
         }
 
         return $total;
-
     }
     
     public function getResidualPoints()
@@ -1694,7 +1693,16 @@ class Customers
         }
 
         return $total;
+    }
+    
+    public function getPositivePoints() {
+        $total = 0;
+        foreach ($this->getValidPoints() as $points) {
+            if($points->getTotal() >= 0)
+                $total += $points->getTotal();
+        }
 
+        return $total;
     }
 
     public function getUsedBonuses()

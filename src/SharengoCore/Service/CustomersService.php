@@ -492,6 +492,38 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->addBonus($customer, $customerBonus);
     }
+    
+    public function setPointField1($numeberAddPoint){
+        
+        $data['customer-point']['total'] = $numeberAddPoint."";
+        $data['customer-point']['description'] = "add row to script -add point day- ";
+        
+        $date = new \DateTime();
+        $data['customer-point']['validFrom'] = $date->format("Y-m-d");
+        
+        $date = new \DateTime();
+        $dateAdd10year = $date->modify('+10 years');
+        $data['customer-point']['validTo'] = $dateAdd10year->format("Y-m-d");;
+        
+        return $data;
+    }
+
+
+    public function setPointField2(CustomersPoints $point, $customerId){
+        
+        //recupero il custimer dall'id
+        $customer = $this->findById($customerId);
+        
+        $date = new \DateTime();
+        
+        $point->setInsertTs($date);
+        $point->setUpdateTs($date);
+        //$point->setTotal($pointAdd);
+        $point->setResidual(0);
+        $point->setType("Drive");
+        
+        $this->addPoint($customer, $point);
+    }
 
     public function addBonusFromWebUser(Customers $customer, CustomersBonus $bonus)
     {

@@ -21,7 +21,8 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
                . 'WHERE t.timestampBeginning >= :dateYesterdayStart '
-               . 'AND t.timestampEnd < :dateTodayStart';
+               . 'AND t.timestampEnd < :dateTodayStart'
+               . 'AND t.payable = :payable';
         
         $dql2 = 'SELECT DISTINCT c.id '
                . 'FROM \SharengoCore\Entity\Trips t '
@@ -29,9 +30,12 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository
                . 'WHERE c.id > 27500'
                . 'order by c.id';
 
+        $payable = "TRUE";
+        
         $query = $em->createQuery($dql2);
         //$query->setParameter('dateYesterdayStart', $dateYesterdayStart);
         //$query->setParameter('dateTodayStart', $dateTodayStart);
+        //$query->setParameter('payable', $dateTodayStart);
         
         return $query->getResult();
     }

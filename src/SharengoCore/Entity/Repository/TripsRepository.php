@@ -32,41 +32,51 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'WHERE t.timestampBeginning >= :dateYesterdayStart '
                . 'AND t.timestampEnd < :dateTodayStart '
-               . 'AND t.customer = :customerId';
+               . 'AND t.customer = :customerId '
+               . 'AND t.payable = :payable';
         
         $dql2 = 'SELECT t '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
-               . 'WHERE c.id > 27500'
+               . 'WHERE c.id = :customerId '
+               . 'AND t.payable = :payable '
                . 'order by c.id';
 
-        $query = $em->createQuery($dql);
-        $query->setParameter('dateYesterdayStart', $dateYesterdayStart);
-        $query->setParameter('dateTodayStart', $dateTodayStart);
+        $payable = "TRUE";
+        
+        $query = $em->createQuery($dql2);
+        //$query->setParameter('dateYesterdayStart', $dateYesterdayStart);
+        //$query->setParameter('dateTodayStart', $dateTodayStart);
         $query->setParameter('customerId', $customerId);
+        $query->setParameter('payable', $payable);
         
         return $query->getResult();
     }
     
-    public function getTripsByCustomerForAddPointMonth($customerId, $dateCurrentMonthStart, $dateNextMonthStart) {
+    public function getTripsByCustomerForAddPointMonth($customerId, $dateCurrentMonthStart, $dateYesterdayStart) {
         $em = $this->getEntityManager();
         
         $dql = 'SELECT t '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'WHERE t.timestampBeginning >= :dateCurrentMonthStart '
-               . 'AND t.timestampEnd < :dateNextMonthStart '
-               . 'AND t.customer = :customerId';
+               . 'AND t.timestampEnd < :dateYesterdayStart '
+               . 'AND t.customer = :customerId '
+               . 'AND t.payable = :payable';
         
         $dql2 = 'SELECT t '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
-               . 'WHERE c.id > 27500'
+               . 'WHERE t.customer = :customerId '
+               . 'AND t.payable = :payable '
                . 'order by c.id';
 
-        $query = $em->createQuery($dql);
-        $query->setParameter('dateCurrentMonthStart', $dateCurrentMonthStart);
-        $query->setParameter('dateNextMonthStart', $dateNextMonthStart);
+        $payable = "TRUE";
+        
+        $query = $em->createQuery($dql2);
+        //$query->setParameter('dateCurrentMonthStart', $dateCurrentMonthStart);
+        //$query->setParameter('dateYesterdayStart', $dateYesterdayStart);
         $query->setParameter('customerId', $customerId);
+        $query->setParameter('payable', $payable);
         
         return $query->getResult();
     }
