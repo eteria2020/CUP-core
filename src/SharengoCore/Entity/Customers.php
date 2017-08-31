@@ -13,8 +13,8 @@ use Doctrine\Common\Collections\Collection;
  * @ORM\Table(name="customers", uniqueConstraints={@ORM\UniqueConstraint(name="email_uk", columns={"email"}), @ORM\UniqueConstraint(name="tax_code_uk", columns={"tax_code"})})
  * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CustomersRepository")
  */
-class Customers
-{
+class Customers {
+
     /**
      * @var integer
      *
@@ -157,13 +157,27 @@ class Customers
      * @ORM\Column(name="phone", type="text", nullable=true)
      */
     private $phone;
-
+    
     /**
      * @var string
      *
      * @ORM\Column(name="mobile", type="text", nullable=true)
      */
     private $mobile;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="job_type", type="string", length=255, nullable=true)
+     */
+    private $jobType;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="how_to_know", type="string", length=255, nullable=true)
+     */
+    private $howToKnow;
 
     /**
      * @var string
@@ -447,9 +461,7 @@ class Customers
      */
     private $discountStatus;
 
-
-    public function __construct()
-    {
+    public function __construct() {
         $this->insertedTs = date('Y-m-d h:i:s');
         $this->foreignDriversLicenseUploads = new ArrayCollection();
     }
@@ -458,8 +470,7 @@ class Customers
      * @param DoctrineHydrator
      * @return mixed[]
      */
-    public function toArray(DoctrineHydrator $hydrator)
-    {
+    public function toArray(DoctrineHydrator $hydrator) {
         $card = $this->getCard();
         if ($card !== null) {
             $card = $card->toArray($hydrator);
@@ -480,8 +491,7 @@ class Customers
      *
      * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -492,8 +502,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setEmail($email)
-    {
+    public function setEmail($email) {
         $this->email = strtolower($email);
 
         return $this;
@@ -504,8 +513,7 @@ class Customers
      *
      * @return string
      */
-    public function getEmail()
-    {
+    public function getEmail() {
         return $this->email;
     }
 
@@ -516,8 +524,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setPassword($password)
-    {
+    public function setPassword($password) {
         $this->password = $password;
 
         return $this;
@@ -528,8 +535,7 @@ class Customers
      *
      * @return string
      */
-    public function getPassword()
-    {
+    public function getPassword() {
         return $this->password;
     }
 
@@ -540,8 +546,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -552,8 +557,7 @@ class Customers
      *
      * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -564,8 +568,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setSurname($surname)
-    {
+    public function setSurname($surname) {
         $this->surname = $surname;
 
         return $this;
@@ -576,8 +579,7 @@ class Customers
      *
      * @return string
      */
-    public function getSurname()
-    {
+    public function getSurname() {
         return $this->surname;
     }
 
@@ -588,8 +590,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setGender($gender)
-    {
+    public function setGender($gender) {
         $this->gender = $gender;
 
         return $this;
@@ -600,8 +601,7 @@ class Customers
      *
      * @return string
      */
-    public function getGender()
-    {
+    public function getGender() {
         return $this->gender;
     }
 
@@ -612,8 +612,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setBirthDate($birthDate)
-    {
+    public function setBirthDate($birthDate) {
         $this->birthDate = $birthDate;
 
         return $this;
@@ -624,8 +623,7 @@ class Customers
      *
      * @return \DateTime
      */
-    public function getBirthDate()
-    {
+    public function getBirthDate() {
         return $this->birthDate;
     }
 
@@ -636,8 +634,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setBirthTown($birthTown)
-    {
+    public function setBirthTown($birthTown) {
         $this->birthTown = $birthTown;
 
         return $this;
@@ -648,8 +645,7 @@ class Customers
      *
      * @return string
      */
-    public function getBirthTown()
-    {
+    public function getBirthTown() {
         return $this->birthTown;
     }
 
@@ -660,8 +656,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setBirthProvince($birthProvince)
-    {
+    public function setBirthProvince($birthProvince) {
         $this->birthProvince = $birthProvince;
 
         return $this;
@@ -672,8 +667,7 @@ class Customers
      *
      * @return string
      */
-    public function getBirthProvince()
-    {
+    public function getBirthProvince() {
         return $this->birthProvince;
     }
 
@@ -684,8 +678,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setBirthCountry($birthCountry)
-    {
+    public function setBirthCountry($birthCountry) {
         $this->birthCountry = $birthCountry;
 
         return $this;
@@ -696,8 +689,7 @@ class Customers
      *
      * @return string
      */
-    public function getBirthCountry()
-    {
+    public function getBirthCountry() {
         return $this->birthCountry;
     }
 
@@ -708,8 +700,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setVat($vat)
-    {
+    public function setVat($vat) {
         $this->vat = $vat;
 
         return $this;
@@ -720,8 +711,7 @@ class Customers
      *
      * @return string
      */
-    public function getVat()
-    {
+    public function getVat() {
         return $this->vat;
     }
 
@@ -732,8 +722,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setTaxCode($taxCode)
-    {
+    public function setTaxCode($taxCode) {
         $this->taxCode = $taxCode;
 
         return $this;
@@ -744,8 +733,7 @@ class Customers
      *
      * @return string
      */
-    public function getTaxCode()
-    {
+    public function getTaxCode() {
         return $this->taxCode;
     }
 
@@ -756,8 +744,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setLanguage($language)
-    {
+    public function setLanguage($language) {
         $this->language = $language;
 
         return $this;
@@ -768,8 +755,7 @@ class Customers
      *
      * @return string
      */
-    public function getLanguage()
-    {
+    public function getLanguage() {
         return $this->language;
     }
 
@@ -780,8 +766,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setCountry($country)
-    {
+    public function setCountry($country) {
         $this->country = $country;
 
         return $this;
@@ -792,8 +777,7 @@ class Customers
      *
      * @return string
      */
-    public function getCountry()
-    {
+    public function getCountry() {
         return $this->country;
     }
 
@@ -804,8 +788,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setProvince($province)
-    {
+    public function setProvince($province) {
         $this->province = $province;
 
         return $this;
@@ -816,8 +799,7 @@ class Customers
      *
      * @return string
      */
-    public function getProvince()
-    {
+    public function getProvince() {
         return $this->province;
     }
 
@@ -828,8 +810,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setTown($town)
-    {
+    public function setTown($town) {
         $this->town = $town;
 
         return $this;
@@ -840,8 +821,7 @@ class Customers
      *
      * @return string
      */
-    public function getTown()
-    {
+    public function getTown() {
         return $this->town;
     }
 
@@ -852,8 +832,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setAddress($address)
-    {
+    public function setAddress($address) {
         $this->address = $address;
 
         return $this;
@@ -864,8 +843,7 @@ class Customers
      *
      * @return string
      */
-    public function getAddress()
-    {
+    public function getAddress() {
         return $this->address;
     }
 
@@ -876,8 +854,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setAddressInfo($addressInfo)
-    {
+    public function setAddressInfo($addressInfo) {
         $this->addressInfo = $addressInfo;
 
         return $this;
@@ -888,8 +865,7 @@ class Customers
      *
      * @return string
      */
-    public function getAddressInfo()
-    {
+    public function getAddressInfo() {
         return $this->addressInfo;
     }
 
@@ -900,8 +876,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setZipCode($zipCode)
-    {
+    public function setZipCode($zipCode) {
         $this->zipCode = $zipCode;
 
         return $this;
@@ -912,8 +887,7 @@ class Customers
      *
      * @return string
      */
-    public function getZipCode()
-    {
+    public function getZipCode() {
         return $this->zipCode;
     }
 
@@ -924,8 +898,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setPhone($phone)
-    {
+    public function setPhone($phone) {
         $this->phone = $phone;
 
         return $this;
@@ -936,9 +909,53 @@ class Customers
      *
      * @return string
      */
-    public function getPhone()
-    {
+    public function getPhone() {
         return $this->phone;
+    }
+    
+    
+    /**
+     * Set jobType
+     *
+     * @param string $jobType
+     *
+     * @return Customers
+     */
+    public function setJobType($jobType) {
+        $this->jobType = $jobType;
+
+        return $this;
+    }
+
+    /**
+     * Get jobType
+     *
+     * @return string
+     */
+    public function getJobType() {
+        return $this->jobType;
+    }
+
+    /**
+     * Set howToKnow
+     *
+     * @param string $howToKnow
+     *
+     * @return Customers
+     */
+    public function setHowToKnow($howToKnow) {
+        $this->howToKnow = $howToKnow;
+
+        return $this;
+    }
+
+    /**
+     * Get howToKnow
+     *
+     * @return string
+     */
+    public function getHowToKnow() {
+        return $this->howToKnow;
     }
 
     /**
@@ -948,8 +965,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setMobile($mobile)
-    {
+    public function setMobile($mobile) {
         $this->mobile = $mobile;
 
         return $this;
@@ -960,8 +976,7 @@ class Customers
      *
      * @return string
      */
-    public function getMobile()
-    {
+    public function getMobile() {
         return $this->mobile;
     }
 
@@ -972,8 +987,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setFax($fax)
-    {
+    public function setFax($fax) {
         $this->fax = $fax;
 
         return $this;
@@ -984,8 +998,7 @@ class Customers
      *
      * @return string
      */
-    public function getFax()
-    {
+    public function getFax() {
         return $this->fax;
     }
 
@@ -996,8 +1009,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setDriverLicense($driverLicense)
-    {
+    public function setDriverLicense($driverLicense) {
         $this->driverLicense = $driverLicense;
 
         return $this;
@@ -1008,8 +1020,7 @@ class Customers
      *
      * @return string
      */
-    public function getDriverLicense()
-    {
+    public function getDriverLicense() {
         return $this->driverLicense;
     }
 
@@ -1020,8 +1031,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setDriverLicenseCategories($driverLicenseCategories)
-    {
+    public function setDriverLicenseCategories($driverLicenseCategories) {
         $this->driverLicenseCategories = $driverLicenseCategories;
 
         return $this;
@@ -1032,8 +1042,7 @@ class Customers
      *
      * @return string
      */
-    public function getDriverLicenseCategories()
-    {
+    public function getDriverLicenseCategories() {
         return $this->driverLicenseCategories;
     }
 
@@ -1044,8 +1053,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setDriverLicenseExpire($driverLicenseExpire)
-    {
+    public function setDriverLicenseExpire($driverLicenseExpire) {
         $this->driverLicenseExpire = $driverLicenseExpire;
 
         return $this;
@@ -1056,8 +1064,7 @@ class Customers
      *
      * @return \DateTime
      */
-    public function getDriverLicenseExpire()
-    {
+    public function getDriverLicenseExpire() {
         return $this->driverLicenseExpire;
     }
 
@@ -1068,8 +1075,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setPin($pin)
-    {
+    public function setPin($pin) {
         $this->pin = $pin;
 
         return $this;
@@ -1080,8 +1086,7 @@ class Customers
      *
      * @return string
      */
-    public function getPrimaryPin()
-    {
+    public function getPrimaryPin() {
         $pins = json_decode($this->pin, true);
         return $pins['primary'];
     }
@@ -1093,8 +1098,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setNotes($notes)
-    {
+    public function setNotes($notes) {
         $this->notes = $notes;
 
         return $this;
@@ -1105,8 +1109,7 @@ class Customers
      *
      * @return string
      */
-    public function getNotes()
-    {
+    public function getNotes() {
         return $this->notes;
     }
 
@@ -1117,8 +1120,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setInsertedTs($insertedTs)
-    {
+    public function setInsertedTs($insertedTs) {
         $this->insertedTs = $insertedTs;
 
         return $this;
@@ -1129,8 +1131,7 @@ class Customers
      *
      * @return \DateTime
      */
-    public function getInsertedTs()
-    {
+    public function getInsertedTs() {
         return $this->insertedTs;
     }
 
@@ -1141,8 +1142,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setUpdateId($updateId)
-    {
+    public function setUpdateId($updateId) {
         $this->updateId = $updateId;
 
         return $this;
@@ -1153,8 +1153,7 @@ class Customers
      *
      * @return integer
      */
-    public function getUpdateId()
-    {
+    public function getUpdateId() {
         return $this->updateId;
     }
 
@@ -1165,8 +1164,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setUpdateTs($updateTs)
-    {
+    public function setUpdateTs($updateTs) {
         $this->updateTs = $updateTs;
 
         return $this;
@@ -1177,8 +1175,7 @@ class Customers
      *
      * @return integer
      */
-    public function getUpdateTs()
-    {
+    public function getUpdateTs() {
         return $this->updateTs;
     }
 
@@ -1189,8 +1186,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setDriverLicenseAuthority($driverLicenseAuthority)
-    {
+    public function setDriverLicenseAuthority($driverLicenseAuthority) {
         $this->driverLicenseAuthority = $driverLicenseAuthority;
 
         return $this;
@@ -1201,8 +1197,7 @@ class Customers
      *
      * @return string
      */
-    public function getDriverLicenseAuthority()
-    {
+    public function getDriverLicenseAuthority() {
         return $this->driverLicenseAuthority;
     }
 
@@ -1213,8 +1208,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setDriverLicenseCountry($driverLicenseCountry)
-    {
+    public function setDriverLicenseCountry($driverLicenseCountry) {
         $this->driverLicenseCountry = $driverLicenseCountry;
 
         return $this;
@@ -1225,8 +1219,7 @@ class Customers
      *
      * @return string
      */
-    public function getDriverLicenseCountry()
-    {
+    public function getDriverLicenseCountry() {
         return $this->driverLicenseCountry;
     }
 
@@ -1235,8 +1228,7 @@ class Customers
      *
      * @return bool
      */
-    public function hasForeignDriverLicense()
-    {
+    public function hasForeignDriverLicense() {
         return $this->driverLicenseCountry !== 'it';
     }
 
@@ -1247,8 +1239,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setDriverLicenseReleaseDate($driverLicenseReleaseDate)
-    {
+    public function setDriverLicenseReleaseDate($driverLicenseReleaseDate) {
         $this->driverLicenseReleaseDate = $driverLicenseReleaseDate;
 
         return $this;
@@ -1259,8 +1250,7 @@ class Customers
      *
      * @return \DateTime
      */
-    public function getDriverLicenseReleaseDate()
-    {
+    public function getDriverLicenseReleaseDate() {
         return $this->driverLicenseReleaseDate;
     }
 
@@ -1271,8 +1261,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setDriverLicenseName($driverLicenseName)
-    {
+    public function setDriverLicenseName($driverLicenseName) {
         $this->driverLicenseName = $driverLicenseName;
 
         return $this;
@@ -1283,8 +1272,7 @@ class Customers
      *
      * @return string
      */
-    public function getDriverLicenseName()
-    {
+    public function getDriverLicenseName() {
         return $this->driverLicenseName;
     }
 
@@ -1295,8 +1283,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setDriverLicenseSurname($driverLicenseSurname)
-    {
+    public function setDriverLicenseSurname($driverLicenseSurname) {
         $this->driverLicenseSurname = $driverLicenseSurname;
 
         return $this;
@@ -1307,8 +1294,7 @@ class Customers
      *
      * @return string
      */
-    public function getDriverLicenseSurname()
-    {
+    public function getDriverLicenseSurname() {
         return $this->driverLicenseSurname;
     }
 
@@ -1319,8 +1305,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setRegistrationCompleted($registrationCompleted)
-    {
+    public function setRegistrationCompleted($registrationCompleted) {
         $this->registrationCompleted = $registrationCompleted;
 
         return $this;
@@ -1331,8 +1316,7 @@ class Customers
      *
      * @return boolean
      */
-    public function getRegistrationCompleted()
-    {
+    public function getRegistrationCompleted() {
         return $this->registrationCompleted;
     }
 
@@ -1343,8 +1327,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setHash($hash)
-    {
+    public function setHash($hash) {
         $this->hash = $hash;
 
         return $this;
@@ -1355,8 +1338,7 @@ class Customers
      *
      * @return string
      */
-    public function getHash()
-    {
+    public function getHash() {
         return $this->hash;
     }
 
@@ -1367,8 +1349,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setFirstPaymentCompleted($firstPaymentCompleted)
-    {
+    public function setFirstPaymentCompleted($firstPaymentCompleted) {
         $this->firstPaymentCompleted = $firstPaymentCompleted;
 
         return $this;
@@ -1379,8 +1360,7 @@ class Customers
      *
      * @return boolean
      */
-    public function getFirstPaymentCompleted()
-    {
+    public function getFirstPaymentCompleted() {
         return $this->firstPaymentCompleted;
     }
 
@@ -1391,8 +1371,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setDiscountRate($discountRate)
-    {
+    public function setDiscountRate($discountRate) {
         $this->discountRate = $discountRate;
 
         return $this;
@@ -1403,8 +1382,7 @@ class Customers
      *
      * @return integer
      */
-    public function getDiscountRate()
-    {
+    public function getDiscountRate() {
         return $this->discountRate ?: 0;
     }
 
@@ -1415,8 +1393,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setReprofilingOption($reprofilingOption)
-    {
+    public function setReprofilingOption($reprofilingOption) {
         $this->reprofilingOption = $reprofilingOption;
 
         return $this;
@@ -1427,8 +1404,7 @@ class Customers
      *
      * @return integer
      */
-    public function getReprofilingOption()
-    {
+    public function getReprofilingOption() {
         return $this->reprofilingOption;
     }
 
@@ -1439,8 +1415,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setProfilingCounter($profilingCounter)
-    {
+    public function setProfilingCounter($profilingCounter) {
         $this->profilingCounter = $profilingCounter;
 
         return $this;
@@ -1451,8 +1426,7 @@ class Customers
      *
      * @return integer
      */
-    public function getProfilingCounter()
-    {
+    public function getProfilingCounter() {
         return $this->profilingCounter;
     }
 
@@ -1463,8 +1437,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setEnabled($enabled)
-    {
+    public function setEnabled($enabled) {
         $this->enabled = $enabled;
 
         return $this;
@@ -1475,8 +1448,7 @@ class Customers
      *
      * @return boolean
      */
-    public function getEnabled()
-    {
+    public function getEnabled() {
         return $this->enabled;
     }
 
@@ -1487,8 +1459,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setGoldList($goldList)
-    {
+    public function setGoldList($goldList) {
         $this->goldList = $goldList;
 
         return $this;
@@ -1499,8 +1470,7 @@ class Customers
      *
      * @return boolean
      */
-    public function getGoldList()
-    {
+    public function getGoldList() {
         return $this->goldList;
     }
 
@@ -1511,8 +1481,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setMaintainer($maintainer)
-    {
+    public function setMaintainer($maintainer) {
         $this->maintainer = $maintainer;
 
         return $this;
@@ -1523,8 +1492,7 @@ class Customers
      *
      * @return boolean
      */
-    public function getMaintainer()
-    {
+    public function getMaintainer() {
         return $this->maintainer;
     }
 
@@ -1533,8 +1501,7 @@ class Customers
      *
      * @return string
      */
-    public function getPin()
-    {
+    public function getPin() {
         return $this->pin;
     }
 
@@ -1545,8 +1512,7 @@ class Customers
      *
      * @return Customers
      */
-    public function setCard(\SharengoCore\Entity\Cards $card = null)
-    {
+    public function setCard(\SharengoCore\Entity\Cards $card = null) {
         $this->card = $card;
 
         return $this;
@@ -1557,19 +1523,16 @@ class Customers
      *
      * @return \SharengoCore\Entity\Cards
      */
-    public function getCard()
-    {
+    public function getCard() {
         return $this->card;
     }
-
 
     /**
      * Get Cards rfid
      *
      * @return string
      */
-    public function getCardRfid()
-    {
+    public function getCardRfid() {
         return $this->card->getRfid();
     }
 
@@ -1578,8 +1541,7 @@ class Customers
      *
      * @return Array of Doctrine Entities
      */
-    public function getBonuses()
-    {
+    public function getBonuses() {
         return $this->customersbonuses;
     }
     
@@ -1588,20 +1550,18 @@ class Customers
         return $this->customerspoints;
     }
 
-    public function getValidBonuses()
-    {
+    public function getValidBonuses() {
         $validBonuses = [];
         
         foreach ($this->getBonuses() as $bonus) {
             if ($bonus->getActive() &&
-                (null == $bonus->getValidFrom() || $bonus->getValidFrom() <= new \DateTime()) &&
-                (null == $bonus->getValidTo() || $bonus->getValidTo() >= new \DateTime())) {
+                    (null == $bonus->getValidFrom() || $bonus->getValidFrom() <= new \DateTime()) &&
+                    (null == $bonus->getValidTo() || $bonus->getValidTo() >= new \DateTime())) {
                 $validBonuses[] = $bonus;
             }
         }
 
         return $validBonuses;
-
     }
     
     public function getValidPoints()
@@ -1642,15 +1602,13 @@ class Customers
 
     }
 
-    public function getTotalBonuses()
-    {
+    public function getTotalBonuses() {
         $total = 0;
         foreach ($this->getValidBonuses() as $bonus) {
             $total += $bonus->getTotal();
         }
 
         return $total;
-
     }
     
     public function getTotalPoints()
@@ -1675,14 +1633,14 @@ class Customers
 
     }
 
-    public function getResidualBonuses()
-    {
+    public function getResidualBonuses() {
         $total = 0;
         foreach ($this->getValidBonuses() as $bonus) {
             $total += $bonus->getResidual();
         }
 
         return $total;
+
     }
     
     public function getResidualPoints()
@@ -1703,10 +1661,10 @@ class Customers
         }
 
         return $total;
+
     }
 
-    public function getUsedBonuses()
-    {
+    public function getUsedBonuses() {
         return $this->getTotalBonuses() - $this->getResidualBonuses();
     }
     
@@ -1718,8 +1676,7 @@ class Customers
     /**
      * @return boolean
      */
-    public function getGeneralCondition1()
-    {
+    public function getGeneralCondition1() {
         return $this->generalCondition1;
     }
 
@@ -1727,8 +1684,7 @@ class Customers
      * @param boolean $generalCondition1
      * @return Customers
      */
-    public function setGeneralCondition1($generalCondition1)
-    {
+    public function setGeneralCondition1($generalCondition1) {
         $this->generalCondition1 = $generalCondition1;
         return $this;
     }
@@ -1736,8 +1692,7 @@ class Customers
     /**
      * @return boolean
      */
-    public function getGeneralCondition2()
-    {
+    public function getGeneralCondition2() {
         return $this->generalCondition2;
     }
 
@@ -1745,8 +1700,7 @@ class Customers
      * @param boolean $generalCondition2
      * @return Customers
      */
-    public function setGeneralCondition2($generalCondition2)
-    {
+    public function setGeneralCondition2($generalCondition2) {
         $this->generalCondition2 = $generalCondition2;
         return $this;
     }
@@ -1754,8 +1708,7 @@ class Customers
     /**
      * @return boolean
      */
-    public function getRegulationCondition1()
-    {
+    public function getRegulationCondition1() {
         return $this->regulationCondition1;
     }
 
@@ -1763,8 +1716,7 @@ class Customers
      * @param boolean $regulationCondition1
      * @return Customers
      */
-    public function setRegulationCondition1($regulationCondition1)
-    {
+    public function setRegulationCondition1($regulationCondition1) {
         $this->regulationCondition1 = $regulationCondition1;
         return $this;
     }
@@ -1772,8 +1724,7 @@ class Customers
     /**
      * @return boolean
      */
-    public function getRegulationCondition2()
-    {
+    public function getRegulationCondition2() {
         return $this->regulationCondition2;
     }
 
@@ -1781,8 +1732,7 @@ class Customers
      * @param boolean $regulationCondition2
      * @return Customers
      */
-    public function setRegulationCondition2($regulationCondition2)
-    {
+    public function setRegulationCondition2($regulationCondition2) {
         $this->regulationCondition2 = $regulationCondition2;
         return $this;
     }
@@ -1790,8 +1740,7 @@ class Customers
     /**
      * @return boolean
      */
-    public function getPrivacyCondition()
-    {
+    public function getPrivacyCondition() {
         return $this->privacyCondition;
     }
 
@@ -1799,8 +1748,7 @@ class Customers
      * @param boolean $privacyCondition
      * @return Customers
      */
-    public function setPrivacyCondition($privacyCondition)
-    {
+    public function setPrivacyCondition($privacyCondition) {
         $this->privacyCondition = $privacyCondition;
         return $this;
     }
@@ -1808,8 +1756,7 @@ class Customers
     /**
      * @return boolean
      */
-    public function getPaymentAble()
-    {
+    public function getPaymentAble() {
         return $this->paymentAble;
     }
 
@@ -1817,8 +1764,7 @@ class Customers
      * @param boolean $paymentAble
      * @return Customers
      */
-    public function setPaymentAble($paymentAble)
-    {
+    public function setPaymentAble($paymentAble) {
         $this->paymentAble = $paymentAble;
 
         return $this;
@@ -1827,24 +1773,21 @@ class Customers
     /**
      * @return boolean
      */
-    public function getDriverLicenseForeign()
-    {
+    public function getDriverLicenseForeign() {
         return $this->driverLicenseForeign;
     }
 
     /**
      * @param boolean $driverLicenseForeign
      */
-    public function setDriverLicenseForeign($driverLicenseForeign)
-    {
+    public function setDriverLicenseForeign($driverLicenseForeign) {
         $this->driverLicenseForeign = $driverLicenseForeign;
     }
 
     /**
      * @return Fleet
      */
-    public function getFleet()
-    {
+    public function getFleet() {
         return $this->fleet;
     }
 
@@ -1852,8 +1795,7 @@ class Customers
      * @param Fleet $fleet
      * @return Customers
      */
-    public function setFleet(Fleet $fleet)
-    {
+    public function setFleet(Fleet $fleet) {
         $this->fleet = $fleet;
 
         return $this;
@@ -1862,8 +1804,7 @@ class Customers
     /**
      * @return Customers
      */
-    public function disable()
-    {
+    public function disable() {
         $this->enabled = false;
 
         return $this;
@@ -1872,26 +1813,21 @@ class Customers
     /**
      * @return Customers
      */
-    public function enable()
-    {
+    public function enable() {
         $this->enabled = true;
 
         return $this;
     }
 
-
-    public function benefitsFromDiscoutedSubscriptionAmount()
-    {
+    public function benefitsFromDiscoutedSubscriptionAmount() {
         return null != $this->findDiscountedSubscriptionAmount();
     }
 
-    public function getSubscriptionAmount($defaultAmount)
-    {
+    public function getSubscriptionAmount($defaultAmount) {
         return $this->findDiscountedSubscriptionAmount() ?: $defaultAmount;
     }
 
-    public function findDiscountedSubscriptionAmount()
-    {
+    public function findDiscountedSubscriptionAmount() {
         $bonuses = $this->getBonuses();
         /** @var CustomersBonus $bonus */
         foreach ($bonuses as $bonus) {
@@ -1909,8 +1845,7 @@ class Customers
      * @param int $defaultAmount
      * @return int amount in euro cents
      */
-    public function payedSubscriptionAmount($defaultAmount)
-    {
+    public function payedSubscriptionAmount($defaultAmount) {
         if ($this->subscriptionPayments->isEmpty()) {
             return $this->getSubscriptionAmount($defaultAmount);
         }
@@ -1920,21 +1855,18 @@ class Customers
         return $lastSubscriptionPayment->amount();
     }
 
-    public function getForeignDriversLicenseUploads()
-    {
+    public function getForeignDriversLicenseUploads() {
         return $this->foreignDriversLicenseUploads;
     }
 
-    public function addForeignDriversLicenseUploads(Collection $uploads)
-    {
+    public function addForeignDriversLicenseUploads(Collection $uploads) {
         foreach ($uploads as $upload) {
             $upload->setCustomer($this);
             $this->foreignDriversLicenseUploads->add($upload);
         }
     }
 
-    public function removeForeignDriversLicenseUploads(Collection $uploads)
-    {
+    public function removeForeignDriversLicenseUploads(Collection $uploads) {
         foreach ($uploads as $upload) {
             $upload->setCustomer(null);
             $this->foreignDriversLicenseUploads->removeElement($upload);
@@ -1945,8 +1877,7 @@ class Customers
      * @param CustomersBonus $bonus
      * @return bool
      */
-    public function hasAlreadyBonus(CustomersBonus $bonus)
-    {
+    public function hasAlreadyBonus(CustomersBonus $bonus) {
         /** @var CustomersBonus $currentBonus */
         foreach ($this->getBonuses() as $currentBonus) {
             if ($bonus->getId() == $currentBonus->getId()) {
@@ -1956,16 +1887,14 @@ class Customers
         return false;
     }
 
-    public function disableCompanyPin($reason)
-    {
+    public function disableCompanyPin($reason) {
         $pins = json_decode($this->pin, true);
         $pins['companyPinDisabled'] = true;
         $pins['disabledReason'] = $reason;
         $this->pin = json_encode($pins);
     }
 
-    public function enableCompanyPin()
-    {
+    public function enableCompanyPin() {
         $pins = json_decode($this->pin, true);
         $pins['companyPinDisabled'] = false;
         $pins['disabledReason'] = '';
@@ -1975,38 +1904,35 @@ class Customers
     /**
      * @return bool
      */
-    public function deservesNewDiscount()
-    {
+    public function deservesNewDiscount() {
         return $this->discountRate == 0 && // has 0% discount
-            ($this->insertedTs >= date_create('18 april 2016') // registered after 18/04/2016
-            || !$this->oldDiscounts->isEmpty()); // has a discount already expired
+                ($this->insertedTs >= date_create('18 april 2016') // registered after 18/04/2016
+                || !$this->oldDiscounts->isEmpty()); // has a discount already expired
     }
 
     /**
      * return bool
      */
-    public function hasDiscountStatus()
-    {
+    public function hasDiscountStatus() {
         return isset($this->discountStatus);
     }
 
     /**
      * @return null|DiscountStatus
      */
-    public function discountStatus()
-    {
+    public function discountStatus() {
         return $this->discountStatus;
     }
 
     /**
      * @return string
      */
-    public function discountStatusValue()
-    {
+    public function discountStatusValue() {
         if (!$this->hasDiscountStatus()) {
             return '';
         }
 
         return $this->discountStatus->status();
     }
+
 }

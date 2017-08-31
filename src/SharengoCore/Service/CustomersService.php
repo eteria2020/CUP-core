@@ -192,7 +192,7 @@ class CustomersService implements ValidatorServiceInterface
             'id' => $id
         ]);
     }
-
+    
     public function findByTaxCode($taxCode)
     {
         return $this->customersRepository->findByCI('taxCode', $taxCode);
@@ -203,6 +203,30 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersRepository->findByCI('driverLicense', $driversLicense);
     }
 
+    /**
+     * 
+     * @param string $mobile    mobile number
+     * @return Customers[]
+     */
+    public function findByMobile($mobile)
+    {
+        return $this->customersRepository->findByMobile($mobile);
+    }
+
+    /**
+     * 
+     * Check if mobile number already exists
+     * 
+     * @param string $mobile    mobile number
+     * @return int              0 = not found
+     *                          >0 = found
+     * 
+     */
+    public function checkMobileNumber($mobile)
+    {
+        return $this->customersRepository->checkMobileNumber($mobile);
+    }
+    
     /**
      * @param \DateTime $date
      * @return Customers[]
