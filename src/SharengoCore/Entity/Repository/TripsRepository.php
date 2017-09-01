@@ -80,6 +80,14 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         
         return $query->getResult();
     }
+    
+    public function getTripsByCustomerForAddPointClusterLastMonth($customerId, $dateStartLastMonth, $dateStartCurrentMonth){
+        
+    }
+    
+    public function getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartTwotMonthAgo){
+        
+    }
 
     public function findTripsByPlateNotEnded($plate)
     {

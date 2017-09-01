@@ -416,6 +416,10 @@ class CustomersService implements ValidatorServiceInterface
             'customer' => $customer
         ]);
     }
+    
+    public function getCustomerPointsByCustomer($customerId){
+        return $this->customersPointsRepository->findCustomerPointsByCustomer($customerId);
+    }
 
     public function findBonus($bonus)
     {
@@ -517,23 +521,22 @@ class CustomersService implements ValidatorServiceInterface
         $this->addBonus($customer, $customerBonus);
     }
     
-    public function setPointField1($numeberAddPoint){
+    public function setPointField1($numeberAddPoint, $nameScript){
+        
+        $date = new \DateTime();
+        $date2 = new \DateTime();
+        $dateAdd10year = $date2->modify('+10 years');
         
         $data['customer-point']['total'] = $numeberAddPoint."";
-        $data['customer-point']['description'] = "add row to script -add point day- ";
-        
-        $date = new \DateTime();
+        $data['customer-point']['description'] = "add row to script: ".$nameScript;
         $data['customer-point']['validFrom'] = $date->format("Y-m-d");
-        
-        $date = new \DateTime();
-        $dateAdd10year = $date->modify('+10 years');
         $data['customer-point']['validTo'] = $dateAdd10year->format("Y-m-d");;
         
         return $data;
     }
 
 
-    public function setPointField2(CustomersPoints $point, $customerId){
+    public function setPointField2(CustomersPoints $point, $customerId, $type){
         
         //recupero il custimer dall'id
         $customer = $this->findById($customerId);
@@ -542,9 +545,8 @@ class CustomersService implements ValidatorServiceInterface
         
         $point->setInsertTs($date);
         $point->setUpdateTs($date);
-        //$point->setTotal($pointAdd);
         $point->setResidual(0);
-        $point->setType("Drive");
+        $point->setType($type);
         
         $this->addPoint($customer, $point);
     }
@@ -901,5 +903,9 @@ class CustomersService implements ValidatorServiceInterface
     
     public function getCustomersRunYesterday($dateYesterdayStart, $dateTodayStart){
         return $this->customersPointsRepository->getCustomersRunYesterday($dateYesterdayStart, $dateTodayStart);
+    }
+    
+    public function getCustomersRunThisMonth($dateStartLastMonth, $dateStartCurrentMonth){
+        return $this->customersPointsRepository->getCustomersRunThisMonth($dateStartLastMonth, $dateStartCurrentMonth);
     }
 }
