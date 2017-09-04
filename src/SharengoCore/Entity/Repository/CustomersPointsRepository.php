@@ -20,7 +20,8 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository
         $dql = 'SELECT DISTINCT c.id '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
-               . 'WHERE t.timestampBeginning >= :dateYesterdayStart '
+               . 'WHERE 1=1 '
+               //. 't.timestampBeginning >= :dateYesterdayStart '
                . 'AND t.timestampEnd < :dateTodayStart'
                . 'AND t.payable = :payable';
         

@@ -30,7 +30,8 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         
         $dql = 'SELECT t '
                . 'FROM \SharengoCore\Entity\Trips t '
-               . 'WHERE t.timestampBeginning >= :dateYesterdayStart '
+               . 'WHERE 1=1 '
+               //. 't.timestampBeginning >= :dateYesterdayStart '
                . 'AND t.timestampEnd < :dateTodayStart '
                . 'AND t.customer = :customerId '
                . 'AND t.payable = :payable';
