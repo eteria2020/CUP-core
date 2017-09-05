@@ -113,7 +113,7 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
     public function getWelcomeBonusPackage($customer) {
         $em = $this->getEntityManager();
         $dql = "SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb ".
-               "WHERE cb.customer = :customer AND cb.description = 'Pacchetto di benevenuto' ";
+               "WHERE cb.customer = :customer AND cb.description = 'Pacchetto di benvenuto' ";
         $query = $em->createQuery($dql);
         $query->setParameter('customer', $customer);
         return $query->getResult();

@@ -473,7 +473,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('status', 'invoiced');
         $query->setMaxResults(1);
 
-        return $query->getResult();
+        return $query->getOneOrNullResult();
     }
 
 }
