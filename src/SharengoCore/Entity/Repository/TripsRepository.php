@@ -101,7 +101,6 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $dql = 'SELECT t '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'WHERE 1=1 '
-               //. 'AND t.timestampBeginning >= :dateStartLastMonth '
                . 'AND t.endTx >= :dateStartLastMonth '
                . 'AND t.endTx < :dateStartCurrentMonth '
                . 'AND t.customer = :customerId '
@@ -129,12 +128,11 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $dql = 'SELECT t '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'WHERE 1=1 '
-               //. 'AND t.timestampBeginning >= :dateStartTwotMonthAgo '
                . 'AND t.endTx < :dateStartLastMonth '
                . 'AND t.endTx >= :dateStartTwotMonthAgo '
                . 'AND t.customer = :customerId '
                . 'AND t.payable = :payable '
-               . 'AND t.pinType IS NOT NULL'
+               . 'AND t.pinType IS NULL'
                . 'AND t.beginningTx > :date';
 
         $payable = "TRUE";
