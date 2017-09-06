@@ -4,6 +4,7 @@ namespace SharengoCore\Entity\Repository;
 
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\PromoCodes;
+use SharengoCore\Entity\CustomersPoints;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Service\PromoCodesService;
 
@@ -21,22 +22,28 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
                . 'WHERE 1=1 '
-               //. 't.timestampBeginning >= :dateYesterdayStart '
-               . 'AND t.timestampEnd < :dateTodayStart'
-               . 'AND t.payable = :payable';
+               //. 'AND t.timestampBeginning >= :dateYesterdayStart '
+               . 'AND t.endTx >= :dateYesterdayStart '
+               . 'AND t.endTx < :dateTodayStart '
+               . 'AND t.payable = :payable '
+               . 'AND t.pinType IS NULL '
+               . 'AND t.beginningTx > :date'
+               . 'order by c.id';
         
-        $dql2 = 'SELECT DISTINCT c.id '
+        $dql = 'SELECT DISTINCT c.id '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
-               . 'WHERE c.id > 27500'
-               . 'order by c.id';
+               . 'WHERE c.id > 27500 '
+               . 'AND t.payable = :payable '
+               . 'AND t.beginningTx > :date';
 
         $payable = "TRUE";
         
-        $query = $em->createQuery($dql2);
+        $query = $em->createQuery($dql);
         //$query->setParameter('dateYesterdayStart', $dateYesterdayStart);
         //$query->setParameter('dateTodayStart', $dateTodayStart);
-        //$query->setParameter('payable', $payable);
+        $query->setParameter('payable', $payable);
+        $query->setParameter('date', '2015-01-01');
         
         return $query->getResult();
     }
@@ -48,9 +55,12 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository
         $dql = 'SELECT DISTINCT c.id '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
-               . 'WHERE t.timestampBeginning >= :dateStartLastMonth '
-               . 'AND t.timestampEnd < :dateTodayStart'
-               . 'AND t.payable = :payable';
+               . 'WHERE 1=1 '
+               . 'AND t.endTx >= :dateStartLastMonth '
+               . 'AND t.endTx < :dateTodayStart'
+               . 'AND t.payable = :payable '
+               . 'AND t.pinType IS NULL'
+               . 'AND t.beginningTx > :date';
         
         $dql = 'SELECT DISTINCT c.id '
                . 'FROM \SharengoCore\Entity\Trips t '
@@ -64,6 +74,7 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository
         //$query->setParameter('dateStartLastMonth', $dateStartLastMonth);
         //$query->setParameter('dateStartCurrentMonth', $dateStartCurrentMonth);
         $query->setParameter('payable', $payable);
+        $query->setParameter('date', '2015-01-01');
         
         return $query->getResult();
     }
@@ -78,5 +89,29 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('id', $customerId);
         
         return $query->getResult();
+    }
+    
+    public function checkCustomerIfAlreadyAddPointsThisMonth($customerId, $dateCurrentMonthStart, $dateNextMonthStart){
+        
+        $em = $this->getEntityManager();
+        
+        $dql = 'SELECT cp '
+               . 'FROM \SharengoCore\Entity\CustomersPoints cp '
+               . 'WHERE 1=1 '
+               . 'AND cp.type = :type '
+               . 'AND cp.customer = :customerId '
+               . 'AND cp.insertTs >= :dateCurrentMonthStart '
+               . 'AND cp.insertTs < :dateNextMonthStart ';
+        
+        $type="DRIVE";
+        
+        $query = $em->createQuery($dql);
+        $query->setParameter('type', $type);
+        $query->setParameter('customerId', $customerId);
+        $query->setParameter('dateCurrentMonthStart', $dateCurrentMonthStart);
+        $query->setParameter('dateNextMonthStart', $dateNextMonthStart);
+         
+        return $query->getResult();
+        
     }
 }

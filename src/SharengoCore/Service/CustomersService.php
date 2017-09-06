@@ -420,7 +420,11 @@ class CustomersService implements ValidatorServiceInterface
     public function getCustomerPointsByCustomer($customerId){
         return $this->customersPointsRepository->findCustomerPointsByCustomer($customerId);
     }
-
+    
+    public function checkCustomerIfAlreadyAddPointsThisMonth($customerId, $dateCurrentMonthStart, $dateNextMonthStart){
+        return $this->customersPointsRepository->checkCustomerIfAlreadyAddPointsThisMonth($customerId, $dateCurrentMonthStart, $dateNextMonthStart);
+    }
+    
     public function findBonus($bonus)
     {
         return $this->customersBonusRepository->find($bonus);
@@ -521,32 +525,14 @@ class CustomersService implements ValidatorServiceInterface
         $this->addBonus($customer, $customerBonus);
     }
     
-    public function setPointField1($numeberAddPoint, $nameScript){
-        
-        $date = new \DateTime();
-        $date2 = new \DateTime();
-        $dateAdd10year = $date2->modify('+10 years');
-        
-        $data['customer-point']['total'] = $numeberAddPoint."";
-        $data['customer-point']['description'] = "add row to script: ".$nameScript;
-        $data['customer-point']['validFrom'] = $date->format("Y-m-d");
-        $data['customer-point']['validTo'] = $dateAdd10year->format("Y-m-d");;
-        
-        return $data;
+    public function updateCustomerPointRow($customerPoint) {
+        $this->entityManager->persist($customerPoint);
+        $this->entityManager->flush();
     }
 
+    public function setPointField(CustomersPoints $point, $customerId, $type){
 
-    public function setPointField2(CustomersPoints $point, $customerId, $type){
-        
-        //recupero il custimer dall'id
         $customer = $this->findById($customerId);
-        
-        $date = new \DateTime();
-        
-        $point->setInsertTs($date);
-        $point->setUpdateTs($date);
-        $point->setResidual(0);
-        $point->setType($type);
         
         $this->addPoint($customer, $point);
     }

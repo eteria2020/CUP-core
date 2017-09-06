@@ -31,25 +31,31 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $dql = 'SELECT t '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'WHERE 1=1 '
-               //. 't.timestampBeginning >= :dateYesterdayStart '
-               . 'AND t.timestampEnd < :dateTodayStart '
+               //. 'AND t.timestampBeginning >= :dateYesterdayStart '
+               . 'AND t.endTx < :dateTodayStart '
+               . 'AND t.endTx >= :dateYesterdayStart '
                . 'AND t.customer = :customerId '
-               . 'AND t.payable = :payable';
+               . 'AND t.payable = :payable '
+               . 'AND t.pinType IS NULL '
+               . 'AND t.beginningTx > :date';
         
-        $dql2 = 'SELECT t '
+        $dql = 'SELECT t '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
                . 'WHERE c.id = :customerId '
                . 'AND t.payable = :payable '
-               . 'order by c.id';
+               . 'AND t.beginningTx > :date '
+                . 'AND t.endTx IS NOT NULL';
+               
 
         $payable = "TRUE";
         
-        $query = $em->createQuery($dql2);
+        $query = $em->createQuery($dql);
         //$query->setParameter('dateYesterdayStart', $dateYesterdayStart);
         //$query->setParameter('dateTodayStart', $dateTodayStart);
         $query->setParameter('customerId', $customerId);
         $query->setParameter('payable', $payable);
+        $query->setParameter('date', '2015-01-01');
         
         return $query->getResult();
     }
@@ -59,34 +65,88 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         
         $dql = 'SELECT t '
                . 'FROM \SharengoCore\Entity\Trips t '
-               . 'WHERE t.timestampBeginning >= :dateCurrentMonthStart '
-               . 'AND t.timestampEnd < :dateYesterdayStart '
+               . 'WHERE 1=1 '
+               //. 'AND t.timestampBeginning >= :dateCurrentMonthStart '
+               . 'AND t.endTx >= :dateCurrentMonthStart '
+               . 'AND t.endTx < :dateYesterdayStart '
                . 'AND t.customer = :customerId '
-               . 'AND t.payable = :payable';
+               . 'AND t.payable = :payable '
+               . 'AND t.pinType IS NULL'
+               . 'AND t.beginningTx > :date';
         
-        $dql2 = 'SELECT t '
+        $dql = 'SELECT t '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
                . 'WHERE t.customer = :customerId '
                . 'AND t.payable = :payable '
-               . 'order by c.id';
+               . 'AND t.beginningTx > :date '
+                . 'AND t.endTx IS NOT NULL';
 
         $payable = "TRUE";
         
-        $query = $em->createQuery($dql2);
+        $query = $em->createQuery($dql);
         //$query->setParameter('dateCurrentMonthStart', $dateCurrentMonthStart);
         //$query->setParameter('dateYesterdayStart', $dateYesterdayStart);
         $query->setParameter('customerId', $customerId);
         $query->setParameter('payable', $payable);
+        $query->setParameter('date', '2015-01-01');
         
         return $query->getResult();
     }
     
     public function getTripsByCustomerForAddPointClusterLastMonth($customerId, $dateStartLastMonth, $dateStartCurrentMonth){
         
+        $em = $this->getEntityManager();
+        
+        $dql = 'SELECT t '
+               . 'FROM \SharengoCore\Entity\Trips t '
+               . 'WHERE 1=1 '
+               //. 'AND t.timestampBeginning >= :dateStartLastMonth '
+               . 'AND t.endTx >= :dateStartLastMonth '
+               . 'AND t.endTx < :dateStartCurrentMonth '
+               . 'AND t.customer = :customerId '
+               . 'AND t.payable = :payable '
+               . 'AND t.pinType IS NULL'
+               . 'AND t.beginningTx > :date';
+
+        $payable = "TRUE";
+        
+        $query = $em->createQuery($dql);
+        $query->setParameter('dateStartLastMonth', $dateStartLastMonth);
+        $query->setParameter('dateStartCurrentMonth', $dateStartCurrentMonth);
+        $query->setParameter('customerId', $customerId);
+        $query->setParameter('payable', $payable);
+        $query->setParameter('date', '2015-01-01');
+
+        return $query->getResult();
+        
     }
     
     public function getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartTwotMonthAgo){
+        
+        $em = $this->getEntityManager();
+        
+        $dql = 'SELECT t '
+               . 'FROM \SharengoCore\Entity\Trips t '
+               . 'WHERE 1=1 '
+               //. 'AND t.timestampBeginning >= :dateStartTwotMonthAgo '
+               . 'AND t.endTx < :dateStartLastMonth '
+               . 'AND t.endTx >= :dateStartTwotMonthAgo '
+               . 'AND t.customer = :customerId '
+               . 'AND t.payable = :payable '
+               . 'AND t.pinType IS NOT NULL'
+               . 'AND t.beginningTx > :date';
+
+        $payable = "TRUE";
+        
+        $query = $em->createQuery($dql);
+        $query->setParameter('dateStartTwotMonthAgo', $dateStartTwotMonthAgo);
+        $query->setParameter('dateStartLastMonth', $dateStartLastMonth);
+        $query->setParameter('customerId', $customerId);
+        $query->setParameter('payable', $payable);
+        $query->setParameter('date', '2015-01-01');
+
+        return $query->getResult();
         
     }
 
