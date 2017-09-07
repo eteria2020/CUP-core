@@ -31,7 +31,6 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $dql = 'SELECT t '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'WHERE 1=1 '
-               //. 'AND t.timestampBeginning >= :dateYesterdayStart '
                . 'AND t.endTx < :dateTodayStart '
                . 'AND t.endTx >= :dateYesterdayStart '
                . 'AND t.customer = :customerId '
@@ -39,7 +38,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
                . 'AND t.pinType IS NULL '
                . 'AND t.beginningTx > :date';
         
-        $dql = 'SELECT t '
+        /*$dql = 'SELECT t '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
                . 'WHERE c.id = :customerId '
@@ -47,12 +46,12 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
                . 'AND t.beginningTx > :date '
                 . 'AND t.endTx IS NOT NULL';
                
-
+        */
         $payable = "TRUE";
         
         $query = $em->createQuery($dql);
-        //$query->setParameter('dateYesterdayStart', $dateYesterdayStart);
-        //$query->setParameter('dateTodayStart', $dateTodayStart);
+        $query->setParameter('dateYesterdayStart', $dateYesterdayStart);
+        $query->setParameter('dateTodayStart', $dateTodayStart);
         $query->setParameter('customerId', $customerId);
         $query->setParameter('payable', $payable);
         $query->setParameter('date', '2015-01-01');
@@ -66,7 +65,6 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $dql = 'SELECT t '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'WHERE 1=1 '
-               //. 'AND t.timestampBeginning >= :dateCurrentMonthStart '
                . 'AND t.endTx >= :dateCurrentMonthStart '
                . 'AND t.endTx < :dateYesterdayStart '
                . 'AND t.customer = :customerId '
@@ -74,19 +72,19 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
                . 'AND t.pinType IS NULL'
                . 'AND t.beginningTx > :date';
         
-        $dql = 'SELECT t '
+        /*$dql = 'SELECT t '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
                . 'WHERE t.customer = :customerId '
                . 'AND t.payable = :payable '
                . 'AND t.beginningTx > :date '
                 . 'AND t.endTx IS NOT NULL';
-
+        */
         $payable = "TRUE";
         
         $query = $em->createQuery($dql);
-        //$query->setParameter('dateCurrentMonthStart', $dateCurrentMonthStart);
-        //$query->setParameter('dateYesterdayStart', $dateYesterdayStart);
+        $query->setParameter('dateCurrentMonthStart', $dateCurrentMonthStart);
+        $query->setParameter('dateYesterdayStart', $dateYesterdayStart);
         $query->setParameter('customerId', $customerId);
         $query->setParameter('payable', $payable);
         $query->setParameter('date', '2015-01-01');

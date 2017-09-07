@@ -30,18 +30,18 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository
                . 'AND c.discountRate = 80 '
                . 'order by c.id';
         
-        $dql = 'SELECT DISTINCT c.id '
+        /*$dql = 'SELECT DISTINCT c.id '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
                . 'WHERE c.id > 27500 '
                . 'AND t.payable = :payable '
                . 'AND t.beginningTx > :date';
-
+        */
         $payable = "TRUE";
         
         $query = $em->createQuery($dql);
-        //$query->setParameter('dateYesterdayStart', $dateYesterdayStart);
-        //$query->setParameter('dateTodayStart', $dateTodayStart);
+        $query->setParameter('dateYesterdayStart', $dateYesterdayStart);
+        $query->setParameter('dateTodayStart', $dateTodayStart);
         $query->setParameter('payable', $payable);
         $query->setParameter('date', '2015-01-01');
         
@@ -64,17 +64,17 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository
                . 'AND c.discountRate = 80 '
                . 'order by c.id';
         
-        $dql = 'SELECT DISTINCT c.id '
+        /*$dql = 'SELECT DISTINCT c.id '
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
                . 'WHERE t.customer > 28800 '
                . 'AND t.payable = :payable';
-        
+        */
         $payable = "TRUE";
         
         $query = $em->createQuery($dql);
-        //$query->setParameter('dateStartLastMonth', $dateStartLastMonth);
-        //$query->setParameter('dateStartCurrentMonth', $dateStartCurrentMonth);
+        $query->setParameter('dateStartLastMonth', $dateStartLastMonth);
+        $query->setParameter('dateStartCurrentMonth', $dateStartCurrentMonth);
         $query->setParameter('payable', $payable);
         $query->setParameter('date', '2015-01-01');
         
