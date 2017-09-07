@@ -57,7 +57,7 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository
                . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
                . 'WHERE 1=1 '
                . 'AND t.endTx >= :dateStartLastMonth '
-               . 'AND t.endTx < :dateTodayStart '
+               . 'AND t.endTx < :dateStartCurrentMonth '
                . 'AND t.payable = :payable '
                . 'AND t.pinType IS NULL '
                . 'AND t.beginningTx > :date '

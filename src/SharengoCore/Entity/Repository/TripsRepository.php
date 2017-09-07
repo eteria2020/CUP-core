@@ -44,9 +44,9 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
                . 'WHERE c.id = :customerId '
                . 'AND t.payable = :payable '
                . 'AND t.beginningTx > :date '
-                . 'AND t.endTx IS NOT NULL';
-               
-        */
+               . 'AND t.endTx IS NOT NULL';
+            */   
+        
         $payable = "TRUE";
         
         $query = $em->createQuery($dql);
@@ -78,8 +78,9 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
                . 'WHERE t.customer = :customerId '
                . 'AND t.payable = :payable '
                . 'AND t.beginningTx > :date '
-                . 'AND t.endTx IS NOT NULL';
+               . 'AND t.endTx IS NOT NULL';
         */
+        
         $payable = "TRUE";
         
         $query = $em->createQuery($dql);
