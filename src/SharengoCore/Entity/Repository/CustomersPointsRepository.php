@@ -22,12 +22,12 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository
                . 'FROM \SharengoCore\Entity\Trips t '
                . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
                . 'WHERE 1=1 '
-               //. 'AND t.timestampBeginning >= :dateYesterdayStart '
                . 'AND t.endTx >= :dateYesterdayStart '
                . 'AND t.endTx < :dateTodayStart '
                . 'AND t.payable = :payable '
                . 'AND t.pinType IS NULL '
-               . 'AND t.beginningTx > :date'
+               . 'AND t.beginningTx > :date '
+               . 'AND c.discountRate = 80 '
                . 'order by c.id';
         
         $dql = 'SELECT DISTINCT c.id '
@@ -61,6 +61,7 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository
                . 'AND t.payable = :payable '
                . 'AND t.pinType IS NULL '
                . 'AND t.beginningTx > :date '
+               . 'AND c.discountRate = 80 '
                . 'order by c.id';
         
         $dql = 'SELECT DISTINCT c.id '

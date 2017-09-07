@@ -1935,4 +1935,7 @@ class Customers {
         return $this->discountStatus->status();
     }
 
+    public function haveDiscountRate80() {
+        return ($this->discountRate == 80) ? true : false;
+    }
 }
