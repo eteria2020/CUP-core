@@ -170,6 +170,70 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    /**
+     *
+     * @param Trips $trip
+     * @return Business business
+     */
+    public function findBusinessByTrip(Trips $trip)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT b
+        FROM \BusinessCore\Entity\Business b
+        INNER JOIN \BusinessCore\Entity\BusinessTrip bt WITH bt.business = b
+        WHERE bt.trip = :trip";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('trip', $trip);
+        $query->setMaxResults(1);
+
+        return $query->getOneOrNullResult();
+    }
+
+    /**
+     *
+     * @param Trips $trip
+     * @return BusinessFare BusinessFare
+     */
+    public function findBusinessFareByTrip(Trips $trip) {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT bf
+        FROM \BusinessCore\Entity\BusinessFare bf
+        INNER JOIN \BusinessCore\Entity\BusinessTrip bt WITH bt.business = bf.business
+        WHERE bt.trip = :trip
+        AND bf.insertedTs < :timestampBeginning
+        ORDER BY bf.insertedTs DESC";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('trip', $trip);
+        $query->setParameter('timestampBeginning', $trip->getTimestampBeginning()->format("Y-m-d H:i:s"));
+        $query->setMaxResults(1);
+
+        return $query->getOneOrNullResult();
+    }
+
+    /**
+     *
+     * @param Trips $trip
+     * @return BusinessTripPayment businessTripPayment
+     */
+    public function findBusinessTripPaymentByTrip(Trips $trip) {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT btp
+        FROM \BusinessCore\Entity\BusinessTripPayment btp
+        INNER JOIN \BusinessCore\Entity\BusinessTrip bt WITH bt.id = btp
+        WHERE bt.trip = :trip";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('trip', $trip);
+        $query->setMaxResults(1);
+
+        return $query->getOneOrNullResult();
+    }
+
     public function findCustomerTripsToBeAccounted(Customers $customer)
     {
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t ".
@@ -406,7 +470,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $dql = "SELECT t 
+        $dql = "SELECT t
         FROM \SharengoCore\Entity\Trips t
         WHERE t.car = :plate
         AND t.timestampBeginning < (SELECT tr.timestampBeginning FROM \SharengoCore\Entity\Trips tr WHERE tr.id = :tripId)
@@ -456,7 +520,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         if ($timestampEndParam !== null){
             $query->setParameter('timestampEndParam', date_create($timestampEndParam));
         }
- 
+
         return $query->getResult();
     }
 

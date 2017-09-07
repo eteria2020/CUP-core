@@ -99,6 +99,30 @@ class TripsService
     }
 
     /**
+     * 
+     * @param Trip $trip
+     */
+    public function getBusinessByTrip(Trips $trip){
+        return $this->tripRepository->findBusinessByTrip($trip);
+    }
+
+    /**
+     * 
+     * @param Trip $trip
+     */
+    public function getBusinessFareByTrip(Trips $trip){
+        return $this->tripRepository->findBusinessFareByTrip($trip);
+    }
+
+     /**
+     * 
+     * @param Trip $trip
+     */
+    public function getBusinessTripPayment(Trips $trip){
+        return $this->tripRepository->findBusinessTripPaymentByTrip($trip);
+    }
+
+    /**
      * @return mixed
      */
     public function getListTrips()
