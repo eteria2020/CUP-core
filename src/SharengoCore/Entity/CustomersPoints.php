@@ -89,13 +89,6 @@ class CustomersPoints
     private $type;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="operator", type="string", length=100, nullable=true)
-     */
-    private $operator;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(name="valid_from", type="datetime", nullable=true)
@@ -122,44 +115,6 @@ class CustomersPoints
      * @ORM\Column(name="description", type="text", nullable=true)
      */
     private $description;
-
-    /**
-     * @var \PromoCodes
-     *
-     * @ORM\ManyToOne(targetEntity="PromoCodes")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="promocode_id", referencedColumnName="id", nullable=true)
-     * })
-     */
-    private $promocode;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="package_id", type="integer", nullable=true)
-     */
-    private $packageId;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="transaction_id", type="integer", nullable=true)
-     */
-    private $transactionId;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="invoice_id", type="integer", nullable=true)
-     */
-    private $invoiceId;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="invoiced_at", type="datetime", nullable=true)
-     */
-    private $invoicedAt;
 
 
     
@@ -246,15 +201,6 @@ class CustomersPoints
     }
 
     /**
-     * Get operator
-     *
-     * @return string
-     */
-    function getOperator() {
-        return $this->operator;
-    }
-
-    /**
      * Get validFrom
      *
      * @return datetime
@@ -288,52 +234,6 @@ class CustomersPoints
      */
     function getDescription() {
         return $this->description;
-    }
-
-    /**
-     * Get promocode
-     *
-     * @return Promocodes
-     */
-    public function getPromocode()
-    {
-        return $this->promocode;
-    }
-
-    /**
-     * Get packageId
-     *
-     * @return integer
-     */
-    function getPackageId() {
-        return $this->packageId;
-    }
-
-    /**
-     * Get transactionId
-     *
-     * @return integer
-     */
-    function getTransactionId() {
-        return $this->transactionId;
-    }
-
-    /**
-     * Get invoiceId
-     *
-     * @return integer
-     */
-    function getInvoiceId() {
-        return $this->invoiceId;
-    }
-
-    /**
-     * Get invoicedAt
-     *
-     * @return datetime
-     */
-    function getInvoicedAt() {
-        return $this->invoicedAt;
     }
 
     function setId($id) {
@@ -415,10 +315,6 @@ class CustomersPoints
         return $this;
     }
 
-    function setOperator($operator) {
-        $this->operator = $operator;
-    }
-
     function setValidFrom(\DateTime $validFrom) {
         $this->validFrom = $validFrom;
     }
@@ -434,63 +330,13 @@ class CustomersPoints
     function setDescription($description) {
         $this->description = $description;
     }
-
-    /**
-     * Set promocode
-     *
-     * @param Promocodes $promocode
-     *
-     * @return CustomersBonus
-     */
-    public function setPromocode(PromoCodes $promocode = null)
-    {
-        $this->promocode = $promocode;
-
-        return $this;
-    }
-
-    function setPackageId($packageId) {
-        $this->packageId = $packageId;
-    }
-
-    function setTransactionId($transactionId) {
-        $this->transactionId = $transactionId;
-    }
-
-    function setInvoiceId($invoiceId) {
-        $this->invoiceId = $invoiceId;
-    }
-
-    function setInvoicedAt(\DateTime $invoicedAt) {
-        $this->invoicedAt = $invoicedAt;
-    }
-    
-    public function impliesSubscriptionDiscount()
-    {
-        return null != $this->findDiscountedSubscriptionAmount();
-    }
-    
-    public function findDiscountedSubscriptionAmount()
-    {
-        if (null != $this->getPromocode()) {
-            $promoCodeInfo = $this->getPromocode()->getPromocodesinfo();
-            $overriddenSubscriptionCost = $promoCodeInfo->getOverriddenSubscriptionCost();
-
-            if (null !=  $overriddenSubscriptionCost &&
-                is_numeric($overriddenSubscriptionCost)) {
-                return $overriddenSubscriptionCost;
-            }
-        }
-
-        return null;
-    }
     
     public function canBeDeleted()
     {
         /*return $this->getTotal() == $this->getResidual() &&
                !$this->impliesSubscriptionDiscount();*/
         
-        return !$this->impliesSubscriptionDiscount();
+        return true;
     }
     
     /**
