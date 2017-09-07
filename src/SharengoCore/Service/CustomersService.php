@@ -894,4 +894,5 @@ class CustomersService implements ValidatorServiceInterface
     public function getCustomersRunThisMonth($dateStartLastMonth, $dateStartCurrentMonth){
         return $this->customersPointsRepository->getCustomersRunThisMonth($dateStartLastMonth, $dateStartCurrentMonth);
     }
+    
 }
