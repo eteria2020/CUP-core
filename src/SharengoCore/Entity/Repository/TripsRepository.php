@@ -24,6 +24,17 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
     
+    public function findTripsByCustomerCO2($customerId)
+    {
+            $query = $this->getEntityManager()->createQuery(
+                    "SELECT t FROM \SharengoCore\Entity\Trips t WHERE t.customer = :id "
+                    . "AND t.timestampEnd IS NOT NULL AND t.endTx IS NOT NULL"
+            );
+            $query->setParameter('id', $customerId);
+
+            return $query->getResult();
+    }
+    
     public function getTripsByCustomerForAddPointYesterday($customerId, $dateYesterdayStart, $dateTodayStart) {
         
         $em = $this->getEntityManager();
