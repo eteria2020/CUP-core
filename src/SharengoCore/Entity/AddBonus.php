@@ -28,6 +28,13 @@ class AddBonus
      * @ORM\Column(name="description", type="text", nullable=false)
      */
     private $description;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="type", type="text", nullable=false)
+     */
+    private $type;
 
     /**
      * @return integer
@@ -43,6 +50,11 @@ class AddBonus
     public function getDescription()
     {
         return $this->description;
+    }
+    
+    public function  getType()
+    {
+        return $this->type;
     }
 }
 

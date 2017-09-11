@@ -137,6 +137,22 @@ class TripsService
     {
         return $this->tripRepository->findTripsByCustomer($customerId);
     }
+    
+    public function  getTripsByCustomerForAddPointYesterday($customerId, $dateYesterdayStart, $dateTodayStart){
+        return $this->tripRepository->getTripsByCustomerForAddPointYesterday($customerId, $dateYesterdayStart, $dateTodayStart);
+    }
+    
+    public function  getTripsByCustomerForAddPointMonth($customerId, $dateCurrentMonthStart, $dateYesterdayStart){
+        return $this->tripRepository->getTripsByCustomerForAddPointMonth($customerId, $dateCurrentMonthStart, $dateYesterdayStart);
+    }
+    
+    public function  getTripsByCustomerForAddPointClusterLastMonth($customerId, $dateStartLastMonth, $dateStartCurrentMonth){
+        return $this->tripRepository->getTripsByCustomerForAddPointClusterLastMonth($customerId, $dateStartLastMonth, $dateStartCurrentMonth);
+    }
+    
+    public function  getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateCurrentMonthStart, $dateYesterdayStart){
+        return $this->tripRepository->getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartTwotMonthAgo);
+    }
 
     public function getListTripsFiltered($filters = [])
     {

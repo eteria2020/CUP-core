@@ -6,8 +6,10 @@ use Cartasi\Service\CartasiContractsService;
 use SharengoCore\Entity\Cards;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonus;
+use SharengoCore\Entity\CustomersPoints;
 use SharengoCore\Entity\PromoCodes;
 use SharengoCore\Entity\Repository\CustomersBonusRepository;
+use SharengoCore\Entity\Repository\CustomersPointsRepository;
 use SharengoCore\Entity\Repository\CustomersRepository;
 use SharengoCore\Exception\BonusAssignmentException;
 use SharengoCore\Service\DatatableServiceInterface;
@@ -46,6 +48,11 @@ class CustomersService implements ValidatorServiceInterface
      * @var CustomersBonusRepository
      */
     private $customersBonusRepository;
+    
+    /**
+     * @var CustomersPointsRepository
+     */
+    private $customersPointsRepository;
 
     /**
      * @var UserService
@@ -118,6 +125,7 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager = $entityManager;
         $this->customersRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Customers');
         $this->customersBonusRepository = $this->entityManager->getRepository('\SharengoCore\Entity\CustomersBonus');
+        $this->customersPointsRepository = $this->entityManager->getRepository('\SharengoCore\Entity\CustomersPoints');
         $this->userService = $userService;
         $this->datatableService = $datatableService;
         $this->cardsService = $cardsService;
@@ -384,6 +392,16 @@ class CustomersService implements ValidatorServiceInterface
 
         return $bonus;
     }
+    
+    public function addPoint(Customers $customer, CustomersPoints $point)
+    {
+        $point->setCustomer($customer);
+
+        $this->entityManager->persist($point);
+        $this->entityManager->flush();
+
+        return $point;
+    }
 
     public function getAllBonus(Customers $customer)
     {
@@ -391,10 +409,30 @@ class CustomersService implements ValidatorServiceInterface
             'customer' => $customer
         ]);
     }
-
+    
+    public function getAllPoints(Customers $customer)
+    {
+        return $this->customersPointsRepository->findBy([
+            'customer' => $customer
+        ]);
+    }
+    
+    public function getCustomerPointsByCustomer($customerId){
+        return $this->customersPointsRepository->findCustomerPointsByCustomer($customerId);
+    }
+    
+    public function checkCustomerIfAlreadyAddPointsThisMonth($customerId, $dateCurrentMonthStart, $dateNextMonthStart){
+        return $this->customersPointsRepository->checkCustomerIfAlreadyAddPointsThisMonth($customerId, $dateCurrentMonthStart, $dateNextMonthStart);
+    }
+    
     public function findBonus($bonus)
     {
         return $this->customersBonusRepository->find($bonus);
+    }
+    
+    public function findPoint($point)
+    {
+        return $this->customersPointsRepository->find($point);
     }
 
     /**
@@ -486,6 +524,18 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->addBonus($customer, $customerBonus);
     }
+    
+    public function updateCustomerPointRow($customerPoint) {
+        $this->entityManager->persist($customerPoint);
+        $this->entityManager->flush();
+    }
+
+    public function setPointField(CustomersPoints $point, $customerId, $type){
+
+        $customer = $this->findById($customerId);
+        
+        $this->addPoint($customer, $point);
+    }
 
     public function addBonusFromWebUser(Customers $customer, CustomersBonus $bonus)
     {
@@ -496,11 +546,35 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->addBonus($customer, $bonus);
     }
+    
+    public function addPointFromWebUser(Customers $customer, CustomersPoints $point)
+    {
+        $point->setType('webPromo');
+        //$point->setResidual($point->getTotal());
+        $point->setResidual(0);
+        $point->setInsertTs(date_create());
+        $point->setWebuser($this->userService->getIdentity());
+
+        $this->addPoint($customer, $point);
+    }
+    
 
     public function removeBonus(CustomersBonus $customerBonus)
     {
         if ($customerBonus->canBeDeleted()) {
             $this->entityManager->remove($customerBonus);
+            $this->entityManager->flush();
+
+            return true;
+        }
+
+        return false;
+    }
+    
+    public function removePoint(CustomersPoints $customerPoint)
+    {
+        if ($customerPoint->canBeDeleted()) {
+            $this->entityManager->remove($customerPoint);
             $this->entityManager->flush();
 
             return true;
@@ -812,4 +886,13 @@ class CustomersService implements ValidatorServiceInterface
     public function getCustomersExpiredLicense() {
         return $this->customersRepository->findAllCustomersWithExpireLicense();
     }
+    
+    public function getCustomersRunYesterday($dateYesterdayStart, $dateTodayStart){
+        return $this->customersPointsRepository->getCustomersRunYesterday($dateYesterdayStart, $dateTodayStart);
+    }
+    
+    public function getCustomersRunThisMonth($dateStartLastMonth, $dateStartCurrentMonth){
+        return $this->customersPointsRepository->getCustomersRunThisMonth($dateStartLastMonth, $dateStartCurrentMonth);
+    }
+    
 }
