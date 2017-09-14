@@ -464,6 +464,24 @@ class TripsService
             $closeTrip->payable()
         );
     }
+    
+    public function closeTripNoSignal($trip,$now,$payable,$car,$signal=false)
+    {
+        if($signal=="false")
+        {
+        $this->tripRepository->closeTrip($trip,$now,$payable);
+        }
+        else
+        {   
+            $webUser=NULL;
+            $this->commandsService->sendCommand(
+            $car,
+            Commands::CLOSE_TRIP,
+            $webUser );
+            $this->tripRepository->closeTrip($trip,$now,$payable);
+            
+        }
+    }
 
     /**
      * Returns an array of Trips to be displayed in a datatable that represents
@@ -533,5 +551,14 @@ class TripsService
         }
 
         return $result;
+    }    
+    public function getCarsByTripId($tid)
+    {
+        return $this->tripRepository->getCarsByTripId($tid);
+    }
+    
+    public function getCarOpenTrips($tplate)
+    {
+        return $this->tripRepository->getCarOpenTrips($tplate);
     }
 }

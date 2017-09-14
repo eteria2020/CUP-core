@@ -270,5 +270,32 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         $row = $query->fetch();
         return $row["sng_checkmobile"];        
     }
+    
+    public function getMaintainerTripsOpen() {
+        
+        $em = $this->getEntityManager();
+        
+        /* $dql= "SELECT DISTINCT t.id "
+               . "FROM \SharengoCore\Entity\Trips t "
+               . "JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id "
+               . "WHERE c.maintainer='t' "
+               . "AND t.timestampBeginning < :dateStart AND t.timestampEnd IS NULL"
+               ; */
+        
+        $dql= "SELECT DISTINCT t.id "
+               . "FROM \SharengoCore\Entity\Trips t "
+               . "JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id "
+               . "WHERE c.id='26740' "
+               . "AND t.timestampBeginning < :dateStart AND t.timestampEnd IS NULL"
+               ;
+        
+        
+        $now = new \DateTime();
+        $dateStart = $now->modify("-120 minute");
+        
+        $query = $em->createQuery($dql);
+        $query->setParameter('dateStart', $dateStart);
+        return $query->getResult();
+    }
  
 }

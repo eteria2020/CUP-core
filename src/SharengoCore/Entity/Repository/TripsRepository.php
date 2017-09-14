@@ -657,5 +657,37 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+ public function getCarsByTripId($tid) {
+        
+        $em = $this->getEntityManager();
+        
+         $dql= "SELECT a "
+               . "FROM \SharengoCore\Entity\Cars a "
+               . "JOIN \SharengoCore\Entity\Trips t WITH t.car=a.plate "
+               . "WHERE t.id = :tid  "
+               ;
 
+        
+        $query = $em->createQuery($dql);
+        $query->setParameter('tid', $tid);
+        return $query->getResult();
+    }
+
+public function getCarOpenTrips($tplate) {
+        
+        $em = $this->getEntityManager();
+       
+         
+         $dql= "SELECT DISTINCT t.id "
+               . "FROM \SharengoCore\Entity\Trips t "
+               . "JOIN \SharengoCore\Entity\Cars a WITH t.car = a.plate "
+               . "WHERE a.plate = :tplate "
+               . "AND t.timestampEnd IS NULL"
+               ;
+
+        
+        $query = $em->createQuery($dql);
+        $query->setParameter('tplate', $tplate);
+        return $query->getResult();
+    }
 }
