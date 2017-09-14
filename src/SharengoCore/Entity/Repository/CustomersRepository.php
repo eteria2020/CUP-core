@@ -275,19 +275,12 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         
         $em = $this->getEntityManager();
         
-        /* $dql= "SELECT DISTINCT t.id "
+        $dql= "SELECT DISTINCT t.id "
                . "FROM \SharengoCore\Entity\Trips t "
                . "JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id "
                . "WHERE c.maintainer='t' "
                . "AND t.timestampBeginning < :dateStart AND t.timestampEnd IS NULL"
-               ; */
-        
-        $dql= "SELECT DISTINCT t.id "
-               . "FROM \SharengoCore\Entity\Trips t "
-               . "JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id "
-               . "WHERE c.id='26740' "
-               . "AND t.timestampBeginning < :dateStart AND t.timestampEnd IS NULL"
-               ;
+               ; 
         
         
         $now = new \DateTime();
