@@ -80,7 +80,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
                . 'AND t.endTx < :dateYesterdayStart '
                . 'AND t.customer = :customerId '
                . 'AND t.payable = :payable '
-               . 'AND t.pinType IS NULL'
+               . 'AND t.pinType IS NULL '
                . 'AND t.beginningTx > :date';
         
         /*$dql = 'SELECT t '
@@ -115,7 +115,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
                . 'AND t.endTx < :dateStartCurrentMonth '
                . 'AND t.customer = :customerId '
                . 'AND t.payable = :payable '
-               . 'AND t.pinType IS NULL'
+               . 'AND t.pinType IS NULL '
                . 'AND t.beginningTx > :date';
 
         $payable = "TRUE";
@@ -142,7 +142,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
                . 'AND t.endTx >= :dateStartTwotMonthAgo '
                . 'AND t.customer = :customerId '
                . 'AND t.payable = :payable '
-               . 'AND t.pinType IS NULL'
+               . 'AND t.pinType IS NULL '
                . 'AND t.beginningTx > :date';
 
         $payable = "TRUE";
