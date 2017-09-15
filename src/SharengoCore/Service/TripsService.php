@@ -155,7 +155,7 @@ class TripsService
         return $this->tripRepository->getTripsByCustomerForAddPointClusterLastMonth($customerId, $dateStartLastMonth, $dateStartCurrentMonth);
     }
     
-    public function  getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateCurrentMonthStart, $dateYesterdayStart){
+    public function  getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartTwotMonthAgo){
         return $this->tripRepository->getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartTwotMonthAgo);
     }
 
