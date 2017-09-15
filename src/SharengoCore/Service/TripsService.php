@@ -113,6 +113,7 @@ class TripsService
     public function getBusinessFareByTrip(Trips $trip){
         return $this->tripRepository->findBusinessFareByTrip($trip);
     }
+    
 
      /**
      * 
