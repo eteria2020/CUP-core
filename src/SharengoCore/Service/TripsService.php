@@ -113,6 +113,7 @@ class TripsService
     public function getBusinessFareByTrip(Trips $trip){
         return $this->tripRepository->findBusinessFareByTrip($trip);
     }
+    
 
      /**
      * 
@@ -155,7 +156,7 @@ class TripsService
         return $this->tripRepository->getTripsByCustomerForAddPointClusterLastMonth($customerId, $dateStartLastMonth, $dateStartCurrentMonth);
     }
     
-    public function  getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateCurrentMonthStart, $dateYesterdayStart){
+    public function  getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartTwotMonthAgo){
         return $this->tripRepository->getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartTwotMonthAgo);
     }
 
