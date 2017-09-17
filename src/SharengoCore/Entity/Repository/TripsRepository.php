@@ -614,7 +614,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('tripId', $trip->getId());
         $query->setParameter('plate', $trip->getCar()->getPlate());
         $query->setMaxResults(1);
-        return $query->getResult();
+        return $query->getOneOrNullResult();
     }
 
     /**
