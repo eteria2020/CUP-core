@@ -157,14 +157,14 @@ class Customers {
      * @ORM\Column(name="phone", type="text", nullable=true)
      */
     private $phone;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="mobile", type="text", nullable=true)
      */
     private $mobile;
-    
+
     /**
      * @var string
      *
@@ -363,7 +363,7 @@ class Customers {
      * @ORM\OneToMany(targetEntity="CustomersBonus", mappedBy="customer")
      */
     private $customersbonuses;
-    
+
     /**
      * Bidirectional - One-To-Many (INVERSE SIDE)
      *
@@ -912,8 +912,8 @@ class Customers {
     public function getPhone() {
         return $this->phone;
     }
-    
-    
+
+
     /**
      * Set jobType
      *
@@ -1544,7 +1544,7 @@ class Customers {
     public function getBonuses() {
         return $this->customersbonuses;
     }
-    
+
     public function getPoints()
     {
         return $this->customerspoints;
@@ -1552,7 +1552,7 @@ class Customers {
 
     public function getValidBonuses() {
         $validBonuses = [];
-        
+
         foreach ($this->getBonuses() as $bonus) {
             if ($bonus->getActive() &&
                     (null == $bonus->getValidFrom() || $bonus->getValidFrom() <= new \DateTime()) &&
@@ -1563,11 +1563,11 @@ class Customers {
 
         return $validBonuses;
     }
-    
+
     public function getValidPoints()
     {
         $validPoints = [];
-        
+
         foreach ($this->getPoints() as $points) {
             if ($points->getActive() &&
                 (null == $points->getValidFrom() || $points->getValidFrom() <= new \DateTime()) &&
@@ -1579,15 +1579,15 @@ class Customers {
         return $validPoints;
 
     }
-    
-    
+
+
     public function getValidPointsCurrentMonth()
     {
         $validPoints = [];
 
         $firstDateThisMonth = new \DateTime('first day of this month 00:00:00');
         $firstDateNextMonth = new \DateTime('first day of next month 00:00:00');
-        
+
         foreach ($this->getPoints() as $points) {
             if ($points->getActive() &&
                 (null == $points->getValidFrom() || $points->getValidFrom() <= new \DateTime()) &&
@@ -1610,7 +1610,7 @@ class Customers {
 
         return $total;
     }
-    
+
     public function getTotalPoints()
     {
         $total = 0;
@@ -1621,7 +1621,7 @@ class Customers {
         return $total;
 
     }
-    
+
     public function getTotalPointsCurrentMonth()
     {
         $total = 0;
@@ -1642,7 +1642,7 @@ class Customers {
         return $total;
 
     }
-    
+
     public function getResidualPoints()
     {
         $total = 0;
@@ -1652,12 +1652,13 @@ class Customers {
 
         return $total;
     }
-    
+
     public function getPositivePoints() {
         $total = 0;
         foreach ($this->getValidPoints() as $points) {
-            if($points->getTotal() >= 0)
+            if($points->getTotal() >= 0){
                 $total += $points->getTotal();
+            }
         }
 
         return $total;
@@ -1667,7 +1668,7 @@ class Customers {
     public function getUsedBonuses() {
         return $this->getTotalBonuses() - $this->getResidualBonuses();
     }
-    
+
     public function getUsedPoints()
     {
         return $this->getTotalPoints() - $this->getResidualPoints();
