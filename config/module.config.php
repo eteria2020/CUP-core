@@ -179,7 +179,6 @@ return [
     'service_manager' => [
         'invokables' => [
             'SharengoCore\Service\DatatableQueryBuilder' => 'SharengoCore\Service\DatatableQueryBuilders\Basic',
-            'SharengoCore\Service\FreeFaresService' => 'SharengoCore\Service\FreeFaresService',
             'SharengoCore\Service\TripFaresService' => 'SharengoCore\Service\TripFaresService',
             'SharengoCore\Service\LocationService' => 'SharengoCore\Service\LocationService',
             'SharengoCore\Service\BlackHoleLogger' => 'SharengoCore\Service\BlackHoleLogger',
@@ -200,6 +199,7 @@ return [
             'SharengoCore\Service\PromoCodesOnceService' => 'SharengoCore\Service\PromoCodesOnceServiceFactory',
             'SharengoCore\Service\CardsService' => 'SharengoCore\Service\CardsServiceFactory',
             'SharengoCore\Service\BonusService' => 'SharengoCore\Service\BonusServiceFactory',
+            'SharengoCore\Service\PointService' => 'SharengoCore\Service\PointServiceFactory',
             'SharengoCore\Service\AccountTripsService' => 'SharengoCore\Service\AccountTripsServiceFactory',
             'SharengoCore\Service\CommandsService' => 'SharengoCore\Service\CommandsServiceFactory',
             'SharengoCore\Service\Invoices' => 'SharengoCore\Service\InvoicesServiceFactory',
@@ -216,6 +216,7 @@ return [
             'SharengoCore\Service\ExtraPaymentsService' => 'SharengoCore\Service\ExtraPaymentsServiceFactory',
             'SharengoCore\Service\PenaltiesService' => 'SharengoCore\Service\PenaltiesServiceFactory',
             'SharengoCore\Service\AddBonusService' => 'SharengoCore\Service\AddBonusServiceFactory',
+            'SharengoCore\Service\AddPointService' => 'SharengoCore\Service\AddPointServiceFactory',
             'SharengoCore\Service\DisableContractService' => 'SharengoCore\Service\DisableContractServiceFactory',
             'SharengoCore\Service\EventsService' => 'SharengoCore\Service\EventsServiceFactory',
             'SharengoCore\Service\EventsTypesService' => 'SharengoCore\Service\EventsTypesServiceFactory',
@@ -247,6 +248,7 @@ return [
             'SharengoCore\Service\CarrefourService' => 'SharengoCore\Service\CarrefourServiceFactory',
             'SharengoCore\Service\DriversLicenseValidationService' => 'SharengoCore\Service\DriversLicenseValidationServiceFactory',
             'SharengoCore\Service\PaymentScriptRunsService' => 'SharengoCore\Service\PaymentScriptRunsServiceFactory',
+            'SharengoCore\Service\FreeFaresService' => 'SharengoCore\Service\FreeFaresServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
             'SharengoCore\Listener\DisableContractListener' => 'SharengoCore\Listener\DisableContractListenerFactory',

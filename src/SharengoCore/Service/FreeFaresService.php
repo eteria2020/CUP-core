@@ -1,7 +1,11 @@
 <?php
 
 namespace SharengoCore\Service;
+use Doctrine\ORM\EntityManager;
 
+use SharengoCore\Entity\Repository\TripsRepository;
+use SharengoCore\Entity\Repository\ReservationsRepository;
+use SharengoCore\Entity\ReservationsArchive;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\FreeFares;
 use SharengoCore\Entity\Customers;
@@ -9,6 +13,30 @@ use SharengoCore\Utils\Interval;
 
 class FreeFaresService
 {
+
+    private $entityManager;
+
+    /**
+     * @var TripsRepository
+     */
+    private $tripsRepository;
+
+    /**
+     * @var ReservationsRepository
+     */
+    private $reservationsRepository;
+
+    public function __construct(
+        TripsRepository $tripsRepository,
+        ReservationsREpository $reservationsRepository,
+        EntityManager $entityManager
+    )
+    {
+        $this->tripsRepository = $tripsRepository;
+        $this->reservationsRepository = $reservationsRepository;
+        $this->entityManager = $entityManager;
+    }
+
     /**
      * Returns the intervals given by the intersection between the trip and the
      * free fare conditions
@@ -25,12 +53,17 @@ class FreeFaresService
 
         $intervals = [$tripInterval];
 
-        if (isset($conditions['customer'])) {
+        if(isset($conditions['car'])) {
+            $intervals = $this->filterCar($intervals, $trip, $conditions['car']);
+        }
+        else if (isset($conditions['customer'])) {
             $intervals = $this->filterCustomer($intervals, $trip->getCustomer(), $conditions['customer']);
         }
-
-        if (isset($conditions['time'])) {
+        else if (isset($conditions['time'])) {
             $intervals = $this->filterTime($intervals, $conditions['time']);
+        }
+        else {
+            $intervals = [];
         }
 
         return $intervals;
@@ -132,5 +165,84 @@ class FreeFaresService
         }
 
         return $newIntervals;
+    }
+
+    /**
+     * @param Intervals[] $intervals
+     * @param array $carConditions has keys type, hour  minutes
+     * @param Trips $trip
+     * @return Intervals[]
+     */
+    private function filterCar(array $intervals, Trips $trip, array $carConditions)
+    {
+        $newIntervals = [];
+        if ($carConditions['type'] == 'nouse'){
+
+            if (self::verifyFilterCar($trip, $carConditions, $this->tripsRepository, $this->reservationsRepository)) {
+
+                $start = $trip->getTimestampBeginning();
+                $end = clone $start;
+                $end->modify('+' . $carConditions['value'] . ' minutes');
+                $carInterval = new Interval($start, $end);
+
+                foreach ($intervals as $interval) {
+                    $intersection = $interval->intersection($carInterval);
+
+                    if ($intersection) {
+                        $newIntervals[] = $intersection;
+                    }
+                }
+            }
+        }
+        return $newIntervals;
+    }
+
+    static function verifyFilterCar(Trips $trip, array $carConditions, TripsRepository $tripsRepository, ReservationsRepository $reservationsRepository){
+
+        $reservation = $reservationsRepository->findReservationByTrip($trip);
+        if ($reservation != NULL && $reservation instanceof ReservationsArchive) {
+            $date = $reservation->getBeginningTs();
+        } else {
+            $date = $trip->getTimestampBeginning();
+        }
+
+        if (!isset($carConditions['dow'][$date->format('w')])){ //check the day of the week
+            return false;
+        }
+
+        $time = explode("-",$carConditions['dow'][$date->format('w')]); // retrieve the time interval
+        $start = new \DateTime ($date->format('Y-m-d').' '.$time[0]);
+        $end = new \DateTime($date->format('Y-m-d').' '.$time[1]);
+
+        if ($date >= $start && $date <= $end) {
+
+            if ($trip->getFleet()->getId() != $carConditions['fleet']){
+                return false;
+            }
+            $check = $tripsRepository->findPreviousTrip($trip);
+            if ($check == NULL) {
+                return false;
+            }
+
+            $minutes = $carConditions['hour'] * 60;
+
+            if (isset($carConditions['max'])){
+                $maxMinutes = ($carConditions['max'] * 60);
+            } else {
+                $maxMinutes = NULL;
+            }
+
+            $tripsInterval = $trip->getTimestampBeginning()->diff($check->getTimestampEnd(), true);
+            $checkMinutes = ($tripsInterval->days * 24 * 60) + ($tripsInterval->h * 60) + $tripsInterval->i;
+
+            if (($trip->getBatteryBeginning() > $carConditions['soc']) && ($checkMinutes >= $minutes && ($maxMinutes == NULL || $checkMinutes < $maxMinutes))) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }

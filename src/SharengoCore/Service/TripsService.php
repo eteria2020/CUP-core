@@ -99,6 +99,31 @@ class TripsService
     }
 
     /**
+     * 
+     * @param Trip $trip
+     */
+    public function getBusinessByTrip(Trips $trip){
+        return $this->tripRepository->findBusinessByTrip($trip);
+    }
+
+    /**
+     * 
+     * @param Trip $trip
+     */
+    public function getBusinessFareByTrip(Trips $trip){
+        return $this->tripRepository->findBusinessFareByTrip($trip);
+    }
+    
+
+     /**
+     * 
+     * @param Trip $trip
+     */
+    public function getBusinessTripPayment(Trips $trip){
+        return $this->tripRepository->findBusinessTripPaymentByTrip($trip);
+    }
+
+    /**
      * @return mixed
      */
     public function getListTrips()
@@ -112,6 +137,27 @@ class TripsService
     public function getTripsByCustomer($customerId)
     {
         return $this->tripRepository->findTripsByCustomer($customerId);
+    }
+    
+    public function getTripsByCustomerCO2($customerId)
+    {
+            return $this->tripRepository->findTripsByCustomerCO2($customerId);
+    }
+    
+    public function  getTripsByCustomerForAddPointYesterday($customerId, $dateYesterdayStart, $dateTodayStart){
+        return $this->tripRepository->getTripsByCustomerForAddPointYesterday($customerId, $dateYesterdayStart, $dateTodayStart);
+    }
+    
+    public function  getTripsByCustomerForAddPointMonth($customerId, $dateCurrentMonthStart, $dateYesterdayStart){
+        return $this->tripRepository->getTripsByCustomerForAddPointMonth($customerId, $dateCurrentMonthStart, $dateYesterdayStart);
+    }
+    
+    public function  getTripsByCustomerForAddPointClusterLastMonth($customerId, $dateStartLastMonth, $dateStartCurrentMonth){
+        return $this->tripRepository->getTripsByCustomerForAddPointClusterLastMonth($customerId, $dateStartLastMonth, $dateStartCurrentMonth);
+    }
+    
+    public function  getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartTwotMonthAgo){
+        return $this->tripRepository->getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartTwotMonthAgo);
     }
 
     public function getListTripsFiltered($filters = [])
@@ -469,5 +515,35 @@ class TripsService
         }
 
         return $result;
+    }
+
+    /**
+     * Return the array and the total cost of the trips in status 'to_be_pay' and 'wrong'
+     * 
+     * @param Customers $customer Customer
+     * @param Trips[] $trips Array of trips
+     * @return int Return total cost of trips
+     */
+    public function getTripsToBePayedAndWrong(Customers $customer, &$trips){
+
+        $result =0;
+        $trips = $this->tripRepository->findTripsToBePayedAndWrong($customer);
+
+        foreach($trips as $trip) {
+            $result += $trip->getTripPayment()->getTotalCost();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns the first paid customer's trip otherwise NULL
+     *
+     * @param Customers $customer Customer
+     * @return Trips
+     */
+
+    public function getFirstTripInvoicedByCustomer($customer){
+        return $this->tripRepository->findFirstTripInvoicedByCustomer($customer);
     }
 }

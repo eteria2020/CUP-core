@@ -1,6 +1,7 @@
 <?php
 
 namespace SharengoCore\Entity\Repository;
+use SharengoCore\Entity\Trips;
 
 /**
  * Class ReservationsRepository
@@ -65,6 +66,17 @@ class ReservationsRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('time',  date_sub($time, date_interval_create_from_date_string('4 hours')));
 
         return $query->getResult();
+    }
+
+    public function findReservationByTrip(Trips $trip)
+    {
+        $em = $this->getEntityManager();
+        $query = $em->createQuery("SELECT t FROM \SharengoCore\Entity\ReservationsArchive t WHERE t.customer = :customer AND t.car = :car AND DATE_ADD(t.consumedTs, 60, 'SECOND') >= :time AND t.consumedTs <= :time AND t.reason = 'USED'");
+        $query->setParameter('customer', $trip->getCustomer());
+        $query->setParameter('car', $trip->getCar());
+        $query->setParameter('time', $trip->getTimestampBeginning());
+        $query->setMaxResults(1);
+        return $query->getOneOrNullResult();
     }
     
     /**
