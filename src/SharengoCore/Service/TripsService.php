@@ -535,4 +535,15 @@ class TripsService
 
         return $result;
     }
+
+    /**
+     * Returns the first paid customer's trip otherwise NULL
+     *
+     * @param Customers $customer Customer
+     * @return Trips
+     */
+
+    public function getFirstTripInvoicedByCustomer($customer){
+        return $this->tripRepository->findFirstTripInvoicedByCustomer($customer);
+    }
 }
