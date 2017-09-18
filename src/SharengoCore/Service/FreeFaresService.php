@@ -4,6 +4,8 @@ namespace SharengoCore\Service;
 use Doctrine\ORM\EntityManager;
 
 use SharengoCore\Entity\Repository\TripsRepository;
+use SharengoCore\Entity\Repository\ReservationsRepository;
+use SharengoCore\Entity\ReservationsArchive;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\FreeFares;
 use SharengoCore\Entity\Customers;
@@ -19,12 +21,19 @@ class FreeFaresService
      */
     private $tripsRepository;
 
+    /**
+     * @var ReservationsRepository
+     */
+    private $reservationsRepository;
+
     public function __construct(
         TripsRepository $tripsRepository,
+        ReservationsREpository $reservationsRepository,
         EntityManager $entityManager
     )
     {
         $this->tripsRepository = $tripsRepository;
+        $this->reservationsRepository = $reservationsRepository;
         $this->entityManager = $entityManager;
     }
 
@@ -169,13 +178,7 @@ class FreeFaresService
         $newIntervals = [];
         if ($carConditions['type'] == 'nouse'){
 
-            $check = $this->tripsRepository->findPreviousTrip($trip)[0];
-            $minutes = $carConditions['hour'] * 60;
-
-            $tripsInterval = $trip->getTimestampBeginning()->diff($check->getTimestampEnd(), true);
-            $checkMinutes = ($tripsInterval->days * 24 * 60) + ($tripsInterval->h * 60) + $tripsInterval->i;
-
-            if (($trip->getBatteryBeginning() > $carConditions['soc']) && ($checkMinutes > $minutes)) {
+            if (self::verifyFilterCar($trip, $carConditions, $this->tripsRepository, $this->reservationsRepository)) {
 
                 $start = $trip->getTimestampBeginning();
                 $end = clone $start;
@@ -192,5 +195,54 @@ class FreeFaresService
             }
         }
         return $newIntervals;
+    }
+
+    static function verifyFilterCar(Trips $trip, array $carConditions, TripsRepository $tripsRepository, ReservationsRepository $reservationsRepository){
+
+        $reservation = $reservationsRepository->findReservationByTrip($trip);
+        if ($reservation != NULL && $reservation instanceof ReservationsArchive) {
+            $date = $reservation->getBeginningTs();
+        } else {
+            $date = $trip->getTimestampBeginning();
+        }
+
+        if (!isset($carConditions['dow'][$date->format('w')])){ //check the day of the week
+            return false;
+        }
+
+        $time = explode("-",$carConditions['dow'][$date->format('w')]); // retrieve the time interval
+        $start = new \DateTime ($date->format('Y-m-d').' '.$time[0]);
+        $end = new \DateTime($date->format('Y-m-d').' '.$time[1]);
+
+        if ($date >= $start && $date <= $end) {
+
+            if ($trip->getFleet()->getId() != $carConditions['fleet']){
+                return false;
+            }
+            $check = $tripsRepository->findPreviousTrip($trip);
+            if ($check == NULL) {
+                return false;
+            }
+
+            $minutes = $carConditions['hour'] * 60;
+
+            if (isset($carConditions['max'])){
+                $maxMinutes = ($carConditions['max'] * 60);
+            } else {
+                $maxMinutes = NULL;
+            }
+
+            $tripsInterval = $trip->getTimestampBeginning()->diff($check->getTimestampEnd(), true);
+            $checkMinutes = ($tripsInterval->days * 24 * 60) + ($tripsInterval->h * 60) + $tripsInterval->i;
+
+            if (($trip->getBatteryBeginning() > $carConditions['soc']) && ($checkMinutes >= $minutes && ($maxMinutes == NULL || $checkMinutes < $maxMinutes))) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }
