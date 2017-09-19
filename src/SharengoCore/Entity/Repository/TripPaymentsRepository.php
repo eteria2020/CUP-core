@@ -123,7 +123,7 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
      * @param type $timestampEndParam
      * @return type
      */
-        public function findTripPaymentsToBePayedAndWrong(Customers $customer = null, $timestampEndParam = null)
+    public function findTripPaymentsToBePayedAndWrong(Customers $customer = null, $timestampEndParam = null)
     {
         $em = $this->getEntityManager();
 
