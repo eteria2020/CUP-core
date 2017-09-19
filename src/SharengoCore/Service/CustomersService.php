@@ -48,7 +48,7 @@ class CustomersService implements ValidatorServiceInterface
      * @var CustomersBonusRepository
      */
     private $customersBonusRepository;
-    
+
     /**
      * @var CustomersPointsRepository
      */
@@ -192,7 +192,7 @@ class CustomersService implements ValidatorServiceInterface
             'id' => $id
         ]);
     }
-    
+
     public function findByTaxCode($taxCode)
     {
         return $this->customersRepository->findByCI('taxCode', $taxCode);
@@ -204,7 +204,7 @@ class CustomersService implements ValidatorServiceInterface
     }
 
     /**
-     * 
+     *
      * @param string $mobile    mobile number
      * @return Customers[]
      */
@@ -214,19 +214,19 @@ class CustomersService implements ValidatorServiceInterface
     }
 
     /**
-     * 
+     *
      * Check if mobile number already exists
-     * 
+     *
      * @param string $mobile    mobile number
      * @return int              0 = not found
      *                          >0 = found
-     * 
+     *
      */
     public function checkMobileNumber($mobile)
     {
         return $this->customersRepository->checkMobileNumber($mobile);
     }
-    
+
     /**
      * @param \DateTime $date
      * @return Customers[]
@@ -392,7 +392,7 @@ class CustomersService implements ValidatorServiceInterface
 
         return $bonus;
     }
-    
+
     public function addPoint(Customers $customer, CustomersPoints $point)
     {
         $point->setCustomer($customer);
@@ -409,27 +409,27 @@ class CustomersService implements ValidatorServiceInterface
             'customer' => $customer
         ]);
     }
-    
+
     public function getAllPoints(Customers $customer)
     {
         return $this->customersPointsRepository->findBy([
             'customer' => $customer
         ]);
     }
-    
+
     public function getCustomerPointsByCustomer($customerId){
         return $this->customersPointsRepository->findCustomerPointsByCustomer($customerId);
     }
-    
+
     public function checkCustomerIfAlreadyAddPointsThisMonth($customerId, $dateCurrentMonthStart, $dateNextMonthStart){
         return $this->customersPointsRepository->checkCustomerIfAlreadyAddPointsThisMonth($customerId, $dateCurrentMonthStart, $dateNextMonthStart);
     }
-    
+
     public function findBonus($bonus)
     {
         return $this->customersBonusRepository->find($bonus);
     }
-    
+
     public function findPoint($point)
     {
         return $this->customersPointsRepository->find($point);
@@ -524,7 +524,7 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->addBonus($customer, $customerBonus);
     }
-    
+
     public function updateCustomerPointRow($customerPoint) {
         $this->entityManager->persist($customerPoint);
         $this->entityManager->flush();
@@ -533,7 +533,7 @@ class CustomersService implements ValidatorServiceInterface
     public function setPointField(CustomersPoints $point, $customerId, $type){
 
         $customer = $this->findById($customerId);
-        
+
         $this->addPoint($customer, $point);
     }
 
@@ -546,7 +546,7 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->addBonus($customer, $bonus);
     }
-    
+
     public function addPointFromWebUser(Customers $customer, CustomersPoints $point)
     {
         $point->setType('webPromo');
@@ -557,7 +557,7 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->addPoint($customer, $point);
     }
-    
+
 
     public function removeBonus(CustomersBonus $customerBonus)
     {
@@ -570,7 +570,7 @@ class CustomersService implements ValidatorServiceInterface
 
         return false;
     }
-    
+
     public function removePoint(CustomersPoints $customerPoint)
     {
         if ($customerPoint->canBeDeleted()) {
@@ -633,7 +633,7 @@ class CustomersService implements ValidatorServiceInterface
                     $this->translator->translate('SHARENGO - NOTIFICA DI DISABILITAZIONE'),
                     $content,
                     $attachments
-                ); 
+                );
             }*/
         }
     }
@@ -882,22 +882,21 @@ class CustomersService implements ValidatorServiceInterface
     {
         return $this->customersBonusRepository->getBonusesForCustomerIdAndDateInsertionAndType($customer, $date, $type);
     }
-    
+
     public function getCustomersExpiredLicense() {
         return $this->customersRepository->findAllCustomersWithExpireLicense();
     }
-    
+
     public function getCustomersRunYesterday($dateYesterdayStart, $dateTodayStart){
         return $this->customersPointsRepository->getCustomersRunYesterday($dateYesterdayStart, $dateTodayStart);
     }
-    
+
     public function getCustomersRunThisMonth($dateStartLastMonth, $dateStartCurrentMonth){
         return $this->customersPointsRepository->getCustomersRunThisMonth($dateStartLastMonth, $dateStartCurrentMonth);
     }
-    
+
     public function getMaintainerTripsOpen()
     {
         return $this->customersRepository->getMaintainerTripsOpen();
     }
-    
 }
