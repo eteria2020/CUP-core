@@ -212,4 +212,25 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+    
+    public function checkOnlineStatus($lastContact)
+    {
+        $rightnow = new \DateTime();
+        $interval = $rightnow->diff($lastContact);        
+        $minutes = 0;
+        
+        $days = $interval->format('%a');
+        if ($days) {
+        $minutes += 24 * 60 * $days;
+        }
+        $hours = $interval->format('%H');
+        if ($hours) {
+            $minutes += 60 * $hours;
+        }
+        $minutes += $interval->format('%i');
+        
+        
+        return $minutes;
+            
+        }
 }
