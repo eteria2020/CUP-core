@@ -1,8 +1,10 @@
 <?php
 
-
+namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use SharengoCore\Utils\Interval;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
 /**
  * ServerScripts
