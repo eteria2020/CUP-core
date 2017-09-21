@@ -754,11 +754,13 @@ class CustomersService implements ValidatorServiceInterface
     {
         $vat = $customer->getVat();
         $vat = str_replace(";", " ", $vat);
-        $vat = str_replace("it", "", strtolower($vat));
+        $vat = trim(str_replace("it", "", strtolower($vat)));
 
         $cardCode = $customer->getCard() instanceof Cards ?
             $customer->getCard()->getCode() :
             '';
+
+        $taxCode = strtoupper(trim($customer->getTaxCode()));
 
         /**
          * Every element is in a row
@@ -766,52 +768,59 @@ class CustomersService implements ValidatorServiceInterface
          * The second value is the maximum length of that element
          */
         $registry = [
-            "GEN", // 10 - max 3
-            $customer->getId(), // 41 - max 25
-            $cardCode, //50 - max 15
-            $vat, // 60 - max 25
-            empty($vat) ? 0 : 1, // 61 - max 1
-            empty($vat) ? 1 : 0, // 358 - max 1
-            str_replace(";", " ", $customer->getTaxCode()), // 70 - max 25
-            empty($vat) ? 3 : 2, // 80 - max 1
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getSurname()), 30), // 90 - max 30
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getName()), 30), // 95 - max 30
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getAddress()), 35), // 100 - max 35
-            "", // 105 - max 35
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getPhone()), 20), // 160 - max 20
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getMobile()), 20), // 170 - max 20
-            str_replace(";", " ", $customer->getZipCode()), // 110 - max 7
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getTown()), 25), // 120 - max 25
-            $customer->getBirthProvince(), // 130 - max 2
-            str_replace(";", " ", $customer->getBirthCountry()), // 140 - max 3
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getSurname()), 25), // 230 - max 25
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getName()), 20), // 231 - max 20
-            $this->truncateIfLonger(str_replace(";", " ", $customer->getBirthTown()), 25), // 232 - max 25
-            $customer->getBirthProvince(), // 233 - max 2
-            $customer->getBirthDate()->format("d/m/Y"), // 234 - max 10
-            $customer->getGender() == 'male' ? 'M' : 'F', // 235 - max 1
-            $customer->getBirthCountry(), // 236 - max 3
-            "C01", // 240 - max 6
-            "200", // 330 - max 6
-            "CC001" // 581 - max 25
+            "GEN",                                                                          // 1. 10 - max 3
+            $customer->getId(),                                                             // 2. 41 - max 25
+            $cardCode,                                                                      // 3. 50 - max 15
+            $vat,                                                                           // 4. 60 - max 25
+            empty($vat) ? 0 : 1,                                                            // 5. 61 - max 1
+            empty($vat) ? 1 : 0,                                                            // 6. 358 - max 1
+            str_replace(";", " ", $taxCode),                                                // 7. 70 - max 25
+            empty($vat) ? 3 : 2,                                                            // 8. 80 - max 1
+            $this->exportFormat($customer->getSurname(), 30),                               // 9. 90 - max 30
+            $this->exportFormat($customer->getName(), 30),                                 // 10. 95 - max 30
+            $this->exportFormat($customer->getAddress(), 35),                               // 11. 100 - max 35
+            "",                                                                             // 12. 105 - max 35
+            $this->exportFormat($customer->getPhone(), 20),                                 // 13. 160 - max 20
+            $this->exportFormat($customer->getMobile(), 20),                                // 14. 170 - max 20
+            $this->exportFormat($customer->getZipCode(), 10),                               // 15. 110 - max 7
+            $this->exportFormat($customer->getTown(), 25),                                  // 16. 120 - max 25
+            $customer->getBirthProvince(),                                                  // 17. 130 - max 2
+            str_replace(";", " ", $customer->getBirthCountry()),                            // 18. 140 - max 3
+            $this->exportFormat($customer->getSurname(), 25),                               // 19. 230 - max 25
+            $this->exportFormat($customer->getName(), 20),                                  // 20. 231 - max 20
+            $this->exportFormat($customer->getBirthTown(), 25),                             // 21. 232 - max 25
+            $customer->getBirthProvince(),                                                  // 22. 233 - max 2
+            $customer->getBirthDate()->format("d/m/Y"),                                     // 23. 234 - max 10
+            $customer->getGender() == 'male' ? 'M' : 'F',                                   // 24. 235 - max 1
+            $customer->getBirthCountry(),                                                   // 25. 236 - max 3
+            "C01",                                                                          // 26. 240 - max 6
+            "200",                                                                          // 27. 330 - max 6
+            "CC001"                                                                         // 28. 581 - max 25
         ];
         return implode(";", $registry);
     }
 
     /**
-     * Returns the same string if it is shorter that the specified length,
-     * returns the truncated string if it is longer
-     *
-     * @param string $string string to truncate
-     * @param integer $length maximum length
-     * @return string
+     * Replace the character ';', and truncate the $inputString if longer of $length
+     * @param type $inputString string to truncate
+     * @param type $length maximum length
+     * @return type
      */
-    private function truncateIfLonger($string, $length)
-    {
-        if (empty($string)) {
-            return '';
+    private function exportFormat($inputString, $length){
+        $result = '';
+
+        if (!empty($inputString)) {
+            $result = trim($inputString);
+            $result = str_replace(";", "", $result);
+            $result = str_replace("\n", "", $result);
+            $result = str_replace("\r", "", $result);
+            $result = str_replace("\t", "", $result);
+            if($length>0) {
+                $result = substr($result, 0, $length);
+            }
         }
-        return substr($string, 0, $length);
+
+        return $result;
     }
 
     /**
