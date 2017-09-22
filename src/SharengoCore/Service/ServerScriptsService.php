@@ -15,11 +15,6 @@ class ServerScriptsService
     private $entityManager;
     
     /**
-     * @var ServerScriptsService
-     */
-    private $serverScriptsService;
-    
-    /**
      * @var ServerScriptsRepository
      */
     private $serverScriptsRepository;
@@ -28,15 +23,15 @@ class ServerScriptsService
      * @param EntityManager $entityManager
      * @param ServerScriptsService $serverScriptsService
      */
-    public function __construct(EntityManager $entityManager, ServerScriptsService $serverScriptsService)
+    public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->serverScriptsService = $serverScriptsService;
         $this->serverScriptsRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ServerScripts');
     }
     
     public function test() {
-        return $this->serverScriptsRepository->test();
+        $a = "";
+        return $this->serverScriptsRepository->findByTestABC(true);
     }
 
 }

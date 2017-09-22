@@ -11,8 +11,7 @@ class ServerScriptsServiceFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {        
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
-        $serverScriptsService = $serviceLocator->get('SharengoCore\Service\ServerScriptsService');
 
-        return new ServerScriptsService($entityManager, $serverScriptsService);
+        return new ServerScriptsService($entityManager);
     }
 }

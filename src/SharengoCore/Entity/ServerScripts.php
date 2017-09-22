@@ -10,7 +10,7 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
  * ServerScripts
  *
  * @ORM\Table(name="server_scripts")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\ServerScriptsRepository")
  */
 class ServerScripts
 {

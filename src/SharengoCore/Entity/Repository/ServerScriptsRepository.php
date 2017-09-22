@@ -8,7 +8,8 @@ namespace SharengoCore\Entity\Repository;
  */
 class ServerScriptsRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function test() {
+    public function findByTestABC($param) {
+        $a = "";
         return true;
     }
 }
