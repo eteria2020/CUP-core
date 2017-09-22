@@ -29,9 +29,13 @@ class ServerScriptsService
         $this->serverScriptsRepository = $this->entityManager->getRepository('\SharengoCore\Entity\ServerScripts');
     }
     
-    public function test() {
-        $a = "";
-        return $this->serverScriptsRepository->findByTestABC(true);
+    public function writeRow(ServerScripts $serverScript) {
+        $this->entityManager->persist($serverScript);
+        $this->entityManager->flush();
+    }
+    
+    public function getOldServerScript($dateStart) {
+        return $this->serverScriptsRepository->getOldServerScript($dateStart);
     }
 
 }
