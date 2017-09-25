@@ -28,15 +28,22 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
             . 'AND t.pinType IS NULL '
             . 'AND t.beginningTx > :date '
             . 'ORDER BY c.id';
+        
+        $dql = 'SELECT DISTINCT c.id '
+            . 'FROM \SharengoCore\Entity\Trips t '
+            . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
+            . 'WHERE '
+            . 'c.id > 28000 '
+            . 'ORDER BY c.id';
 
         $payable = "TRUE";
 
         $query = $em->createQuery($dql);
-        $query->setParameter('dateYesterdayStart', $dateYesterdayStart);
+        /*$query->setParameter('dateYesterdayStart', $dateYesterdayStart);
         $query->setParameter('dateTodayStart', $dateTodayStart);
         $query->setParameter('payable', $payable);
         $query->setParameter('date', '2015-01-01');
-
+*/
         return $query->getResult();
     }
 

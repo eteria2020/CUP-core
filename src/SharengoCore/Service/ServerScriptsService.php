@@ -35,7 +35,10 @@ class ServerScriptsService
     }
     
     public function getOldServerScript($dateStart) {
-        return $this->serverScriptsRepository->getOldServerScript($dateStart);
+        $dateEnd = new \DateTime($dateStart);
+        $dateEnd = $dateEnd->modify("+1 day");
+        $dateEnd = $dateEnd->format("Y-m-d");
+        return $this->serverScriptsRepository->getOldServerScript($dateStart, $dateEnd);
     }
 
 }
