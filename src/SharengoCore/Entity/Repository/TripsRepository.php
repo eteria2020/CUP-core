@@ -641,14 +641,14 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
     public function findFirstTripInvoicedByCustomer($customer)
     {
         $dql =  "SELECT t FROM \SharengoCore\Entity\Trips t ".
-            "LEFT JOIN \SharengoCore\Entity\TripPayments tp WITH t.id = tp.trip ".
+            //"LEFT JOIN \SharengoCore\Entity\TripPayments tp WITH t.id = tp.trip ".
             "WHERE t.timestampEnd IS NOT NULL AND t.payable = TRUE ".
-            "AND t.customer = :customer AND tp.status = :status ".
+            "AND t.customer = :customer ". //AND tp.status = :status
             "ORDER BY t.timestampEnd ASC ";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('customer', $customer);
-        $query->setParameter('status', 'invoiced');
+        //$query->setParameter('status', 'invoiced');
         $query->setMaxResults(1);
 
         return $query->getOneOrNullResult();
