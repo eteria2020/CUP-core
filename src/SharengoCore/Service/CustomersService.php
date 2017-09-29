@@ -417,8 +417,19 @@ class CustomersService implements ValidatorServiceInterface
         ]);
     }
 
+    public function  getCustomerPointsCheckCluster($customerId){
+        return $this->customersPointsRepository->getCustomerPointsCheckCluster($customerId);
+    }
     public function getCustomerPointsByCustomer($customerId){
         return $this->customersPointsRepository->findCustomerPointsByCustomer($customerId);
+    }
+    
+    public function  getTripsByCustomerForAddPointClusterLastMonth($customerId, $dateTodayStart, $dateStartCurrentMonth){
+        return $this->customersPointsRepository->getTripsByCustomerForAddPointClusterLastMonth($customerId, $dateTodayStart, $dateStartCurrentMonth);
+    }
+    
+    public function  getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartCurrentMonth){
+        return $this->customersPointsRepository->getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartCurrentMonth);
     }
 
     public function checkCustomerIfAlreadyAddPointsThisMonth($customerId, $dateCurrentMonthStart, $dateNextMonthStart){
@@ -900,8 +911,8 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersPointsRepository->getCustomersRunYesterday($dateYesterdayStart, $dateTodayStart);
     }
 
-    public function getCustomersRunThisMonth($dateStartLastMonth, $dateStartCurrentMonth){
-        return $this->customersPointsRepository->getCustomersRunThisMonth($dateStartLastMonth, $dateStartCurrentMonth);
+    public function getCustomersRunThisMonth($dateTodayStart, $dateStartCurrentMonth){
+        return $this->customersPointsRepository->getCustomersRunThisMonth($dateTodayStart, $dateStartCurrentMonth);
     }
 
     public function getMaintainerTripsOpen()
