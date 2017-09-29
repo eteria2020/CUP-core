@@ -47,7 +47,7 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getResult();
     }
 
-    public function getCustomersRunThisMonth($dateStartLastMonth, $dateStartCurrentMonth) {
+    public function getCustomersRunThisMonth($dateTodayStart, $dateStartCurrentMonth) {
 
         $em = $this->getEntityManager();
 
@@ -55,8 +55,8 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
             . 'FROM \SharengoCore\Entity\Trips t '
             . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
             . 'WHERE '
-            . 't.endTx >= :dateStartLastMonth '
-            . 'AND t.endTx < :dateStartCurrentMonth '
+            . 't.endTx >= :dateStartCurrentMonth '
+            . 'AND t.endTx < :dateTodayStart '
             . 'AND t.payable = :payable '
             . 'AND t.pinType IS NULL '
             . 'AND t.beginningTx > :date '
@@ -65,10 +65,23 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         $payable = "TRUE";
 
         $query = $em->createQuery($dql);
-        $query->setParameter('dateStartLastMonth', $dateStartLastMonth);
         $query->setParameter('dateStartCurrentMonth', $dateStartCurrentMonth);
+        $query->setParameter('dateTodayStart', $dateTodayStart);
         $query->setParameter('payable', $payable);
         $query->setParameter('date', '2015-01-01');
+
+        return $query->getResult();
+    }
+    
+    public function getCustomerPointsCheckCluster($customerId) {
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT cp FROM \SharengoCore\Entity\CustomersPoints cp WHERE cp.customer = :id '
+                . 'AND cp.type = :typeCluster';
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('id', $customerId);
+        $query->setParameter('typeCluster', "CLUSTER");
 
         return $query->getResult();
     }
@@ -107,5 +120,54 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
 
         return $query->getResult();
     }
+    
+    public function getTripsByCustomerForAddPointClusterLastMonth($customerId, $dateTodayStart, $dateStartCurrentMonth) {
+
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT cp '
+                . 'FROM \SharengoCore\Entity\CustomersPoints cp '
+                . 'WHERE 1=1 '
+                . 'AND cp.insertTs >= :dateStartCurrentMonth '
+                . 'AND cp.insertTs < :dateTodayStart '
+                . 'AND cp.customer = :customerId '
+                . 'AND cp.type = :typeDrive '
+                ;
+
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('dateTodayStart', $dateTodayStart);
+        $query->setParameter('dateStartCurrentMonth', $dateStartCurrentMonth);
+        $query->setParameter('customerId', $customerId);
+        $query->setParameter('typeDrive', "DRIVE");
+
+        return $query->getResult();
+    }
+    
+    public function getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartCurrentMonth) {
+
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT cp '
+                . 'FROM \SharengoCore\Entity\CustomersPoints cp '
+                . 'WHERE 1=1 '
+                . 'AND cp.insertTs >= :dateStartLastMonth '
+                . 'AND cp.insertTs < :dateStartCurrentMonth '
+                . 'AND cp.customer = :customerId '
+                . 'AND cp.type = :typeDrive '
+                ;
+
+        $payable = "TRUE";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('dateStartLastMonth', $dateStartLastMonth);
+        $query->setParameter('dateStartCurrentMonth', $dateStartCurrentMonth);
+        $query->setParameter('customerId', $customerId);
+        $query->setParameter('typeDrive', "DRIVE");
+
+
+        return $query->getResult();
+    }
+    
 
 }

@@ -95,58 +95,6 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getResult();
     }
 
-    public function getTripsByCustomerForAddPointClusterLastMonth($customerId, $dateStartLastMonth, $dateStartCurrentMonth) {
-
-        $em = $this->getEntityManager();
-
-        $dql = 'SELECT t '
-                . 'FROM \SharengoCore\Entity\Trips t '
-                . 'WHERE 1=1 '
-                . 'AND t.endTx >= :dateStartLastMonth '
-                . 'AND t.endTx < :dateStartCurrentMonth '
-                . 'AND t.customer = :customerId '
-                . 'AND t.payable = :payable '
-                . 'AND t.pinType IS NULL '
-                . 'AND t.beginningTx > :date';
-
-        $payable = "TRUE";
-
-        $query = $em->createQuery($dql);
-        $query->setParameter('dateStartLastMonth', $dateStartLastMonth);
-        $query->setParameter('dateStartCurrentMonth', $dateStartCurrentMonth);
-        $query->setParameter('customerId', $customerId);
-        $query->setParameter('payable', $payable);
-        $query->setParameter('date', '2015-01-01');
-
-        return $query->getResult();
-    }
-
-    public function getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartTwotMonthAgo) {
-
-        $em = $this->getEntityManager();
-
-        $dql = 'SELECT t '
-                . 'FROM \SharengoCore\Entity\Trips t '
-                . 'WHERE 1=1 '
-                . 'AND t.endTx < :dateStartLastMonth '
-                . 'AND t.endTx >= :dateStartTwotMonthAgo '
-                . 'AND t.customer = :customerId '
-                . 'AND t.payable = :payable '
-                . 'AND t.pinType IS NULL '
-                . 'AND t.beginningTx > :date';
-
-        $payable = "TRUE";
-
-        $query = $em->createQuery($dql);
-        $query->setParameter('dateStartTwotMonthAgo', $dateStartTwotMonthAgo);
-        $query->setParameter('dateStartLastMonth', $dateStartLastMonth);
-        $query->setParameter('customerId', $customerId);
-        $query->setParameter('payable', $payable);
-        $query->setParameter('date', '2015-01-01');
-
-        return $query->getResult();
-    }
-
     public function findTripsByPlateNotEnded($plate) {
         $em = $this->getEntityManager();
 
@@ -641,14 +589,14 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
     public function findFirstTripInvoicedByCustomer($customer)
     {
         $dql =  "SELECT t FROM \SharengoCore\Entity\Trips t ".
-            "LEFT JOIN \SharengoCore\Entity\TripPayments tp WITH t.id = tp.trip ".
+            //"LEFT JOIN \SharengoCore\Entity\TripPayments tp WITH t.id = tp.trip ".
             "WHERE t.timestampEnd IS NOT NULL AND t.payable = TRUE ".
-            "AND t.customer = :customer AND tp.status = :status ".
+            "AND t.customer = :customer ". //AND tp.status = :status
             "ORDER BY t.timestampEnd ASC ";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('customer', $customer);
-        $query->setParameter('status', 'invoiced');
+        //$query->setParameter('status', 'invoiced');
         $query->setMaxResults(1);
 
         return $query->getOneOrNullResult();
