@@ -38,7 +38,7 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         $query->setParameter('date', '2015-01-01');
 
         return $query->getResult();
-    }
+    }//end getCustomersRunYesterday
 
     public function getCustomersRunThisMonth($dateTodayStart, $dateStartCurrentMonth) {
 
