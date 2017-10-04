@@ -31,11 +31,13 @@ class ServerScriptsService
     
     public function writeEndServerScript(ServerScripts $serverScript) {
         $serverScript->setEndTs(new \DateTime());
+        $serverScript->setNote("END");
         $this->writeRow($serverScript);
     }
     
     public function writeStartServerScript(ServerScripts $serverScript){
         $serverScript->setStartTs(new \DateTime());
+        $serverScript->setNote("RUNNING");
         $this->writeRow($serverScript);
     }
     

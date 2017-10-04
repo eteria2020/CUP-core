@@ -28,7 +28,7 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
             . 'AND t.pinType IS NULL '
             . 'AND t.beginningTx > :date '
             . 'ORDER BY c.id';
-
+        
         $payable = "TRUE";
 
         $query = $em->createQuery($dql);
