@@ -17,8 +17,7 @@ class ServerScriptsRepository extends \Doctrine\ORM\EntityRepository
                 . 'AND s.name = :name '
                 . 'AND (s.param = :dateStartJson OR (s.startTs >= :dateStartDay AND s.startTs < :dateEndDay)) '
                 . 'AND s.note != :status '
-                . 'ORDER BY s.id DESC'
-                ;
+                . 'ORDER BY s.id DESC';
 
         $query = $em->createQuery($dql);
         $query->setParameter('dateStartJson', '{"date": "'.$dateStart.'"}');
