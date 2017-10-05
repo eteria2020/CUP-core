@@ -16,8 +16,7 @@ class ServerScriptsRepository extends \Doctrine\ORM\EntityRepository
                 . 'WHERE 1=1 '
                 . 'AND s.name = :name '
                 . 'AND (s.param = :dateStartJson OR (s.startTs >= :dateStartDay AND s.startTs < :dateEndDay)) '
-                . 'AND s.note != :status1 '
-                . 'AND s.note != :status2 '
+                . 'AND s.note != :status '
                 . 'ORDER BY s.id DESC'
                 ;
 
@@ -25,8 +24,7 @@ class ServerScriptsRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('dateStartJson', '{"date": "'.$dateStart.'"}');
         $query->setParameter('dateStartDay', $dateStart);
         $query->setParameter('dateEndDay', $dateEnd);
-        $query->setParameter('status1', "RUNNING");
-        $query->setParameter('status2', "END");
+        $query->setParameter('status', "RUNNING");
         $query->setParameter('name', "addPointDay_scrpit");
         
         return $query->getResult();

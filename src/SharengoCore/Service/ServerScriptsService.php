@@ -31,7 +31,7 @@ class ServerScriptsService
     
     public function writeEndServerScript(ServerScripts $serverScript) {
         $serverScript->setEndTs(new \DateTime());
-        $serverScript->setNote("END");
+        $serverScript->setNote(null);
         $this->writeRow($serverScript);
     }
     
