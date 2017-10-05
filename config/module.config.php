@@ -184,6 +184,7 @@ return [
             'SharengoCore\Service\BlackHoleLogger' => 'SharengoCore\Service\BlackHoleLogger',
         ],
         'factories' => [
+            'SharengoCore\Service\ServerScriptsService' => 'SharengoCore\Service\ServerScriptsServiceFactory',
             'SharengoCore\Service\CustomersService' => 'SharengoCore\Service\CustomersServiceFactory',
             'SharengoCore\Service\CountriesService' => 'SharengoCore\Service\CountriesServiceFactory',
             'SharengoCore\Service\ProvincesService' => 'SharengoCore\Service\ProvincesServiceFactory',
@@ -249,6 +250,7 @@ return [
             'SharengoCore\Service\DriversLicenseValidationService' => 'SharengoCore\Service\DriversLicenseValidationServiceFactory',
             'SharengoCore\Service\PaymentScriptRunsService' => 'SharengoCore\Service\PaymentScriptRunsServiceFactory',
             'SharengoCore\Service\FreeFaresService' => 'SharengoCore\Service\FreeFaresServiceFactory',
+            //'SharengoCore\Service\ServerScriptsService' => 'SharengoCore\Service\ServerScriptsServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
             'SharengoCore\Listener\DisableContractListener' => 'SharengoCore\Listener\DisableContractListenerFactory',
