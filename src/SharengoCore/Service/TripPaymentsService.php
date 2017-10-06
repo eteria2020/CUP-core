@@ -138,9 +138,10 @@ class TripPaymentsService
 
         return array_map(function (TripPayments $payment) {
             $customer = $payment->getTrip()->getCustomer();
+            $firstPaymentTryTs = (!is_null( $payment->getFirstPaymentTryTs()) ? $payment->getFirstPaymentTryTs()->format('Y-m-d H:i:s'): $payment->getCreatedAt()->format('Y-m-d H:i:s')); 
             return [
                 'e' => [
-                    'firstPaymentTryTs' => $payment->getFirstPaymentTryTs()->format('Y-m-d H:i:s'),
+                    'firstPaymentTryTs' => $firstPaymentTryTs,
                     'trip' => $payment->getTrip()->getId(),
                     'tripMinutes' => $payment->getTripMinutes(),
                     'parkingMinutes' => $payment->getParkingMinutes(),
