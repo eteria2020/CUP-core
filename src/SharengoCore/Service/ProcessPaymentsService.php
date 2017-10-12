@@ -100,7 +100,7 @@ class ProcessPaymentsService
                     $avoidCartasi,
                     $avoidPersistance
                 );
-            } catch (WrongPaymentException $e) {
+            } catch (\Exception $e) {
                 $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;tripPayment->getId;".$tripPayment->getId() . "\n");
                 $this->logger->log($e->getMessage(). "\n");
                 // if we are not able to process a payment we skip the followings
