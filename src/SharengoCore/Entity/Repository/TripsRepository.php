@@ -42,6 +42,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
                 . 'WHERE 1=1 '
                 . 'AND t.endTx < :dateTodayStart '
                 . 'AND t.endTx >= :dateYesterdayStart '
+                . 'AND t.timestampEnd IS NOT NULL'
                 . 'AND t.customer = :customerId '
                 . 'AND t.payable = :payable '
                 . 'AND t.pinType IS NULL '
