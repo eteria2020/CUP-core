@@ -620,4 +620,35 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         $query->setParameter('tplate', $tplate);
         return $query->getResult();
     }
+    
+    public function getTripInMonth($customerId, $dateStart, $dateEnd) {
+        
+        $em = $this->getEntityManager();
+        
+        $dql = 'SELECT t '
+                . 'FROM \SharengoCore\Entity\Trips t '
+                . 'WHERE 1=1 '
+                . 'AND t.endTx < :dateEnd '
+                . 'AND t.endTx >= :dateStart '
+                . 'AND t.timestampEnd IS NOT NULL '
+                . 'AND t.customer = :customerId '
+                //. 'AND t.payable = :payable '
+                . 'AND t.pinType IS NULL '
+                . 'AND t.beginningTx > :date '
+                //. 'AND t.timestampBeginning > :date '
+                . 'ORDER BY t.id'
+                ;
+
+        $payable = "TRUE";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('dateStart', $dateStart);
+        $query->setParameter('dateEnd', $dateEnd);
+        $query->setParameter('customerId', $customerId);
+        //$query->setParameter('payable', $payable);
+        $query->setParameter('date', '2015-01-01');
+
+        return $query->getResult();
+        
+    }
 }
