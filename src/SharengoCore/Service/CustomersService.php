@@ -435,6 +435,10 @@ class CustomersService implements ValidatorServiceInterface
     public function checkCustomerIfAlreadyAddPointsThisMonth($customerId, $dateCurrentMonthStart, $dateNextMonthStart){
         return $this->customersPointsRepository->checkCustomerIfAlreadyAddPointsThisMonth($customerId, $dateCurrentMonthStart, $dateNextMonthStart);
     }
+    
+    public function getAllCustomerInCustomersPoints($dateStart, $dateEnd){
+        return $this->customersPointsRepository->getAllCustomerInCustomersPoints($dateStart, $dateEnd);
+    }
 
     public function findBonus($bonus)
     {

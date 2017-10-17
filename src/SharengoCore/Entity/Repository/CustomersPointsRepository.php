@@ -162,5 +162,27 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getResult();
     }
     
+    public function getAllCustomerInCustomersPoints($dateStart, $dateEnd) {
+       
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT cp '
+                . 'FROM \SharengoCore\Entity\CustomersPoints cp '
+                . 'WHERE 1=1 '
+                . 'AND cp.insertTs >= :dateEnd '
+                . 'AND cp.insertTs < :dateEnd '
+                . 'AND cp.type = :typeDrive '
+                ;
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('dateStart', $dateStart);
+        $query->setParameter('dateEnd', $dateEnd);
+        $query->setParameter('typeDrive', "DRIVE");
+
+
+        return $query->getResult();
+        
+    }
+    
 
 }
