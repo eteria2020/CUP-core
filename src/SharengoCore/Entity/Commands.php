@@ -113,6 +113,16 @@ class Commands
     private $payload;
 
     /**
+     * @var Webuser
+     *
+     * @ORM\ManyToOne(targetEntity="Webuser")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="webuser_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $webuser;
+
+    /**
      * @var array
      */
     private static $codes = [
@@ -160,6 +170,7 @@ class Commands
         $command->setQueued(new \DateTime());
         $command->setToSend(true);
         $command->setTtl($commandData['ttl']);
+        $command->setWebuser($webuser);
 
         return $command;
     }
@@ -450,5 +461,27 @@ class Commands
     public function getPayload()
     {
         return $this->payload;
+    }
+
+    /**
+     * Set Webuser
+     * 
+     * @param type $webuser
+     * @return $this
+     */
+    public function setWebuser($webuser)
+    {
+        $this->webuser = $webuser;
+        return $this;
+    }
+
+    /**
+     * Get Webuser
+     * 
+     * @return type
+     */
+    public function getWebuser()
+    {
+        return $this->webuser;
     }
 }
