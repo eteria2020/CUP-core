@@ -124,6 +124,15 @@ class TripsService
     }
 
     /**
+     * 
+     * @param Trips $trip
+     * @return BusinessInvoice
+     */
+    public function getBusinessInvoiceByTrip(Trips $trip){
+        return $this->tripRepository->findBusinessInvoiceByTrip($trip);
+    }
+
+    /**
      * @return mixed
      */
     public function getListTrips()
