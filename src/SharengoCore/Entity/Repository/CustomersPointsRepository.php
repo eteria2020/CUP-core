@@ -172,6 +172,7 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
                 . 'AND cp.insertTs >= :dateStart '
                 . 'AND cp.insertTs < :dateEnd '
                 . 'AND cp.type = :typeDrive '
+                . 'ORDER BY cp.id '
                 ;
 
         $query = $em->createQuery($dql);
