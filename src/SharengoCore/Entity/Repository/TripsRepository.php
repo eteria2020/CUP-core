@@ -287,9 +287,28 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         $em = $this->getEntityManager();
 
         $dql = "SELECT btp
-        FROM \BusinessCore\Entity\BusinessTripPayment btp
-        INNER JOIN \BusinessCore\Entity\BusinessTrip bt WITH bt.id = btp
+        FROM \BusinessCore\Entity\BusinessTrip bt
+        INNER JOIN \BusinessCore\Entity\BusinessTripPayment btp
         WHERE bt.trip = :trip";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('trip', $trip);
+        $query->setMaxResults(1);
+
+        return $query->getOneOrNullResult();
+    }
+
+    public function findBusinessInvoiceByTrip(Trips $trip) {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT bi 
+        FROM \BusinessCore\Entity\BusinessInvoice bi 
+        WHERE bi.id IN (
+            SELECT btp 
+            FROM \BusinessCore\Entity\BusinessTrip bt
+            INNER JOIN \BusinessCore\Entity\BusinessTripPayment btp
+            WHERE bt.trip = :trip
+        )";
 
         $query = $em->createQuery($dql);
         $query->setParameter('trip', $trip);
