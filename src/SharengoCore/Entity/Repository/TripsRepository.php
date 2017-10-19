@@ -651,7 +651,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
                 . 'AND t.endTx >= :dateStart '
                 . 'AND t.timestampEnd IS NOT NULL '
                 . 'AND t.customer = :customerId '
-                //. 'AND t.payable = :payable '
+                . 'AND t.payable = :payable '
                 . 'AND t.pinType IS NULL '
                 . 'AND t.beginningTx > :date '
                 //. 'AND t.timestampBeginning > :date '
@@ -664,7 +664,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         $query->setParameter('dateStart', $dateStart);
         $query->setParameter('dateEnd', $dateEnd);
         $query->setParameter('customerId', $customerId);
-        //$query->setParameter('payable', $payable);
+        $query->setParameter('payable', $payable);
         $query->setParameter('date', '2015-01-01');
 
         return $query->getResult();

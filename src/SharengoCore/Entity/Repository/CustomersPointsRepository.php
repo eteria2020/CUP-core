@@ -169,7 +169,7 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         $dql = 'SELECT cp '
                 . 'FROM \SharengoCore\Entity\CustomersPoints cp '
                 . 'WHERE 1=1 '
-                . 'AND cp.insertTs >= :dateEnd '
+                . 'AND cp.insertTs >= :dateStart '
                 . 'AND cp.insertTs < :dateEnd '
                 . 'AND cp.type = :typeDrive '
                 ;
