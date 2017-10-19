@@ -411,7 +411,7 @@ class TripsService {
      * @param CloseTripData $closeTrip
      */
     public function closeTrip(CloseTripData $closeTrip, WebUser $webUser) {
-        $txtArg1 = json_encode(
+        $txtArg2 = json_encode(
             array('TripId' => $closeTrip->trip()->getId(),
                 'CustomerId' => $closeTrip->trip()->getCustomer()->getId(),
                 'TimestampBeginning' => $closeTrip->trip()->getTimestampBeginning()->format('Y-m-d H:i:s')));
@@ -422,7 +422,8 @@ class TripsService {
             $webUser,
             0,
             0,
-            $txtArg1
+            null,
+            $txtArg2
         );
 
         $this->tripRepository->closeTrip(
