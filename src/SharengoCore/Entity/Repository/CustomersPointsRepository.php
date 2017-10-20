@@ -197,7 +197,9 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
             . 'AND t.endTx < :dateEnd '
             . 'AND t.payable = :payable '
             . 'AND t.pinType IS NULL '
-            . 'AND t.beginningTx > :date '
+            . 'AND t.timestampBeginning > :date1 '
+            . 'AND t.timestampEnd < :date2 '
+            . 'AND (t.timestampEnd - t.timestampBeginning)  '
             . 'ORDER BY c.id';
         
         $payable = "TRUE";
@@ -206,21 +208,12 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         $query->setParameter('dateStart', $dateStart);
         $query->setParameter('dateEnd', $dateEnd);
         $query->setParameter('payable', $payable);
-        $query->setParameter('date', '2015-01-01');
+        $query->setParameter('date1', '2017-09-18');
+        $query->setParameter('date2', '2018-01-01');
 
         return $query->getResult();
         
     }
-    
-    public function truncateCustomersPoints() {
-       
-        $em = $this->getEntityManager();
-
-        $dql = 'TRUNCATE \SharengoCore\Entity\CustomersPoints cp';
-
-        $query = $em->createQuery($dql);
-        
-    }
-    
+   
 
 }
