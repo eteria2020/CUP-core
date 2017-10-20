@@ -279,16 +279,17 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
     }
 
     /**
-     *
+     * Return a BusinessTripPayment from a Trip (public)
+     * 
      * @param Trips $trip
      * @return BusinessTripPayment businessTripPayment
      */
-    public function findBusinessTripPaymentByTrip(Trips $trip) {
+   public function findBusinessTripPaymentByTrip(Trips $trip) {
         $em = $this->getEntityManager();
 
         $dql = "SELECT btp
-        FROM \BusinessCore\Entity\BusinessTrip bt
-        INNER JOIN \BusinessCore\Entity\BusinessTripPayment btp
+        FROM \BusinessCore\Entity\BusinessTripPayment btp 
+        INNER JOIN \BusinessCore\Entity\BusinessTrip bt WITH bt = btp.businessTrip 
         WHERE bt.trip = :trip";
 
         $query = $em->createQuery($dql);
@@ -298,17 +299,20 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getOneOrNullResult();
     }
 
+    /**
+     * Return a BusinessInvoice from a Trip (public)
+     * 
+     * @param Trips $trip
+     * @return type
+     */
     public function findBusinessInvoiceByTrip(Trips $trip) {
         $em = $this->getEntityManager();
 
-        $dql = "SELECT bi 
-        FROM \BusinessCore\Entity\BusinessInvoice bi 
-        WHERE bi.id IN (
-            SELECT btp 
-            FROM \BusinessCore\Entity\BusinessTrip bt
-            INNER JOIN \BusinessCore\Entity\BusinessTripPayment btp
-            WHERE bt.trip = :trip
-        )";
+        $dql = "SELECT bi
+        FROM \BusinessCore\Entity\BusinessTripPayment btp 
+        INNER JOIN \BusinessCore\Entity\BusinessTrip bt WITH bt = btp.businessTrip 
+        INNER JOIN \BusinessCore\Entity\BusinessInvoice bi WITH bi = btp.businessInvoice 
+        WHERE bt.trip = :trip";
 
         $query = $em->createQuery($dql);
         $query->setParameter('trip', $trip);
