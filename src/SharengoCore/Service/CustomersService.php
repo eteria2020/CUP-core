@@ -402,6 +402,17 @@ class CustomersService implements ValidatorServiceInterface
 
         return $point;
     }
+    
+    public function addCustomerPointTmp(CustomersPointsTmp $customerPointTmp, $customerId)
+    {
+        $customer = $this->findById($customerId);
+        $customerPointTmp->setCustomer($customer);
+        
+        $this->entityManager->persist($customerPointTmp);
+        $this->entityManager->flush();
+
+        return $customerPointTmp;
+    }
 
     public function getAllBonus(Customers $customer)
     {
@@ -442,6 +453,10 @@ class CustomersService implements ValidatorServiceInterface
     
     public function getAllCustomerRunInMonth($dateStart, $dateEnd){
         return $this->customersPointsRepository->getAllCustomerRunInMonth($dateStart, $dateEnd);
+    }
+    
+    public function truncateCustomersPoints(){
+        return $this->customersPointsRepository->truncateCustomersPoints();
     }
 
     public function findBonus($bonus)

@@ -212,6 +212,15 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         
     }
     
+    public function truncateCustomersPoints() {
+       
+        $em = $this->getEntityManager();
+
+        $dql = 'TRUNCATE \SharengoCore\Entity\CustomersPoints cp';
+
+        $query = $em->createQuery($dql);
+        
+    }
     
 
 }
