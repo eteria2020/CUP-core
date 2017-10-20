@@ -185,5 +185,33 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         
     }
     
+    public function getAllCustomerRunInMonth($dateStart, $dateEnd) {
+       
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT DISTINCT c.id '
+            . 'FROM \SharengoCore\Entity\Trips t '
+            . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
+            . 'WHERE '
+            . 't.endTx >= :dateStart '
+            . 'AND t.endTx < :dateEnd '
+            . 'AND t.payable = :payable '
+            . 'AND t.pinType IS NULL '
+            . 'AND t.beginningTx > :date '
+            . 'ORDER BY c.id';
+        
+        $payable = "TRUE";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('dateStart', $dateStart);
+        $query->setParameter('dateEnd', $dateEnd);
+        $query->setParameter('payable', $payable);
+        $query->setParameter('date', '2015-01-01');
+
+        return $query->getResult();
+        
+    }
+    
+    
 
 }
