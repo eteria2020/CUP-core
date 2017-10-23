@@ -46,7 +46,8 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
                 . 'AND t.customer = :customerId '
                 . 'AND t.payable = :payable '
                 . 'AND t.pinType IS NULL '
-                . 'AND t.beginningTx > :date';
+                . 'AND t.beginningTx > :date'
+                ;
 
         $payable = "TRUE";
 
@@ -648,8 +649,9 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
                 . 'AND t.customer = :customerId '
                 . 'AND t.payable = :payable '
                 . 'AND t.pinType IS NULL '
-                . 'AND t.beginningTx > :date '
-                //. 'AND t.timestampBeginning > :date '
+                . 'AND t.timestampEnd < :date2 '
+                . 'AND t.timestampBeginning > :date1 '
+                . 'AND (t.timestampEnd - t.timestampBeginning) < :oneDay '
                 . 'ORDER BY t.id'
                 ;
 
@@ -660,7 +662,9 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         $query->setParameter('dateEnd', $dateEnd);
         $query->setParameter('customerId', $customerId);
         $query->setParameter('payable', $payable);
-        $query->setParameter('date', '2015-01-01');
+        $query->setParameter('date1', '2017-09-18');
+        $query->setParameter('date2', '2018-01-01');
+        $query->setParameter('oneDay', '24:00:00');
 
         return $query->getResult();
         

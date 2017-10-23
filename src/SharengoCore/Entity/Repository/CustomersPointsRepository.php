@@ -198,8 +198,6 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
             . 'AND t.payable = :payable '
             . 'AND t.pinType IS NULL '
             . 'AND t.timestampBeginning > :date1 '
-            . 'AND t.timestampEnd < :date2 '
-            //. 'AND (t.timestampEnd - t.timestampBeginning)  '
             . 'ORDER BY c.id';
         
         $payable = "TRUE";
@@ -209,7 +207,7 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         $query->setParameter('dateEnd', $dateEnd);
         $query->setParameter('payable', $payable);
         $query->setParameter('date1', '2017-09-18');
-        $query->setParameter('date2', '2018-01-01');
+
 
         return $query->getResult();
         

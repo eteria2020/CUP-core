@@ -403,7 +403,7 @@ class CustomersService implements ValidatorServiceInterface
         return $point;
     }
     
-    public function addCustomerPointTmp(CustomersPoints $customerPoint, $customerId)
+    public function addCustomerPoint(CustomersPoints $customerPoint, $customerId)
     {
         $customer = $this->findById($customerId);
         $customerPoint->setCustomer($customer);
