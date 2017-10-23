@@ -48,15 +48,6 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
                 . 'AND t.pinType IS NULL '
                 . 'AND t.beginningTx > :date';
 
-        /* $dql = 'SELECT t '
-          . 'FROM \SharengoCore\Entity\Trips t '
-          . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
-          . 'WHERE c.id = :customerId '
-          . 'AND t.payable = :payable '
-          . 'AND t.beginningTx > :date '
-          . 'AND t.endTx IS NOT NULL';
-         */
-
         $payable = "TRUE";
 
         $query = $em->createQuery($dql);

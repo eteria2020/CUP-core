@@ -199,7 +199,7 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
             . 'AND t.pinType IS NULL '
             . 'AND t.timestampBeginning > :date1 '
             . 'AND t.timestampEnd < :date2 '
-            . 'AND (t.timestampEnd - t.timestampBeginning)  '
+            //. 'AND (t.timestampEnd - t.timestampBeginning)  '
             . 'ORDER BY c.id';
         
         $payable = "TRUE";
@@ -214,6 +214,20 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getResult();
         
     }
-   
+
+    public function deleteCustomersPoints() {
+        
+        
+        $em = $this->getEntityManager();
+
+        $dql = 'DELETE '
+                . 'FROM \SharengoCore\Entity\CustomersPoints cp '
+                ;
+
+        $query = $em->createQuery($dql);
+
+        return $query->getResult();
+        
+    }
 
 }
