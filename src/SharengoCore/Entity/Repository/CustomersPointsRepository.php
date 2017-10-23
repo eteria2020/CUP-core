@@ -28,14 +28,27 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
             . 'AND t.pinType IS NULL '
             . 'AND t.beginningTx > :date '
             . 'ORDER BY c.id';
-        
+        /*
+        $dql = 'SELECT DISTINCT c.id '
+            . 'FROM \SharengoCore\Entity\Trips t '
+            . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
+            . 'WHERE '
+            . 't.endTx >= :date1 '
+            . 'AND t.endTx < :date2 '
+            . 'AND t.payable = :payable '
+            . 'AND t.pinType IS NULL '
+            . 'AND t.timestampBeginning > :date '
+            . 'ORDER BY c.id';
+        */
         $payable = "TRUE";
 
         $query = $em->createQuery($dql);
         $query->setParameter('dateYesterdayStart', $dateYesterdayStart);
         $query->setParameter('dateTodayStart', $dateTodayStart);
+        //$query->setParameter('date1', '2017-09-01');
+        //$query->setParameter('date2', '2017-10-01');
         $query->setParameter('payable', $payable);
-        $query->setParameter('date', '2015-01-01');
+        $query->setParameter('date', '2017-09-18');
 
         return $query->getResult();
     }//end getCustomersRunYesterday
