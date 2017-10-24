@@ -163,10 +163,6 @@ class Commands
             $command->$methodName($value);
         }
 
-        if ($command->getCommand() == 'END_CHARGE') {
-            $command->setTxtarg2($webuser->getId());
-        }
-
         $command->setQueued(new \DateTime());
         $command->setToSend(true);
         $command->setTtl($commandData['ttl']);
@@ -465,7 +461,7 @@ class Commands
 
     /**
      * Set Webuser
-     * 
+     *
      * @param type $webuser
      * @return $this
      */
@@ -477,7 +473,7 @@ class Commands
 
     /**
      * Get Webuser
-     * 
+     *
      * @return type
      */
     public function getWebuser()
