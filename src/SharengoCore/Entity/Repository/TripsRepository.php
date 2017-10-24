@@ -279,16 +279,16 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
 
     /**
      * Return a BusinessTripPayment from a Trip (public)
-     * 
+     *
      * @param Trips $trip
      * @return BusinessTripPayment businessTripPayment
      */
-   public function findBusinessTripPaymentByTrip(Trips $trip) {
+    public function findBusinessTripPaymentByTrip(Trips $trip) {
         $em = $this->getEntityManager();
 
         $dql = "SELECT btp
-        FROM \BusinessCore\Entity\BusinessTripPayment btp 
-        INNER JOIN \BusinessCore\Entity\BusinessTrip bt WITH bt = btp.businessTrip 
+        FROM \BusinessCore\Entity\BusinessTripPayment btp
+        INNER JOIN \BusinessCore\Entity\BusinessTrip bt WITH bt = btp.businessTrip
         WHERE bt.trip = :trip";
 
         $query = $em->createQuery($dql);
@@ -300,7 +300,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
 
     /**
      * Return a BusinessInvoice from a Trip (public)
-     * 
+     *
      * @param Trips $trip
      * @return type
      */
@@ -308,9 +308,9 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         $em = $this->getEntityManager();
 
         $dql = "SELECT bi
-        FROM \BusinessCore\Entity\BusinessTripPayment btp 
-        INNER JOIN \BusinessCore\Entity\BusinessTrip bt WITH bt = btp.businessTrip 
-        INNER JOIN \BusinessCore\Entity\BusinessInvoice bi WITH bi = btp.businessInvoice 
+        FROM \BusinessCore\Entity\BusinessTripPayment btp
+        INNER JOIN \BusinessCore\Entity\BusinessTrip bt WITH bt = btp.businessTrip
+        INNER JOIN \BusinessCore\Entity\BusinessInvoice bi WITH bi = btp.businessInvoice
         WHERE bt.trip = :trip";
 
         $query = $em->createQuery($dql);
@@ -595,27 +595,12 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getResult();
     }
 
-    public function getCarsByTripId($tid) {
-        
-        $em = $this->getEntityManager();
-        
-         $dql= "SELECT a "
-               . "FROM \SharengoCore\Entity\Cars a "
-               . "JOIN \SharengoCore\Entity\Trips t WITH t.car=a.plate "
-               . "WHERE t.id = :tid  ";
-
-        $query = $em->createQuery($dql);
-        $query->setParameter('tid', $tid);
-        return $query->getResult();
-    }
-
-    public function findFirstTripInvoicedByCustomer($customer)
-    {
-        $dql =  "SELECT t FROM \SharengoCore\Entity\Trips t ".
-            //"LEFT JOIN \SharengoCore\Entity\TripPayments tp WITH t.id = tp.trip ".
-            "WHERE t.timestampEnd IS NOT NULL AND t.payable = TRUE ".
-            "AND t.customer = :customer ". //AND tp.status = :status
-            "ORDER BY t.timestampEnd ASC ";
+    public function findFirstTripInvoicedByCustomer($customer) {
+        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t " .
+                //"LEFT JOIN \SharengoCore\Entity\TripPayments tp WITH t.id = tp.trip ".
+                "WHERE t.timestampEnd IS NOT NULL AND t.payable = TRUE " .
+                "AND t.customer = :customer " . //AND tp.status = :status
+                "ORDER BY t.timestampEnd ASC ";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('customer', $customer);
@@ -625,21 +610,43 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getOneOrNullResult();
     }
 
-    public function getCarOpenTrips($tplate) {
-        
+     public function findTripsForCloseOldTripMaintainer($beginningIntervalMinute = '-120 minute', $lastContactIntervalMinutes = "-80 minute") {
         $em = $this->getEntityManager();
-       
-         
-         $dql= "SELECT DISTINCT t.id "
-               . "FROM \SharengoCore\Entity\Trips t "
-               . "JOIN \SharengoCore\Entity\Cars a WITH t.car = a.plate "
-               . "WHERE a.plate = :tplate "
-               . "AND t.timestampEnd IS NULL"
-               ;
 
-        
+        $dql= "SELECT DISTINCT t "
+            . "FROM \SharengoCore\Entity\Trips t "
+            . "JOIN t.customer cu "
+            . "JOIN t.car ca "
+            . "WHERE cu.maintainer = true "
+            . "AND t.timestampEnd IS NULL "
+            . "AND t.timestampBeginning < :lastBeginning "
+            . "AND ca.lastContact > :lastContact ";
+
+        $now = new \DateTime();
+        $dateLastBeginning = $now->modify($beginningIntervalMinute);
+        $dateLastContact = $now->modify($lastContactIntervalMinutes);
+
         $query = $em->createQuery($dql);
-        $query->setParameter('tplate', $tplate);
+        $query->setParameter('lastBeginning', $dateLastBeginning);
+        $query->setParameter('lastContact', $dateLastContact);
         return $query->getResult();
-    }
+     }
+
+     /**
+      * Return all trips open on the car $carPlate
+      * @param type $carPlate
+      * @return type
+      */
+     public function findTripsOpenByCarPlate($carPlate){
+        $em = $this->getEntityManager();
+
+        $dql= "SELECT t "
+            . "FROM \SharengoCore\Entity\Trips t "
+            . "WHERE t.carPlate = :carPlate "
+            . "AND t.timestampEnd IS NULL ";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('carPlate', $carPlate);
+        return $query->getResult();
+     }
 }

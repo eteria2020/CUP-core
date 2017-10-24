@@ -427,9 +427,5 @@ class CarsService
     {
         return $this->carsRepository->findOutOfBoundsPlates()[0]['value'];
     }
-    
-    public function checkOnlineStatus($lastContact)
-    {
-        return $this->carsRepository->checkOnlineStatus($lastContact);
-    }
+
 }

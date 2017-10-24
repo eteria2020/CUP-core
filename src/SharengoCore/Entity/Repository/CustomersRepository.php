@@ -219,33 +219,33 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
-    
+
      /**
      * This method returns the Customers with expired drive license at current date
      *
      * @return Customers[]
      */
     public function findAllCustomersWithExpireLicense(){
-        
+
         $em = $this->getEntityManager();
 
         $dql = "SELECT c
             FROM \SharengoCore\Entity\Customers c
-            WHERE c.enabled = TRUE AND c.driverLicenseExpire < CURRENT_DATE()  
+            WHERE c.enabled = TRUE AND c.driverLicenseExpire < CURRENT_DATE()
             ORDER BY c.id ASC";
 
         $query = $em->createQuery($dql);
         return $query->getResult();
-        
+
     }
 
     /**
-     * 
+     *
      * Find customers by mobile number
-     * 
-     * @param string $value    mobile number 
+     *
+     * @param string $value    mobile number
      * @return Customers[]     customers list with the same mobile number
-     */    
+     */
     public function findByMobile($value)
     {
         $em = $this->getEntityManager();
@@ -255,7 +255,7 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * 
+     *
      * Check if mobile number already exists
      * The function compares values from right to left to evaluate the mobiles without dial code
      *
@@ -268,27 +268,7 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         $sql = "SELECT sng_checkmobile('".$mobile."')";
         $query = $this->getEntityManager()->getConnection()->query($sql);
         $row = $query->fetch();
-        return $row["sng_checkmobile"];        
+        return $row["sng_checkmobile"];
     }
-    
-    public function getMaintainerTripsOpen() {
-        
-        $em = $this->getEntityManager();
-        
-        $dql= "SELECT DISTINCT t.id "
-               . "FROM \SharengoCore\Entity\Trips t "
-               . "JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id "
-               . "WHERE c.maintainer='t' "
-               . "AND t.timestampBeginning < :dateStart AND t.timestampEnd IS NULL"
-               ; 
-        
-        
-        $now = new \DateTime();
-        $dateStart = $now->modify("-120 minute");
-        
-        $query = $em->createQuery($dql);
-        $query->setParameter('dateStart', $dateStart);
-        return $query->getResult();
-    }
- 
+
 }
