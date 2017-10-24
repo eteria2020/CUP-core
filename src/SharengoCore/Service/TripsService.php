@@ -408,7 +408,10 @@ class TripsService {
     }
 
     /**
+     * Close the trip $closeTrip whith $webUser
+     * 
      * @param CloseTripData $closeTrip
+     * @param WebUser $webUser
      */
     public function closeTrip(CloseTripData $closeTrip, WebUser $webUser) {
         $txtArg2 = json_encode(
