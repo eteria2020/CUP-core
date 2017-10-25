@@ -46,28 +46,14 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
                 . 'AND t.customer = :customerId '
                 . 'AND t.payable = :payable '
                 . 'AND t.pinType IS NULL '
-                . 'AND t.beginningTx > :date'
-                ;
-        /*
-        $dql = 'SELECT t '
-                . 'FROM \SharengoCore\Entity\Trips t '
-                . 'WHERE 1=1 '
-                . 'AND t.endTx < :date2 '
-                . 'AND t.endTx >= :date1 '
-                . 'AND t.timestampEnd IS NOT NULL '
-                . 'AND t.customer = :customerId '
-                . 'AND t.payable = :payable '
-                . 'AND t.pinType IS NULL '
                 . 'AND t.timestampBeginning > :date '
                 ;
-*/
+
         $payable = "TRUE";
 
         $query = $em->createQuery($dql);
         $query->setParameter('dateYesterdayStart', $dateYesterdayStart);
         $query->setParameter('dateTodayStart', $dateTodayStart);
-        //$query->setParameter('date1', '2017-09-01');
-        //$query->setParameter('date2', '2017-10-01');
         $query->setParameter('customerId', $customerId);
         $query->setParameter('payable', $payable);
         $query->setParameter('date', '2017-09-18');
