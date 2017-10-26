@@ -5,6 +5,7 @@ namespace SharengoCore\Entity\Repository;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripPayments;
+use SharengoCore\Entity\Cars;
 
 /**
  * TripsRepository
@@ -279,16 +280,16 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
 
     /**
      * Return a BusinessTripPayment from a Trip (public)
-     * 
+     *
      * @param Trips $trip
      * @return BusinessTripPayment businessTripPayment
      */
-   public function findBusinessTripPaymentByTrip(Trips $trip) {
+    public function findBusinessTripPaymentByTrip(Trips $trip) {
         $em = $this->getEntityManager();
 
         $dql = "SELECT btp
-        FROM \BusinessCore\Entity\BusinessTripPayment btp 
-        INNER JOIN \BusinessCore\Entity\BusinessTrip bt WITH bt = btp.businessTrip 
+        FROM \BusinessCore\Entity\BusinessTripPayment btp
+        INNER JOIN \BusinessCore\Entity\BusinessTrip bt WITH bt = btp.businessTrip
         WHERE bt.trip = :trip";
 
         $query = $em->createQuery($dql);
@@ -300,7 +301,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
 
     /**
      * Return a BusinessInvoice from a Trip (public)
-     * 
+     *
      * @param Trips $trip
      * @return type
      */
@@ -308,9 +309,9 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         $em = $this->getEntityManager();
 
         $dql = "SELECT bi
-        FROM \BusinessCore\Entity\BusinessTripPayment btp 
-        INNER JOIN \BusinessCore\Entity\BusinessTrip bt WITH bt = btp.businessTrip 
-        INNER JOIN \BusinessCore\Entity\BusinessInvoice bi WITH bi = btp.businessInvoice 
+        FROM \BusinessCore\Entity\BusinessTripPayment btp
+        INNER JOIN \BusinessCore\Entity\BusinessTrip bt WITH bt = btp.businessTrip
+        INNER JOIN \BusinessCore\Entity\BusinessInvoice bi WITH bi = btp.businessInvoice
         WHERE bt.trip = :trip";
 
         $query = $em->createQuery($dql);
@@ -595,27 +596,12 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getResult();
     }
 
-    public function getCarsByTripId($tid) {
-        
-        $em = $this->getEntityManager();
-        
-         $dql= "SELECT a "
-               . "FROM \SharengoCore\Entity\Cars a "
-               . "JOIN \SharengoCore\Entity\Trips t WITH t.car=a.plate "
-               . "WHERE t.id = :tid  ";
-
-        $query = $em->createQuery($dql);
-        $query->setParameter('tid', $tid);
-        return $query->getResult();
-    }
-
-    public function findFirstTripInvoicedByCustomer($customer)
-    {
-        $dql =  "SELECT t FROM \SharengoCore\Entity\Trips t ".
-            //"LEFT JOIN \SharengoCore\Entity\TripPayments tp WITH t.id = tp.trip ".
-            "WHERE t.timestampEnd IS NOT NULL AND t.payable = TRUE ".
-            "AND t.customer = :customer ". //AND tp.status = :status
-            "ORDER BY t.timestampEnd ASC ";
+    public function findFirstTripInvoicedByCustomer($customer) {
+        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t " .
+                //"LEFT JOIN \SharengoCore\Entity\TripPayments tp WITH t.id = tp.trip ".
+                "WHERE t.timestampEnd IS NOT NULL AND t.payable = TRUE " .
+                "AND t.customer = :customer " . //AND tp.status = :status
+                "ORDER BY t.timestampEnd ASC ";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('customer', $customer);
@@ -625,21 +611,68 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getOneOrNullResult();
     }
 
-    public function getCarOpenTrips($tplate) {
-        
-        $em = $this->getEntityManager();
-       
-         
-         $dql= "SELECT DISTINCT t.id "
-               . "FROM \SharengoCore\Entity\Trips t "
-               . "JOIN \SharengoCore\Entity\Cars a WITH t.car = a.plate "
-               . "WHERE a.plate = :tplate "
-               . "AND t.timestampEnd IS NULL"
-               ;
+    /**
+     * Return the trips: maintainer, open and more conditions
+     *
+     * @param type $beginningIntervalMinute
+     * @param type $lastContactIntervalMinutes
+     * @param type $additionalConditions
+     * @return type
+     */
+     public function findTripsForCloseOldTripMaintainer($beginningIntervalMinute = null, $lastContactIntervalMinutes = null, $additionalConditions = null) {
 
-        
+        $em = $this->getEntityManager();
+
+        $dql= "SELECT DISTINCT t "
+            . "FROM \SharengoCore\Entity\Trips t "
+            . "JOIN t.customer cu "
+            . "JOIN t.car ca "
+            . "WHERE cu.maintainer = true "
+            . "AND t.timestampEnd IS NULL ";
+
+        $now = new \DateTime();
+        if(!is_null($beginningIntervalMinute)) {
+            $dateLastBeginning = $now->modify($beginningIntervalMinute);
+            $dql .= " AND t.timestampBeginning < :lastBeginning ";
+        }
+
+        if(!is_null($lastContactIntervalMinutes)) {
+            $dateLastContact = $now->modify($lastContactIntervalMinutes);
+            $dql .= " AND ca.lastContact > :lastContact ";
+        }
+
+        if(!is_null($additionalConditions)){
+            $dql .= " " . $additionalConditions;
+        }
+
         $query = $em->createQuery($dql);
-        $query->setParameter('tplate', $tplate);
+        if(!is_null($beginningIntervalMinute)) {
+            $query->setParameter('lastBeginning', $dateLastBeginning);
+        }
+
+        if(!is_null($lastContactIntervalMinutes)) {
+            $query->setParameter('lastContact', $dateLastContact);
+        }
+
         return $query->getResult();
-    }
+     }
+
+     /**
+      * Return all trips open on the car $carPlate
+      * @param type $carPlate
+      * @return type
+      */
+     public function findTripsOpenByCarPlate(Cars $car){
+        $em = $this->getEntityManager();
+
+        $dql= "SELECT t "
+            . "FROM \SharengoCore\Entity\Trips t "
+            . "WHERE t.car = :car "
+            . "AND t.timestampEnd IS NULL "
+            . "ORDER BY t.id";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('car', $car);
+        return $query->getResult();
+     }
 }
