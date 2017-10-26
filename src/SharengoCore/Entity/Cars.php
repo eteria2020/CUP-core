@@ -241,6 +241,20 @@ class Cars
     private $vin;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="battery_safety", type="boolean", nullable=false)
+     */
+    private $batterySafety;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="battery_safety_ts", type="datetimetz", nullable=true)
+     */
+    private $batterySafetyTs;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="key_status", type="text", nullable=true)
@@ -1183,4 +1197,23 @@ class Cars
         return $this->carsInfo->getFirmwareVersion();
     }
 
+    /**
+     * Get batterySafety
+     *
+     * @return boolean
+     */
+    public function getBatterySafety()
+    {
+        return $this->batterySafety;
+    }
+
+    /**
+     * Get batterySafetyTs
+     *
+     * @return \DateTime
+     */
+    public function getBatterySafetyTs()
+    {
+        return $this->batterySafetyTs;
+    }
 }
