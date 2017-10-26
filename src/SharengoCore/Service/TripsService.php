@@ -10,6 +10,7 @@ use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\WebUser;
+use SharengoCore\Entity\Cars;
 use SharengoCore\Service\CommandsService;
 use SharengoCore\Service\CustomersService;
 use SharengoCore\Service\LocationService;
@@ -413,25 +414,25 @@ class TripsService {
     public function closeTrip(CloseTripData $closeTrip, WebUser $webUser) {
 
         $this->commandsService->sendCommand(
-            $closeTrip->car(), Commands::CLOSE_TRIP, $webUser
+                $closeTrip->car(), Commands::CLOSE_TRIP, $webUser
         );
 
         $this->tripRepository->closeTrip(
-            $closeTrip->trip(), $closeTrip->dateTime(), $closeTrip->payable()
+                $closeTrip->trip(), $closeTrip->dateTime(), $closeTrip->payable()
         );
     }
 
     public function closeTripParam(CloseTripData $closeTrip, WebUser $webUser, $sendCommandEnable = false, $clodeDatabaseTripEnable = false) {
 
-        if($sendCommandEnable){
+        if ($sendCommandEnable) {
             $this->commandsService->sendCommand(
-                $closeTrip->car(), Commands::CLOSE_TRIP, $webUser
+                    $closeTrip->car(), Commands::CLOSE_TRIP, $webUser
             );
         }
 
-        if($clodeDatabaseTripEnable){
+        if ($clodeDatabaseTripEnable) {
             $this->tripRepository->closeTrip(
-                $closeTrip->trip(), $closeTrip->dateTime(), $closeTrip->payable()
+                    $closeTrip->trip(), $closeTrip->dateTime(), $closeTrip->payable()
             );
         }
     }
@@ -511,18 +512,11 @@ class TripsService {
         return $this->tripRepository->findFirstTripInvoicedByCustomer($customer);
     }
 
-    /**
-     * Return the trips that belong to maintainers, old more of $beginningIntervalMinute minutes, and more recent
-     * and not yet close
-     * @param type $beginningIntervalMinute
-     * @param type $lastContactIntervalMinutes
-     * @return Trips
-     */
-    public function getTripsForCloseOldTripMaintainer($beginningIntervalMinute = '-120 minute', $lastContactIntervalMinutes = "-80 minute") {
-        return $this->tripRepository->findTripsForCloseOldTripMaintainer($beginningIntervalMinute, $lastContactIntervalMinutes);
+    public function findTripsForCloseOldTripMaintainer($beginningIntervalMinute = null, $lastContactIntervalMinutes = null, $additionalConditions = null) {
+        return $this->tripRepository->findTripsForCloseOldTripMaintainer($beginningIntervalMinute, $lastContactIntervalMinutes, $additionalConditions);
     }
 
-    public function getTripsOpenByCarPlate($carPlate){
+    public function getTripsOpenByCarPlate(Cars $carPlate) {
         return $this->tripRepository->findTripsOpenByCarPlate($carPlate);
     }
 
