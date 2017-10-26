@@ -185,7 +185,7 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         
     }
     
-    public function getAllCustomerRunInMonth($dateStart, $dateEnd) {
+    public function getAllCustomerRunInMonth($dateStart, $dateEnd){
        
         $em = $this->getEntityManager();
 
