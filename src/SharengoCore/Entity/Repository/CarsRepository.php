@@ -168,8 +168,8 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
                     round(extract('epoch' from (now() - MAX(t.timestamp_end))) / 60) as ts_end
                 FROM trips t
                 JOIN cars c ON t.car_plate = c.plate
-                WHERE t.timestamp_end IS NOT NULL AND 
-                t.customer_id NOT IN (SELECT id FROM customers WHERE maintainer = TRUE GROUP BY id) 
+                WHERE t.timestamp_end IS NOT NULL AND
+                t.customer_id NOT IN (SELECT id FROM customers WHERE maintainer = TRUE GROUP BY id)
                 GROUP BY c.plate
                 ORDER BY c.plate ASC
             ) sub_q";
@@ -212,25 +212,5 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
-    
-    public function checkOnlineStatus($lastContact)
-    {
-        $rightnow = new \DateTime();
-        $interval = $rightnow->diff($lastContact);        
-        $minutes = 0;
-        
-        $days = $interval->format('%a');
-        if ($days) {
-        $minutes += 24 * 60 * $days;
-        }
-        $hours = $interval->format('%H');
-        if ($hours) {
-            $minutes += 60 * $hours;
-        }
-        $minutes += $interval->format('%i');
-        
-        
-        return $minutes;
-            
-        }
+
 }

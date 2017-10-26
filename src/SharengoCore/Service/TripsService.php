@@ -10,6 +10,7 @@ use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\WebUser;
+use SharengoCore\Entity\Cars;
 use SharengoCore\Service\CommandsService;
 use SharengoCore\Service\CustomersService;
 use SharengoCore\Service\LocationService;
@@ -419,44 +420,32 @@ class TripsService {
      * @param WebUser $webUser
      */
     public function closeTrip(CloseTripData $closeTrip, WebUser $webUser) {
+
         $txtArg2 = json_encode(
-            array('TripId' => $closeTrip->trip()->getId(),
-                'CustomerId' => $closeTrip->trip()->getCustomer()->getId(),
-                'TimestampBeginning' => $closeTrip->trip()->getTimestampBeginning()->format('Y-m-d H:i:s')));
+                array('TripId' => $closeTrip->trip()->getId(),
+                    'CustomerId' => $closeTrip->trip()->getCustomer()->getId(),
+                    'TimestampBeginning' => $closeTrip->trip()->getTimestampBeginning()->format('Y-m-d H:i:s')));
 
         $this->commandsService->sendCommand(
-            $closeTrip->car(),
-            Commands::CLOSE_TRIP,
-            $webUser,
-            0,
-            0,
-            null,
-            $txtArg2
-        );
+                $closeTrip->car(), Commands::CLOSE_TRIP, $webUser, 0, 0, null, $txtArg2);
 
         $this->tripRepository->closeTrip(
                 $closeTrip->trip(), $closeTrip->dateTime(), $closeTrip->payable()
         );
     }
 
-    /**
-     * 
-     * @param type $trip
-     * @param type $now
-     * @param type $payable
-     * @param type $car
-     * @param type $signal
-     */
-    public function closeTripNoSignal($trip, $now, $payable, $car, $signal = false) {
-        if ($signal == "false") {
-            $this->tripRepository->closeTrip($trip, $now, $payable);
-        } else {
-            $this->commandsService->sendCommand(
-                $car, 
-                Commands::CLOSE_TRIP, 
-                NULL);
+    public function closeTripParam(CloseTripData $closeTrip, WebUser $webUser, $sendCommandEnable = false, $clodeDatabaseTripEnable = false) {
 
-            $this->tripRepository->closeTrip($trip, $now, $payable);
+        if ($sendCommandEnable) {
+            $this->commandsService->sendCommand(
+                    $closeTrip->car(), Commands::CLOSE_TRIP, $webUser
+            );
+        }
+
+        if ($clodeDatabaseTripEnable) {
+            $this->tripRepository->closeTrip(
+                    $closeTrip->trip(), $closeTrip->dateTime(), $closeTrip->payable()
+            );
         }
     }
 
@@ -529,10 +518,6 @@ class TripsService {
         return $this->tripRepository->getCarsByTripId($tid);
     }
 
-    public function getCarOpenTrips($tplate) {
-        return $this->tripRepository->getCarOpenTrips($tplate);
-    }
-
     /**
      * Returns the first paid customer's trip otherwise NULL
      *
@@ -541,6 +526,14 @@ class TripsService {
      */
     public function getFirstTripInvoicedByCustomer($customer) {
         return $this->tripRepository->findFirstTripInvoicedByCustomer($customer);
+    }
+
+    public function findTripsForCloseOldTripMaintainer($beginningIntervalMinute = null, $lastContactIntervalMinutes = null, $additionalConditions = null) {
+        return $this->tripRepository->findTripsForCloseOldTripMaintainer($beginningIntervalMinute, $lastContactIntervalMinutes, $additionalConditions);
+    }
+
+    public function getTripsOpenByCarPlate(Cars $carPlate) {
+        return $this->tripRepository->findTripsOpenByCarPlate($carPlate);
     }
 
 }
