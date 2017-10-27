@@ -48,7 +48,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
                 . 'AND t.payable = :payable '
                 . 'AND t.pinType IS NULL '
                 . 'AND t.timestampBeginning > :date '
-                ;
+        ;
 
         $payable = "TRUE";
 
@@ -612,49 +612,62 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
      * @param type $additionalConditions
      * @return type
      */
-     public function findTripsForCloseOldTripMaintainer($beginningIntervalMinute = null, $lastContactIntervalMinutes = null, $additionalConditions = null) {
+    public function findTripsForCloseOldTripMaintainer($beginningIntervalMinute = null, $lastContactIntervalMinutes = null, $additionalConditions = null) {
 
         $em = $this->getEntityManager();
 
-        $dql= "SELECT DISTINCT t "
-            . "FROM \SharengoCore\Entity\Trips t "
-            . "JOIN t.customer cu "
-            . "JOIN t.car ca "
-            . "WHERE cu.maintainer = true "
-            . "AND t.timestampEnd IS NULL ";
+        $dql = "SELECT DISTINCT t "
+                . "FROM \SharengoCore\Entity\Trips t "
+                . "JOIN t.customer cu "
+                . "JOIN t.car ca "
+                . "WHERE cu.maintainer = true "
+                . "AND t.timestampEnd IS NULL ";
 
         $now = new \DateTime();
-        if(!is_null($beginningIntervalMinute)) {
+        if (!is_null($beginningIntervalMinute)) {
             $dateLastBeginning = $now->modify($beginningIntervalMinute);
             $dql .= " AND t.timestampBeginning < :lastBeginning ";
         }
 
-        if(!is_null($lastContactIntervalMinutes)) {
+        if (!is_null($lastContactIntervalMinutes)) {
             $dateLastContact = $now->modify($lastContactIntervalMinutes);
             $dql .= " AND ca.lastContact > :lastContact ";
         }
 
-        if(!is_null($additionalConditions)){
+        if (!is_null($additionalConditions)) {
             $dql .= " " . $additionalConditions;
         }
 
         $query = $em->createQuery($dql);
-        if(!is_null($beginningIntervalMinute)) {
+        if (!is_null($beginningIntervalMinute)) {
             $query->setParameter('lastBeginning', $dateLastBeginning);
         }
 
-        if(!is_null($lastContactIntervalMinutes)) {
+        if (!is_null($lastContactIntervalMinutes)) {
             $query->setParameter('lastContact', $dateLastContact);
         }
 
         return $query->getResult();
-
     }
-    
-    public function getTripInMonth($customerId, $dateStart, $dateEnd) {
-        
+
+     public function findTripsOpenByCar(Cars $car){
         $em = $this->getEntityManager();
-        
+
+        $dql= "SELECT t "
+            . "FROM \SharengoCore\Entity\Trips t "
+            . "WHERE t.car = :car "
+            . "AND t.timestampEnd IS NULL "
+            . "ORDER BY t.id";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('car', $car);
+        return $query->getResult();
+     }
+
+    public function getTripInMonth($customerId, $dateStart, $dateEnd) {
+
+        $em = $this->getEntityManager();
+
         $dql = 'SELECT t '
                 . 'FROM \SharengoCore\Entity\Trips t '
                 . 'WHERE 1=1 '
@@ -668,7 +681,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
                 . 'AND t.timestampBeginning > :date1 '
                 . 'AND (t.timestampEnd - t.timestampBeginning) < :oneDay '
                 . 'ORDER BY t.id'
-                ;
+        ;
 
         $payable = "TRUE";
 
@@ -682,7 +695,6 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         $query->setParameter('oneDay', '24:00:00');
 
         return $query->getResult();
-        
     }
 
 }

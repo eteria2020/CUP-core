@@ -142,8 +142,7 @@ class TripsService {
         return $this->tripRepository->findTripsByCustomerCO2($customerId);
     }
 
-    
-    public function  getTripInMonth($customerId, $dateStart, $dateEnd){
+    public function getTripInMonth($customerId, $dateStart, $dateEnd) {
         return $this->tripRepository->getTripInMonth($customerId, $dateStart, $dateEnd);
     }
 
@@ -415,7 +414,7 @@ class TripsService {
 
     /**
      * Close the trip $closeTrip whith $webUser
-     * 
+     *
      * @param CloseTripData $closeTrip
      * @param WebUser $webUser
      */
@@ -434,17 +433,17 @@ class TripsService {
         );
     }
 
-    public function closeTripParam(CloseTripData $closeTrip, WebUser $webUser, $sendCommandEnable = false, $clodeDatabaseTripEnable = false) {
+    public function closeTripParam(Trips $trip, $payable = false, WebUser $webUser = null, $sendCommandEnable = false, $clodeDatabaseTripEnable = false) {
 
         if ($sendCommandEnable) {
             $this->commandsService->sendCommand(
-                    $closeTrip->car(), Commands::CLOSE_TRIP, $webUser
+                    $trip->getCar(), Commands::CLOSE_TRIP, $webUser
             );
         }
 
         if ($clodeDatabaseTripEnable) {
             $this->tripRepository->closeTrip(
-                    $closeTrip->trip(), $closeTrip->dateTime(), $closeTrip->payable()
+                    $trip, date_create(), $payable
             );
         }
     }
@@ -532,8 +531,8 @@ class TripsService {
         return $this->tripRepository->findTripsForCloseOldTripMaintainer($beginningIntervalMinute, $lastContactIntervalMinutes, $additionalConditions);
     }
 
-    public function getTripsOpenByCarPlate(Cars $carPlate) {
-        return $this->tripRepository->findTripsOpenByCarPlate($carPlate);
+    public function getTripsOpenByCar(Cars $car) {
+        return $this->tripRepository->findTripsOpenByCar($car);
     }
 
 }
