@@ -43,19 +43,12 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
                 . 'WHERE 1=1 '
                 . 'AND t.endTx < :dateTodayStart '
                 . 'AND t.endTx >= :dateYesterdayStart '
+                . 'AND t.timestampEnd IS NOT NULL '
                 . 'AND t.customer = :customerId '
                 . 'AND t.payable = :payable '
                 . 'AND t.pinType IS NULL '
-                . 'AND t.beginningTx > :date';
-
-        /* $dql = 'SELECT t '
-          . 'FROM \SharengoCore\Entity\Trips t '
-          . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
-          . 'WHERE c.id = :customerId '
-          . 'AND t.payable = :payable '
-          . 'AND t.beginningTx > :date '
-          . 'AND t.endTx IS NOT NULL';
-         */
+                . 'AND t.timestampBeginning > :date '
+                ;
 
         $payable = "TRUE";
 
@@ -64,7 +57,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         $query->setParameter('dateTodayStart', $dateTodayStart);
         $query->setParameter('customerId', $customerId);
         $query->setParameter('payable', $payable);
-        $query->setParameter('date', '2015-01-01');
+        $query->setParameter('date', '2017-09-18');
 
         return $query->getResult();
     }
@@ -655,24 +648,41 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         }
 
         return $query->getResult();
-     }
 
-     /**
-      * Return all trips open on the car $carPlate
-      * @param type $carPlate
-      * @return type
-      */
-     public function findTripsOpenByCarPlate(Cars $car){
+    }
+    
+    public function getTripInMonth($customerId, $dateStart, $dateEnd) {
+        
         $em = $this->getEntityManager();
+        
+        $dql = 'SELECT t '
+                . 'FROM \SharengoCore\Entity\Trips t '
+                . 'WHERE 1=1 '
+                . 'AND t.endTx < :dateEnd '
+                . 'AND t.endTx >= :dateStart '
+                . 'AND t.timestampEnd IS NOT NULL '
+                . 'AND t.customer = :customerId '
+                . 'AND t.payable = :payable '
+                . 'AND t.pinType IS NULL '
+                . 'AND t.timestampEnd < :date2 '
+                . 'AND t.timestampBeginning > :date1 '
+                . 'AND (t.timestampEnd - t.timestampBeginning) < :oneDay '
+                . 'ORDER BY t.id'
+                ;
 
-        $dql= "SELECT t "
-            . "FROM \SharengoCore\Entity\Trips t "
-            . "WHERE t.car = :car "
-            . "AND t.timestampEnd IS NULL "
-            . "ORDER BY t.id";
+        $payable = "TRUE";
 
         $query = $em->createQuery($dql);
-        $query->setParameter('car', $car);
+        $query->setParameter('dateStart', $dateStart);
+        $query->setParameter('dateEnd', $dateEnd);
+        $query->setParameter('customerId', $customerId);
+        $query->setParameter('payable', $payable);
+        $query->setParameter('date1', '2017-09-18');
+        $query->setParameter('date2', '2018-01-01');
+        $query->setParameter('oneDay', '24:00:00');
+
         return $query->getResult();
-     }
+        
+    }
+
 }

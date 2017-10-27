@@ -26,16 +26,16 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
             . 'AND t.endTx < :dateTodayStart '
             . 'AND t.payable = :payable '
             . 'AND t.pinType IS NULL '
-            . 'AND t.beginningTx > :date '
+            . 'AND t.timestampBeginning > :date '
             . 'ORDER BY c.id';
-        
+
         $payable = "TRUE";
 
         $query = $em->createQuery($dql);
         $query->setParameter('dateYesterdayStart', $dateYesterdayStart);
         $query->setParameter('dateTodayStart', $dateTodayStart);
         $query->setParameter('payable', $payable);
-        $query->setParameter('date', '2015-01-01');
+        $query->setParameter('date', '2017-09-18');
 
         return $query->getResult();
     }//end getCustomersRunYesterday
@@ -162,5 +162,70 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getResult();
     }
     
+    public function getAllCustomerInCustomersPoints($dateStart, $dateEnd) {
+       
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT cp '
+                . 'FROM \SharengoCore\Entity\CustomersPoints cp '
+                . 'WHERE 1=1 '
+                . 'AND cp.insertTs >= :dateStart '
+                . 'AND cp.insertTs < :dateEnd '
+                . 'AND cp.type = :typeDrive '
+                . 'ORDER BY cp.id '
+                ;
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('dateStart', $dateStart);
+        $query->setParameter('dateEnd', $dateEnd);
+        $query->setParameter('typeDrive', "DRIVE");
+
+
+        return $query->getResult();
+        
+    }
+    
+    public function getAllCustomerRunInMonth($dateStart, $dateEnd){
+       
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT DISTINCT c.id '
+            . 'FROM \SharengoCore\Entity\Trips t '
+            . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
+            . 'WHERE '
+            . 't.endTx >= :dateStart '
+            . 'AND t.endTx < :dateEnd '
+            . 'AND t.payable = :payable '
+            . 'AND t.pinType IS NULL '
+            . 'AND t.timestampBeginning > :date1 '
+            . 'ORDER BY c.id';
+        
+        $payable = "TRUE";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('dateStart', $dateStart);
+        $query->setParameter('dateEnd', $dateEnd);
+        $query->setParameter('payable', $payable);
+        $query->setParameter('date1', '2017-09-18');
+
+
+        return $query->getResult();
+        
+    }
+
+    public function deleteCustomersPoints() {
+        
+        
+        $em = $this->getEntityManager();
+
+        $dql = 'DELETE '
+                . 'FROM \SharengoCore\Entity\CustomersPoints cp '
+                ;
+
+        $query = $em->createQuery($dql);
+
+        return $query->getResult();
+        
+    }
 
 }
