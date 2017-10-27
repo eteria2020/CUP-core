@@ -142,8 +142,7 @@ class TripsService {
         return $this->tripRepository->findTripsByCustomerCO2($customerId);
     }
 
-    
-    public function  getTripInMonth($customerId, $dateStart, $dateEnd){
+    public function getTripInMonth($customerId, $dateStart, $dateEnd) {
         return $this->tripRepository->getTripInMonth($customerId, $dateStart, $dateEnd);
     }
 
@@ -415,7 +414,7 @@ class TripsService {
 
     /**
      * Close the trip $closeTrip whith $webUser
-     * 
+     *
      * @param CloseTripData $closeTrip
      * @param WebUser $webUser
      */
@@ -532,8 +531,8 @@ class TripsService {
         return $this->tripRepository->findTripsForCloseOldTripMaintainer($beginningIntervalMinute, $lastContactIntervalMinutes, $additionalConditions);
     }
 
-    public function getTripsOpenByCarPlate(Cars $car) {
-        return $this->tripRepository->findTripsOpenByCarPlate($car);
+    public function getTripsOpenByCar(Cars $car) {
+        return $this->tripRepository->findTripsOpenByCar($car);
     }
 
 }
