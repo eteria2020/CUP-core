@@ -1,8 +1,8 @@
 <?php
 
 namespace SharengoCore\Service;
-use Doctrine\ORM\EntityManager;
 
+use Doctrine\ORM\EntityManager;
 use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Repository\ReservationsRepository;
 use SharengoCore\Entity\ReservationsArchive;
@@ -11,8 +11,7 @@ use SharengoCore\Entity\FreeFares;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Utils\Interval;
 
-class FreeFaresService
-{
+class FreeFaresService {
 
     private $entityManager;
 
@@ -27,11 +26,8 @@ class FreeFaresService
     private $reservationsRepository;
 
     public function __construct(
-        TripsRepository $tripsRepository,
-        ReservationsREpository $reservationsRepository,
-        EntityManager $entityManager
-    )
-    {
+    TripsRepository $tripsRepository, ReservationsREpository $reservationsRepository, EntityManager $entityManager
+    ) {
         $this->tripsRepository = $tripsRepository;
         $this->reservationsRepository = $reservationsRepository;
         $this->entityManager = $entityManager;
@@ -45,24 +41,20 @@ class FreeFaresService
      * @param FreeFares $freeFare
      * @return Intervals[]
      */
-    public function usedInterval(Trips $trip, FreeFares $freeFare)
-    {
+    public function usedInterval(Trips $trip, FreeFares $freeFare) {
         $conditions = json_decode($freeFare->getConditions(), true);
 
         $tripInterval = new Interval($trip->getTimestampBeginning(), $trip->getTimestampEnd());
 
         $intervals = [$tripInterval];
 
-        if(isset($conditions['car'])) {
+        if (isset($conditions['car'])) {
             $intervals = $this->filterCar($intervals, $trip, $conditions['car']);
-        }
-        else if (isset($conditions['customer'])) {
+        } else if (isset($conditions['customer'])) {
             $intervals = $this->filterCustomer($intervals, $trip->getCustomer(), $conditions['customer']);
-        }
-        else if (isset($conditions['time'])) {
+        } else if (isset($conditions['time'])) {
             $intervals = $this->filterTime($intervals, $conditions['time']);
-        }
-        else {
+        } else {
             $intervals = [];
         }
 
@@ -78,8 +70,7 @@ class FreeFaresService
      * @param array $customerConditions
      * @return Intervals[]
      */
-    private function filterCustomer(array $intervals, Customers $customer, array $customerConditions)
-    {
+    private function filterCustomer(array $intervals, Customers $customer, array $customerConditions) {
         if (isset($customerConditions['gender'])) {
             $intervals = $this->filterCustomerGender($intervals, $customer->getGender(), $customerConditions['gender']);
         }
@@ -101,8 +92,7 @@ class FreeFaresService
      * @param string $genderCondition
      * @return Intervals[]
      */
-    private function filterCustomerGender(array $intervals, $gender, $genderCondition)
-    {
+    private function filterCustomerGender(array $intervals, $gender, $genderCondition) {
         if ($gender != $genderCondition) {
             return [];
         }
@@ -115,16 +105,15 @@ class FreeFaresService
      * @param DateTime $birthdate
      * @return Intervals[]
      */
-    private function filterCustomerBirthday(array $intervals, \Datetime $birthdate)
-    {
+    private function filterCustomerBirthday(array $intervals, \Datetime $birthdate) {
         $birthday = $birthdate->format('m-d');
 
         $newIntervals = [];
 
         foreach ($intervals as $interval) {
             foreach ($interval->years() as $year) {
-                $birthdayStart = date_create_from_format('Y-m-d H:i:s', $year.'-'.$birthday.' 00:00:00');
-                $birthdayEnd = date_create_from_format('Y-m-d H:i:s', $year.'-'.$birthday.' 23:59:59');
+                $birthdayStart = date_create_from_format('Y-m-d H:i:s', $year . '-' . $birthday . ' 00:00:00');
+                $birthdayEnd = date_create_from_format('Y-m-d H:i:s', $year . '-' . $birthday . ' 23:59:59');
                 $birthdayInterval = new Interval($birthdayStart, $birthdayEnd);
 
                 $intersection = $interval->intersection($birthdayInterval);
@@ -143,8 +132,7 @@ class FreeFaresService
      * @param array $timeConditions has keys `from` and `to`
      * @return Intervals[]
      */
-    private function filterTime(array $intervals, array $timeConditions)
-    {
+    private function filterTime(array $intervals, array $timeConditions) {
         $newIntervals = [];
 
         foreach ($intervals as $interval) {
@@ -173,10 +161,9 @@ class FreeFaresService
      * @param Trips $trip
      * @return Intervals[]
      */
-    private function filterCar(array $intervals, Trips $trip, array $carConditions)
-    {
+    private function filterCar(array $intervals, Trips $trip, array $carConditions) {
         $newIntervals = [];
-        if ($carConditions['type'] == 'nouse'){
+        if ($carConditions['type'] == 'nouse') {
 
             if (self::verifyFilterCar($trip, $carConditions, $this->tripsRepository, $this->reservationsRepository)) {
 
@@ -197,36 +184,43 @@ class FreeFaresService
         return $newIntervals;
     }
 
-    static function verifyFilterCar(Trips $trip, array $carConditions, TripsRepository $tripsRepository, ReservationsRepository $reservationsRepository){
+    static function verifyFilterCar(Trips $trip, array $carConditions, TripsRepository $tripsRepository, ReservationsRepository $reservationsRepository) {
 
         $reservation = $reservationsRepository->findReservationByTrip($trip);
-        if ($reservation != NULL && $reservation instanceof ReservationsArchive) {
+
+        if (!is_null($reservation) && $reservation instanceof ReservationsArchive) {
             $date = $reservation->getBeginningTs();
         } else {
             $date = $trip->getTimestampBeginning();
         }
 
-        if (!isset($carConditions['dow'][$date->format('w')])){ //check the day of the week
+        if (!isset($carConditions['dow'][$date->format('w')])) { //check the day of the week
             return false;
         }
 
-        $time = explode("-",$carConditions['dow'][$date->format('w')]); // retrieve the time interval
-        $start = new \DateTime ($date->format('Y-m-d').' '.$time[0]);
-        $end = new \DateTime($date->format('Y-m-d').' '.$time[1]);
+        $time = explode("-", $carConditions['dow'][$date->format('w')]); // retrieve the time interval
+        $start = new \DateTime($date->format('Y-m-d') . ' ' . $time[0]);
+        $end = new \DateTime($date->format('Y-m-d') . ' ' . $time[1]);
 
         if ($date >= $start && $date <= $end) {
 
-            if ($trip->getFleet()->getId() != $carConditions['fleet']){
+            if ($trip->getFleet()->getId() != $carConditions['fleet']) {
                 return false;
             }
+
             $check = $tripsRepository->findPreviousTrip($trip);
-            if ($check == NULL) {
+
+            if (is_null($check)) {
+                return false;
+            }
+
+            if (is_null($check->getTimestampEnd())) {
                 return false;
             }
 
             $minutes = $carConditions['hour'] * 60;
 
-            if (isset($carConditions['max'])){
+            if (isset($carConditions['max'])) {
                 $maxMinutes = ($carConditions['max'] * 60);
             } else {
                 $maxMinutes = NULL;
@@ -237,12 +231,12 @@ class FreeFaresService
 
             if (($trip->getBatteryBeginning() > $carConditions['soc']) && ($checkMinutes >= $minutes && ($maxMinutes == NULL || $checkMinutes < $maxMinutes))) {
                 return true;
-            }
-            else {
+            } else {
                 return false;
             }
         } else {
             return false;
         }
     }
+
 }
