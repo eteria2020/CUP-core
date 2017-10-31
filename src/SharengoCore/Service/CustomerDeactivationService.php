@@ -381,6 +381,17 @@ class CustomerDeactivationService
         if ($deactivation instanceof CustomerDeactivation) {
             $this->reactivateForDriversLicense($deactivation, $endTs, $webuser);
         }
+
+        //Reactivates all CustomerDeactivations with reason EXPIRED_DRIVERS_LICENSE
+        $queryExpiredDriverLicense = new FindActiveCustomerDeactivations(
+            $this->entityManager,
+            $customer,
+            CustomerDeactivation::EXPIRED_DRIVERS_LICENSE
+        );
+        $deactivationExpiredDriverLicense = $queryExpiredDriverLicense();
+        if ($deactivation instanceof CustomerDeactivation) {
+            $this->reactivateForDriversLicense($deactivationExpiredDriverLicense, $endTs, $webuser);
+        }
     }
 
     /**
