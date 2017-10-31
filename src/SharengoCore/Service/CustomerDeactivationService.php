@@ -389,7 +389,7 @@ class CustomerDeactivationService
             CustomerDeactivation::EXPIRED_DRIVERS_LICENSE
         );
         $deactivationExpiredDriverLicense = $queryExpiredDriverLicense();
-        if ($deactivation instanceof CustomerDeactivation) {
+        if ($deactivationExpiredDriverLicense instanceof CustomerDeactivation) {
             $this->reactivateForDriversLicense($deactivationExpiredDriverLicense, $endTs, $webuser);
         }
     }
