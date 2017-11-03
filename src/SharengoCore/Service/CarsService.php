@@ -223,6 +223,7 @@ class CarsService
     public function saveData(Cars $cars, $defaultData = true)
     {
         $cars->setPlate(strtoupper($cars->getPlate()));
+        //$cars->setBatterySafety(false);
 
         if ($defaultData) {
             $cars->setIntCleanliness('clean');
