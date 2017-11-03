@@ -245,7 +245,7 @@ class Cars
      *
      * @ORM\Column(name="battery_safety", type="boolean", nullable=false)
      */
-    private $batterySafety;
+    private $batterySafety = false;
 
     /**
      * @var \DateTime
@@ -1205,6 +1205,20 @@ class Cars
     public function getBatterySafety()
     {
         return $this->batterySafety;
+    }
+
+    /**
+     * Set battery safety
+     *
+     * @param boolean $batterySafety
+     *
+     * @return Cars
+     */
+    public function setBatterySafety($batterySafety)
+    {
+        $this->batterySafety = $batterySafety;
+
+        return $this;
     }
 
     /**
