@@ -227,5 +227,22 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getResult();
         
     }
+    
+    public function deleteCustomersPointsOct($date) {
+        
+        
+        $em = $this->getEntityManager();
+
+        $dql = 'DELETE '
+                . 'FROM \SharengoCore\Entity\CustomersPoints cp '
+                . 'WHERE insertTs > :date'
+                ;
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('date', $date);
+
+        return $query->getResult();
+        
+    }
 
 }
