@@ -410,7 +410,10 @@ class CustomersService implements ValidatorServiceInterface
         
         $this->entityManager->persist($customerPoint);
         $this->entityManager->flush();
-
+        
+        //$entity = $this->entityManager->getUnitOfWork()->getIdentityMap();
+        $this->entityManager->clear();
+        
         return $customerPoint;
     }
 

@@ -235,7 +235,7 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
 
         $dql = 'DELETE '
                 . 'FROM \SharengoCore\Entity\CustomersPoints cp '
-                . 'WHERE insertTs > :date'
+                . 'WHERE cp.insertTs > :date'
                 ;
 
         $query = $em->createQuery($dql);
