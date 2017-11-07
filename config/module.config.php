@@ -250,6 +250,7 @@ return [
             'SharengoCore\Service\DriversLicenseValidationService' => 'SharengoCore\Service\DriversLicenseValidationServiceFactory',
             'SharengoCore\Service\PaymentScriptRunsService' => 'SharengoCore\Service\PaymentScriptRunsServiceFactory',
             'SharengoCore\Service\FreeFaresService' => 'SharengoCore\Service\FreeFaresServiceFactory',
+            'SharengoCore\Service\PreauthorizationsService' => 'SharengoCore\Service\PreauthorizationsServiceFactory',
             //'SharengoCore\Service\ServerScriptsService' => 'SharengoCore\Service\ServerScriptsServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
