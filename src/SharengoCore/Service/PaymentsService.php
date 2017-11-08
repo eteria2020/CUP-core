@@ -135,6 +135,8 @@ class PaymentsService
 
             $this->disableCustomer($customer);
         }
+
+        $this->entityManager->clear();
     }
 
     /**
