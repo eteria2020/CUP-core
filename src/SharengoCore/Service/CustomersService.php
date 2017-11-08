@@ -458,12 +458,8 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersPointsRepository->getAllCustomerRunInMonth($dateStart, $dateEnd);
     }
     
-    public function deleteCustomersPoints() {
-        return $this->customersPointsRepository->deleteCustomersPoints();
-    }
-    
-    public function deleteCustomersPointsOct($date) {
-        return $this->customersPointsRepository->deleteCustomersPointsOct($date);
+    public function deleteCustomersPoints($date) {
+        return $this->customersPointsRepository->deleteCustomersPoints($date);
     }
 
     public function findBonus($bonus)

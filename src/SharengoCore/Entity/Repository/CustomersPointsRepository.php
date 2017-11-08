@@ -212,23 +212,8 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getResult();
         
     }
-
-    public function deleteCustomersPoints() {
-        
-        
-        $em = $this->getEntityManager();
-
-        $dql = 'DELETE '
-                . 'FROM \SharengoCore\Entity\CustomersPoints cp '
-                ;
-
-        $query = $em->createQuery($dql);
-
-        return $query->getResult();
-        
-    }
     
-    public function deleteCustomersPointsOct($date) {
+    public function deleteCustomersPoints($date) {
         
         
         $em = $this->getEntityManager();
@@ -244,5 +229,6 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getResult();
         
     }
+
 
 }
