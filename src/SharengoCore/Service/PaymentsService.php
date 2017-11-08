@@ -184,7 +184,6 @@ class PaymentsService
             $this->disableCustomer($customer);
         }
 
-        $this->entityManager->clear();
     }
 
     /**
@@ -199,6 +198,7 @@ class PaymentsService
 
         if (!$this->avoidPersistance) {
             $this->entityManager->flush();
+            $this->entityManager->clear();
         }
     }
 
@@ -281,6 +281,7 @@ class PaymentsService
 
             $this->entityManager->persist($tripPaymentTry);
             $this->entityManager->flush();
+            $this->entityManager->clear();
 
             if (!$this->avoidPersistance) {
                 $this->entityManager->commit();
