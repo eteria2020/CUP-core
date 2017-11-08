@@ -254,6 +254,14 @@ class Trips
     private $pinType;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="error_code", type="integer", nullable=false, options={"default" = 0})
+     */
+    private $errorCode = 0;
+
+
+    /**
      * Get id
      *
      * @return integer
@@ -1100,4 +1108,29 @@ class Trips
     {
         return $this->pinType;
     }
+
+    /**
+     * Set errorCode
+     *
+     * @param integer $errorCode
+     *
+     * @return Trips
+     */
+    public function setErrorCode($errorCode)
+    {
+        $this->errorCode = $errorCode;
+
+        return $this;
+    }
+
+    /**
+     * Get errorCode
+     *
+     * @return integer
+     */
+    public function getErrorCode()
+    {
+        return $this->errorCode;
+    }
+
 }

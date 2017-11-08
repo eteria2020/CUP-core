@@ -4,8 +4,14 @@ namespace SharengoCore\Service;
 
 use Cartasi\Service\CartasiCustomerPaymentsInterface;
 use Cartasi\Service\CartasiContractsService;
+use SharengoCore\Entity\Repository\FreeFaresRepository;
+use SharengoCore\Entity\Reservations;
 use SharengoCore\Service\TripPaymentTriesService;
+use SharengoCore\Service\FreeFaresService as FreeFares;
+use SharengoCore\Entity\Repository\TripsRepository;
+use SharengoCore\Entity\Repository\ReservationsRepository;
 use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\Webuser;
 use SharengoCore\Entity\TripPaymentTries;
@@ -71,6 +77,31 @@ class PaymentsService
     private $deactivationService;
 
     /**
+     * @var PreauthorizationsService
+     */
+    private $preauthorizationsService;
+
+    /**
+     * @var integer
+     */
+    private $preauthorizationsAmount;
+
+    /**
+     * @var FreeFaresRepository
+     */
+    private $freeFaresRepository;
+
+    /**
+     * @var TripsRepository
+     */
+    private $tripsRepository;
+
+    /**
+     * @var ReservationsRepository
+     */
+    private $reservationsRepository;
+
+    /**
      * @param CartasiCustomerPaymentsInterface $cartasiCustomerPayments
      * @param CartasiContractsService $cartasiContractService
      * @param EntityManager $entityManager
@@ -79,6 +110,12 @@ class PaymentsService
      * @param TripPaymentTriesService $tripPaymentTriesService
      * @param string $url
      * @param CustomerDeactivationService $deactivationService
+     * @param PreauthorizationsService $preauthorizationsService
+     * @param int $preauthorizationsAmount
+     * @param FreeFaresRepository $freeFaresRepository
+     * @param TripsRepository $tripsRepository
+     * @param ReservationsRepository $reservationsRepository
+     *
      */
     public function __construct(
         CartasiCustomerPaymentsInterface $cartasiCustomerPayments,
@@ -88,7 +125,13 @@ class PaymentsService
         EventManager $eventManager,
         TripPaymentTriesService $tripPaymentTriesService,
         $url,
-        CustomerDeactivationService $deactivationService
+        CustomerDeactivationService $deactivationService,
+        PreauthorizationsService $preauthorizationsService,
+        $preauthorizationsAmount,
+        FreeFaresRepository $freeFaresRepository,
+        TripsRepository $tripsRepository,
+        ReservationsRepository $reservationsRepository
+
     ) {
         $this->cartasiCustomerPayments = $cartasiCustomerPayments;
         $this->cartasiContractService = $cartasiContractService;
@@ -98,6 +141,11 @@ class PaymentsService
         $this->tripPaymentTriesService = $tripPaymentTriesService;
         $this->url = $url;
         $this->deactivationService = $deactivationService;
+        $this->preauthorizationsService = $preauthorizationsService;
+        $this->preauthorizationsAmount = $preauthorizationsAmount;
+        $this->freeFaresRepository = $freeFaresRepository;
+        $this->tripsRepository = $tripsRepository;
+        $this->reservationsRepository = $reservationsRepository;
     }
 
     /**
@@ -381,4 +429,87 @@ class PaymentsService
             'tripPayment' => $tripPayment
         ]);
     }
+
+    public function tryPreAuthorization(Customers $customer, Trips $trip, $avoidEmails = false, $avoidCartasi = false, $avoidPersistance = false){
+
+        $message = 22; //default ok
+        //TODO: check other preauthorization for same customer and car plate
+        if ($customer->getResidualBonuses() >= 20){
+            return $message = 23;
+        }
+
+        $pin = json_decode($customer->getPin(), true);
+        if (!is_null($pin["company"]) && isset($pin["companyPinDisabled"]) && $pin["companyPinDisabled"] == false) {
+            return $message = 25; //maybe business user
+        }
+
+        if ($this->verifyFreeFaresPreauth($trip)){
+            return $message = 24; //freefares
+        }
+
+        if (!$this->cartasiContractService->hasCartasiContract($customer)){
+            return $message = 26; //the customer doesn't have a contract
+        }
+
+        $response = $this->cartasiCustomerPayments->sendPaymentRequest(
+            $customer,
+            $this->preauthorizationsAmount,
+            $avoidCartasi
+        );
+
+        $this->entityManager->beginTransaction();
+
+        try {
+            $preauthorization = $this->preauthorizationsService->generatePreauthorizations(
+                $customer,
+                $trip,
+                $response->getTransaction()
+            );
+
+            if ($response->getCompletedCorrectly()){
+                $message = 22; // successfully
+                $this->entityManager->persist($preauthorization);
+                $this->entityManager->flush();
+            } else {
+                $message = 27; // failed transaction
+            }
+
+            if (!$avoidPersistance) {
+                $this->entityManager->commit();
+            } else {
+                $this->entityManager->rollback();
+            }
+        } catch (\Exception $e) {
+            $this->entityManager->rollback();
+            $message = 20; //exception
+            throw $e;
+        }
+
+        return $message;
+    }
+
+    /**
+     * @param Trips $trip
+     * @return bool
+     */
+
+    private function verifyFreeFaresPreauth(Trips $trip) {
+        //verify free15
+        $freeFares = $this->freeFaresRepository->findAllActive();
+        $carConditions = [];
+        foreach ($freeFares as $freeFare) {
+            $conditions = json_decode($freeFare->getConditions(), true);
+            if(isset($conditions['car'])) {
+                $carConditions = $conditions['car'];
+                if ($carConditions['type'] == 'nouse') {
+                    return FreeFares::verifyFilterCar($trip, $carConditions, $this->tripsRepository, $this->reservationsRepository);
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+    }
+
 }
