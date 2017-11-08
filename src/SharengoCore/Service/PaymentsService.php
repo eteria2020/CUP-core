@@ -436,8 +436,13 @@ class PaymentsService
             return $message = 23;
         }
 
+        $pin = json_decode($customer->getPin(), true);
+        if (!is_null($pin["company"]) && isset($pin["companyPinDisabled"]) && $pin["companyPinDisabled"] == false) {
+            return $message = 25; //maybe business user
+        }
+
         if ($this->verifyFreeFaresPreauth($trip)){
-            return $message = 24;
+            return $message = 24; //freefares
         }
 
         if (!$this->cartasiContractService->hasCartasiContract($customer)){
@@ -477,11 +482,6 @@ class PaymentsService
             $message = 20; //exception
             throw $e;
         }
-
-        /*$this->entityManager->beginTransaction();
-        $this->entityManager->persist($trip->setErrorCode($message));
-        $this->entityManager->flush();
-        $this->entityManager->commit();*/
 
         return $message;
     }
