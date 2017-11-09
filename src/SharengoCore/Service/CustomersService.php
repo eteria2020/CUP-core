@@ -399,7 +399,9 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->entityManager->persist($point);
         $this->entityManager->flush();
-
+        
+        $this->clearEntityManager();
+        
         return $point;
     }
     
@@ -411,10 +413,14 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->persist($customerPoint);
         $this->entityManager->flush();
         
-        //$entity = $this->entityManager->getUnitOfWork()->getIdentityMap();
-        $this->entityManager->clear();
+        $this->clearEntityManager();
         
         return $customerPoint;
+    }
+    
+    public function clearEntityManager() {
+        //$entity = $this->entityManager->getUnitOfWork()->getIdentityMap();
+        $this->entityManager->clear();
     }
 
     public function getAllBonus(Customers $customer)
@@ -565,6 +571,9 @@ class CustomersService implements ValidatorServiceInterface
     public function updateCustomerPointRow($customerPoint) {
         $this->entityManager->persist($customerPoint);
         $this->entityManager->flush();
+        
+        $this->clearEntityManager();
+        
     }
 
     public function setPointField(CustomersPoints $point, $customerId, $type){
