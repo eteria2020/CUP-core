@@ -18,7 +18,13 @@ class PaymentsServiceFactory implements FactoryInterface
         $eventManager = new EventManager();
         $eventManager->setIdentifiers(['PaymentsService']);
         $url = $serviceLocator->get('Configuration')['website']['uri'];
+        $preauthorizationsAmount = $serviceLocator->get('Configuration')['cartasi']['preauthorization_amount'];
         $deactivationService = $serviceLocator->get('SharengoCore\Service\CustomerDeactivationService');
+        $preauthorizationsService = $serviceLocator->get('SharengoCore\Service\PreauthorizationsService');
+        $freeFaresRepository = $entityManager->getRepository('\SharengoCore\Entity\FreeFares');
+        $tripsRepository = $entityManager->getRepository('\SharengoCore\Entity\Trips');
+        $reservationsRepository = $entityManager->getRepository('\SharengoCore\Entity\Reservations');
+
 
         return new PaymentsService(
             $cartasiCustomerPayments,
@@ -28,7 +34,12 @@ class PaymentsServiceFactory implements FactoryInterface
             $eventManager,
             $tripPaymentTriesService,
             $url,
-            $deactivationService
+            $deactivationService,
+            $preauthorizationsService,
+            $preauthorizationsAmount,
+            $freeFaresRepository,
+            $tripsRepository,
+            $reservationsRepository
         );
     }
 }
