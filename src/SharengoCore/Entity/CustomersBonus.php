@@ -104,7 +104,7 @@ class CustomersBonus
     /**
      * @var \Customers
      *
-     * @ORM\ManyToOne(targetEntity="Customers")
+     * @ORM\ManyToOne(targetEntity="Customers", inversedBy="customersbonuses")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="customer_id", referencedColumnName="id", nullable=false)
      * })

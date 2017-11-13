@@ -28,7 +28,7 @@ class TripFreeFares
     /**
      * @var Trips
      *
-     * @ORM\ManyToOne(targetEntity="Trips")
+     * @ORM\ManyToOne(targetEntity="Trips", inversedBy="tripFreeFares")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="trip_id", referencedColumnName="id")
      * })

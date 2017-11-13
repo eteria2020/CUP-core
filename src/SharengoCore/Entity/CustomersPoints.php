@@ -29,7 +29,7 @@ class CustomersPoints
     /**
      * @var \Customers
      *
-     * @ORM\ManyToOne(targetEntity="Customers")
+     * @ORM\ManyToOne(targetEntity="Customers", inversedBy="customerspoints")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="customer_id", referencedColumnName="id", nullable=false)
      * })

@@ -27,7 +27,7 @@ class TripPaymentTries
     /**
      * @var TripPayments
      *
-     * @ORM\ManyToOne(targetEntity="TripPayments")
+     * @ORM\ManyToOne(targetEntity="TripPayments", inversedBy="tripPaymentTries")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="trip_payment_id", referencedColumnName="id", nullable=false)
      * })
