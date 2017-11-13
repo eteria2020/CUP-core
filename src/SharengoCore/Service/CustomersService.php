@@ -400,8 +400,6 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->persist($point);
         $this->entityManager->flush();
         
-        $this->clearEntityManager();
-        
         return $point;
     }
     
@@ -413,14 +411,22 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->persist($customerPoint);
         $this->entityManager->flush();
         
-        $this->clearEntityManager();
+        $this->entityManager->clear();
         
         return $customerPoint;
     }
     
     public function clearEntityManager() {
         //$entity = $this->entityManager->getUnitOfWork()->getIdentityMap();
-        $this->entityManager->clear();
+        $this->entityManager->clear('SharengoCore\Entity\Trips');
+        $this->entityManager->clear('SharengoCore\Entity\Cars');
+        $this->entityManager->clear('SharengoCore\Entity\Customers');
+        $this->entityManager->clear('SharengoCore\Entity\TripPayments');
+        $this->entityManager->clear('SharengoCore\Entity\Invoices');
+        $this->entityManager->clear('SharengoCore\Entity\Cards');
+        $this->entityManager->clear('SharengoCore\Entity\CustomersPoints');
+        $this->entityManager->clear('SharengoCore\Entity\DiscountStatus');
+
     }
 
     public function getAllBonus(Customers $customer)
@@ -571,9 +577,6 @@ class CustomersService implements ValidatorServiceInterface
     public function updateCustomerPointRow($customerPoint) {
         $this->entityManager->persist($customerPoint);
         $this->entityManager->flush();
-        
-        $this->clearEntityManager();
-        
     }
 
     public function setPointField(CustomersPoints $point, $customerId, $type){
