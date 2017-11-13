@@ -33,6 +33,7 @@ class Module
         $platform->registerDoctrineTypeMapping('disabled_reason', 'string');
         $platform->registerDoctrineTypeMapping('reactivation_reason', 'string');
         $platform->registerDoctrineTypeMapping('csv_anomaly_type', 'string');
+        $platform->registerDoctrineTypeMapping('preauthorization_status', 'string');
 
         \Doctrine\DBAL\Types\Type::addType('uuid', 'Ramsey\Uuid\Doctrine\UuidType');
         $platform->registerDoctrineTypeMapping('uuid', 'uuid');
