@@ -104,7 +104,6 @@ class ProcessPaymentsService
                 $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;tripPayment->getId;".$tripPayment->getId() . "\n");
                 $this->logger->log($e->getMessage() . " " . $e->getFile() . " line " . $e->getLine() . "\n");
                 $this->logger->log($e->getTraceAsString(). "\n");
-                exit();
                 // if we are not able to process a payment we skip the followings
                 //break;
             }
