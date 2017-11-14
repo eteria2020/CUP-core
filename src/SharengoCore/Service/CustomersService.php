@@ -416,7 +416,7 @@ class CustomersService implements ValidatorServiceInterface
         return $customerPoint;
     }
     
-    public function clearEntityManager() {
+    public function clearEntityManager(){
         
         $this->entityManager->clear('SharengoCore\Entity\Trips');
         $this->entityManager->clear('SharengoCore\Entity\Cars');
