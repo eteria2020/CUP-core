@@ -85,7 +85,7 @@ class Reservations
     /**
      * @var \SharengoCore\Entity\Cars
      *
-     * @ORM\ManyToOne(targetEntity="SharengoCore\Entity\Cars")
+     * @ORM\ManyToOne(targetEntity="SharengoCore\Entity\Cars", inversedBy="reservations")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="car_plate", referencedColumnName="plate")
      * })

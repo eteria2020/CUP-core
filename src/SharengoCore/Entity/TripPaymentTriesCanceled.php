@@ -34,7 +34,7 @@ class TripPaymentTriesCanceled
     /**
      * @var TripPaymentsCanceled
      *
-     * @ORM\ManyToOne(targetEntity="TripPaymentsCanceled")
+     * @ORM\ManyToOne(targetEntity="TripPaymentsCanceled", inversedBy="tripPaymentTriesCanceled")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="trip_payment_canceled_id", referencedColumnName="id", nullable=false)
      * })

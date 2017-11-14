@@ -25,7 +25,7 @@ class OldCustomerDiscount
     /**
      * @var \Customers
      *
-     * @ORM\ManyToOne(targetEntity="Customers")
+     * @ORM\ManyToOne(targetEntity="Customers", inversedBy="oldDiscounts")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      * })

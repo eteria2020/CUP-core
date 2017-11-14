@@ -34,7 +34,7 @@ class CartasiCsvAnomalyNote
      *
      * @var CartasiCsvAnomaly
      *
-     * @ORM\ManyToOne(targetEntity="CartasiCsvAnomaly")
+     * @ORM\ManyToOne(targetEntity="CartasiCsvAnomaly", inversedBy="notes")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="cartasi_csv_anomaly_id", referencedColumnName="id")
      * })

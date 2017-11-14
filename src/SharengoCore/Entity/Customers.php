@@ -350,7 +350,7 @@ class Customers {
     /**
      * @var \Cards
      *
-     * @ORM\OneToOne(targetEntity="Cards")
+     * @ORM\OneToOne(targetEntity="Cards", inversedBy="customer")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="card_code", referencedColumnName="code")
      * })
