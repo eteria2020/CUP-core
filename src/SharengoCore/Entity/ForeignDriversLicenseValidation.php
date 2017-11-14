@@ -24,7 +24,7 @@ class ForeignDriversLicenseValidation
     /**
      * @var ForeignDriversLicenseUpload
      *
-     * @ORM\ManyToOne(targetEntity="ForeignDriversLicenseUpload")
+     * @ORM\ManyToOne(targetEntity="ForeignDriversLicenseUpload", inversedBy="validations")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="foreign_drivers_license_upload_id", referencedColumnName="id")
      * })

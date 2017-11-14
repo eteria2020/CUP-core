@@ -27,7 +27,7 @@ class SubscriptionPayment
     /**
      * @var \Customers
      *
-     * @ORM\ManyToOne(targetEntity="Customers")
+     * @ORM\ManyToOne(targetEntity="Customers", inversedBy="subscriptionPayments")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="customer_id", referencedColumnName="id", nullable=false)
      * })

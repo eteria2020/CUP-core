@@ -27,7 +27,7 @@ class DiscountStatus
     /**
      * @var Customers
      *
-     * @ORM\OneToOne(targetEntity="Customers")
+     * @ORM\OneToOne(targetEntity="Customers", inversedBy="discountStatus")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="customer_id", referencedColumnName="id", nullable=false)
      * })

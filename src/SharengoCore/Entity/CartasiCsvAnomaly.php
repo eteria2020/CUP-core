@@ -50,7 +50,7 @@ class CartasiCsvAnomaly
     /**
      * @var CartasiCsvFile
      *
-     * @ORM\ManyToOne(targetEntity="CartasiCsvFile")
+     * @ORM\ManyToOne(targetEntity="CartasiCsvFile", inversedBy="cartasiCsvAnomalies")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="cartasi_csv_file_id", referencedColumnName="id")
      * })
