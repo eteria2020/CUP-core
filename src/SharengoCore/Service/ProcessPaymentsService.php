@@ -102,7 +102,8 @@ class ProcessPaymentsService
                 );
             } catch (\Exception $e) {
                 $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;tripPayment->getId;".$tripPayment->getId() . "\n");
-                $this->logger->log($e->getMessage(). "\n");
+                $this->logger->log($e->getMessage() . " " . $e->getFile() . " line " . $e->getLine() . "\n");
+                $this->logger->log($e->getTraceAsString(). "\n");
                 // if we are not able to process a payment we skip the followings
                 //break;
             }
