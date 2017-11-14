@@ -157,7 +157,7 @@ class Trips
     /**
      * @var \Cars
      *
-     * @ORM\ManyToOne(targetEntity="Cars")
+     * @ORM\ManyToOne(targetEntity="Cars", inversedBy="trips")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="car_plate", referencedColumnName="plate")
      * })
@@ -167,7 +167,7 @@ class Trips
     /**
      * @var \Customers
      *
-     * @ORM\ManyToOne(targetEntity="Customers")
+     * @ORM\ManyToOne(targetEntity="Customers", inversedBy="trips")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      * })

@@ -131,7 +131,7 @@ class TripPaymentsCanceled
     /**
      * @var TripPaymentTriesCanceled[]
      *
-     * @ORM\OneToMany(targetEntity="TripPaymentTriesCanceled", mappedBy="tripPayment")
+     * @ORM\OneToMany(targetEntity="TripPaymentTriesCanceled", mappedBy="tripPaymentCanceled")
      */
     private $tripPaymentTriesCanceled;
 

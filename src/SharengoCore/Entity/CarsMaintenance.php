@@ -50,7 +50,7 @@ class CarsMaintenance
     /**
      * @var \Cars
      *
-     * @ORM\ManyToOne(targetEntity="Cars")
+     * @ORM\ManyToOne(targetEntity="Cars", inversedBy="maintenances")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="car_plate", referencedColumnName="plate")
      * })

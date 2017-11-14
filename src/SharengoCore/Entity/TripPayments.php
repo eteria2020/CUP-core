@@ -32,7 +32,7 @@ class TripPayments
     /**
      * @var Trips
      *
-     * @ORM\OneToOne(targetEntity="Trips")
+     * @ORM\OneToOne(targetEntity="Trips", inversedBy="tripPayment")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="trip_id", referencedColumnName="id", nullable=false)
      * })
