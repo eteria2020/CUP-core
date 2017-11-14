@@ -1603,10 +1603,6 @@ class Customers {
         $firstDateNextMonth = new \DateTime('first day of next month 00:00:00');
 
         foreach ($this->getPoints() as $points) {
-            $a = $points->getValidFrom();
-            $b = $points->getValidTo();
-            $c = new \DateTime();
-            $d = $points->getInsertTs();
             if ($points->getActive() &&
                 (null == $points->getValidFrom() || $points->getValidFrom() <= new \DateTime()) &&
                 (null == $points->getValidTo() || $points->getValidTo() >= new \DateTime())) {
