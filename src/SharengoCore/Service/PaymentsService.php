@@ -198,7 +198,7 @@ class PaymentsService
 
         if (!$this->avoidPersistance) {
             $this->entityManager->flush();
-            $this->entityManager->clear();      //TODO: for test
+            //$this->entityManager->clear();      //TODO: for test
         }
     }
 
@@ -281,7 +281,7 @@ class PaymentsService
 
             $this->entityManager->persist($tripPaymentTry);
             $this->entityManager->flush();
-            $this->entityManager->clear();      //TODO: for test
+            //$this->entityManager->clear();      //TODO: for test
 
             if (!$this->avoidPersistance) {
                 $this->entityManager->commit();
