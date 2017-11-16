@@ -513,4 +513,7 @@ class PaymentsService
         }
     }
 
+    public function refund($transaction, $customer, $amount) {
+        return $this->cartasiCustomerPayments->sendRefundRequest($transaction, $customer, $amount);
+    }
 }
