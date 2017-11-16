@@ -510,8 +510,7 @@ class PaymentsService
         }
     }
 
-    public function ecreq($transaction, $customer, $amount) {
-        $response = $this->cartasiCustomerPayments->sendRefundRequest($transaction, $customer, $amount);
-
+    public function refund($transaction, $customer, $amount) {
+        return $this->cartasiCustomerPayments->sendRefundRequest($transaction, $customer, $amount);
     }
 }
