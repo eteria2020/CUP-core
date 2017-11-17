@@ -184,6 +184,7 @@ class PaymentsService
             $this->disableCustomer($customer);
         }
 
+        $this->clearEntityManager();
     }
 
     /**
@@ -198,7 +199,6 @@ class PaymentsService
 
         if (!$this->avoidPersistance) {
             $this->entityManager->flush();
-            //$this->entityManager->clear();      //TODO: for test
         }
     }
 
@@ -281,7 +281,6 @@ class PaymentsService
 
             $this->entityManager->persist($tripPaymentTry);
             $this->entityManager->flush();
-            //$this->entityManager->clear();      //TODO: for test
 
             if (!$this->avoidPersistance) {
                 $this->entityManager->commit();
@@ -515,5 +514,25 @@ class PaymentsService
 
     public function refund($transaction, $customer, $amount) {
         return $this->cartasiCustomerPayments->sendRefundRequest($transaction, $customer, $amount);
+    }
+
+    /**
+     * Clear EntityManager every 20 call, and return tru if it's happen.
+     * @staticvar int $countClear
+     * @return boolean
+     */
+    private function clearEntityManager() {
+        $result = false;
+        static $countClear = 20;
+
+        if($countClear<=0) {
+            $this->entityManager->clear();
+            $countClear = 20;
+            $result = true;
+        } else {
+            --$countClear;
+        }
+        var_dump($countClear);
+        return $result;
     }
 }
