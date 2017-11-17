@@ -105,7 +105,7 @@ class ProcessPaymentsService
                 $this->logger->log($e->getMessage() . " " . $e->getFile() . " line " . $e->getLine() . "\n");
                 $this->logger->log($e->getTraceAsString(). "\n");
                 // if we are not able to process a payment we skip the followings
-                //break;
+                break;
             }
         }
 
