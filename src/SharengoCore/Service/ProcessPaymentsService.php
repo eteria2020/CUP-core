@@ -100,7 +100,7 @@ class ProcessPaymentsService
                     $avoidCartasi,
                     $avoidPersistance
                 );
-            } catch(\Doctrine\DBAL\Exception $de){
+            } catch(\Doctrine\ORM\ORMException $de){
                 $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;doctrine exception;tripPayment->getId;".$tripPayment->getId() . "\n");
                 $this->logger->log($de->getMessage() . " " . $de->getFile() . " line " . $de->getLine() . "\n");
                 $this->logger->log($de->getTraceAsString(). "\n");
