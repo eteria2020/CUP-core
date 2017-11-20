@@ -229,6 +229,20 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getResult();
         
     }
+    
+    public function getTotalPoints($customer_id) {
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT SUM(cp.total) '
+                . 'FROM \SharengoCore\Entity\CustomersPoints cp '
+                . 'WHERE cp.customer = :customer'
+                ;
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('customer', $customer_id);
+
+        return $query->getResult();
+    }
 
 
 }

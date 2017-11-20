@@ -58,16 +58,7 @@ class CustomersPointsService
      * @param string $url
      */
     public function __construct(
-        EntityManager $entityManager,
-        UserService $userService,
-        DatatableServiceInterface $datatableService,
-        CardsService $cardsService,
-        EmailService $emailService,
-        Translator $translator,
-        Logger $logger,
-        CartasiContractsService $cartasiContractsService,
-        TripPaymentsService $tripPaymentsService,
-        $url
+        EntityManager $entityManager
     ) {
         $this->entityManager = $entityManager;
         $this->customersRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Customers');
@@ -77,7 +68,41 @@ class CustomersPointsService
 
     
     public function buyPacketPoints($customer) {
-        //return $this->customersPointsRepository->buyPacketPoints($customer);
+        return $this->customersPointsRepository->buyPacketPoints($customer);
+    }
+    
+    public function getTotalPoints($customer_id) {
+        return $this->customersPointsRepository->getTotalPoints($customer_id);
+    }
+    
+    public function addCustomerPoint(CustomersPoints $customerPoint){
+        
+        $this->entityManager->persist($customerPoint);
+        $this->entityManager->flush();
+        
+        return $customerPoint;
+    } 
+    
+    public function setCustomerPointPackage(CustomersPoints $customerPoint, Customers $customer){
+        
+        $date = new \DateTime();
+        $date2 = new \DateTime();
+        $date2 = $date2->modify("+10 years");
+        
+        $customerPoint->setCustomer($customer);
+        $customerPoint->setWebuser(null);
+        $customerPoint->setActive(TRUE);
+        $customerPoint->setInsertTs($date);
+        $customerPoint->setUpdateTs($date);
+        $customerPoint->setTotal(-1500);
+        $customerPoint->setResidual(0);
+        $customerPoint->setType("PacchettoPunti");
+        $customerPoint->setValidFrom($date);
+        $customerPoint->setDurationDays(null);
+        $customerPoint->setValidTo($date2);
+        $customerPoint->setDescription("Desc pacchetto punti");
+        
+        return $customerPoint;
     }
 
 }
