@@ -100,12 +100,17 @@ class ProcessPaymentsService
                     $avoidCartasi,
                     $avoidPersistance
                 );
+            } catch(\Doctrine\DBAL\Exception $de){
+                $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;doctrine exception;tripPayment->getId;".$tripPayment->getId() . "\n");
+                $this->logger->log($de->getMessage() . " " . $de->getFile() . " line " . $de->getLine() . "\n");
+                $this->logger->log($de->getTraceAsString(). "\n");
+                break;
             } catch (\Exception $e) {
-                $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;tripPayment->getId;".$tripPayment->getId() . "\n");
+                $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;general exception;tripPayment->getId;".$tripPayment->getId() . "\n");
                 $this->logger->log($e->getMessage() . " " . $e->getFile() . " line " . $e->getLine() . "\n");
                 $this->logger->log($e->getTraceAsString(). "\n");
                 // if we are not able to process a payment we skip the followings
-                break;
+                //break;
             }
         }
 
