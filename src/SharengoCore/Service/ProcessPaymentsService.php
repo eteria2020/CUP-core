@@ -93,7 +93,8 @@ class ProcessPaymentsService
 
         foreach ($tripPayments as $tripPayment) {
             try {
-                $this->logger->log( date_create()->format('H:i:s').";INF;processPayments;tripPayment->getId;".$tripPayment->getId() . ";trip->getTripId;".$tripPayment->getTripId().";customer->getId;".$tripPayment->getCustomer()->getId()."\n");
+                $this->logger->log( date_create()->format('H:i:s').";INF;processPayments;tripPayment;".$tripPayment->getId() . ";trip;".$tripPayment->getTripId().";customer;".$tripPayment->getCustomer()->getId()."\n");
+                \Doctrine\Common\Util\Debug::dump($tripPayment);
                 $this->paymentsService->tryPayment(
                     $tripPayment,
                     $avoidEmails,

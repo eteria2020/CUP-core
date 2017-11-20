@@ -532,7 +532,7 @@ class PaymentsService
         } else {
             --$countClear;
         }
-        var_dump($countClear);
+
         return $result;
     }
 }
