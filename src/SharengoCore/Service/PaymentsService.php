@@ -517,17 +517,17 @@ class PaymentsService
     }
 
     /**
-     * Clear EntityManager every 20 call, and return tru if it's happen.
+     * Clear EntityManager every 50 call, and return tru if it's happen.
      * @staticvar int $countClear
      * @return boolean
      */
     private function clearEntityManager() {
         $result = false;
-        static $countClear = 20;
+        static $countClear = 50;
 
         if($countClear<=0) {
             $this->entityManager->clear();
-            $countClear = 20;
+            $countClear = 50;
             $result = true;
         } else {
             --$countClear;

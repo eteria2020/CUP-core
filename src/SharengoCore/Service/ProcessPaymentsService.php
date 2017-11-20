@@ -104,7 +104,7 @@ class ProcessPaymentsService
                 $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;doctrine exception;tripPayment->getId;".$tripPayment->getId() . "\n");
                 $this->logger->log($de->getMessage() . " " . $de->getFile() . " line " . $de->getLine() . "\n");
                 $this->logger->log($de->getTraceAsString(). "\n");
-                \Doctrine\Common\Util\Debug::dump($tripPayment);
+                // \Doctrine\Common\Util\Debug::dump($tripPayment);
                 break;
             } catch (\Exception $e) {
                 $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;general exception;tripPayment->getId;".$tripPayment->getId() . "\n");
