@@ -110,7 +110,7 @@ class ProcessPaymentsService
                 $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;general exception;tripPayment->getId;".$tripPayment->getId() . "\n");
                 $this->logger->log($e->getMessage() . " " . $e->getFile() . " line " . $e->getLine() . "\n");
                 $this->logger->log($e->getTraceAsString(). "\n");
-                \Doctrine\Common\Util\Debug::dump($tripPayment);
+                // \Doctrine\Common\Util\Debug::dump($tripPayment);
                 if(strpos($e->getMessage(), "An exception occurred while executing 'INSERT INTO ")!==false ){
                     break;
                 }
