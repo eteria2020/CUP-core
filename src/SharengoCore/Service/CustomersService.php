@@ -403,19 +403,6 @@ class CustomersService implements ValidatorServiceInterface
         return $point;
     }
     
-    public function addCustomerPoint(CustomersPoints $customerPoint, $customerId)
-    {
-        $customer = $this->findById($customerId);
-        $customerPoint->setCustomer($customer);
-        
-        $this->entityManager->persist($customerPoint);
-        $this->entityManager->flush();
-        
-        $this->entityManager->clear();
-        
-        return $customerPoint;
-    }
-    
     public function clearEntityManager(){
         
         $this->entityManager->clear('SharengoCore\Entity\Trips');
@@ -464,14 +451,6 @@ class CustomersService implements ValidatorServiceInterface
     
     public function getAllCustomerInCustomersPoints($dateStart, $dateEnd){
         return $this->customersPointsRepository->getAllCustomerInCustomersPoints($dateStart, $dateEnd);
-    }
-    
-    public function getAllCustomerRunInMonth($dateStart, $dateEnd){
-        return $this->customersPointsRepository->getAllCustomerRunInMonth($dateStart, $dateEnd);
-    }
-    
-    public function deleteCustomersPoints($date) {
-        return $this->customersPointsRepository->deleteCustomersPoints($date);
     }
 
     public function findBonus($bonus)

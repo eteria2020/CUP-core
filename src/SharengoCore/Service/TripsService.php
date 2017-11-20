@@ -142,10 +142,6 @@ class TripsService {
         return $this->tripRepository->findTripsByCustomerCO2($customerId);
     }
 
-    public function getTripInMonth($customerId, $dateStart, $dateEnd) {
-        return $this->tripRepository->getTripInMonth($customerId, $dateStart, $dateEnd);
-    }
-
     public function getTripsByCustomerForAddPointYesterday($customerId, $dateYesterdayStart, $dateTodayStart) {
         return $this->tripRepository->getTripsByCustomerForAddPointYesterday($customerId, $dateYesterdayStart, $dateTodayStart);
     }
