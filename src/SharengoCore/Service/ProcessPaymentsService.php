@@ -93,7 +93,7 @@ class ProcessPaymentsService
 
         foreach ($tripPayments as $tripPayment) {
             try {
-                $this->logger->log( date_create()->format('H:i:s').";INF;processPayments;tripPayment->getId;".$tripPayment->getId() . "\n");
+                $this->logger->log( date_create()->format('H:i:s').";INF;processPayments;tripPayment->getId;".$tripPayment->getId() . ";trip->getTripId;".$tripPayment->getTripId().";customer->getId;".$tripPayment->getCustomer()->getId()."\n");
                 $this->paymentsService->tryPayment(
                     $tripPayment,
                     $avoidEmails,
@@ -109,6 +109,9 @@ class ProcessPaymentsService
                 $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;general exception;tripPayment->getId;".$tripPayment->getId() . "\n");
                 $this->logger->log($e->getMessage() . " " . $e->getFile() . " line " . $e->getLine() . "\n");
                 $this->logger->log($e->getTraceAsString(). "\n");
+                if(strpos($e->getMessage(), "An exception occurred while executing 'INSERT INTO ")!==false ){
+                    break;
+                }
                 // if we are not able to process a payment we skip the followings
                 //break;
             }
