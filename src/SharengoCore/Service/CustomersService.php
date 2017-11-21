@@ -412,7 +412,7 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->clear('SharengoCore\Entity\Invoices');
         $this->entityManager->clear('SharengoCore\Entity\Cards');
         $this->entityManager->clear('SharengoCore\Entity\CustomersPoints');
-        $this->entityManager->clear('SharengoCore\Entity\DiscountStatus');
+        $this->entityManager->clear('SharengoCore\Entity\DiscountStatus'); 
 
     }
 
