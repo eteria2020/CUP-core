@@ -184,51 +184,5 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getResult();
         
     }
-    
-    public function getAllCustomerRunInMonth($dateStart, $dateEnd){
-       
-        $em = $this->getEntityManager();
-
-        $dql = 'SELECT DISTINCT c.id '
-            . 'FROM \SharengoCore\Entity\Trips t '
-            . 'JOIN \SharengoCore\Entity\Customers c WITH t.customer = c.id '
-            . 'WHERE '
-            . 't.endTx >= :dateStart '
-            . 'AND t.endTx < :dateEnd '
-            . 'AND t.payable = :payable '
-            . 'AND t.pinType IS NULL '
-            . 'AND t.timestampBeginning > :date1 '
-            . 'ORDER BY c.id';
-        
-        $payable = "TRUE";
-
-        $query = $em->createQuery($dql);
-        $query->setParameter('dateStart', $dateStart);
-        $query->setParameter('dateEnd', $dateEnd);
-        $query->setParameter('payable', $payable);
-        $query->setParameter('date1', '2017-09-18');
-
-
-        return $query->getResult();
-        
-    }
-    
-    public function deleteCustomersPoints($date) {
-        
-        
-        $em = $this->getEntityManager();
-
-        $dql = 'DELETE '
-                . 'FROM \SharengoCore\Entity\CustomersPoints cp '
-                . 'WHERE cp.insertTs > :date'
-                ;
-
-        $query = $em->createQuery($dql);
-        $query->setParameter('date', $date);
-
-        return $query->getResult();
-        
-    }
-
 
 }
