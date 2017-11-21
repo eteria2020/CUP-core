@@ -184,7 +184,7 @@ class PaymentsService
             $this->disableCustomer($customer);
         }
 
-        //$this->clearEntityManager();
+        $this->clearEntityManager();
     }
 
     /**
@@ -360,7 +360,7 @@ class PaymentsService
             if ($response->getCompletedCorrectly()) {
                 $this->deactivationService->reactivateCustomerForFailedPayment(
                     $customer,
-                    null, 
+                    null,
                     new \DateTime(),
                     true);
             }
@@ -523,15 +523,23 @@ class PaymentsService
      */
     private function clearEntityManager() {
         $result = false;
-        static $countClear = 50;
 
-        if($countClear<=0) {
-            $this->entityManager->clear();
-            $countClear = 50;
-            $result = true;
-        } else {
-            --$countClear;
-        }
+        $this->entityManager->clear("SharengoCore\Entity\Trips");
+        $this->entityManager->clear("SharengoCore\Entity\TripPayments");
+        $this->entityManager->clear("SharengoCore\Entity\TripPaymentTries");
+
+//        $this->entityManager->clear("SharengoCore\Entity\Cars");
+//        $this->entityManager->clear("SharengoCore\Entity\Customers");
+
+//        static $countClear = 50;
+//
+//        if($countClear<=0) {
+//            $this->entityManager->clear();
+//            $countClear = 50;
+//            $result = true;
+//        } else {
+//            --$countClear;
+//        }
 
         return $result;
     }
