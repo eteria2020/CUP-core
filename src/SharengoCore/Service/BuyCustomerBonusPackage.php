@@ -75,8 +75,9 @@ class BuyCustomerBonusPackage
                 }
             } else { //$package->getType() === "PacchettoPunti"
                 
-                
-                if($this->customersPointsService->getTotalPoints($customer->getId()) >= $package->getCost()){
+                $sumPoints = $this->customersPointsService->getTotalPoints($customer->getId());
+                $totalPoints = $sumPoints[0][1];
+                if($totalPoints >= $package->getCost()){
                 
                     $customersPoints = new CustomersPoints();
                     $customersPoints = $this->customersPointsService->setCustomerPointPackage($customersPoints, $customer, $package);
@@ -86,6 +87,8 @@ class BuyCustomerBonusPackage
                     $this->entityManager->persist($customersPoints);
                     $this->entityManager->flush();
                     
+                }else{
+                    return false;
                 }
             }
 
