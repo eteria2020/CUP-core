@@ -47,8 +47,7 @@ class PaymentScriptRunsService
 
         $lastRun = $lastRun[0];
 
-        return $lastRun['end_ts'] === null &&
-            (date_create_from_format('Y-m-d H:i:s', $lastRun['start_ts']) >= date_create('-4 hours'));
+        return $lastRun['end_ts'] === null; //&& (date_create_from_format('Y-m-d H:i:s', $lastRun['start_ts']) >= date_create('-4 hours'));
     }
 
     /** Method returns the status of the script pay invoice
