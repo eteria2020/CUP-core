@@ -76,10 +76,10 @@ class BuyCustomerBonusPackage
             } else { //$package->getType() === "PacchettoPunti"
                 
                 
-                if($this->customersPointsService->getTotalPoints($customer->getId()) >= 1500){
+                if($this->customersPointsService->getTotalPoints($customer->getId()) >= $package->getCost()){
                 
                     $customersPoints = new CustomersPoints();
-                    $customersPoints = $this->customersPointsService->setCustomerPointPackage($customersPoints, $customer);
+                    $customersPoints = $this->customersPointsService->setCustomerPointPackage($customersPoints, $customer, $package);
                     $bonus = $package->generateCustomerBonus($customer);
 
                     $this->entityManager->persist($bonus);

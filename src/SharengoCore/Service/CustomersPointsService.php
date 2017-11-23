@@ -16,6 +16,7 @@ use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 use SharengoCore\Service\TripPaymentsService;
 use SharengoCore\Service\TripService;
+use SharengoCore\Entity\CustomersBonusPackages;
 
 use Doctrine\ORM\EntityManager;
 use Zend\Authentication\AuthenticationService as UserService;
@@ -83,7 +84,7 @@ class CustomersPointsService
         return $customerPoint;
     } 
     
-    public function setCustomerPointPackage(CustomersPoints $customerPoint, Customers $customer){
+    public function setCustomerPointPackage(CustomersPoints $customerPoint, Customers $customer, CustomersBonusPackages $package){
         
         $date = new \DateTime();
         $date2 = new \DateTime();
@@ -94,13 +95,14 @@ class CustomersPointsService
         $customerPoint->setActive(TRUE);
         $customerPoint->setInsertTs($date);
         $customerPoint->setUpdateTs($date);
-        $customerPoint->setTotal(-1500);
+        $customerPoint->setTotal(-($package->getCost()));
         $customerPoint->setResidual(0);
         $customerPoint->setType("PacchettoPunti");
         $customerPoint->setValidFrom($date);
         $customerPoint->setDurationDays(null);
         $customerPoint->setValidTo($date2);
-        $customerPoint->setDescription("Desc pacchetto punti");
+        //$customerPoint->setDescription("Desc pacchetto punti");
+        $customerPoint->setDescription($package->getDescription());
         
         return $customerPoint;
     }
