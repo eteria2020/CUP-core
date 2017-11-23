@@ -97,12 +97,11 @@ class CustomersPointsService
         $customerPoint->setUpdateTs($date);
         $customerPoint->setTotal(-($package->getCost()));
         $customerPoint->setResidual(0);
-        //$customerPoint->setType("PacchettoPunti");
+        //this type is for buy packet with point
         $customerPoint->setType("REDEMPTION");
         $customerPoint->setValidFrom($date);
         $customerPoint->setDurationDays(null);
         $customerPoint->setValidTo($date2);
-        //$customerPoint->setDescription("Desc pacchetto punti");
         $customerPoint->setDescription($package->getDescription());
         
         return $customerPoint;
