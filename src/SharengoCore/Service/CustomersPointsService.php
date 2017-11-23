@@ -97,7 +97,8 @@ class CustomersPointsService
         $customerPoint->setUpdateTs($date);
         $customerPoint->setTotal(-($package->getCost()));
         $customerPoint->setResidual(0);
-        $customerPoint->setType("PacchettoPunti");
+        //$customerPoint->setType("PacchettoPunti");
+        $customerPoint->setType("REDEMPTION");
         $customerPoint->setValidFrom($date);
         $customerPoint->setDurationDays(null);
         $customerPoint->setValidTo($date2);

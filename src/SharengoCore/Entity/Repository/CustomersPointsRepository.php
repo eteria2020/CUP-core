@@ -196,7 +196,10 @@ class CustomersPointsRepository extends \Doctrine\ORM\EntityRepository {
         $query = $em->createQuery($dql);
         $query->setParameter('customer', $customer_id);
 
-        return $query->getResult();
+        $result = $query->getResult();
+        $value = $result[0][1];
+        
+        return $value;
     }
 
 }

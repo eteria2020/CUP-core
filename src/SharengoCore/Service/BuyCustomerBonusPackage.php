@@ -74,11 +74,9 @@ class BuyCustomerBonusPackage
                     return false;
                 }
             } else { //$package->getType() === "PacchettoPunti"
-                
-                $sumPoints = $this->customersPointsService->getTotalPoints($customer->getId());
-                $totalPoints = $sumPoints[0][1];
-                if($totalPoints >= $package->getCost()){
-                
+
+                if($this->customersPointsService->getTotalPoints($customer->getId()) >= $package->getCost()){
+                    
                     $customersPoints = new CustomersPoints();
                     $customersPoints = $this->customersPointsService->setCustomerPointPackage($customersPoints, $customer, $package);
                     $bonus = $package->generateCustomerBonus($customer);
