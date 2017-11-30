@@ -43,11 +43,7 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getSingleScalarResult();
     }
 
-    /**
-     * @param Customers $customer optional parameter to filter the results by
-     *  customer
-     */
-    public function findTripPaymentsForPayment(Customers $customer = null, $timestampEndParam = null)
+    public function findTripPaymentsForPayment(Customers $customer = null, $timestampEndParam = null, $idCondition = null, $limit = null)
     {
         $em = $this->getEntityManager();
 
@@ -64,7 +60,11 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
             $dql .= 'AND t.timestampEnd >= :timestampEndParam ';
         }
 
-        $dql .= ' ORDER BY t.timestampBeginning ASC';
+        if ($idCondition !== null){
+            $dql .= 'AND tp.id > :condition ';
+        }
+        $dql .= ' ORDER BY tp.id ASC';
+        //$dql .= ' ORDER BY t.timestampBeginning ASC';
 
         $query = $em->createQuery($dql);
 
@@ -76,9 +76,46 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         }
 
         if ($timestampEndParam !== null){
-            $query->setParameter('timestampEndParam', date_create($timestampEndParam));
+            $query->setParameter('timestampEndParam', date_create($timestampEndParam)->setTime(00,00,00));
+        }
+
+        if ($idCondition !== null){
+            $query->setParameter('condition', $idCondition);
+        }
+
+        if ($limit !== null){
+            $query->setMaxResults($limit);
         }
  
+        return $query->getResult();
+    }
+
+    public function getCountTripPaymentsForPayment($timestampEndParam = null, $idCondition = null, $limit = null)
+    {
+        $em = $this->getEntityManager();
+        $main = "SELECT tp.id as id FROM trip_payments as tp LEFT JOIN trips as t ON tp.trip_id = t.id ".
+               "WHERE tp.status = 'to_be_payed' AND t.timestamp_end < (date 'now()' + time '00:00:00') ";
+
+        if ($timestampEndParam !== null){
+            $main .= "AND t.timestamp_end >= (CURRENT_DATE -INTERVAL '".$timestampEndParam."')::date + time '00:00:00'";
+        }
+
+        if ($idCondition !== null){
+            $main .= 'AND tp.id > '.$idCondition;
+        }
+
+        $main .= ' ORDER BY tp.id ASC';
+
+        if ($limit !== null){
+            $main .= ' LIMIT '.$limit;
+        }
+        $sql = "SELECT (SELECT count(id) FROM (".$main.") as tp) as count, (SELECT id FROM (".$main.") as tp ORDER BY id DESC LIMIT 1) as last";
+
+        $rsm = new ResultSetMapping;
+        $rsm->addScalarResult('count', 'count');
+        $rsm->addScalarResult('last', 'last');
+        $query = $em->createNativeQuery($sql, $rsm);
+
         return $query->getResult();
     }
 

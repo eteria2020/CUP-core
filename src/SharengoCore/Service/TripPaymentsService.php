@@ -170,9 +170,9 @@ class TripPaymentsService
      *  customer
      * @return PersistentCollection
      */
-    public function getTripPaymentsForPayment(Customers $customer = null, $timestampEndParam = null)
+    public function getTripPaymentsForPayment(Customers $customer = null, $timestampEndParam = null, $condiction = null, $limit = null)
     {
-        return $this->tripPaymentsRepository->findTripPaymentsForPayment($customer, $timestampEndParam);
+        return $this->tripPaymentsRepository->findTripPaymentsForPayment($customer, $timestampEndParam, $condiction, $limit);
     }
 
     public function getTripPaymentsWrong(Customers $customer = null, $timestampEndParam = null)
@@ -188,6 +188,18 @@ class TripPaymentsService
     public function getTripPaymentsForUserPayment(Customers $customer)
     {
         return $this->tripPaymentsRepository->findTripPaymentsForUserPayment($customer);
+    }
+
+    /**
+     * @param null $timestampEndParam
+     * @param null $condition
+     * @param null $limit
+     * @return array
+     */
+
+    public function getTripPaymentsForPaymentDetails($timestampEndParam = null, $condition = null, $limit = null)
+    {
+        return $this->tripPaymentsRepository->getCountTripPaymentsForPayment($timestampEndParam, $condition, $limit);
     }
 
     /**
