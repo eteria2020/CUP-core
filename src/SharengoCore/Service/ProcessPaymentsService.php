@@ -88,8 +88,8 @@ class ProcessPaymentsService
         $avoidCartasi = true,
         $avoidPersistance = true
     ) {
-        $this->eventManager->getSharedManager()->attachAggregate($this->paymentEmailListener);
-        $this->eventManager->getSharedManager()->attachAggregate($this->notifyCustomerPayListener);
+        //$this->eventManager->getSharedManager()->attachAggregate($this->paymentEmailListener);
+        //$this->eventManager->getSharedManager()->attachAggregate($this->notifyCustomerPayListener);
 
         foreach ($tripPayments as $tripPayment) {
             try {
@@ -119,9 +119,20 @@ class ProcessPaymentsService
             }
         }
 
+        /*$this->eventManager->trigger('processPaymentsCompleted', $this, [
+            'avoidEmails' => $avoidEmails
+        ]);*/
+    }
+
+    public function processPaymentsCompleted($avoidEmails = true){
+
+        $this->eventManager->getSharedManager()->attachAggregate($this->paymentEmailListener);
+        $this->eventManager->getSharedManager()->attachAggregate($this->notifyCustomerPayListener);
+
         $this->eventManager->trigger('processPaymentsCompleted', $this, [
             'avoidEmails' => $avoidEmails
         ]);
+
     }
 
     /*
