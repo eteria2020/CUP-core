@@ -221,6 +221,7 @@ return [
             'SharengoCore\Service\DisableContractService' => 'SharengoCore\Service\DisableContractServiceFactory',
             'SharengoCore\Service\EventsService' => 'SharengoCore\Service\EventsServiceFactory',
             'SharengoCore\Service\EventsTypesService' => 'SharengoCore\Service\EventsTypesServiceFactory',
+            'SharengoCore\Service\LogsService' => 'SharengoCore\Service\LogsServiceFactory',
             'SharengoCore\Service\FleetService' => 'SharengoCore\Service\FleetServiceFactory',
             'SharengoCore\Service\ExtraPaymentsSearchService' => 'SharengoCore\Service\ExtraPaymentsSearchServiceFactory',
             'SharengoCore\Service\BonusPackagesService' => 'SharengoCore\Service\CustomersBonusPackagesServiceFactory',
