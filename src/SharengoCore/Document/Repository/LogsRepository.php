@@ -10,8 +10,9 @@ class LogsRepository extends DocumentRepository
     public function getByTrip($trip)
     {
         $a = "";
-        $logs = $this->findBy([ "idTrip" => $trip->getId()]);
+        $logs = $this->findBy([ "idTrip" => (string)$trip->getId()]);
         //2095638
+        //771081214
         //$logs = $this->findBy([ "id_trip" => 2095638 ]);
         //$logs = $this->findBy([ "lon" => 9.20278]);
         $a = "";
