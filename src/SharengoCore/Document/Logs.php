@@ -36,9 +36,9 @@ class Logs
     private $androidDevice;
     
     /**
-     * @var DateTime
+     * @var integer
      *
-     * @ODM\Field(type="date", name="AppCode");
+     * @ODM\Field(type="integer", name="AppCode");
      */
     private $appCode;
     
@@ -85,9 +85,9 @@ class Logs
     private $chHeatFault;
     
     /**
-     * @var DateTime
+     * @var integer
      *
-     * @ODM\Field(type="date", name="ChStatus");
+     * @ODM\Field(type="integer", name="ChStatus");
      */
     private $chStatus;
     
@@ -134,9 +134,9 @@ class Logs
     private $hwVersion;
     
     /**
-     * @var DateTime
+     * @var string
      *
-     * @ODM\Field(type="date", name="IMEI");
+     * @ODM\Field(type="string", name="IMEI");
      */
     private $imei;
     
@@ -197,9 +197,9 @@ class Logs
     private $motFalut;
     
     /**
-     * @var DateTime
+     * @var integer
      *
-     * @ODM\Field(type="date", name="MotT");
+     * @ODM\Field(type="integer", name="MotT");
      */
     private $motT;
     
@@ -211,9 +211,9 @@ class Logs
     private $motTempHigh;
     
     /**
-     * @var string
+     * @var integer
      *
-     * @ODM\Field(type="string", name="MotV");
+     * @ODM\Field(type="integer", name="MotV");
      */
     private $motV;
     
@@ -225,9 +225,9 @@ class Logs
     private $ppStatus;
     
     /**
-     * @var DateTime
+     * @var integer
      *
-     * @ODM\Field(type="date", name="PackA");
+     * @ODM\Field(type="integer", name="PackA");
      */
     private $packA;
     
@@ -239,9 +239,9 @@ class Logs
     private $packStatus;
     
     /**
-     * @var DateTime
+     * @var integer
      *
-     * @ODM\Field(type="date", name="PackV");
+     * @ODM\Field(type="integer", name="PackV");
      */
     private $packV;
     
@@ -281,9 +281,9 @@ class Logs
     private $SDKVer;
     
     /**
-     * @var DateTime
+     * @var string
      *
-     * @ODM\Field(type="date", name="SIM_SN");
+     * @ODM\Field(type="string", name="SIM_SN");
      */
     private $sim_sn;
     
@@ -295,9 +295,9 @@ class Logs
     private $soc;
     
     /**
-     * @var DateTime
+     * @var integer
      *
-     * @ODM\Field(type="date", name="Service");
+     * @ODM\Field(type="integer", name="Service");
      */
     private $service;
     
@@ -540,9 +540,9 @@ class Logs
     private $hwVer;
     
     /**
-     * @var integer
+     * @var string
      *
-     * @ODM\Field(type="integer", name="id_trip");
+     * @ODM\Field(type="string", name="id_trip");
      */
     private $idTrip;
     
@@ -587,9 +587,9 @@ class Logs
     private $logTime;
     
     /**
-     * @var DateTime
+     * @var string
      *
-     * @ODM\Field(type="date", name="log_tx_time");
+     * @ODM\Field(type="string", name="log_tx_time");
      */
     private $logTxTime;
     
@@ -599,9 +599,9 @@ class Logs
     private $lon;
     
     /**
-     * @var DateTime
+     * @var integer
      *
-     * @ODM\Field(type="date", name="offLineTrips");
+     * @ODM\Field(type="integer", name="offLineTrips");
      */
     private $offLineTrips;
     
@@ -613,9 +613,9 @@ class Logs
     private $onTrip;
     
     /**
-     * @var DateTime
+     * @var integer
      *
-     * @ODM\Field(type="date", name="openTrips");
+     * @ODM\Field(type="integer", name="openTrips");
      */
     private $openTrips;
     
@@ -816,7 +816,7 @@ class Logs
     }
 
     /**
-     * @return \DateTime
+     * @return integer
      */
     function getAppCode() {
         return $this->appCode;
@@ -830,42 +830,42 @@ class Logs
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getBsmFault() {
         return $this->bsmFault;
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getBrakesOn() {
         return $this->brakesOn;
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getChCommStatus() {
         return $this->chCommStatus;
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getChFault() {
         return $this->chFault;
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getChHeatFault() {
         return $this->chHeatFault;
     }
 
     /**
-     * @return \DateTime
+     * @return integer
      */
     function getChStatus() {
         return $this->chStatus;
@@ -914,21 +914,21 @@ class Logs
     }
 
     /**
-     * @return \DateTime
+     * @return string
      */
     function getImei() {
         return $this->imei;
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getKmStatus() {
         return $this->kmStatus;
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getKsStatus() {
         return $this->ksStatus;
@@ -949,7 +949,7 @@ class Logs
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getLcdOn() {
         return $this->lcdOn;
@@ -970,42 +970,42 @@ class Logs
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getMotFalut() {
         return $this->motFalut;
     }
 
     /**
-     * @return \DateTime
+     * @return integer
      */
     function getMotT() {
         return $this->motT;
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getMotTempHigh() {
         return $this->motTempHigh;
     }
 
     /**
-     * @return string
+     * @return integer
      */
     function getMotV() {
         return $this->motV;
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getPpStatus() {
         return $this->ppStatus;
     }
 
     /**
-     * @return \DateTime
+     * @return integer
      */
     function getPackA() {
         return $this->packA;
@@ -1019,21 +1019,21 @@ class Logs
     }
 
     /**
-     * @return \DateTime
+     * @return integer
      */
     function getPackV() {
         return $this->packV;
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getPreChFault() {
         return $this->preChFault;
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getReadyOn() {
         return $this->readyOn;
@@ -1061,7 +1061,7 @@ class Logs
     }
 
     /**
-     * @return \DateTime
+     * @return stirng
      */
     function getSim_sn() {
         return $this->sim_sn;
@@ -1075,7 +1075,7 @@ class Logs
     }
 
     /**
-     * @return \DateTime
+     * @return integer
      */
     function getService() {
         return $this->service;
@@ -1145,14 +1145,14 @@ class Logs
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getBatterySafety() {
         return $this->batterySafety;
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getCharging() {
         return $this->charging;
@@ -1166,7 +1166,7 @@ class Logs
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getCloseEnabled() {
         return $this->closeEnabled;
@@ -1215,7 +1215,7 @@ class Logs
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getGpsBoxFix() {
         return $this->gpsBoxFix;
@@ -1243,7 +1243,7 @@ class Logs
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getGpsBoxSpd() {
         return $this->gpsBoxSpd;
@@ -1320,7 +1320,7 @@ class Logs
     }
 
     /**
-     * @return integer
+     * @return string
      */
     function getIdTrip() {
         return $this->idTrip;
@@ -1348,7 +1348,7 @@ class Logs
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getKeyOn() {
         return $this->keyOn;
@@ -1397,21 +1397,21 @@ class Logs
     }
 
     /**
-     * @return \DateTime
+     * @return integer
      */
     function getOpenTrips() {
         return $this->openTrips;
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getParkEnabled() {
         return $this->parkEnabled;
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getParking() {
         return $this->parking;
@@ -1439,7 +1439,7 @@ class Logs
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     function getVcuFault() {
         return $this->vcuFault;
