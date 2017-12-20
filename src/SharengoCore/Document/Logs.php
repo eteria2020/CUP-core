@@ -540,9 +540,9 @@ class Logs
     private $hwVer;
     
     /**
-     * @var string
+     * @var integer
      *
-     * @ODM\Field(type="string", name="id_trip");
+     * @ODM\Field(type="integer", name="id_trip");
      */
     private $idTrip;
     
