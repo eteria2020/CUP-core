@@ -36,9 +36,9 @@ class Logs
     private $androidDevice;
     
     /**
-     * @var integer
+     * @var string
      *
-     * @ODM\Field(type="integer", name="AppCode");
+     * @ODM\Field(type="string", name="AppCode");
      */
     private $appCode;
     
@@ -85,9 +85,9 @@ class Logs
     private $chHeatFault;
     
     /**
-     * @var integer
+     * @var string
      *
-     * @ODM\Field(type="integer", name="ChStatus");
+     * @ODM\Field(type="string", name="ChStatus");
      */
     private $chStatus;
     
@@ -197,9 +197,9 @@ class Logs
     private $motFalut;
     
     /**
-     * @var integer
+     * @var string
      *
-     * @ODM\Field(type="integer", name="MotT");
+     * @ODM\Field(type="string", name="MotT");
      */
     private $motT;
     
@@ -225,9 +225,9 @@ class Logs
     private $ppStatus;
     
     /**
-     * @var integer
+     * @var string
      *
-     * @ODM\Field(type="integer", name="PackA");
+     * @ODM\Field(type="string", name="PackA");
      */
     private $packA;
     
@@ -239,9 +239,9 @@ class Logs
     private $packStatus;
     
     /**
-     * @var integer
+     * @var string
      *
-     * @ODM\Field(type="integer", name="PackV");
+     * @ODM\Field(type="string", name="PackV");
      */
     private $packV;
     
@@ -295,9 +295,9 @@ class Logs
     private $soc;
     
     /**
-     * @var integer
+     * @var string
      *
-     * @ODM\Field(type="integer", name="Service");
+     * @ODM\Field(type="string", name="Service");
      */
     private $service;
     
@@ -599,9 +599,9 @@ class Logs
     private $lon;
     
     /**
-     * @var integer
+     * @var string
      *
-     * @ODM\Field(type="integer", name="offLineTrips");
+     * @ODM\Field(type="string", name="offLineTrips");
      */
     private $offLineTrips;
     
@@ -613,9 +613,9 @@ class Logs
     private $onTrip;
     
     /**
-     * @var integer
+     * @var string
      *
-     * @ODM\Field(type="integer", name="openTrips");
+     * @ODM\Field(type="string", name="openTrips");
      */
     private $openTrips;
     
