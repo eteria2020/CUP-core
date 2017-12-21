@@ -9,40 +9,7 @@ class LogsRepository extends DocumentRepository
 {
     public function getByTrip($trip)
     {
-        $a = "";
-        $logs = $this->findBy([ "id_trip" => $trip->getId()]);
-        //$logs = $this->findBy([ "id_trip" => (string)$trip->getId()]);
-        //2095638
-        //1081214
-        //$logs = $this->findBy([ "id_trip" => 1081214 ]);
-        //$logs = $this->findBy([ "lon" => 9.20278]);
-        $a = "";
-        
-        //$logs = $this->findBy("id_trip", $trip->getId());
-        
-        /*
-        $is_same_trip = true;
-
-        
-        if (!$logs) {
-            return array();
-        }
-        
-        $startTime = $events[0]->getEventTime();
-
-        while ($is_same_trip) {
-            $event = $this->_getPreviousEvent($plate, $startTime);
-
-            if ($event && $event->getTrip() == '0'
-            && $event->getCustomerId() == $trip->getCustomer()->getId()) {
-                array_unshift($events, $event);
-                $startTime = $event->getEventTime();
-            } else {
-                $is_same_trip = false;
-            }
-        }
-        */
-        return $logs;
+        return $this->findBy([ "id_trip" => $trip->getId()]);
     }
 
     private function _getPreviousEvent($plate, $startTime) {
