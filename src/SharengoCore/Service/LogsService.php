@@ -36,16 +36,6 @@ class LogsService
      */
     public function getLogsByTrip(Trips $trip)
     {
-        /*
-        $logs = $this->logsRepository->getByTrip($trip);
-
-        foreach ($logs as $log) {
-            $eventType = $this->logsTypesService->mapEvent($event);
-            $event->setEventType($eventType);
-        }
-
-        return $logs;
-        */
         return $logs = $this->logsRepository->getByTrip($trip);
     }
 }

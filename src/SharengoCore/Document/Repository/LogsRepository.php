@@ -11,14 +11,5 @@ class LogsRepository extends DocumentRepository
     {
         return $this->findBy([ "id_trip" => $trip->getId()]);
     }
-
-    private function _getPreviousEvent($plate, $startTime) {
-        $q = $this->dm->createQueryBuilder('\SharengoCore\Document\Logs')
-            ->field('carPlate')->equals($plate)
-            ->field('eventTime')->lt($startTime)
-            ->sort('eventTime', 'desc')
-            ->getQuery();
-
-        return $q->getSingleResult();
-    }
+    
 }
