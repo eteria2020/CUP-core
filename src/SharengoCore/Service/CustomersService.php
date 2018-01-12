@@ -942,5 +942,11 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->flush();
         
     }
+    
+    public function clearAllEntityManager(){
+        $identity = $this->entityManager->getUnitOfWork()->getIdentityMap();
+        $this->entityManager->clear();
+        $a ="";
+    }
 
 }

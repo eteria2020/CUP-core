@@ -40,6 +40,11 @@ class CustomerDeactivation
     const EXPIRED_DRIVERS_LICENSE = 'EXPIRED_DRIVERS_LICENSE';
 
     /**
+     * @var string
+     */
+    const EXPIRED_CREDIT_CARD = 'EXPIRED_CREDIT_CARD';
+    
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
