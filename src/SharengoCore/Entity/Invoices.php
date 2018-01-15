@@ -326,11 +326,13 @@ class Invoices
         $version,
         $amounts
     ) {
+        $date = new \DateTime('last day of previous month');
         $invoice = new Invoices(
             $customer,
             $version,
             self::TYPE_TRIP,
-            intval($tripPayments[0]->getPayedSuccessfullyAt()->format("Ymd")), // it's supposed all trips have been payed on the same day
+            intval($date->format("Ymd")),
+            //intval($tripPayments[0]->getPayedSuccessfullyAt()->format("Ymd")), // it's supposed all trips have been payed on the same day
             $amounts,
             $tripPayments[0]->getTrip()->getFleet()
         );
