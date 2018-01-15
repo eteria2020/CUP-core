@@ -24,6 +24,5 @@ class TripBonusesRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('id', $tripId);
 
         return $query->execute();
-        
     }
 }
