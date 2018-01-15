@@ -190,12 +190,9 @@ class CustomerDeactivationService
      * @param \DateTime|null $startTs
      */
     public function deactivateByScriptDisableCreditCard(
-        Customers $customer,
-        $note = null
+        Customers $customer
     ) {
-        $details = [
-            'note' => ($note === null) ? 'Deactivated by script disable-credit-card' : $note
-        ];
+        $details = ['details' => 'Deactivated by script disable-credit-card because credit card of  customer is expired'];
 
         $this->deactivate(
             $customer,
