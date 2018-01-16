@@ -6,7 +6,6 @@ use SharengoCore\Utils\Interval;
 use SharengoCore\Exception\EditTripDeniedException;
 use SharengoCore\Exception\EditTripWrongDateException;
 use SharengoCore\Exception\EditTripNotDateTimeException;
-
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
@@ -16,8 +15,8 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
  * @ORM\Table(name="trips", indexes={@ORM\Index(name="IDX_AA7370DAAE35528C", columns={"car_plate"}), @ORM\Index(name="IDX_AA7370DA9395C3F3", columns={"customer_id"})})
  * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\TripsRepository")
  */
-class Trips
-{
+class Trips {
+
     /**
      * @var integer
      *
@@ -260,14 +259,12 @@ class Trips
      */
     private $errorCode = 0;
 
-
     /**
      * Get id
      *
      * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -278,8 +275,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setTimestampBeginning($timestampBeginning)
-    {
+    public function setTimestampBeginning($timestampBeginning) {
         $this->timestampBeginning = $timestampBeginning;
 
         return $this;
@@ -290,8 +286,7 @@ class Trips
      *
      * @return \DateTime
      */
-    public function getTimestampBeginning()
-    {
+    public function getTimestampBeginning() {
         return $this->timestampBeginning;
     }
 
@@ -302,8 +297,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setKmBeginning($kmBeginning)
-    {
+    public function setKmBeginning($kmBeginning) {
         $this->kmBeginning = $kmBeginning;
 
         return $this;
@@ -314,8 +308,7 @@ class Trips
      *
      * @return integer
      */
-    public function getKmBeginning()
-    {
+    public function getKmBeginning() {
         return $this->kmBeginning;
     }
 
@@ -326,8 +319,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setBatteryBeginning($batteryBeginning)
-    {
+    public function setBatteryBeginning($batteryBeginning) {
         $this->batteryBeginning = $batteryBeginning;
 
         return $this;
@@ -338,8 +330,7 @@ class Trips
      *
      * @return integer
      */
-    public function getBatteryBeginning()
-    {
+    public function getBatteryBeginning() {
         return $this->batteryBeginning;
     }
 
@@ -350,8 +341,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setLongitudeBeginning($longitudeBeginning)
-    {
+    public function setLongitudeBeginning($longitudeBeginning) {
         $this->longitudeBeginning = $longitudeBeginning;
 
         return $this;
@@ -362,8 +352,7 @@ class Trips
      *
      * @return string
      */
-    public function getLongitudeBeginning()
-    {
+    public function getLongitudeBeginning() {
         return $this->longitudeBeginning;
     }
 
@@ -374,8 +363,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setLatitudeBeginning($latitudeBeginning)
-    {
+    public function setLatitudeBeginning($latitudeBeginning) {
         $this->latitudeBeginning = $latitudeBeginning;
 
         return $this;
@@ -386,8 +374,7 @@ class Trips
      *
      * @return string
      */
-    public function getLatitudeBeginning()
-    {
+    public function getLatitudeBeginning() {
         return $this->latitudeBeginning;
     }
 
@@ -398,8 +385,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setGeoBeginning($geoBeginning)
-    {
+    public function setGeoBeginning($geoBeginning) {
         $this->geoBeginning = $geoBeginning;
 
         return $this;
@@ -410,8 +396,7 @@ class Trips
      *
      * @return string
      */
-    public function getGeoBeginning()
-    {
+    public function getGeoBeginning() {
         return $this->geoBeginning;
     }
 
@@ -422,8 +407,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setBeginningTx($beginningTx)
-    {
+    public function setBeginningTx($beginningTx) {
         $this->beginningTx = $beginningTx;
 
         return $this;
@@ -434,8 +418,7 @@ class Trips
      *
      * @return \DateTime
      */
-    public function getBeginningTx()
-    {
+    public function getBeginningTx() {
         return $this->beginningTx;
     }
 
@@ -446,8 +429,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setAddressBeginning($addressBeginning)
-    {
+    public function setAddressBeginning($addressBeginning) {
         $this->addressBeginning = $addressBeginning;
 
         return $this;
@@ -458,8 +440,7 @@ class Trips
      *
      * @return string
      */
-    public function getAddressBeginning()
-    {
+    public function getAddressBeginning() {
         return $this->addressBeginning;
     }
 
@@ -470,8 +451,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setTimestampEnd($timestampEnd)
-    {
+    public function setTimestampEnd($timestampEnd) {
         $this->timestampEnd = $timestampEnd;
 
         return $this;
@@ -482,8 +462,7 @@ class Trips
      *
      * @return \DateTime
      */
-    public function getTimestampEnd()
-    {
+    public function getTimestampEnd() {
         return $this->timestampEnd;
     }
 
@@ -494,8 +473,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setKmEnd($kmEnd)
-    {
+    public function setKmEnd($kmEnd) {
         $this->kmEnd = $kmEnd;
 
         return $this;
@@ -506,8 +484,7 @@ class Trips
      *
      * @return integer
      */
-    public function getKmEnd()
-    {
+    public function getKmEnd() {
         return $this->kmEnd;
     }
 
@@ -518,8 +495,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setBatteryEnd($batteryEnd)
-    {
+    public function setBatteryEnd($batteryEnd) {
         $this->batteryEnd = $batteryEnd;
 
         return $this;
@@ -530,8 +506,7 @@ class Trips
      *
      * @return integer
      */
-    public function getBatteryEnd()
-    {
+    public function getBatteryEnd() {
         return $this->batteryEnd;
     }
 
@@ -542,8 +517,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setLongitudeEnd($longitudeEnd)
-    {
+    public function setLongitudeEnd($longitudeEnd) {
         $this->longitudeEnd = $longitudeEnd;
 
         return $this;
@@ -554,8 +528,7 @@ class Trips
      *
      * @return string
      */
-    public function getLongitudeEnd()
-    {
+    public function getLongitudeEnd() {
         return $this->longitudeEnd;
     }
 
@@ -566,8 +539,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setLatitudeEnd($latitudeEnd)
-    {
+    public function setLatitudeEnd($latitudeEnd) {
         $this->latitudeEnd = $latitudeEnd;
 
         return $this;
@@ -578,8 +550,7 @@ class Trips
      *
      * @return string
      */
-    public function getLatitudeEnd()
-    {
+    public function getLatitudeEnd() {
         return $this->latitudeEnd;
     }
 
@@ -590,8 +561,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setGeoEnd($geoEnd)
-    {
+    public function setGeoEnd($geoEnd) {
         $this->geoEnd = $geoEnd;
 
         return $this;
@@ -602,8 +572,7 @@ class Trips
      *
      * @return string
      */
-    public function getGeoEnd()
-    {
+    public function getGeoEnd() {
         return $this->geoEnd;
     }
 
@@ -614,8 +583,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setEndTx($endTx)
-    {
+    public function setEndTx($endTx) {
         $this->endTx = $endTx;
 
         return $this;
@@ -626,8 +594,7 @@ class Trips
      *
      * @return \DateTime
      */
-    public function getEndTx()
-    {
+    public function getEndTx() {
         return $this->endTx;
     }
 
@@ -638,8 +605,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setAddressEnd($addressEnd)
-    {
+    public function setAddressEnd($addressEnd) {
         $this->addressEnd = $addressEnd;
 
         return $this;
@@ -650,8 +616,7 @@ class Trips
      *
      * @return string
      */
-    public function getAddressEnd()
-    {
+    public function getAddressEnd() {
         return $this->addressEnd;
     }
 
@@ -662,8 +627,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setParkSeconds($parkSeconds)
-    {
+    public function setParkSeconds($parkSeconds) {
         $this->parkSeconds = $parkSeconds;
 
         return $this;
@@ -674,8 +638,7 @@ class Trips
      *
      * @return integer
      */
-    public function getParkSeconds()
-    {
+    public function getParkSeconds() {
         return $this->parkSeconds;
     }
 
@@ -686,8 +649,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setPayable($payable)
-    {
+    public function setPayable($payable) {
         $this->payable = $payable;
 
         return $this;
@@ -698,8 +660,7 @@ class Trips
      *
      * @return boolean
      */
-    public function getPayable()
-    {
+    public function getPayable() {
         return $this->payable;
     }
 
@@ -710,8 +671,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setCar(\SharengoCore\Entity\Cars $car = null)
-    {
+    public function setCar(\SharengoCore\Entity\Cars $car = null) {
         $this->car = $car;
 
         return $this;
@@ -722,8 +682,7 @@ class Trips
      *
      * @return \SharengoCore\Entity\Cars
      */
-    public function getCar()
-    {
+    public function getCar() {
         return $this->car;
     }
 
@@ -732,8 +691,7 @@ class Trips
      *
      * @return string
      */
-    public function getCarLabel()
-    {
+    public function getCarLabel() {
         return $this->car->getLabel();
     }
 
@@ -744,8 +702,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setCustomer(\SharengoCore\Entity\Customers $customer = null)
-    {
+    public function setCustomer(\SharengoCore\Entity\Customers $customer = null) {
         $this->customer = $customer;
 
         return $this;
@@ -756,8 +713,7 @@ class Trips
      *
      * @return \SharengoCore\Entity\Customers
      */
-    public function getCustomer()
-    {
+    public function getCustomer() {
         return $this->customer;
     }
 
@@ -766,8 +722,7 @@ class Trips
      *
      * @return string
      */
-    public function getCustomerCardRfid()
-    {
+    public function getCustomerCardRfid() {
         return $this->customer->getCardRfid();
     }
 
@@ -778,8 +733,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setIsAccounted($isAccounted)
-    {
+    public function setIsAccounted($isAccounted) {
         $this->isAccounted = $isAccounted;
 
         return $this;
@@ -790,8 +744,7 @@ class Trips
      *
      * @return boolean
      */
-    public function getIsAccounted()
-    {
+    public function getIsAccounted() {
         return $this->isAccounted;
     }
 
@@ -800,8 +753,7 @@ class Trips
      *
      * @return TripBills[]
      */
-    public function getTripBills()
-    {
+    public function getTripBills() {
         return $this->tripBills;
     }
 
@@ -810,8 +762,7 @@ class Trips
      *
      * @return TripBills[]
      */
-    public function getTripPayment()
-    {
+    public function getTripPayment() {
         return $this->tripPayment;
     }
 
@@ -820,8 +771,7 @@ class Trips
      *
      * @return TripBonuses[]
      */
-    public function getTripBonuses()
-    {
+    public function getTripBonuses() {
         return $this->tripBonuses;
     }
 
@@ -830,8 +780,7 @@ class Trips
      *
      * @return TripFreeFares[]
      */
-    public function getTripFreeFares()
-    {
+    public function getTripFreeFares() {
         return $this->tripFreeFares;
     }
 
@@ -839,8 +788,7 @@ class Trips
      * @param DoctrineHydrator
      * @return mixed[]
      */
-    public function toArray(DoctrineHydrator $hydrator, array $tripsHydrationOptions = ['customer','car'])
-    {
+    public function toArray(DoctrineHydrator $hydrator, array $tripsHydrationOptions = ['customer', 'car']) {
         $extractedTrip = $hydrator->extract($this);
 
         unset($extractedTrip['customer']);
@@ -915,25 +863,22 @@ class Trips
      *
      * @return boolean
      */
-    public function isAccountable()
-    {
+    public function isAccountable() {
 
         $minutes = $this->getDurationMinutes();
 
         return !$this->customer->getGoldList() &&
-               $minutes >= 1;
+                $minutes >= 1;
     }
 
-    public function getDurationMinutes()
-    {
+    public function getDurationMinutes() {
         if ($this->getTimestampBeginning() instanceof \DateTime &&
-            $this->getTimestampEnd() instanceof \DateTime) {
+                $this->getTimestampEnd() instanceof \DateTime) {
             $interval = new Interval($this->getTimestampBeginning(), $this->getTimestampEnd());
             return $interval->minutes();
         } else {
             return 0;
         }
-
     }
 
     /**
@@ -942,8 +887,7 @@ class Trips
      *
      * @return int
      */
-    public function getDiscountPercentage()
-    {
+    public function getDiscountPercentage() {
         return $this->customer->getDiscountRate();
     }
 
@@ -952,16 +896,14 @@ class Trips
      *
      * @return boolean
      */
-    public function customerIsPaymentAble()
-    {
+    public function customerIsPaymentAble() {
         return $this->customer->getPaymentAble();
     }
 
     /**
      * @return Trips
      */
-    public function getParent()
-    {
+    public function getParent() {
         return $this->parent;
     }
 
@@ -969,8 +911,7 @@ class Trips
      * @param Trips $parent
      * @return Trips
      */
-    public function setParent($parent)
-    {
+    public function setParent($parent) {
         $this->parent = $parent;
         return $this;
     }
@@ -981,8 +922,7 @@ class Trips
      * @param boolean $bonusComputed
      * @return Trips
      */
-    public function setBonusComputed($bonusComputed)
-    {
+    public function setBonusComputed($bonusComputed) {
         $this->bonusComputed = $bonusComputed;
 
         return $this;
@@ -991,8 +931,7 @@ class Trips
     /**
      * @return boolean
      */
-    public function getBonusComputed()
-    {
+    public function getBonusComputed() {
         return $this->bonusComputed;
     }
 
@@ -1002,8 +941,7 @@ class Trips
      * @param boolean $costComputed
      * @return Trips
      */
-    public function setCostComputed($costComputed)
-    {
+    public function setCostComputed($costComputed) {
         $this->costComputed = $costComputed;
 
         return $this;
@@ -1012,8 +950,7 @@ class Trips
     /**
      * @return boolean
      */
-    public function getCostComputed()
-    {
+    public function getCostComputed() {
         return $this->costComputed;
     }
 
@@ -1022,8 +959,7 @@ class Trips
      *
      * @return \SharengoCore\Entity\Fleet
      */
-    public function getFleet()
-    {
+    public function getFleet() {
         return $this->fleet;
     }
 
@@ -1032,8 +968,7 @@ class Trips
      *
      * @return string
      */
-    public function getFleetName()
-    {
+    public function getFleetName() {
         return $this->fleet->getName();
     }
 
@@ -1042,8 +977,7 @@ class Trips
      *
      * @return bool
      */
-    public function isEnded()
-    {
+    public function isEnded() {
         return $this->getTimestampEnd() instanceof \DateTime;
     }
 
@@ -1051,8 +985,7 @@ class Trips
      * @return boolean true if at least one tripPaymentTry has been created
      * for this trip
      */
-    public function isPaymentTried()
-    {
+    public function isPaymentTried() {
         $isAttempted = false;
         $tripPayment = $this->getTripPayment();
         if ($tripPayment instanceof TripPayments) {
@@ -1065,8 +998,7 @@ class Trips
      * @return boolean true if the tripPayment for this trip has been payed
      * successfully
      */
-    public function isPaymentCompleted()
-    {
+    public function isPaymentCompleted() {
         $isCompleted = false;
         $tripPayment = $this->getTripPayment();
         if ($tripPayment instanceof TripPayments) {
@@ -1085,8 +1017,7 @@ class Trips
      * @throws EditTripWrongDateException
      * @throws EditTripDeniedException
      */
-    public function checkIfEditable($endDate)
-    {
+    public function checkIfEditable($endDate) {
         if (!$this->isEnded()) {
             throw new EditTripDeniedException();
         }
@@ -1104,8 +1035,7 @@ class Trips
     /**
      * @return string
      */
-    public function getPinType()
-    {
+    public function getPinType() {
         return $this->pinType;
     }
 
@@ -1116,8 +1046,7 @@ class Trips
      *
      * @return Trips
      */
-    public function setErrorCode($errorCode)
-    {
+    public function setErrorCode($errorCode) {
         $this->errorCode = $errorCode;
 
         return $this;
@@ -1128,9 +1057,21 @@ class Trips
      *
      * @return integer
      */
-    public function getErrorCode()
-    {
+    public function getErrorCode() {
         return $this->errorCode;
+    }
+
+    /***
+     * Return true if the trip is business
+     * 
+     * @return boolean
+     */
+    public function isBusiness() {
+        $result = false;
+        if ($this->pinType === "company") {
+            $result = true;
+        }
+        return $result;
     }
 
 }
