@@ -2,7 +2,7 @@
 
 namespace SharengoCore\Entity\Queries;
 
-final class AllPenalties extends Query
+final class AllCausal extends Query
 {
     protected function dql()
     {
@@ -13,7 +13,7 @@ final class AllPenalties extends Query
     protected function params()
     {
         return [
-            'type' => 'penalties'
+            'type' => 'extra'
         ];
     }
 }
