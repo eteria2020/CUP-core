@@ -318,15 +318,22 @@ class Invoices
      * @param TripPayments[] $tripPayments
      * @param integer $version
      * @param mixed $amounts
+     * @param bool $monthly
      * @return Invoices
      */
     public static function createInvoiceForTrips(
         Customers $customer,
         $tripPayments,
         $version,
-        $amounts
+        $amounts,
+        $monthly = false
     ) {
-        $date = new \DateTime('last day of previous month');
+        if ($monthly) {
+            $date = new \DateTime('last day of previous month');
+        } else {
+            $date = $tripPayments[0]->getPayedSuccessfullyAt();
+        }
+
         $invoice = new Invoices(
             $customer,
             $version,

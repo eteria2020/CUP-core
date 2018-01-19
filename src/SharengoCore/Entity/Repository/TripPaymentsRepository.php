@@ -10,21 +10,33 @@ use Doctrine\ORM\Query\ResultSetMapping;
 
 class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function findTripPaymentsNoInvoice()
+    public function findTripPaymentsNoInvoice($firstDay = null, $lastDay = null)
     {
         $em = $this->getEntityManager();
 
         $dql = 'SELECT tp
             FROM SharengoCore\Entity\TripPayments tp
             JOIN tp.trip t
-            WHERE tp.status = :status
-            AND tp.invoice IS NULL
+            WHERE tp.status = :status ';
+
+        if ($firstDay instanceof \DateTime &&  $lastDay instanceof \DateTime) {
+            $dql .= ' AND tp.payedSuccessfullyAt  >= :firstDay
+            AND tp.payedSuccessfullyAt <= :lastDay ';
+        }
+
+        $dql .= ' AND tp.invoice IS NULL
             AND tp.totalCost != 0
             ORDER BY t.timestampBeginning ASC';
 
         $query = $em->createQuery($dql);
 
+        if ($firstDay instanceof \DateTime &&  $lastDay instanceof \DateTime) {
+            $query->setParameter('firstDay', $firstDay->setTime(00,00,00));
+            $query->setParameter('lastDay', $lastDay->setTime(23,59,59));
+        }
+
         $query->setParameter('status', TripPayments::STATUS_PAYED_CORRECTLY);
+
 
         return $query->getResult();
     }
