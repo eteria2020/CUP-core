@@ -3,6 +3,7 @@
 namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Queries\AllPenalties;
+use SharengoCore\Entity\Queries\AllCausal;
 
 use Doctrine\ORM\EntityManager;
 
@@ -28,6 +29,16 @@ class PenaltiesService
     public function getAllPenalties()
     {
         $query = new AllPenalties($this->entityManager);
+
+        return $query();
+    }
+    
+    /**
+     * @return Penalties[]
+     */
+    public function getAllCausal()
+    {
+        $query = new AllCausal($this->entityManager);
 
         return $query();
     }

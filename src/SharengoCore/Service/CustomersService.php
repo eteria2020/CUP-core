@@ -405,6 +405,8 @@ class CustomersService implements ValidatorServiceInterface
     
     public function clearEntityManager(){
         
+        //$identity = $this->entityManager->getUnitOfWork()->getIdentityMap();
+        
         $this->entityManager->clear('SharengoCore\Entity\Trips');
         $this->entityManager->clear('SharengoCore\Entity\Cars');
         $this->entityManager->clear('SharengoCore\Entity\Customers');
@@ -412,7 +414,12 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->clear('SharengoCore\Entity\Invoices');
         $this->entityManager->clear('SharengoCore\Entity\Cards');
         $this->entityManager->clear('SharengoCore\Entity\CustomersPoints');
-        $this->entityManager->clear('SharengoCore\Entity\DiscountStatus'); 
+        $this->entityManager->clear('SharengoCore\Entity\DiscountStatus');
+        $this->entityManager->clear('SharengoCore\Entity\Fares');
+        $this->entityManager->clear('SharengoCore\Entity\TripFreeFares');
+        $this->entityManager->clear('SharengoCore\Entity\FreeFares');
+        $this->entityManager->clear('SharengoCore\Entity\TripBonuses');
+        $this->entityManager->clear('SharengoCore\Entity\CustomersBonus');
 
     }
 

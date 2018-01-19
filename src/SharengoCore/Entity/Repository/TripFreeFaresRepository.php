@@ -14,4 +14,16 @@ class TripFreeFaresRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->execute();
     }
+    
+    public function findByTripId($tripId) {
+        
+        $dql = "SELECT tb FROM \SharengoCore\Entity\TripFreeFares tb ".
+            "WHERE tb.trip = :id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('id', $tripId);
+
+        return $query->execute();
+        
+    }
 }
