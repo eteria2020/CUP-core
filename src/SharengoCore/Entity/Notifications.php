@@ -5,6 +5,7 @@ namespace SharengoCore\Entity;
 // Internals
 use SharengoCore\Entity\NotificationsProtocols;
 use SharengoCore\Entity\NotificationsCategories;
+use SharengoCore\Entity\Webuser;
 // Externals
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
@@ -103,6 +104,16 @@ class Notifications
      * @ORM\Column(name="sent_meta", type="json_array", nullable=true)
      */
     private $sentMeta;
+    
+    /**
+     * @var integer
+     * 
+     * @ORM\ManyToOne(targetEntity="Webuser")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="webuser_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $webuser;
 
 
     /**
@@ -163,6 +174,22 @@ class Notifications
     public function getAcknowledgeDate()
     {
         return $this->acknowledgeDate;
+    }
+    
+    /**
+     * Get webuser
+     *
+     * @return string 
+     */
+    public function getWebuser()
+    {
+        
+        if ($this->webuser instanceof Webuser) {
+            return $this->webuser->getDisplayName();
+        }else{
+            return null;
+        }
+        
     }
 
     /**
@@ -236,6 +263,19 @@ class Notifications
     public function setAcknowledgeDate(DateTime $acknowledgeDate)
     {
         $this->acknowledgeDate = $acknowledgeDate;
+
+        return $this;
+    }
+    
+    /**
+     * Set webuserId
+     *
+     * @param Webuser $webuser
+     * @return Notifications
+     */
+    public function setWebuser(Webuser $webuser)
+    {
+        $this->webuser = $webuser;
 
         return $this;
     }
