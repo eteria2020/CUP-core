@@ -93,13 +93,17 @@ class SOSCategoryService implements NotificationsCategoriesInterface
 
         // Check for cast error
         if (!$tripId) {
-            throw new MetadataNotValidException();
+            //throw new MetadataNotValidException();
+            //temporal fix csd-1835
+            return null;
         }
 
         $trip = $this->tripsService->getById($tripId);
 
         if (!$trip instanceof Trips) {
-            throw new TripNotFoundException();
+            //throw new TripNotFoundException();
+            //temporal fix csd-1835
+            return null;
         }
 
         return $trip;
