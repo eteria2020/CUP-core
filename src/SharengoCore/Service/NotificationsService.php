@@ -74,6 +74,7 @@ class NotificationsService
                         ($notifications->getAcknowledgeDate() instanceof DateTime) ?
                         $notifications->getAcknowledgeDate()->getTimestamp() : null,
                     'webuser' => $notifications->getWebuser()
+                    
                 ],
                 'nc' => [
                     'name' => $notifications->getCategoryName(),
