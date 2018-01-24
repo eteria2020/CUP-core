@@ -12,6 +12,7 @@ class NotificationsServiceFactory implements FactoryInterface
     {
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
+        $userService = $serviceLocator->get('zfcuser_auth_service');
 
         /** @var DatatableServiceInterface **/
         $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
@@ -29,7 +30,8 @@ class NotificationsServiceFactory implements FactoryInterface
         return new NotificationsService(
             $entityManager,
             $notificationsRepository,
-            $datatableService
+            $datatableService,
+            $userService
         );
     }
 }

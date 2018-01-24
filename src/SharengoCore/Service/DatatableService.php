@@ -68,12 +68,18 @@ class DatatableService implements DatatableServiceInterface
             if ($options['column'] == 'id' || $checkIdColumn) {
                 $withAndWhere = $where ? 'AND ' : 'WHERE ';
                 $dql .= $withAndWhere . $options['column'] . ' = :id ';
-                $as_parameters['id'] = (int)$options['searchValue'];
+                $as_parameters['id'] = (int) $options['searchValue'];
             } else {
-                $value = strtolower("%" . $options['searchValue'] . "%");
-                $withAndWhere = $where ? 'AND ' : 'WHERE ';
-                $dql .= $withAndWhere . ' LOWER(CAST(' . $options['column'] . ' as text)) LIKE :value ';
-                $as_parameters['value'] = $value;
+                if ($options['column'] == 'e.webuser' || $checkIdColumn){
+                    $value = strtolower("%" . $options['searchValue'] . "%");
+                    $dql .= 'INNER JOIN e.webuser w WHERE LOWER(CAST(w.displayName as text)) LIKE :value ';
+                    $as_parameters['value'] = $value;                                                      
+                } else {
+                    $value = strtolower("%" . $options['searchValue'] . "%");
+                    $withAndWhere = $where ? 'AND ' : 'WHERE ';
+                    $dql .= $withAndWhere . ' LOWER(CAST(' . $options['column'] . ' as text)) LIKE :value ';
+                    $as_parameters['value'] = $value;
+                }
             }
             $where = true;
         }
