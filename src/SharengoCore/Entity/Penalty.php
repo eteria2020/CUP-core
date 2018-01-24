@@ -35,6 +35,13 @@ class Penalty
      * @ORM\Column(name="amount", type="integer", nullable=true)
      */
     private $amount;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="type", type="string", nullable=false)
+     */
+    private $type;
 
     /**
      * @return string
@@ -50,5 +57,13 @@ class Penalty
     public function getAmount()
     {
         return $this->amount;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 }

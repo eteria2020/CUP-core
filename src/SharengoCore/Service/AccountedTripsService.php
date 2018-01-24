@@ -62,4 +62,12 @@ class AccountedTripsService
             throw $e;
         }
     }
+    
+    public function findFreeMinutesByTripIdFromTripFreeFraes($tripId) {
+        return $this->tripFreeFaresRepository->findByTripId($tripId);
+    }
+    
+    public function findFreeMinutesByTripIdFromTripBonuses($tripId) {
+        return $this->tripBonusesRepository->findByTripId($tripId);
+    }
 }
