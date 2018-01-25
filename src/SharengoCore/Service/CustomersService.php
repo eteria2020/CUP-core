@@ -953,5 +953,4 @@ class CustomersService implements ValidatorServiceInterface
     public function clearAllEntityManager(){
         $this->entityManager->clear();
     }
-
 }
