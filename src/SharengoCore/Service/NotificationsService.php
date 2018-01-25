@@ -8,24 +8,33 @@ use SharengoCore\Entity\Repository\NotificationsRepository;
 // Externals
 use Doctrine\ORM\EntityManager;
 use DateTime;
+use Zend\Authentication\AuthenticationService as UserService;
 
 class NotificationsService
 {
     private $entityManager;
+    
+    /**
+     * @var UserService
+     */
+    private $userService;
 
     /**
      * @param EntityManager $entityManager
      * @param NotificationsRepository $notificationsRepository
      * @param DatatableServiceInterface $datatableService
+     * @param UserService $userService
      */
     public function __construct(
         EntityManager $entityManager,
         NotificationsRepository $notificationsRepository,
-        DatatableServiceInterface $datatableService
+        DatatableServiceInterface $datatableService,
+        UserService $userService
     ) {
         $this->entityManager = $entityManager;
         $this->notificationsRepository = $notificationsRepository;
         $this->datatableService = $datatableService;
+        $this->userService = $userService;
     }
 
     public function getTotalNotifications()
@@ -64,6 +73,8 @@ class NotificationsService
                     'acknowledgeDate' =>
                         ($notifications->getAcknowledgeDate() instanceof DateTime) ?
                         $notifications->getAcknowledgeDate()->getTimestamp() : null,
+                    'webuser' => $notifications->getWebuser()
+                    
                 ],
                 'nc' => [
                     'name' => $notifications->getCategoryName(),
@@ -86,6 +97,15 @@ class NotificationsService
     public function acknowledge(Notifications $notification, DateTime $acknolageDate)
     {
         $notification->setAcknowledgeDate($acknolageDate);
+
+        // persist and flush notification
+        $this->entityManager->persist($notification);
+        $this->entityManager->flush();
+    }
+    
+    public function webuser(Notifications $notification)
+    {
+        $notification->setWebuser($this->userService->getIdentity());
 
         // persist and flush notification
         $this->entityManager->persist($notification);
