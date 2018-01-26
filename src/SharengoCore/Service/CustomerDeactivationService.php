@@ -2,7 +2,6 @@
 
 namespace SharengoCore\Service;
 
-use Cartasi\Entity\CartasiResponse;
 use Cartasi\Entity\Contracts;
 use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Entity\Customers;
