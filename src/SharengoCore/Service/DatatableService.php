@@ -84,7 +84,7 @@ class DatatableService implements DatatableServiceInterface
             }
             $where = true;
         }else{
-            if ($options['column'] != 'select' && !empty($options['column'])) {
+            if ($options['column'] != 'select' && !empty($options['column'])){
                 if ($options['column'] == 'nonGestito') {
                     $dql .= 'WHERE e.webuser IS NULL ';
                 }
