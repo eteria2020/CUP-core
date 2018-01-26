@@ -13,7 +13,7 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
  */
 class Fleet
 {
-
+    const DUMMY_FLEET_LIMIT =100;
     /**
      * @var integer
      *
