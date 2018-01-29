@@ -123,8 +123,8 @@ class NotificationsService
     
     private function getCustomer($customer) {
         return [
-            'name' => $customer->getName(),
-            'surname' => $customer->getSurname(),
+            'id' => $customer->getId(),
+            'name_surname' => $customer->getName() . " ". $customer->getSurname(),
             'mobile' => $customer->getMobile()
         ];
     }

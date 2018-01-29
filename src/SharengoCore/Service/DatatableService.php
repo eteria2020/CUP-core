@@ -6,8 +6,8 @@ use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\DatatableQueryBuilders\DatatableQueryBuilderInterface;
 use Doctrine\ORM\EntityManager;
 
-class DatatableService implements DatatableServiceInterface
-{
+class DatatableService implements DatatableServiceInterface {
+
     /**
      * @var EntityManager
      */
@@ -23,8 +23,7 @@ class DatatableService implements DatatableServiceInterface
      * @param DatatableQueryBuilderInterface $queryBuilder
      */
     public function __construct(
-        EntityManager $entityManager,
-        DatatableQueryBuilderInterface $queryBuilder
+    EntityManager $entityManager, DatatableQueryBuilderInterface $queryBuilder
     ) {
         $this->entityManager = $entityManager;
         $this->queryBuilder = $queryBuilder;
@@ -39,8 +38,7 @@ class DatatableService implements DatatableServiceInterface
      * @param boolean $count
      * @return mixed[] | integer
      */
-    public function getData($entity, array $options, $count = false)
-    {
+    public function getData($entity, array $options, $count = false) {
         $select = $this->queryBuilder->select();
         $join = $this->queryBuilder->join();
         $whereData = $this->queryBuilder->where();
@@ -54,37 +52,48 @@ class DatatableService implements DatatableServiceInterface
         $as_parameters = [];
 
         $dql = 'SELECT ' . ($count ? 'COUNT(e)' : ('e' . $select)) . ' FROM \SharengoCore\Entity\\' . $entity . ' e '
-            . $join . $whereData;
+                . $join . $whereData;
 
         $query = $this->entityManager->createQuery();
 
         if ($options['column'] != 'select' &&
-            !empty($options['searchValue']) &&
-            !empty($options['column'])
+                !empty($options['searchValue']) &&
+                !empty($options['column'])
         ) {
             // if there is a selected filter, we apply it to the query
             $checkIdColumn = strpos($options['column'], '.id');
 
-            if ($options['column'] == 'id' || $checkIdColumn) {
+            if ($options['column'] == 'id' || $options['column'] == 'trip.tripId' || $options['column'] == 'trip.carPlate' || $checkIdColumn) {
                 $withAndWhere = $where ? 'AND ' : 'WHERE ';
-                $dql .= $withAndWhere . $options['column'] . ' = :id ';
-                $as_parameters['id'] = (int) $options['searchValue'];
+                if ($options['column'] == 'id') {
+                    $dql .= $withAndWhere . $options['column'] . ' = :value ';
+                    $as_parameters['value'] = (int) $options['searchValue'];
+                } else {
+                    $value = strtolower("%" . $options['searchValue'] . "%");
+                    if ($options['column'] == 'trip.carPlate') {
+                        $dql .= $withAndWhere . 'LOWER(CAST(e.meta as text)) LIKE :value ';
+                    } else {
+                        if ($options['column'] == 'trip.tripId') {
+                            $dql .= $withAndWhere . 'LOWER(CAST(e.meta as text)) LIKE :value ';
+                        }
+                    }
+                    $as_parameters['value'] = $value;
+                }
             } else {
                 if ($options['column'] == 'e.webuser') {
                     $value = strtolower("%" . $options['searchValue'] . "%");
                     $dql .= 'INNER JOIN e.webuser w WHERE LOWER(CAST(w.displayName as text)) LIKE :value ';
                     $as_parameters['value'] = $value;
                 } else {
-                        $value = strtolower("%" . $options['searchValue'] . "%");
-                        $withAndWhere = $where ? 'AND ' : 'WHERE ';
-                        $dql .= $withAndWhere . ' LOWER(CAST(' . $options['column'] . ' as text)) LIKE :value ';
-                        $as_parameters['value'] = $value;
-                    
+                    $value = strtolower("%" . $options['searchValue'] . "%");
+                    $withAndWhere = $where ? 'AND ' : 'WHERE ';
+                    $dql .= $withAndWhere . ' LOWER(CAST(' . $options['column'] . ' as text)) LIKE :value ';
+                    $as_parameters['value'] = $value;
                 }
             }
             $where = true;
-        }else{
-            if ($options['column'] != 'select' && !empty($options['column'])){
+        } else {
+            if ($options['column'] != 'select' && !empty($options['column'])) {
                 if ($options['column'] == 'nonGestito') {
                     $dql .= 'WHERE e.webuser IS NULL ';
                 }
@@ -93,14 +102,14 @@ class DatatableService implements DatatableServiceInterface
 
         // query a fixed parameter
         if (!empty($options['fixedColumn']) &&
-           !empty($options['fixedValue']) &&
-           !empty($options['fixedLike'])
+                !empty($options['fixedValue']) &&
+                !empty($options['fixedLike'])
         ) {
             $withAndWhere = $where ? 'AND ' : 'WHERE ';
             $dql .= $withAndWhere . $options['fixedColumn'] . ' ';
             if ($options['fixedValue'] != null) {
                 $dql .= ($options['fixedLike'] == 'true' ? 'LIKE ' : '= ') .
-                ':fixedValue ';
+                        ':fixedValue ';
                 $as_parameters['fixedValue'] = $options['fixedValue'];
             } else {
                 $dql .= 'IS NULL ';
@@ -110,7 +119,7 @@ class DatatableService implements DatatableServiceInterface
 
         //query with null
         if (isset($options['columnNull']) &&
-            !empty($options['columnNull'])
+                !empty($options['columnNull'])
         ) {
             /**
              *  This allow to pass multiple columns that must be NULL
@@ -128,7 +137,7 @@ class DatatableService implements DatatableServiceInterface
 
         //query with not null
         if (isset($options['columnNotNull']) &&
-            !empty($options['columnNotNull'])
+                !empty($options['columnNotNull'])
         ) {
             /**
              *  This allow to pass multiple columns that must be NOT NULL
@@ -146,22 +155,22 @@ class DatatableService implements DatatableServiceInterface
 
         //query without LIKE operator
         if ($options['column'] != 'select' &&
-            isset($options['columnWithoutLike']) &&
-            !empty($options['columnWithoutLike']) &&
-            !empty($options['columnValueWithoutLike'])
+                isset($options['columnWithoutLike']) &&
+                !empty($options['columnWithoutLike']) &&
+                !empty($options['columnValueWithoutLike'])
         ) {
             $withAndWhere = $where ? 'AND ' : 'WHERE ';
             $ValueWithoutLike = is_bool($options['columnValueWithoutLike']) ?
-                $options['columnValueWithoutLike'] :
-                sprintf("'%s'", $options['columnValueWithoutLike']);
+                    $options['columnValueWithoutLike'] :
+                    sprintf("'%s'", $options['columnValueWithoutLike']);
             $dql .= $withAndWhere . $options['columnWithoutLike'] . " =  " . $ValueWithoutLike . " ";
             $where = true;
         }
 
         if (!empty($options['from']) &&
-            !empty($options['to']) &&
-            !empty($options['columnFromDate']) &&
-            !empty($options['columnFromEnd'])
+                !empty($options['to']) &&
+                !empty($options['columnFromDate']) &&
+                !empty($options['columnFromEnd'])
         ) {
             $withAndWhere = $where ? 'AND ' : 'WHERE ';
             $dql .= $withAndWhere . $options['columnFromDate'] . ' >= :from ';
@@ -201,16 +210,15 @@ class DatatableService implements DatatableServiceInterface
     /**
      * @return DatatableQueryBuilderInterface
      */
-    public function getQueryBuilder()
-    {
+    public function getQueryBuilder() {
         return $this->queryBuilder;
     }
 
     /**
      * @param DatatableQueryBuilderInterface
      */
-    public function setQueryBuilder(DatatableQueryBuilderInterface $queryBuilder)
-    {
+    public function setQueryBuilder(DatatableQueryBuilderInterface $queryBuilder) {
         $this->queryBuilder = $queryBuilder;
     }
+
 }
