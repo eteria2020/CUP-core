@@ -63,22 +63,23 @@ class DatatableService implements DatatableServiceInterface {
             // if there is a selected filter, we apply it to the query
             $checkIdColumn = strpos($options['column'], '.id');
 
-            if ($options['column'] == 'id' || $options['column'] == 'trip.tripId' || $options['column'] == 'trip.carPlate' || $checkIdColumn) {
+            if ($options['column'] == 'id' || $options['column'] == 'c.id' || $options['column'] == 'trip.tripId' || $options['column'] == 'trip.carPlate' || $checkIdColumn) {
                 $withAndWhere = $where ? 'AND ' : 'WHERE ';
                 if ($options['column'] == 'id') {
                     $dql .= $withAndWhere . $options['column'] . ' = :value ';
                     $as_parameters['value'] = (int) $options['searchValue'];
                 } else {
-                    $value = strtolower("%" . $options['searchValue'] . "%");
-                    if ($options['column'] == 'trip.carPlate') {
+                    if ($options['column'] == 'trip.carPlate' || $options['column'] == 'trip.tripId') {
+                        $value = strtolower("%" . $options['searchValue'] . "%");
                         $dql .= $withAndWhere . 'LOWER(CAST(e.meta as text)) LIKE :value ';
-                    } else {
-                        if ($options['column'] == 'trip.tripId') {
+                    }else{
+                        if ($options['column'] == 'c.id') {
+                            $value = strtolower("%" . "\"customer_id\": " . $options['searchValue'] . "%");
                             $dql .= $withAndWhere . 'LOWER(CAST(e.meta as text)) LIKE :value ';
                         }
                     }
-                    $as_parameters['value'] = $value;
                 }
+                $as_parameters['value'] = $value;
             } else {
                 if ($options['column'] == 'e.webuser') {
                     $value = strtolower("%" . $options['searchValue'] . "%");
