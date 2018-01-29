@@ -69,7 +69,7 @@ class DatatableService implements DatatableServiceInterface {
                     $dql .= $withAndWhere . $options['column'] . ' = :value ';
                     $as_parameters['value'] = (int) $options['searchValue'];
                 } else {
-                    if ($options['column'] == 'trip.carPlate' || $options['column'] == 'trip.tripId') {
+                    if ($options['column'] == 'trip.carPlate' || $options['column'] == 'trip.tripId'){
                         $value = strtolower("%" . $options['searchValue'] . "%");
                         $dql .= $withAndWhere . 'LOWER(CAST(e.meta as text)) LIKE :value ';
                     }else{
