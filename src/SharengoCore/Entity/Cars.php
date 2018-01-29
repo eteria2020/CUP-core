@@ -245,7 +245,7 @@ class Cars
      *
      * @ORM\Column(name="battery_safety", type="boolean", nullable=false)
      */
-    private $batterySafety = false;
+    private $batterySafety = true;
 
     /**
      * @var \DateTime
