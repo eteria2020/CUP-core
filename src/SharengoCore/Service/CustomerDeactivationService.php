@@ -182,6 +182,26 @@ class CustomerDeactivationService
             $webuser
         );
     }
+    
+    /**
+     * Deactivate Customer that was disabled by script disable-credit-card
+     *
+     * @param Customers $customer
+     * @param string|null $note
+     * @param \DateTime|null $startTs
+     */
+    public function deactivateByScriptDisableCreditCard(
+        Customers $customer
+    ) {
+        $details = ['details' => 'Deactivated by script disable-credit-card because credit card of  customer is expired'];
+
+        $this->deactivate(
+            $customer,
+            CustomerDeactivation::EXPIRED_CREDIT_CARD,
+            $details
+        );
+    }
+
 
     /**
      * @param Customers $customer

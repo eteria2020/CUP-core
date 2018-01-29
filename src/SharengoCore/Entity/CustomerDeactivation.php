@@ -184,6 +184,9 @@ class CustomerDeactivation
             case self::EXPIRED_DRIVERS_LICENSE:
                 return 'Patente scaduta';
                 break;
+            case self::EXPIRED_CREDIT_CARD:
+                return 'Carta di credito scaduta';
+                break;
         }
     }
 
