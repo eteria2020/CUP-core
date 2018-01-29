@@ -122,22 +122,29 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
     public function getCustomerBonusNivea() {
         $em = $this->getEntityManager();
         $dql = "SELECT c " .
-                "FROM customers c " .
+                "FROM \SharengoCore\Entity\Customers c " .
                 "WHERE 1=1 " .
-                "AND c.insertedTs > '2018-01-31' " .
-                "AND c.insertedTs  < '2018-05-01' " .
+                "AND c.insertedTs > :start " .
+                "AND c.insertedTs  < :end " .
                 "AND c.id IN ( " .
-                    "SELECT t.customer " .
-                    "FROM trips t " .
-                    "WHERE t.timestampBeginning > '2018-01-31' " .
-                    "AND t.timestampBeginning < '2018-05-01' ".
+                    "SELECT c.id " .
+                    "FROM \SharengoCore\Entity\Trips t " .
+                    "JOIN \SharengoCore\Entity\Customers cu WITH t.customer = cu.id " .
+                    "WHERE t.timestampBeginning > :start " .
+                    "AND t.timestampBeginning < :end ".
                     ") " .
                 "AND c.id NOT IN ( ". 
-                    "SELECT cb.customer " .
-                    "FROM customers_bonus cb " .
-                    "WHERE cb.description = 'ABCDEFC' " .
+                    "SELECT c.id " .
+                    "FROM \SharengoCore\Entity\CustomersBonus cb " .
+                    "JOIN \SharengoCore\Entity\Customers cus WITH cb.customer = cus.id " .
+                    "WHERE cb.description = :description " .
                     ") ";
         $query = $em->createQuery($dql);
+        
+        $query->setParameter('start', '2018-01-31');
+        $query->setParameter('end', '2018-05-01');
+        $query->setParameter('description', 'Courtesy of NIVEA');
+        
         return $query->getResult();
     }
 }
