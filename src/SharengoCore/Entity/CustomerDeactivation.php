@@ -40,6 +40,11 @@ class CustomerDeactivation
     const EXPIRED_DRIVERS_LICENSE = 'EXPIRED_DRIVERS_LICENSE';
 
     /**
+     * @var string
+     */
+    const EXPIRED_CREDIT_CARD = 'EXPIRED_CREDIT_CARD';
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
@@ -178,6 +183,9 @@ class CustomerDeactivation
                 break;
             case self::EXPIRED_DRIVERS_LICENSE:
                 return 'Patente scaduta';
+                break;
+            case self::EXPIRED_CREDIT_CARD:
+                return 'Carta di credito scaduta';
                 break;
         }
     }
