@@ -938,5 +938,19 @@ class CustomersService implements ValidatorServiceInterface
     public function getCustomersRunThisMonth($dateTodayStart, $dateStartCurrentMonth){
         return $this->customersPointsRepository->getCustomersRunThisMonth($dateTodayStart, $dateStartCurrentMonth);
     }
-
+    
+    public function disableCustomer(Customers $customer){
+        //disable customersPaymentAble
+        $customer->setPaymentAble(false);
+        //disable user
+        $customer->disable();
+        
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
+        
+    }
+    
+    public function clearAllEntityManager(){
+        $this->entityManager->clear();
+    }
 }
