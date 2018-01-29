@@ -118,4 +118,26 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('customer', $customer);
         return $query->getResult();
     }
+    
+    public function getCustomerBonusNivea() {
+        $em = $this->getEntityManager();
+        $dql = "SELECT c " .
+                "FROM customers c " .
+                "WHERE 1=1 " .
+                "AND c.insertedTs > '2018-01-31' " .
+                "AND c.insertedTs  < '2018-05-01' " .
+                "AND c.id IN ( " .
+                    "SELECT t.customer " .
+                    "FROM trips t " .
+                    "WHERE t.timestampBeginning > '2018-01-31' " .
+                    "AND t.timestampBeginning < '2018-05-01' ".
+                    ") " .
+                "AND c.id NOT IN ( ". 
+                    "SELECT cb.customer " .
+                    "FROM customers_bonus cb " .
+                    "WHERE cb.description = 'ABCDEFC' " .
+                    ") ";
+        $query = $em->createQuery($dql);
+        return $query->getResult();
+    }
 }
