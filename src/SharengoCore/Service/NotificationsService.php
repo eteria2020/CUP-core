@@ -18,22 +18,30 @@ class NotificationsService
      * @var UserService
      */
     private $userService;
+    
+    /**
+     * @var CustomersService
+     */
+    private $customerService;
 
     /**
      * @param EntityManager $entityManager
      * @param NotificationsRepository $notificationsRepository
      * @param DatatableServiceInterface $datatableService
+     * @param CustomersService $customerService
      * @param UserService $userService
      */
     public function __construct(
         EntityManager $entityManager,
         NotificationsRepository $notificationsRepository,
         DatatableServiceInterface $datatableService,
+        CustomersService $customerService,
         UserService $userService
     ) {
         $this->entityManager = $entityManager;
         $this->notificationsRepository = $notificationsRepository;
         $this->datatableService = $datatableService;
+        $this->customerService = $customerService;
         $this->userService = $userService;
     }
 
@@ -79,10 +87,11 @@ class NotificationsService
                 'nc' => [
                     'name' => $notifications->getCategoryName(),
                 ],
-                'np' => [
-                    'name' => is_null($notifications->getProtocolName()) ? $notifications->getCategoryDefaultProtocolName() : $notifications->getProtocolName(),
+                'trip' => [
+                    'carPlate' => $notifications->getMeta()['car_plate'],
+                    'tripId' => $notifications->getMeta()['trip_id'],
                 ],
-                'button' => $notifications->getId(),
+                'c' => $this->getCustomer($this->customerService->findById($notifications->getMeta()['customer_id']))
             ];
         }, $notifications);
     }
@@ -110,5 +119,13 @@ class NotificationsService
         // persist and flush notification
         $this->entityManager->persist($notification);
         $this->entityManager->flush();
+    }
+    
+    private function getCustomer($customer) {
+        return [
+            'name' => $customer->getName(),
+            'surname' => $customer->getSurname(),
+            'mobile' => $customer->getMobile()
+        ];
     }
 }
