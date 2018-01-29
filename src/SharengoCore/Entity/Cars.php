@@ -269,6 +269,13 @@ class Cars
     private $charging = false;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="noGPS", type="boolean", nullable=true)
+     */
+    private $noGPS = false;
+
+    /**
      * @ORM\OneToMany(targetEntity="Trips", mappedBy="car")
      */
     private $trips;
