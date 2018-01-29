@@ -193,7 +193,7 @@ class CustomerDeactivationService
     public function deactivateByScriptDisableCreditCard(
         Customers $customer
     ) {
-        $details = ['details' => 'Deactivated by script disable-credit-card because credit card of  customer is expired'];
+        $details = ['details' => 'Deactivated by script disable-credit-card because credit card of customer is expired'];
 
         $this->deactivate(
             $customer,
