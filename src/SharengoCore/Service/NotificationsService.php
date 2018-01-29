@@ -71,7 +71,7 @@ class NotificationsService
             return [
                 'e' => [
                     'id' => $notifications->getId(),
-                    'subject' => $notifications->getSubject(),
+
                     'submitDate' =>
                         ($notifications->getSubmitDate() instanceof DateTime) ?
                         $notifications->getSubmitDate()->getTimestamp() : null,
@@ -83,9 +83,6 @@ class NotificationsService
                         $notifications->getAcknowledgeDate()->getTimestamp() : null,
                     'webuser' => $notifications->getWebuser()
                     
-                ],
-                'nc' => [
-                    'name' => $notifications->getCategoryName(),
                 ],
                 'trip' => [
                     'carPlate' => $notifications->getMeta()['car_plate'],
@@ -122,10 +119,18 @@ class NotificationsService
     }
     
     private function getCustomer($customer) {
-        return [
-            'id' => $customer->getId(),
-            'name_surname' => $customer->getName() . " ". $customer->getSurname(),
-            'mobile' => $customer->getMobile()
-        ];
+        if(isset($customer))
+            return [
+                'id' => $customer->getId(),
+                'name_surname' => $customer->getSurname() . " " . $customer->getName(),
+                'mobile' => $customer->getMobile()
+            ];
+        else{
+            return [
+                'id' => null,
+                'name_surname' => null,
+                'mobile' => null
+            ];
+        }
     }
 }
