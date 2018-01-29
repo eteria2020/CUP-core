@@ -245,7 +245,7 @@ class Cars
      *
      * @ORM\Column(name="battery_safety", type="boolean", nullable=false)
      */
-    private $batterySafety = false;
+    private $batterySafety = true;
 
     /**
      * @var \DateTime
@@ -267,6 +267,13 @@ class Cars
      * @ORM\Column(name="charging", type="boolean", nullable=true)
      */
     private $charging = false;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="noGPS", type="boolean", nullable=true)
+     */
+    private $noGPS = false;
 
     /**
      * @ORM\OneToMany(targetEntity="Trips", mappedBy="car")
