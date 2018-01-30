@@ -422,6 +422,16 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->clear('SharengoCore\Entity\CustomersBonus');
 
     }
+    
+    public function clearEntityManagerBonus(){
+        //$identity = $this->entityManager->getUnitOfWork()->getIdentityMap();
+        $this->entityManager->clear('SharengoCore\Entity\Cards');
+        $this->entityManager->clear('SharengoCore\Entity\AddBonus');
+        $this->entityManager->clear('SharengoCore\Entity\CustomersBonus');
+        $this->entityManager->clear('SharengoCore\Entity\Fleet');
+        $this->entityManager->clear('SharengoCore\Entity\DiscountStatus');
+
+    }
 
     public function getAllBonus(Customers $customer)
     {
@@ -951,6 +961,7 @@ class CustomersService implements ValidatorServiceInterface
     }
     
     public function clearAllEntityManager(){
+        $identity = $this->entityManager->getUnitOfWork()->getIdentityMap(); 
         $this->entityManager->clear();
     }
     

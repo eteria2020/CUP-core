@@ -127,14 +127,14 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
                 "AND c.insertedTs > :start " .
                 "AND c.insertedTs  < :end " .
                 "AND c.id IN ( " .
-                    "SELECT c.id " .
+                    "SELECT cu.id " .
                     "FROM \SharengoCore\Entity\Trips t " .
                     "JOIN \SharengoCore\Entity\Customers cu WITH t.customer = cu.id " .
                     "WHERE t.timestampBeginning > :start " .
                     "AND t.timestampBeginning < :end ".
                     ") " .
                 "AND c.id NOT IN ( ". 
-                    "SELECT c.id " .
+                    "SELECT cus.id " .
                     "FROM \SharengoCore\Entity\CustomersBonus cb " .
                     "JOIN \SharengoCore\Entity\Customers cus WITH cb.customer = cus.id " .
                     "WHERE cb.description = :description " .
