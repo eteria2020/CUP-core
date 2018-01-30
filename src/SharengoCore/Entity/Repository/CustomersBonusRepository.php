@@ -141,8 +141,10 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
                     ") ";
         $query = $em->createQuery($dql);
         
-        $query->setParameter('start', '2018-02-01');
-        $query->setParameter('end', '2018-05-01');
+        //$query->setParameter('start', '2018-02-01');
+        //$query->setParameter('end', '2018-05-01');
+        $query->setParameter('start', '2017-09-30');
+        $query->setParameter('end', '2017-11-01');
         $query->setParameter('description', 'Courtesy of NIVEA');
         
         return $query->getResult();
