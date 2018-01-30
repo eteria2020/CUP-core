@@ -429,7 +429,7 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->clear('SharengoCore\Entity\AddBonus');
         $this->entityManager->clear('SharengoCore\Entity\CustomersBonus');
         $this->entityManager->clear('SharengoCore\Entity\Fleet');
-        $this->entityManager->clear('SharengoCore\Entity\DiscountStatus');
+        //$this->entityManager->clear('SharengoCore\Entity\DiscountStatus');
 
     }
 
