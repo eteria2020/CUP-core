@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Service;
 
+use Cartasi\Entity\Contracts;
 use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomerDeactivation;
@@ -181,6 +182,26 @@ class CustomerDeactivationService
             $webuser
         );
     }
+    
+    /**
+     * Deactivate Customer that was disabled by script disable-credit-card
+     *
+     * @param Customers $customer
+     * @param string|null $note
+     * @param \DateTime|null $startTs
+     */
+    public function deactivateByScriptDisableCreditCard(
+        Customers $customer
+    ) {
+        $details = ['details' => 'Deactivated by script disable-credit-card because credit card of customer is expired'];
+
+        $this->deactivate(
+            $customer,
+            CustomerDeactivation::EXPIRED_CREDIT_CARD,
+            $details
+        );
+    }
+
 
     /**
      * @param Customers $customer
@@ -523,5 +544,24 @@ class CustomerDeactivationService
                 ['updated_deactivation' => $customerDeactivation->getId()]
             );
         }
+    }
+
+    /**
+     * Close the CustomerDeactivation when the Customer change expired credit card with a new one
+     *
+     * @param CustomerDeactivation $customerDeactivation
+     * @param Contracts $contract
+     * @param \DateTime|null $endTs
+     */
+    public function reactivateForExpiredCreditCard(
+        CustomerDeactivation $customerDeactivation,
+        Contracts $contract,
+        \DateTime $endTs = null
+    ) {
+        $details = [
+            'new_contract_id' => $contract->getId()
+        ];
+
+        $this->reactivate($customerDeactivation, $details, $endTs);
     }
 }
