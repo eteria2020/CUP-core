@@ -124,13 +124,13 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         $dql = "SELECT c " .
                 "FROM \SharengoCore\Entity\Customers c " .
                 "WHERE 1=1 " .
-                "AND c.insertedTs > :start " .
+                "AND c.insertedTs >= :start " .
                 "AND c.insertedTs  < :end " .
                 "AND c.id IN ( " .
                     "SELECT cu.id " .
                     "FROM \SharengoCore\Entity\Trips t " .
                     "JOIN \SharengoCore\Entity\Customers cu WITH t.customer = cu.id " .
-                    "WHERE t.timestampBeginning > :start " .
+                    "WHERE t.timestampBeginning >= :start " .
                     "AND t.timestampBeginning < :end ".
                     ") " .
                 "AND c.id NOT IN ( ". 
@@ -141,7 +141,7 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
                     ") ";
         $query = $em->createQuery($dql);
         
-        $query->setParameter('start', '2018-01-31');
+        $query->setParameter('start', '2018-02-01');
         $query->setParameter('end', '2018-05-01');
         $query->setParameter('description', 'Courtesy of NIVEA');
         
