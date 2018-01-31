@@ -119,7 +119,7 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
     
-    public function getCustomerBonusNivea() {
+    public function getCustomerBonusNivea($descriptionBonusNivea) {
         $em = $this->getEntityManager();
         $dql = "SELECT c " .
                 "FROM \SharengoCore\Entity\Customers c " .
@@ -142,9 +142,9 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         
         $query = $em->createQuery($dql);
         
-        $query->setParameter('start', '2018-02-01');
-        $query->setParameter('end', '2018-05-01');
-        $query->setParameter('description', 'Courtesy of NIVEA');
+        $query->setParameter('start', '2018-02-01 00:00:00');
+        $query->setParameter('end', '2018-05-01 00:00:00');
+        $query->setParameter('description', $descriptionBonusNivea);
         
         return $query->getResult();
     }

@@ -965,7 +965,7 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->clear();
     }
     
-    public function getCustomerBonusNivea() {
-        return $this->customersBonusRepository->getCustomerBonusNivea();
+    public function getCustomerBonusNivea($descriptionBonusNivea) {
+        return $this->customersBonusRepository->getCustomerBonusNivea($descriptionBonusNivea);
     }
 }
