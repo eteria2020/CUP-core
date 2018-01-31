@@ -11,8 +11,9 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
  * @ORM\Table(name="fleets")
  * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\FleetRepository")
  */
-class Fleet
-{
+class Fleet {
+
+    const DUMMY_FLEET_LIMIT = 100;
 
     /**
      * @var integer
@@ -96,7 +97,6 @@ class Fleet
      */
     private $zoneAlarms;
 
-
     /**
      * @var ZoneAlarms[]
      *
@@ -113,9 +113,7 @@ class Fleet
      */
     private $zoneBonus;
 
-
-    public function __construct($code, $name, $latitude, $longitude, $zoomLevel, $isDefault = false)
-    {
+    public function __construct($code, $name, $latitude, $longitude, $zoomLevel, $isDefault = false) {
         $this->code = $code;
         $this->name = $name;
         $this->latitude = $latitude;
@@ -124,13 +122,11 @@ class Fleet
         $this->isDefault = $isDefault;
     }
 
-
     /**
      * @param DoctrineHydrator
      * @return mixed[]
      */
-    public function toArray(DoctrineHydrator $hydrator)
-    {
+    public function toArray(DoctrineHydrator $hydrator) {
         return $hydrator->extract($this);
     }
 
@@ -139,8 +135,7 @@ class Fleet
      *
      * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -149,8 +144,7 @@ class Fleet
      *
      * @return string
      */
-    public function getCode()
-    {
+    public function getCode() {
         return $this->code;
     }
 
@@ -159,8 +153,7 @@ class Fleet
      *
      * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -169,8 +162,7 @@ class Fleet
      *
      * @return string
      */
-    public function getLatitude()
-    {
+    public function getLatitude() {
         return $this->latitude;
     }
 
@@ -179,8 +171,7 @@ class Fleet
      *
      * @return string
      */
-    public function getLongitude()
-    {
+    public function getLongitude() {
         return $this->longitude;
     }
 
@@ -189,8 +180,7 @@ class Fleet
      *
      * @return integer
      */
-    public function getZoomLevel()
-    {
+    public function getZoomLevel() {
         return $this->zoomLevel;
     }
 
@@ -199,32 +189,29 @@ class Fleet
      *
      * @return bool
      */
-    public function getIsDefault()
-    {
+    public function getIsDefault() {
         return $this->isDefault;
     }
 
     /**
      * @return string
      */
-    public function getIntCode()
-    {
+    public function getIntCode() {
         return $this->intCode;
     }
 
     /**
      * @return string
      */
-    public function getInvoiceHeader()
-    {
+    public function getInvoiceHeader() {
         return $this->invoiceHeader;
     }
 
     /**
      * @return \SharengoCore\Entity\ZoneAlarms[]
      */
-    public function getZoneAlarms()
-    {
+    public function getZoneAlarms() {
         return $this->zoneAlarms;
     }
+
 }
