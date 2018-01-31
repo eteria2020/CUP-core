@@ -6,6 +6,7 @@ use SharengoCore\Entity\Fleet;
 use SharengoCore\Exception\FleetNotFoundException;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Queries\AllFleets;
+use SharengoCore\Entity\Queries\AllFleetsNoDummy;
 use SharengoCore\Entity\Queries\FleetById;
 use SharengoCore\Entity\Queries\FleetByCode;
 use SharengoCore\Entity\Queries\DefaultFleet;
@@ -28,11 +29,21 @@ class FleetService {
     }
 
     /**
-     * @return Penalties[]
+     * Return all fleets.
+     * @return Fleet[]
      */
     public function getAllFleets() {
         $query = new AllFleets($this->entityManager);
+        return $query();
+    }
 
+    /**
+     * Return all fleets expetp dummies fletts (id<100).
+     * 
+     * @return Fleet[]
+     */
+    public function getAllFleetsNoDummy() {
+        $query = new AllFleetsNoDummy($this->entityManager);
         return $query();
     }
 
@@ -52,17 +63,15 @@ class FleetService {
     }
 
     /**
-     * This method return an array of Fleets name with id<DUMMY_FLEET_LIMIT, 
+     * This method return an array of Fleets name with id<DUMMY_FLEET_LIMIT,
      * indexed with the object key "id", to be used with a ZF2 Form Select.
      * With the first parameter for example you can specify frirst element/s.
      *
      * @param array $fleets The inital "empty" array object.
      */
     public function getFleetsSelectorArrayNoDummy(array $fleets = []) {
-        foreach ($this->getAllFleets() as $fleet) {
-            if ($fleet->getId() < Fleet::DUMMY_FLEET_LIMIT) {
-                $fleets[$fleet->getId()] = $fleet->getName();
-            }
+        foreach ($this->getAllFleetsNoDummy() as $fleet) {
+            $fleets[$fleet->getId()] = $fleet->getName();
         }
 
         return $fleets;
