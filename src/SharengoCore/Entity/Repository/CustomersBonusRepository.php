@@ -139,6 +139,7 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
                     "JOIN \SharengoCore\Entity\Customers cus WITH cb.customer = cus.id " .
                     "WHERE cb.description = :description " .
                     ") ";
+        
         $query = $em->createQuery($dql);
         
         $query->setParameter('start', '2018-02-01');
