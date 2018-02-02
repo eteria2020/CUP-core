@@ -132,6 +132,7 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
                     "JOIN \SharengoCore\Entity\Customers cu WITH t.customer = cu.id " .
                     "WHERE t.timestampBeginning >= :start " .
                     "AND t.timestampBeginning < :end ".
+                    "AND t.fleet = :fleet " .
                     ") " .
                 "AND c.id NOT IN ( ". 
                     "SELECT cus.id " .
@@ -144,6 +145,7 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         
         $query->setParameter('start', '2018-02-01 00:00:00');
         $query->setParameter('end', '2018-05-01 00:00:00');
+        $query->setParameter('fleet', 1);
         $query->setParameter('description', $descriptionBonusNivea);
         
         return $query->getResult();
