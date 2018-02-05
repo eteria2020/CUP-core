@@ -68,14 +68,27 @@ class DatatableService implements DatatableServiceInterface
             if ($options['column'] == 'id' || $checkIdColumn) {
                 $withAndWhere = $where ? 'AND ' : 'WHERE ';
                 $dql .= $withAndWhere . $options['column'] . ' = :id ';
-                $as_parameters['id'] = (int)$options['searchValue'];
+                $as_parameters['id'] = (int) $options['searchValue'];
             } else {
-                $value = strtolower("%" . $options['searchValue'] . "%");
-                $withAndWhere = $where ? 'AND ' : 'WHERE ';
-                $dql .= $withAndWhere . ' LOWER(CAST(' . $options['column'] . ' as text)) LIKE :value ';
-                $as_parameters['value'] = $value;
+                if ($options['column'] == 'e.webuser') {
+                    $value = strtolower("%" . $options['searchValue'] . "%");
+                    $dql .= 'INNER JOIN e.webuser w WHERE LOWER(CAST(w.displayName as text)) LIKE :value ';
+                    $as_parameters['value'] = $value;
+                } else {
+                        $value = strtolower("%" . $options['searchValue'] . "%");
+                        $withAndWhere = $where ? 'AND ' : 'WHERE ';
+                        $dql .= $withAndWhere . ' LOWER(CAST(' . $options['column'] . ' as text)) LIKE :value ';
+                        $as_parameters['value'] = $value;
+                    
+                }
             }
             $where = true;
+        }else{
+            if ($options['column'] != 'select' && !empty($options['column'])){
+                if ($options['column'] == 'nonGestito') {
+                    $dql .= 'WHERE e.webuser IS NULL ';
+                }
+            }
         }
 
         // query a fixed parameter
