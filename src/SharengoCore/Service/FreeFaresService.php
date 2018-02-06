@@ -28,7 +28,7 @@ class FreeFaresService {
 
     /**
      *
-     * @var EventsRepository 
+     * @var EventsRepository
      */
     private $eventsRepository;
 
@@ -273,5 +273,34 @@ class FreeFaresService {
             return false;
         }
     }
+
+        static function verifyFilterPlugUnPlug($flagPlag, Trips $trip, array $conditions, EventsRepository $eventsRepository) {
+        $result = false;
+        try {
+            if ($flagPlag) {  // plug-in (in charging)
+                $intVal = 1;
+            } else {         // disconnected (in charging)
+                $intVal = 0;
+            }
+
+            $events = $eventsRepository->getByTrip($trip);
+            $eventLastCharge = null;
+            foreach ($events as $event) {
+                if ($event->getEventId() == 7) {            // event CHARGE
+                    $eventLastCharge = $event;
+                }
+            }
+
+            if (!is_null($eventLastCharge)) {
+                if ($eventLastCharge->getIntval() == $intVal) {
+                    $result = true;
+                }
+            }
+        } catch (Exception $ex) {
+
+        }
+
+        return $result;
+        }
 
 }
