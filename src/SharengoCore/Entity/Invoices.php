@@ -326,10 +326,10 @@ class Invoices
         $tripPayments,
         $version,
         $amounts,
-        $monthly = false
+        $monthly = null
     ) {
-        if ($monthly) {
-            $date = new \DateTime('last day of previous month');
+        if ($monthly instanceof \DateTime) {
+            $date = $monthly;
         } else {
             $date = $tripPayments[0]->getPayedSuccessfullyAt();
         }
@@ -338,8 +338,7 @@ class Invoices
             $customer,
             $version,
             self::TYPE_TRIP,
-            intval($date->format("Ymd")),
-            //intval($tripPayments[0]->getPayedSuccessfullyAt()->format("Ymd")), // it's supposed all trips have been payed on the same day
+            intval($date->format("Ymd")),//intval($tripPayments[0]->getPayedSuccessfullyAt()->format("Ymd")), // it's supposed all trips have been payed on the same day
             $amounts,
             $tripPayments[0]->getTrip()->getFleet()
         );

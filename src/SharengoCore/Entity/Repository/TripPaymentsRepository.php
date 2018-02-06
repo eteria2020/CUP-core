@@ -30,7 +30,7 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
 
         $query = $em->createQuery($dql);
 
-        if ($firstDay instanceof \DateTime &&  $lastDay instanceof \DateTime) {
+        if ($firstDay instanceof \DateTime && $lastDay instanceof \DateTime) {
             $query->setParameter('firstDay', $firstDay->setTime(00,00,00));
             $query->setParameter('lastDay', $lastDay->setTime(23,59,59));
         }

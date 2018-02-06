@@ -88,10 +88,10 @@ class TripPaymentsService
      * @param [TripPayments] $tripPayments
      * @return [[[[TripPayments]]]]
      */
-    private function groupTripPayments($tripPayments, $lastday = null)
+    private function groupTripPayments($tripPayments, $lastDay = null)
     {
-        if (!isNull($lastday)) {
-            $date = $lastday->format("Y-m-d");
+        if ($lastDay instanceof \DateTime) {
+            $date = $lastDay->format("Y-m-d");
         }
         // group by date and customer
         $orderedTripPayments = [];
@@ -100,7 +100,7 @@ class TripPaymentsService
             if (!$dateTrip instanceof \DateTime) {
                 throw new TripPaymentWithoutDateException($tripPayment);
             }
-            if (isNull($lastday)) {
+            if (!$lastDay instanceof \DateTime) {
                 // retrieve date and customerId from tripPayment
                 $date = $dateTrip->format('Y-m-d');
             }

@@ -154,7 +154,7 @@ class InvoicesService
         );
     }
 
-    public function createInvoicesForTrips($tripPayments, $writeToDb = true, $monthly = false)
+    public function createInvoicesForTrips($tripPayments, $writeToDb = true, $monthly = null)
     {
         $invoices = [];
 
@@ -204,7 +204,7 @@ class InvoicesService
      * @param bool $monthly
      * @return Invoices
      */
-    public function prepareInvoiceForTrips(Customers $customer, $tripPayments, $monthly = false)
+    public function prepareInvoiceForTrips(Customers $customer, $tripPayments, $monthly = null)
     {
         $rowAmounts = [];
 
@@ -220,12 +220,12 @@ class InvoicesService
             $customer,
             $tripPayments,
             $this->templateVersion,
-            $monthly,
             [
                 'sum' => $this->calculateAmountsWithTaxesFromTotal($total),
                 'rows' => $rowAmounts,
                 'iva' => $this->ivaPercentage
-            ]
+            ],
+            $monthly
         );
     }
 
