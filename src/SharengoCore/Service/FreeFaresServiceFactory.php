@@ -12,7 +12,8 @@ class FreeFaresServiceFactory implements FactoryInterface
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $tripsRepository = $entityManager->getRepository('\SharengoCore\Entity\Trips');
         $reservationsRepository = $entityManager->getRepository('\SharengoCore\Entity\Reservations');
+        $eventsRepository = $entityManager->getRepository('\SharengoCore\Document\Events');
 
-        return new FreeFaresService($tripsRepository, $reservationsRepository, $entityManager);
+        return new FreeFaresService($tripsRepository, $reservationsRepository, $entityManager, $eventsRepository);
     }
 }

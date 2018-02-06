@@ -10,6 +10,7 @@ use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\FreeFares;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Utils\Interval;
+use SharengoCore\Document\Repository\EventsRepository;
 
 class FreeFaresService {
 
@@ -25,12 +26,18 @@ class FreeFaresService {
      */
     private $reservationsRepository;
 
+    /**
+     *
+     * @var EventsRepository 
+     */
+    private $eventsRepository;
+
     public function __construct(
-    TripsRepository $tripsRepository, ReservationsREpository $reservationsRepository, EntityManager $entityManager
-    ) {
+    TripsRepository $tripsRepository, ReservationsREpository $reservationsRepository, EntityManager $entityManager, EventsRepository $eventsRepository) {
         $this->tripsRepository = $tripsRepository;
         $this->reservationsRepository = $reservationsRepository;
         $this->entityManager = $entityManager;
+        $this->eventsRepository = $eventsRepository;
     }
 
     /**
@@ -54,6 +61,10 @@ class FreeFaresService {
             $intervals = $this->filterCustomer($intervals, $trip->getCustomer(), $conditions['customer']);
         } else if (isset($conditions['time'])) {
             $intervals = $this->filterTime($intervals, $conditions['time']);
+        } else if (isset($conditions['plug'])) {
+            $intervals = $this->filterPlugUnPlug($intervals, true, $trip, $conditions['plug']);
+        } else if (isset($conditions['unplug'])) {
+            $intervals = $this->filterPlugUnPlug($intervals, false, $trip, $conditions['unplug']);
         } else {
             $intervals = [];
         }
@@ -99,6 +110,30 @@ class FreeFaresService {
 
         return $intervals;
     }
+
+    private function filterPlugUnPlug(array $intervals, $flagPlag, Trips $trip, array $conditions) {
+        $result = [];
+
+        if ($conditions['fleet'] == $trip->getFleet()->getId()) {
+            if (self::verifyFilterPlugUnPlug($flagPlag, $trip, $conditions, $this->eventsRepository)) {
+                $start = $trip->getTimestampBeginning();
+                $end = clone $start;
+                $end->modify('+' . $conditions['value'] . ' minutes');
+                $plugInterval = new Interval($start, $end);
+
+                foreach ($intervals as $interval) {
+                    $intersection = $interval->intersection($plugInterval);
+
+                    if ($intersection) {
+                        $result[] = $intersection;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
 
     /**
      * @param Intervals[] $intervals
