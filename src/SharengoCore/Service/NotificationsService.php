@@ -114,13 +114,12 @@ class NotificationsService {
                 'nameSurname' => $customer->getSurname() . " " . $customer->getName(),
                 'mobile' => $customer->getMobile()
             ];
-        else {
+        else
             return [
                 'id' => null,
                 'nameSurname' => null,
                 'mobile' => null
             ];
-        }
     }
 
 }
