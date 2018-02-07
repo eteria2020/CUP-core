@@ -318,19 +318,27 @@ class Invoices
      * @param TripPayments[] $tripPayments
      * @param integer $version
      * @param mixed $amounts
+     * @param bool $monthly
      * @return Invoices
      */
     public static function createInvoiceForTrips(
         Customers $customer,
         $tripPayments,
         $version,
-        $amounts
+        $amounts,
+        $monthly = null
     ) {
+        if ($monthly instanceof \DateTime) {
+            $date = $monthly;
+        } else {
+            $date = $tripPayments[0]->getPayedSuccessfullyAt();
+        }
+
         $invoice = new Invoices(
             $customer,
             $version,
             self::TYPE_TRIP,
-            intval($tripPayments[0]->getPayedSuccessfullyAt()->format("Ymd")), // it's supposed all trips have been payed on the same day
+            intval($date->format("Ymd")),//intval($tripPayments[0]->getPayedSuccessfullyAt()->format("Ymd")), // it's supposed all trips have been payed on the same day
             $amounts,
             $tripPayments[0]->getTrip()->getFleet()
         );

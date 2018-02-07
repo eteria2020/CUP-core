@@ -64,9 +64,9 @@ class TripPaymentsService
     /**
      * @return [[[[TripPayments]]]]
      */
-    public function getTripPaymentsNoInvoiceGrouped()
+    public function getTripPaymentsNoInvoiceGrouped($firstDay = null, $lastDay = null)
     {
-        return $this->groupTripPayments($this->tripPaymentsRepository->findTripPaymentsNoInvoice());
+        return $this->groupTripPayments($this->tripPaymentsRepository->findTripPaymentsNoInvoice($firstDay, $lastDay), $lastDay);
     }
 
     public function getOneGrouped($tripPaymentId)
@@ -88,18 +88,21 @@ class TripPaymentsService
      * @param [TripPayments] $tripPayments
      * @return [[[[TripPayments]]]]
      */
-    private function groupTripPayments($tripPayments)
+    private function groupTripPayments($tripPayments, $lastDay = null)
     {
+        if ($lastDay instanceof \DateTime) {
+            $date = $lastDay->format("Y-m-d");
+        }
         // group by date and customer
         $orderedTripPayments = [];
         foreach ($tripPayments as $tripPayment) {
-            // retrieve date and customerId from tripPayment
-            $date = $tripPayment->getPayedSuccessfullyAt();
-
-            if ($date instanceof \DateTime) {
-                $date = $date->format('Y-m-d');
-            } else {
+            $dateTrip = $tripPayment->getPayedSuccessfullyAt();
+            if (!$dateTrip instanceof \DateTime) {
                 throw new TripPaymentWithoutDateException($tripPayment);
+            }
+            if (!$lastDay instanceof \DateTime) {
+                // retrieve date and customerId from tripPayment
+                $date = $dateTrip->format('Y-m-d');
             }
             $customerId = $tripPayment->getTrip()->getCustomer()->getId();
             $fleetId = $tripPayment->getTrip()->getFleet()->getId();
