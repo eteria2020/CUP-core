@@ -1957,9 +1957,7 @@ class Customers {
      * @return bool
      */
     public function deservesNewDiscount() {
-        return $this->discountRate == 0 && // has 0% discount
-                ($this->insertedTs >= date_create('18 april 2016') // registered after 18/04/2016
-                || !$this->oldDiscounts->isEmpty()); // has a discount already expired
+        return $this->discountRate == 0; // has 0% discount
     }
 
     /**
