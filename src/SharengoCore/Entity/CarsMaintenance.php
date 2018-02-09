@@ -84,6 +84,15 @@ class CarsMaintenance
      */
     private $endTs = null;
 
+    /**
+     * @var MaintenanceMotivations
+     *
+     * @ORM\ManyToOne(targetEntity="MaintenanceMotivations")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="motivation", referencedColumnName="id")
+     * })
+     */
+    private $motivation;
 
     /**
      * Get id
@@ -261,4 +270,13 @@ class CarsMaintenance
         return $this->getEndWebuser() instanceof Webuser ||
             $this->getEndTs() instanceof \DateTime;
     }
+
+    /**
+     * @return MaintenanceMotivations
+     */
+    public function getMotivation()
+    {
+        return $this->motivation;
+    }
+
 }
