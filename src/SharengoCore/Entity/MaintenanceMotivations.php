@@ -3,12 +3,14 @@
 namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * MaintenanceMotivations
  *
  * @ORM\Table(name="maintenance_motivations")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\MaintenanceMotivationsRepository")
  */
 class MaintenanceMotivations
 {
@@ -35,6 +37,30 @@ class MaintenanceMotivations
      * @ORM\Column(name="enabled", type="boolean", nullable=false)
      */
     private $enabled;
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnabled()
+    {
+        return $this->enabled;
+    }
 
 
 }

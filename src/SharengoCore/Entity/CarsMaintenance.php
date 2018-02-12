@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * CarsMaintenance
  *
- * @ORM\Table(name="cars_maintenance", indexes={@ORM\Index(name="IDX_41AB4A8BAE35528C", columns={"car_plate"}), @ORM\Index(name="IDX_41AB4A8B49279951", columns={"webuser_id"})})
+ * @ORM\Table(name="cars_maintenance", indexes={@ORM\Index(name="IDX_41AB4A8BAE35528C", columns={"car_plate"}), @ORM\Index(name="IDX_41AB4A8B49279951", columns={"webuser_id"}), @ORM\Index(name="IDX_12407F1E06073ED", columns={"motivation"})})
  * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CarsMaintenanceRepository")
  *
  */
@@ -85,14 +85,14 @@ class CarsMaintenance
     private $endTs = null;
 
     /**
-     * @var MaintenanceMotivations
+     * @var \MaintenanceMotivations
      *
      * @ORM\ManyToOne(targetEntity="MaintenanceMotivations")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="motivation", referencedColumnName="id")
      * })
      */
-    private $motivation;
+     private $motivation;
 
     /**
      * Get id
@@ -277,6 +277,12 @@ class CarsMaintenance
     public function getMotivation()
     {
         return $this->motivation;
+    }
+
+    public function setMotivation(MaintenanceMotivations $maintenanceMotivations){
+
+        $this->motivation = $maintenanceMotivations;
+
     }
 
 }
