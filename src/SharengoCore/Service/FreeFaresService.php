@@ -62,7 +62,7 @@ class FreeFaresService {
         } else if (isset($conditions['time'])) {
             $intervals = $this->filterTime($intervals, $conditions['time']);
         } else if (isset($conditions['plug'])) {
-            $intervals = $this->filterPlugUnPlug($intervals, true, $trip, $conditions['plug']);
+            //$intervals = $this->filterPlugUnPlug($intervals, true, $trip, $conditions['plug']);
         } else if (isset($conditions['unplug'])) {
             $intervals = $this->filterPlugUnPlug($intervals, false, $trip, $conditions['unplug']);
         } else {
@@ -111,22 +111,28 @@ class FreeFaresService {
         return $intervals;
     }
 
-    private function filterPlugUnPlug(array $intervals, $flagPlag, Trips $trip, array $conditions) {
+/**
+ *
+ * @param array $intervals
+ * @param type $flagPlug
+ * @param Trips $trip
+ * @param array $conditions
+ * @return type
+ */
+    private function filterPlugUnPlug(array $intervals, $flagPlug, Trips $trip, array $conditions) {
         $result = [];
 
-        if ($conditions['fleet'] == $trip->getFleet()->getId()) {
-            if (self::verifyFilterPlugUnPlug($flagPlag, $trip, $conditions, $this->eventsRepository)) {
-                $start = $trip->getTimestampBeginning();
-                $end = clone $start;
-                $end->modify('+' . $conditions['value'] . ' minutes');
-                $plugInterval = new Interval($start, $end);
+        if (self::verifyFilterPlugUnPlug($flagPlug, $trip, $conditions, $this->eventsRepository)) {
+            $start = $trip->getTimestampBeginning();
+            $end = clone $start;
+            $end->modify('+' . $conditions['value'] . ' minutes');
+            $plugInterval = new Interval($start, $end);
 
-                foreach ($intervals as $interval) {
-                    $intersection = $interval->intersection($plugInterval);
+            foreach ($intervals as $interval) {
+                $intersection = $interval->intersection($plugInterval);
 
-                    if ($intersection) {
-                        $result[] = $intersection;
-                    }
+                if ($intersection) {
+                    $result[] = $intersection;
                 }
             }
         }
@@ -274,10 +280,18 @@ class FreeFaresService {
         }
     }
 
-        static function verifyFilterPlugUnPlug($flagPlag, Trips $trip, array $conditions, EventsRepository $eventsRepository) {
+    /**
+     *
+     * @param type $flagPlug
+     * @param Trips $trip
+     * @param array $conditions
+     * @param EventsRepository $eventsRepository
+     * @return boolean
+     */
+    static function verifyFilterPlugUnPlug($flagPlug, Trips $trip, array $conditions, EventsRepository $eventsRepository) {
         $result = false;
         try {
-            if ($flagPlag) {  // plug-in (in charging)
+            if ($flagPlug) {  // plug-in (in charging)
                 $intVal = 1;
             } else {         // disconnected (in charging)
                 $intVal = 0;
@@ -301,6 +315,6 @@ class FreeFaresService {
         }
 
         return $result;
-        }
+    }
 
 }
