@@ -5,15 +5,23 @@ namespace SharengoCore\Entity;
 use Cartasi\Entity\Transactions;
 
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+use SharengoCore\Exception\AlreadySetFirstPaymentTryTsException;
+
 
 /**
- * TripPayments
+ * ExtraPayments
  *
  * @ORM\Table(name="extra_payments")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\ExtraPaymentsRepository")
  */
-class ExtraPayment
+class ExtraPayments
 {
+    const STATUS_TO_BE_PAYED = 'to_be_payed';
+    const STATUS_PAYED_CORRECTLY = 'payed_correctly';
+    const STATUS_WRONG_PAYMENT = 'wrong_payment';
+    const STATUS_INVOICED = 'invoiced';
+    
     /**
      * @var integer
      *
@@ -105,6 +113,25 @@ class ExtraPayment
      * })
      */
     private $transaction;
+    
+    /**
+     * @var string can have values
+     *      - to_be_payed (default)
+     *      - payed_correctly
+     *      - wrong_payment
+     *      - invoiced
+     *
+     * @ORM\Column(name="status", type="string", nullable=false, options={"default" = "to_be_payed"})
+     */
+    private $status;
+    
+    /**
+     * @var ExtraPaymentTries[]
+     *
+     * @ORM\OneToMany(targetEntity="ExtraPaymentTries", mappedBy="extraPayment")
+     * @ORM\OrderBy({"ts" = "ASC"})
+     */
+    private $extraPaymentTries;
 
     /**
      * @param Customer $customer
@@ -130,6 +157,7 @@ class ExtraPayment
         $this->paymentType = $paymentType;
         $this->reasons = $reasons;
         $this->invoiceAble = true;
+        $this->status = self::STATUS_TO_BE_PAYED;
         $this->generatedTs = date_create();
     }
 
@@ -191,5 +219,44 @@ class ExtraPayment
     public function getInvoice()
     {
         return $this->invoice;
+    }
+    
+    
+    public function getGeneratedTs(){
+        return $this->generatedTs;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param string $status
+     * @return ExtraPayments
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+        return $this;
+    }
+    
+    /**
+     * @return boolean
+     */
+    public function isWrongExtra()
+    {
+        return $this->status === self::STATUS_WRONG_PAYMENT;
+    }
+    
+    /**
+     * @return ExtraPaymentTries[]
+     */
+    public function getExtraPaymentTries()
+    {
+        return $this->extraPaymentTries;
     }
 }
