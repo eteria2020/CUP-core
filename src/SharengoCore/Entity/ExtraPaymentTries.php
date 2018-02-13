@@ -1,14 +1,16 @@
 <?php
 
+namespace SharengoCore\Entity;
 
+use Cartasi\Entity\Transactions;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ExtraPaymentTries
  *
- * @ORM\Table(name="extra_payment_tries", indexes={@ORM\Index(name="idx_transaction_id", columns={"transaction_id"}), @ORM\Index(name="idx_webuser_id", columns={"webuser_id"}), @ORM\Index(name="idx_extra_payment_id", columns={"extra_payment_id"})})
- * @ORM\Entity
+ * @ORM\Table(name="extra_payment_tries")
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\ExtraPaymentTriesRepository")
  */
 class ExtraPaymentTries
 {
@@ -37,11 +39,11 @@ class ExtraPaymentTries
     private $outcome;
 
     /**
-     * @var \Transactions
+     * @var Transactions
      *
-     * @ORM\ManyToOne(targetEntity="Transactions")
+     * @ORM\ManyToOne(targetEntity="Cartasi\Entity\Transactions")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id", nullable=true)
      * })
      */
     private $transaction;
@@ -65,7 +67,82 @@ class ExtraPaymentTries
      * })
      */
     private $extraPayment;
+    
+    /**
+     * @param ExtraPayments $extraPayment
+     * @param string $outcome
+     * @param Transactions|null $transaction
+     * @param Webuser|null $webuser
+     */
+    public function __construct(ExtraPayments $extraPayment, $outcome, Transactions $transaction = null, Webuser $webuser = null)
+    {
+        $this->extraPayment = $extraPayment;
+        $this->outcome = $outcome;
+        $this->transaction = $transaction;
+        $this->webuser = $webuser;
+        $this->ts = date_create(date('Y-m-d H:i:s'));
+    }
+    
+    
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
+    /**
+     * @return DateTime
+     */
+    public function getTs()
+    {
+        return $this->ts;
+    }
+
+    /**
+     * @return Webuser
+     */
+    public function getWebuser()
+    {
+        return $this->webuser;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWebuserName()
+    {
+        if ($this->webuser) {
+            return $this->webuser->getDisplayName();
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getOutcome()
+    {
+        return $this->outcome;
+    }
+
+    /**
+     * @param string $outcome
+     * @return ExtraPaymentTries
+     */
+    public function setOutcome($outcome)
+    {
+        $this->outcome = $outcome;
+        return $this;
+    }
+
+    /**
+     * @return Transactions
+     */
+    public function getTransaction()
+    {
+        return $this->transaction;
+    }
 
 }
 

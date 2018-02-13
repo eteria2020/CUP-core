@@ -259,4 +259,16 @@ class ExtraPayments
     {
         return $this->extraPaymentTries;
     }
+    
+    /**
+     * @return string
+     */
+    public function getFormattedTotalCost()
+    {
+        return floor($this->amount / 100) .
+            ',' .
+            ($this->amount % 100 < 10 ? '0' : '') .
+            $this->amount % 100 .
+            '€';
+    }
 }
