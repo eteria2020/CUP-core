@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="cars_info")
  * @ORM\Entity
  */
-class CarsInfo
-{
+class CarsInfo {
+
     /**
      * @var string
      *
@@ -85,7 +85,7 @@ class CarsInfo
      */
     private $softwareVersion;
 
-	/**
+    /**
      * @var string
      *
      * @ORM\Column(name="sdk", type="text", nullable=true)
@@ -120,7 +120,7 @@ class CarsInfo
      */
     private $androidBuild;
 
-	/**
+    /**
      * @var string
      *
      * @ORM\Column(name="tbox_sw", type="text", nullable=true)
@@ -134,7 +134,7 @@ class CarsInfo
      */
     private $tboxHardware;
 
-	/**
+    /**
      * @var string
      *
      * @ORM\Column(name="mcu_model", type="text", nullable=true)
@@ -176,16 +176,22 @@ class CarsInfo
      */
     private $lastUpdate;
 
-	/**
+    /**
      * @var string
      *
      * @ORM\Column(name="gps", type="text", nullable=true)
      */
     private $gps;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="unplug_enable", type="boolean", nullable=false)
+     */
+    private $unplugEnable;
 
-    public function __construct()
-    {
+    public function __construct() {
+
     }
 
     /**
@@ -193,8 +199,7 @@ class CarsInfo
      *
      * @return string
      */
-    public function getPlate()
-    {
+    public function getPlate() {
         return $this->plate;
     }
 
@@ -203,8 +208,7 @@ class CarsInfo
      *
      * @return string
      */
-    public function getFirmwareVersion()
-    {
+    public function getFirmwareVersion() {
         return $this->firmwareVersion;
     }
 
@@ -213,8 +217,7 @@ class CarsInfo
      *
      * @return string
      */
-    public function getSoftwareVersion()
-    {
+    public function getSoftwareVersion() {
         return $this->softwareVersion;
     }
 
@@ -223,8 +226,30 @@ class CarsInfo
      *
      * @return string
      */
-    public function getGps()
-    {
+    public function getGps() {
         return $this->gps;
     }
+
+    /**
+     * Set unplugEnable
+     *
+     * @param boolean unplugEnable
+     *
+     * @return Pois
+     */
+    public function setUnplugEnable($unplugEnable) {
+        $this->unplugEnable = $unplugEnable;
+
+        return $this;
+    }
+
+    /**
+     * Get unplugEnable
+     *
+     * @return boolean
+     */
+    public function getUnplugEnable() {
+        return $this->unplugEnable;
+    }
+
 }
