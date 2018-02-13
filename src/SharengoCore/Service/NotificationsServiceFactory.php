@@ -16,6 +16,7 @@ class NotificationsServiceFactory implements FactoryInterface
 
         /** @var DatatableServiceInterface **/
         $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
+        $customerService = $serviceLocator->get('SharengoCore\Service\CustomersService');
 
         $notificationsRepository = $entityManager->getRepository('\SharengoCore\Entity\Notifications');
 
@@ -31,7 +32,8 @@ class NotificationsServiceFactory implements FactoryInterface
             $entityManager,
             $notificationsRepository,
             $datatableService,
-            $userService
+            $userService,
+            $customerService
         );
     }
 }

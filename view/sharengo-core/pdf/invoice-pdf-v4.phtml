@@ -196,7 +196,7 @@
 
         <!-- Spacing -->
         <div class="spacing" style="height:<?= 570 - $tableHeight; ?>px;"></div>
-
+        <?php if($i == count($pagedContents)){ ?>
         <!-- Summary table -->
         <table class="table table1 font">
             <tr>
@@ -213,6 +213,7 @@
             </tr>
         </table>
         <!-- summary table -->
+            <?php } ?>
 
         <?php if (array_key_exists('bottom_note', $invoiceContent['body'])): ?>
             <div class="bottom-note">

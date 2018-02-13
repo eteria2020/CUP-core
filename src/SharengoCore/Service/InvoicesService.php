@@ -154,7 +154,7 @@ class InvoicesService
         );
     }
 
-    public function createInvoicesForTrips($tripPayments, $writeToDb = true)
+    public function createInvoicesForTrips($tripPayments, $writeToDb = true, $monthly = null)
     {
         $invoices = [];
 
@@ -174,7 +174,7 @@ class InvoicesService
                     // get customer for group of tripPayments
                     $customer = $tripPaymentsForFleet[0]->getTrip()->getCustomer();
                     // generate invoice from group of tripPayments
-                    $invoice = $this->prepareInvoiceForTrips($customer, $tripPaymentsForFleet);
+                    $invoice = $this->prepareInvoiceForTrips($customer, $tripPaymentsForFleet, $monthly);
                     $this->logger->log("Invoice created: " . $invoice->getId() . "\n");
                     $this->entityManager->persist($invoice);
                     $this->logger->log("EntityManager: invoice persisted\n");
@@ -201,9 +201,10 @@ class InvoicesService
     /**
      * @param Customers
      * @param TripPayments[] $tripPayments
+     * @param bool $monthly
      * @return Invoices
      */
-    public function prepareInvoiceForTrips(Customers $customer, $tripPayments)
+    public function prepareInvoiceForTrips(Customers $customer, $tripPayments, $monthly = null)
     {
         $rowAmounts = [];
 
@@ -223,7 +224,8 @@ class InvoicesService
                 'sum' => $this->calculateAmountsWithTaxesFromTotal($total),
                 'rows' => $rowAmounts,
                 'iva' => $this->ivaPercentage
-            ]
+            ],
+            $monthly
         );
     }
 
