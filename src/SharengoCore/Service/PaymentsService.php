@@ -579,11 +579,13 @@ class PaymentsService
         $this->entityManager->persist($extraPayment);
         $this->entityManager->flush();
 
+        /*
         // other unpayable consequences not mentionable here for respect of the childrens
         $this->eventManager->trigger('wrongTripPayment', $this, [
             'customer' => $customer,
             'tripPayment' => $extraPayment
         ]);
+        */
     }
     
     public function tryPreAuthorization(Customers $customer, Trips $trip, $avoidEmails = false, $avoidCartasi = false, $avoidPersistance = false){
