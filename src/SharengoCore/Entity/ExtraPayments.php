@@ -6,7 +6,7 @@ use Cartasi\Entity\Transactions;
 
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
-use SharengoCore\Exception\AlreadySetFirstPaymentTryTsException;
+use SharengoCore\Exception\AlreadySetFirstExtraTryTsException;
 
 
 /**
@@ -132,6 +132,18 @@ class ExtraPayments
      * @ORM\OrderBy({"ts" = "ASC"})
      */
     private $extraPaymentTries;
+    
+    /**
+     * Holds the timestamp of the first extraPaymentTries associated with this
+     * extraPayments. If a user's credit card is removed and the extraPayments's
+     * status is set to to_be_payed, this value shall be set to NULL untill a
+     * new extraPaymentTries is created
+     *
+     * @var DateTime
+     *
+     * @ORM\Column(name="first_extra_try_ts", type="datetime", nullable=true)
+     */
+    private $firstExtraTryTs;
 
     /**
      * @param Customer $customer
@@ -271,4 +283,39 @@ class ExtraPayments
             $this->amount % 100 .
             '€';
     }
+    
+    /**
+     * @return boolean
+     */
+    public function isFirstExtraTryTsSet()
+    {
+        return $this->firstExtraTryTs !== null;
+    }
+    
+    /**
+     * Sets the value of firstExtraTryTs. If the value of firstExtraTryTs
+     * is already set, throws exception AlreadySetFirstPaymentTryTsException.
+     * To prevent this, use method isFirstPaymentTryTsSet()
+     *
+     * @param DateTime $firstExtraTryTs
+     * @return ExtraPayments
+     * @throws AlreadySetFirstExtraTryTsException
+     */
+    public function setFirstExtraTryTs($firstExtraTryTs)
+    {
+        if ($this->isFirstExtraTryTsSet()) {
+            throw new AlreadySetFirstExtraTryTsException();
+        }
+        $this->firstExtraTryTs = $firstExtraTryTs;
+        return $this;
+    }
+    
+    /**
+     * @return ExtraPayments
+     */
+    public function setWrongExtra()
+    {
+        return $this->setStatus(self::STATUS_WRONG_PAYMENT);
+    }
+
 }

@@ -16,6 +16,7 @@ use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\Webuser;
 use SharengoCore\Entity\TripPaymentTries;
 use SharengoCore\Entity\ExtraPayments;
+use SharengoCore\Entity\ExtraPaymentTries;
 
 use Doctrine\ORM\EntityManager;
 use Zend\EventManager\EventManager;
@@ -314,7 +315,7 @@ class PaymentsService
             if ($response->getCompletedCorrectly()) {
                 $this->markTripAsPayed($tripPayment);
             } else {
-                $this->unpayableConsequences(
+                $this->unpayablePaymentConsequences(
                     $customer,
                     $tripPayment,
                     $tripPaymentTry,
@@ -373,11 +374,12 @@ class PaymentsService
             if ($response->getCompletedCorrectly()) {
                 $this->markExtraAsPayed($extraPayment);
             } else {
-                $this->unpayableConsequences(
-                    $customer,
-                    $extraPayment,
-                    $extraPaymentTry,
-                    $avoidDisableUser
+                $a = "";
+                $this->unpayableExtraConsequences(
+                        $customer,
+                        $extraPayment,
+                        $extraPaymentTry,
+                        $avoidDisableUser
                 );
             }
 
@@ -513,7 +515,7 @@ class PaymentsService
      * @param TripPaymentTries $tripPaymentTry
      * @param boolean $avoidDisableUser
      */
-    private function unpayableConsequences(
+    private function unpayablePaymentConsequences(
         Customers $customer,
         TripPayments $tripPayment,
         TripPaymentTries $tripPaymentTry,
@@ -543,6 +545,47 @@ class PaymentsService
         ]);
     }
 
+    /**
+     * If the extra of a trip does not complete correctly we:
+     * - disable the customer
+     * - extra payment set as not payed
+     * - send mail to notify customer
+     *
+     * @param Customers $customer
+     * @param ExtraPayments $extraPayment
+     * @param ExtraPaymentTries $extraPaymentTry
+     * @param boolean $avoidDisableUser
+     */
+    private function unpayableExtraConsequences(
+        Customers $customer,
+        ExtraPayments $extraPayment,
+        ExtraPaymentTries $extraPaymentTry,
+        $avoidDisableUser
+    ) {
+        // disable the customer
+        if (!$avoidDisableUser) {
+            $this->deactivationService->deactivateForTripPaymentTry(
+                $customer,
+                $extraPaymentTry
+            );
+        }
+        $customer->setPaymentAble(false);
+
+        $this->entityManager->persist($customer);
+
+        // set the extra payment as wrong payment
+        $extraPayment->setWrongExtra();
+
+        $this->entityManager->persist($extraPayment);
+        $this->entityManager->flush();
+
+        // other unpayable consequences not mentionable here for respect of the childrens
+        $this->eventManager->trigger('wrongTripPayment', $this, [
+            'customer' => $customer,
+            'tripPayment' => $extraPayment
+        ]);
+    }
+    
     public function tryPreAuthorization(Customers $customer, Trips $trip, $avoidEmails = false, $avoidCartasi = false, $avoidPersistance = false){
 
         $message = 22; //default ok

@@ -11,7 +11,7 @@ class ExtraPaymentTriesServiceFactory implements FactoryInterface
     {
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $extraPaymentTriesRepository = $entityManager->getRepository('\SharengoCore\Entity\ExtraPaymentTries');
-
+        
         return new ExtraPaymentTriesService($entityManager, $extraPaymentTriesRepository);
     }
 }

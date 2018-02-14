@@ -5,7 +5,7 @@ namespace SharengoCore\Entity\Repository;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripPayments;
-use SharengoCore\Entity\ExtraPayment;
+use SharengoCore\Entity\ExtraPayments;
 
 use Doctrine\ORM\Query\ResultSetMapping;
 

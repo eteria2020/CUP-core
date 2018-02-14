@@ -79,16 +79,16 @@ class ExtraPaymentTriesService
      */
     public function generateExtraPaymentTry(ExtraPayments $extraPayment, $outcome, Transactions $transaction = null, Webuser $webuser = null)
     {
-        $extraPaymentTry = new ExtraPaymentTries($extraPayment, $outcome, $transaction, $webuser);//<-------- COSTRUTTORE
-        if (!$extraPayment->isFirstPaymentTryTsSet()) {
-            $extraPayment->setFirstPaymentTryTs($extraPaymentTry->getTs());
+        $extraPaymentTry = new ExtraPaymentTries($extraPayment, $outcome, $transaction, $webuser);
+        if (!$extraPayment->isFirstExtraTryTsSet()) {
+            $extraPayment->setFirstExtraTryTs($extraPaymentTry->getTs());
         }
         return $extraPaymentTry;
     }
 
     /**
-     * @param TripPayments $tripPayment
-     * @return TripPaymentTries[]
+     * @param ExtraPayments $extraPayment
+     * @return ExtraPaymentTries[]
      */
     public function getByExtraPayment(ExtraPayments $extraPayment)
     {
