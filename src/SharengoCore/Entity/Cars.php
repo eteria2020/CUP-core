@@ -271,9 +271,9 @@ class Cars
     /**
      * @var boolean
      *
-     * @ORM\Column(name="noGPS", type="boolean", nullable=true)
+     * @ORM\Column(name="nogps", type="boolean", nullable=true)
      */
-    private $noGPS = false;
+    private $nogps = false;
 
     /**
      * @ORM\OneToMany(targetEntity="Trips", mappedBy="car")
@@ -1237,4 +1237,15 @@ class Cars
     {
         return $this->batterySafetyTs;
     }
+
+    /**
+     * Get nogps
+     *
+     * @return boolean
+     */
+    public function getNogps()
+    {
+        return $this->nogps;
+    }
+
 }
