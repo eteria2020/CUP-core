@@ -253,6 +253,7 @@ return [
             'SharengoCore\Service\FreeFaresService' => 'SharengoCore\Service\FreeFaresServiceFactory',
             'SharengoCore\Service\PreauthorizationsService' => 'SharengoCore\Service\PreauthorizationsServiceFactory',
             'SharengoCore\Service\CustomersPointsService' => 'SharengoCore\Service\CustomersPointsServiceFactory',
+            'SharengoCore\Service\MaintenanceMotivationsService' => 'SharengoCore\Service\MaintenanceMotivationsServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
             'SharengoCore\Listener\DisableContractListener' => 'SharengoCore\Listener\DisableContractListenerFactory',
