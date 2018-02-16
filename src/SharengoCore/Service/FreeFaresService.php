@@ -10,7 +10,7 @@ use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\FreeFares;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Utils\Interval;
-use SharengoCore\Document\Repository\EventsRepository;
+use SharengoCore\Service\EventsService;
 
 class FreeFaresService {
 
@@ -28,16 +28,16 @@ class FreeFaresService {
 
     /**
      *
-     * @var EventsRepository
+     * @var EventsService
      */
-    private $eventsRepository;
+    private $eventsService;
 
     public function __construct(
-    TripsRepository $tripsRepository, ReservationsREpository $reservationsRepository, EntityManager $entityManager, EventsRepository $eventsRepository) {
+    TripsRepository $tripsRepository, ReservationsREpository $reservationsRepository, EntityManager $entityManager, EventsService $eventsService) {
         $this->tripsRepository = $tripsRepository;
         $this->reservationsRepository = $reservationsRepository;
         $this->entityManager = $entityManager;
-        $this->eventsRepository = $eventsRepository;
+        $this->eventsService = $eventsService;
     }
 
     /**
@@ -122,7 +122,7 @@ class FreeFaresService {
     private function filterPlugUnPlug(array $intervals, $flagPlug, Trips $trip, array $conditions) {
         $result = [];
 
-        if (self::verifyFilterPlugUnPlug($flagPlug, $trip, $conditions, $this->eventsRepository)) {
+        if (self::verifyFilterPlugUnPlug($flagPlug, $trip, $conditions, $this->eventsService)) {
             $start = $trip->getTimestampBeginning();
             $end = clone $start;
             $end->modify('+' . $conditions['value'] . ' minutes');
@@ -285,10 +285,10 @@ class FreeFaresService {
      * @param type $flagPlug
      * @param Trips $trip
      * @param array $conditions
-     * @param EventsRepository $eventsRepository
+     * @param EventsRepository $eventsService
      * @return boolean
      */
-    static function verifyFilterPlugUnPlug($flagPlug, Trips $trip, array $conditions, EventsRepository $eventsRepository) {
+    static function verifyFilterPlugUnPlug($flagPlug, Trips $trip, array $conditions, EventsService $eventsService) {
         $result = false;
         try {
             if ($flagPlug) {  // plug-in (in charging)
@@ -297,7 +297,7 @@ class FreeFaresService {
                 $intVal = 0;
             }
 
-            $events = $eventsRepository->getByTrip($trip);
+            $events = $eventsService->getEventsByTrip($trip);
             $eventLastCharge = null;
             foreach ($events as $event) {
                 if ($event->getEventId() == 7) {            // event CHARGE
