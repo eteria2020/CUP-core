@@ -1,6 +1,6 @@
 <?php
 
-
+namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -15,17 +15,17 @@ class CarsBonus
     /**
      * @var string
      *
-     * @ORM\Column(name="car_plate", type="text", nullable=false)
+     * @ORM\OneToOne(targetEntity="Cars", inversedBy="carsBonus")
+     * @ORM\JoinColumn(name="car_plate", referencedColumnName="plate")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="SEQUENCE")
-     * @ORM\SequenceGenerator(sequenceName="cars_bonus_car_plate_seq", allocationSize=1, initialValue=1)
+     * @ORM\GeneratedValue(strategy="NONE")
      */
-    private $carPlate;
+    private $plate;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="nouse", type="datetimetz", nullable=true)
+     * @ORM\Column(name="nouse", type="datetime", nullable=true)
      */
     private $nouse;
 
