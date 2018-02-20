@@ -36,6 +36,21 @@ class CarsBonus
      */
     private $unplugEnable = false;
 
+    /**
+     * 
+     * @return datetime
+     */
+    public function getNouse() {
+        return $this->nouse;
+    }
+
+    /**
+     * 
+     * @return boolean
+     */
+    public function getUnplugEnable() {
+        return $this->unplugEnable;
+    }
 
 }
 

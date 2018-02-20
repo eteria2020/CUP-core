@@ -298,6 +298,13 @@ class Cars {
     private $carsInfo;
 
     /**
+     * @var \CarsBonus
+     *
+     * @ORM\OneToOne(targetEntity="CarsBonus", mappedBy="plate")
+     */
+    private $carsBonus;
+
+    /**
      * Bidirectional - One-To-Many (INVERSE SIDE)
      *
      * @ORM\OneToMany(targetEntity="Reservations", mappedBy="car", cascade={"remove"})
@@ -777,6 +784,14 @@ class Cars {
     }
 
     /**
+     * Get UnplugEnable
+     * @return boolen
+     */
+    public function getCarsBonusUnplugEnable() {
+        return $this->carsBonus->getUnplugEnable();
+    }
+
+    /**
      * Get busy
      *
      * @return boolean
@@ -1126,13 +1141,6 @@ class Cars {
         return $this->carsInfo->getFirmwareVersion();
     }
 
-    /**
-     * Get UnplugEnable
-     * @return boolen
-     */
-    public function getCarsInfoUnplugEnable() {
-        return $this->carsInfo->getUnplugEnable();
-    }
 
     /**
      * Get batterySafety
