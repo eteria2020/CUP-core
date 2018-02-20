@@ -102,6 +102,48 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    public function findWrongTripPaymentsTime(Customers $customer = null, $start, $end, $idCondition = null, $limit = null)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT tp FROM SharengoCore\Entity\TripPayments tp '.
+            'JOIN tp.trip t '.
+            'JOIN t.customer c '.
+            'WHERE tp.status = :status '.
+            'AND t.timestampEnd >= :start '.
+            'AND t.timestampEnd <= :end ';
+
+        if ($customer instanceof Customers) {
+            $dql .= 'AND c = :customer ';
+        }
+
+        if ($idCondition !== null){
+            $dql .= 'AND tp.id > :condition ';
+        }
+
+        $dql .= ' ORDER BY tp.id ASC';
+
+        $query = $em->createQuery($dql);
+
+        $query->setParameter('status', TripPayments::STATUS_WRONG_PAYMENT);
+        $query->setParameter('start', date_create($start));
+        $query->setParameter('end', date_create($end));
+
+        if ($customer instanceof Customers) {
+            $query->setParameter('customer', $customer);
+        }
+
+        if ($idCondition !== null){
+            $query->setParameter('condition', $idCondition);
+        }
+
+        if ($limit !== null){
+            $query->setMaxResults($limit);
+        }
+
+        return $query->getResult();
+    }
+
     public function getCountTripPaymentsForPayment($timestampEndParam = null, $idCondition = null, $limit = null)
     {
         $em = $this->getEntityManager();
@@ -111,6 +153,31 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         if ($timestampEndParam !== null){
             $main .= "AND t.timestamp_end >= (CURRENT_DATE -INTERVAL '".$timestampEndParam."')::date + time '00:00:00'";
         }
+
+        if ($idCondition !== null){
+            $main .= 'AND tp.id > '.$idCondition;
+        }
+
+        $main .= ' ORDER BY tp.id ASC';
+
+        if ($limit !== null){
+            $main .= ' LIMIT '.$limit;
+        }
+        $sql = "SELECT (SELECT count(id) FROM (".$main.") as tp) as count, (SELECT id FROM (".$main.") as tp ORDER BY id DESC LIMIT 1) as last";
+
+        $rsm = new ResultSetMapping;
+        $rsm->addScalarResult('count', 'count');
+        $rsm->addScalarResult('last', 'last');
+        $query = $em->createNativeQuery($sql, $rsm);
+
+        return $query->getResult();
+    }
+
+    public function getCountWrongTripPayments($start, $end, $idCondition = null, $limit = null)
+    {
+        $em = $this->getEntityManager();
+        $main = "SELECT tp.id as id FROM trip_payments as tp LEFT JOIN trips as t ON tp.trip_id = t.id ".
+            "WHERE tp.status = 'wrong_payment' AND t.timestamp_end >= '".$start."' AND t.timestamp_end <= '".$end."' ";
 
         if ($idCondition !== null){
             $main .= 'AND tp.id > '.$idCondition;
