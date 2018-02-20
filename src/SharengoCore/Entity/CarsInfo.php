@@ -183,13 +183,6 @@ class CarsInfo {
      */
     private $gps;
 
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="unplug_enable", type="boolean", nullable=false)
-     */
-    private $unplugEnable;
-
     public function __construct() {
 
     }
@@ -228,28 +221,6 @@ class CarsInfo {
      */
     public function getGps() {
         return $this->gps;
-    }
-
-    /**
-     * Set unplugEnable
-     *
-     * @param boolean unplugEnable
-     *
-     * @return Pois
-     */
-    public function setUnplugEnable($unplugEnable) {
-        $this->unplugEnable = $unplugEnable;
-
-        return $this;
-    }
-
-    /**
-     * Get unplugEnable
-     *
-     * @return boolean
-     */
-    public function getUnplugEnable() {
-        return $this->unplugEnable;
     }
 
 }
