@@ -41,6 +41,7 @@ class ExtraPaymentsService
      * @param Transactions $transaction
      * @param int $amount
      * @param string $type
+     * @param string[] $penalty
      * @param string[] $reasons
      * @param integer[] $amounts
      * @return ExtraPayment
@@ -51,16 +52,25 @@ class ExtraPaymentsService
         Transactions $transaction,
         $amount,
         $type,
+        $penalty,
         $reasons,
         $amounts
     ) {
         $reasonsAmounts = [];
-        for ($i = 0; $i < count($reasons); $i++) {
-            array_push(
-                $reasonsAmounts,
-                [[$reasons[$i]], [$this->formatAmount($amounts[$i])]]
-            );
-        }
+        if($type === "extra")
+            for ($i = 0; $i < count($reasons); $i++) {
+                array_push(
+                    $reasonsAmounts,
+                    [[$reasons[$i]], [$this->formatAmount($amounts[$i])]]
+                );
+            }
+        else
+            for ($i = 0; $i < count($reasons); $i++) {
+                array_push(
+                    $reasonsAmounts,
+                    [[$penalty[$i]], [$reasons[$i]], [$this->formatAmount($amounts[$i])]]
+                );
+            }
 
         $extraPayment = new ExtraPayment(
             $customer,
