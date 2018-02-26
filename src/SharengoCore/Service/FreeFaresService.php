@@ -114,7 +114,7 @@ class FreeFaresService {
 /**
  *
  * @param array $intervals
- * @param type $flagPlug
+ * @param boolean $flagPlug
  * @param Trips $trip
  * @param array $conditions
  * @return type
@@ -122,7 +122,7 @@ class FreeFaresService {
     private function filterPlugUnPlug(array $intervals, $flagPlug, Trips $trip, array $conditions) {
         $result = [];
 
-        if (self::verifyFilterPlugUnPlug($flagPlug, $trip, $conditions, $this->eventsService)) {
+        if (self::verifyFilterPlugUnPlug($flagPlug, $trip, $this->eventsService)) {
             $start = $trip->getTimestampBeginning();
             $end = clone $start;
             $end->modify('+' . $conditions['value'] . ' minutes');
@@ -282,32 +282,28 @@ class FreeFaresService {
 
     /**
      *
-     * @param type $flagPlug
+     * @param bool $flagPlug
      * @param Trips $trip
-     * @param array $conditions
      * @param EventsRepository $eventsService
      * @return boolean
      */
-    static function verifyFilterPlugUnPlug($flagPlug, Trips $trip, array $conditions, EventsService $eventsService) {
+    static function verifyFilterPlugUnPlug($flagPlug, Trips $trip, EventsService $eventsService) {
         $result = false;
         try {
-            if ($flagPlug) {  // plug-in (in charging)
-                $intVal = 1;
-            } else {         // disconnected (in charging)
-                $intVal = 0;
-            }
 
-            $events = $eventsService->getEventsByTrip($trip);
-            $eventLastCharge = null;
-            foreach ($events as $event) {
-                if ($event->getEventId() == 7) {            // event CHARGE
-                    $eventLastCharge = $event;
+            if(!$flagPlug) {    // unplug condition
+                $events = $eventsService->getEventsByTrip($trip);
+                $eventLastMaintenance = null;
+                foreach ($events as $event) {
+                    if ($event->getEventId() == 21) {            // event MAINTENANCE
+                        $eventLastMaintenance = $event;
+                    }
                 }
-            }
 
-            if (!is_null($eventLastCharge)) {
-                if ($eventLastCharge->getIntval() == $intVal) {
-                    $result = true;
+                if (!is_null($eventLastMaintenance)) {
+                    if ($eventLastMaintenance->getTxtval() === "EndCharging") {
+                        $result = true;
+                    }
                 }
             }
         } catch (Exception $ex) {
