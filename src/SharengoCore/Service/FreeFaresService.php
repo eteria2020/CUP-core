@@ -56,15 +56,17 @@ class FreeFaresService {
         $intervals = [$tripInterval];
 
         if (isset($conditions['car'])) {
-            $intervals = $this->filterCar($intervals, $trip, $conditions['car']);
+            if (isset($conditions['car']['type'])) {
+                if ($conditions['car']['type']==='unplug') {
+                     $intervals = $this->filterPlugUnPlug($intervals, false, $trip, $conditions['car']);
+                }
+            } else {
+                $intervals = $this->filterCar($intervals, $trip, $conditions['car']);
+            }
         } else if (isset($conditions['customer'])) {
             $intervals = $this->filterCustomer($intervals, $trip->getCustomer(), $conditions['customer']);
         } else if (isset($conditions['time'])) {
             $intervals = $this->filterTime($intervals, $conditions['time']);
-        } else if (isset($conditions['plug'])) {
-            //$intervals = $this->filterPlugUnPlug($intervals, true, $trip, $conditions['plug']);
-        } else if (isset($conditions['unplug'])) {
-            $intervals = $this->filterPlugUnPlug($intervals, false, $trip, $conditions['unplug']);
         } else {
             $intervals = [];
         }
@@ -122,17 +124,21 @@ class FreeFaresService {
     private function filterPlugUnPlug(array $intervals, $flagPlug, Trips $trip, array $conditions) {
         $result = [];
 
-        if (self::verifyFilterPlugUnPlug($flagPlug, $trip, $this->eventsService)) {
-            $start = $trip->getTimestampBeginning();
-            $end = clone $start;
-            $end->modify('+' . $conditions['value'] . ' minutes');
-            $plugInterval = new Interval($start, $end);
+        if(isset($conditions['value'])){
+            if($conditions['value']>0){
+                if (self::verifyFilterPlugUnPlug($flagPlug, $trip, $this->eventsService)) {
+                    $start = $trip->getTimestampBeginning();
+                    $end = clone $start;
+                    $end->modify('+' . $conditions['value'] . ' minutes');
+                    $plugInterval = new Interval($start, $end);
 
-            foreach ($intervals as $interval) {
-                $intersection = $interval->intersection($plugInterval);
+                    foreach ($intervals as $interval) {
+                        $intersection = $interval->intersection($plugInterval);
 
-                if ($intersection) {
-                    $result[] = $intersection;
+                        if ($intersection) {
+                            $result[] = $intersection;
+                        }
+                    }
                 }
             }
         }
