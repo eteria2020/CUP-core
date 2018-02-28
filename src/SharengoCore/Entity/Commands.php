@@ -139,7 +139,7 @@ class Commands
         self::CLOSE_TRIP => ['label' => 'Chiudi ultima corsa aperta', 'command' => 'CLOSE_TRIP', 'params' => ['txtarg1' => ''], 'ttl' => 60],
         self::GPRS_COORDINATES => ['label' => 'Usa coordinate GPRS', 'command' => 'SET_CONFIG', 'params' => ['txtarg1' => '{UseExternalGPS : true}'], 'ttl' => 0],
         self::ANDROID_COORDINATES => ['label' => 'Usa coordinate ANDROID', 'command' => 'SET_CONFIG', 'params' => ['txtarg1' => '{UseExternalGPS : false}'], 'ttl' => 0],
-        self::REBOT => ['label' => 'Rebot auto', 'command'=>'REBOOT', 'params' => ['txtarg1' => ''], 'ttl' => 60],
+        self::REBOT => ['label' => 'Rebot auto', 'command'=>'FORCE_REBOOT', 'params' => ['txtarg1' => ''], 'ttl' => 60],
     ];
 
     /**
