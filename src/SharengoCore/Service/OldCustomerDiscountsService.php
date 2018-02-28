@@ -82,11 +82,11 @@ class OldCustomerDiscountsService
                 $this->entityManager->flush();
             }
 
-            if ($sendEmail && $customer->getFirstPaymentCompleted()) {
-                // we send the mail only to the customers who payed the first payment
-                // the others have their discount cancelled without notifications
-                $this->sendEmail($customer->getEmail(), $customer->getName(), $customer->getLanguage());
-            }
+//            if ($sendEmail && $customer->getFirstPaymentCompleted()) {
+//                // we send the mail only to the customers who payed the first payment
+//                // the others have their discount cancelled without notifications
+//                $this->sendEmail($customer->getEmail(), $customer->getName(), $customer->getLanguage());
+//            }
 
             $this->entityManager->commit();
         } catch (\Exception $e) {
