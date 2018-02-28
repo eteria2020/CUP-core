@@ -60,7 +60,7 @@ class NotificationsService {
             return $notifications;
         }
 
-        return array_map(function (Notifications $notifications) {
+        return array_map(function (Notifications $notifications){
             return [
                 'e' => [
                     'id' => $notifications->getId(),
