@@ -56,13 +56,7 @@ class FreeFaresService {
         $intervals = [$tripInterval];
 
         if (isset($conditions['car'])) {
-            if (isset($conditions['car']['type'])) {
-                if ($conditions['car']['type']==='unplug') {
-                     $intervals = $this->filterPlugUnPlug($intervals, false, $trip, $conditions['car']);
-                }
-            } else {
-                $intervals = $this->filterCar($intervals, $trip, $conditions['car']);
-            }
+            $intervals = $this->filterCar($intervals, $trip, $conditions['car']);
         } else if (isset($conditions['customer'])) {
             $intervals = $this->filterCustomer($intervals, $trip->getCustomer(), $conditions['customer']);
         } else if (isset($conditions['time'])) {
@@ -112,40 +106,6 @@ class FreeFaresService {
 
         return $intervals;
     }
-
-/**
- *
- * @param array $intervals
- * @param boolean $flagPlug
- * @param Trips $trip
- * @param array $conditions
- * @return type
- */
-    private function filterPlugUnPlug(array $intervals, $flagPlug, Trips $trip, array $conditions) {
-        $result = [];
-
-        if(isset($conditions['value'])){
-            if($conditions['value']>0){
-                if (self::verifyFilterPlugUnPlug($flagPlug, $trip, $this->eventsService)) {
-                    $start = $trip->getTimestampBeginning();
-                    $end = clone $start;
-                    $end->modify('+' . $conditions['value'] . ' minutes');
-                    $plugInterval = new Interval($start, $end);
-
-                    foreach ($intervals as $interval) {
-                        $intersection = $interval->intersection($plugInterval);
-
-                        if ($intersection) {
-                            $result[] = $intersection;
-                        }
-                    }
-                }
-            }
-        }
-
-        return $result;
-    }
-
 
     /**
      * @param Intervals[] $intervals
@@ -204,8 +164,8 @@ class FreeFaresService {
 
     /**
      * @param Intervals[] $intervals
-     * @param array $carConditions has keys type, hour  minutes
-     * @param Trips $trip
+     * @param array carConditions has keys type, hour  minutes
+     * @param Trips trip
      * @return Intervals[]
      */
     private function filterCar(array $intervals, Trips $trip, array $carConditions) {
@@ -224,6 +184,24 @@ class FreeFaresService {
 
                     if ($intersection) {
                         $newIntervals[] = $intersection;
+                    }
+                }
+            } 
+
+        } if ($carConditions['type'] == 'unplug') { 
+            if ($carConditions['value'] > 0) {
+                if (self::verifyFilterPlugUnPlug($flagPlug, $trip, $this->eventsService)) {
+                    $start = $trip->getTimestampBeginning();
+                    $end = clone $start;
+                    $end->modify('+' . $carConditions['value'] . ' minutes');
+                    $plugInterval = new Interval($start, $end);
+
+                    foreach ($intervals as $interval) {
+                        $intersection = $interval->intersection($plugInterval);
+
+                        if ($intersection) {
+                            $newIntervals[] = $intersection;
+                        }
                     }
                 }
             }
@@ -307,7 +285,7 @@ class FreeFaresService {
                 }
 
                 if (!is_null($eventLastMaintenance)) {
-                    if ($eventLastMaintenance->getTxtval() === "EndCharging") {
+                    if (strtolower($eventLastMaintenance->getTxtval()) === "endcharging") {
                         $result = true;
                     }
                 }
