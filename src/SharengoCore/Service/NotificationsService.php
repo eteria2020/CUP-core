@@ -60,7 +60,7 @@ class NotificationsService {
             return $notifications;
         }
 
-        return array_map(function (Notifications $notifications) {
+        return array_map(function (Notifications $notifications){
             return [
                 'e' => [
                     'id' => $notifications->getId(),
@@ -77,7 +77,8 @@ class NotificationsService {
                 ],
                 't' => [
                     'carPlate' => $notifications->getMeta()['car_plate'],
-                    'tripId' => $notifications->getMeta()['trip_id']
+                    'tripId' => $notifications->getMeta()['trip_id'],
+                    'callMobile' => $notifications->getMeta()['txtval']
                 ],
                 'c' => $this->getCustomer($this->customerService->findById($notifications->getMeta()['customer_id']))
             ];
