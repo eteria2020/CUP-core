@@ -25,6 +25,7 @@ class Commands
     const GPRS_COORDINATES = 10;
     const ANDROID_COORDINATES = 11;
     const REBOT = 12;
+    const START_TRIP = 13;
 
     /**
      * @var integer
@@ -139,7 +140,8 @@ class Commands
         self::CLOSE_TRIP => ['label' => 'Chiudi ultima corsa aperta', 'command' => 'CLOSE_TRIP', 'params' => ['txtarg1' => ''], 'ttl' => 60],
         self::GPRS_COORDINATES => ['label' => 'Usa coordinate GPRS', 'command' => 'SET_CONFIG', 'params' => ['txtarg1' => '{UseExternalGPS : true}'], 'ttl' => 0],
         self::ANDROID_COORDINATES => ['label' => 'Usa coordinate ANDROID', 'command' => 'SET_CONFIG', 'params' => ['txtarg1' => '{UseExternalGPS : false}'], 'ttl' => 0],
-        self::REBOT => ['label' => 'Rebot (107.4)', 'command'=>'FORCE_REBOOT', 'params' => ['txtarg1' => ''], 'ttl' => 60]
+        self::REBOT => ['label' => 'Rebot (107.4)', 'command'=>'FORCE_REBOOT', 'params' => ['txtarg1' => ''], 'ttl' => 60],
+        self::START_TRIP => ['label' => 'Apri corsa', 'command'=>'START_TRIP', 'params' => ['txtarg1' => ''], 'ttl' => 60]
     ];
 
     /**
