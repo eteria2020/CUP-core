@@ -226,6 +226,10 @@ class CustomersService implements ValidatorServiceInterface
     {
         return $this->customersRepository->checkMobileNumber($mobile);
     }
+    
+    public function partnerData($name) {
+        return $this->customersRepository->partnerData($name);
+    }
 
     /**
      * @param \DateTime $date
