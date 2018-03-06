@@ -57,20 +57,21 @@ class ExtraPaymentsService
         $amounts
     ) {
         $reasonsAmounts = [];
-        if($type === "extra")
+        if($type === "extra"){
             for ($i = 0; $i < count($reasons); $i++) {
                 array_push(
                     $reasonsAmounts,
                     [[$reasons[$i]], [$this->formatAmount($amounts[$i])]]
                 );
             }
-        else
+        }else{
             for ($i = 0; $i < count($reasons); $i++) {
                 array_push(
                     $reasonsAmounts,
                     [[$penalty[$i]], [$reasons[$i]], [$this->formatAmount($amounts[$i])]]
                 );
             }
+        }
 
         $extraPayment = new ExtraPayment(
             $customer,

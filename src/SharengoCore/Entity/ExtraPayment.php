@@ -6,7 +6,6 @@ use Cartasi\Entity\Transactions;
 
 use Doctrine\ORM\Mapping as ORM;
 
-
 /**
  * TripPayments
  *
