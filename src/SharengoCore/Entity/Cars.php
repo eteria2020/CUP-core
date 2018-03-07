@@ -660,6 +660,37 @@ class Cars {
         return $this->firmwareVersion;
     }
 
+    /** Return an integer rappresentation of software version.
+     * Example, for version star width "0.":
+     * V4.6     --> 4600
+     * V4.7.2~1 --> 4721
+     * V4.7.3   --> 4730
+     * @return int
+     */
+    private function getFirmwareVersionNumber() {
+        $result = 0;
+
+        try {
+            if(is_null($this->firmwareVersion)) {
+                return $result;
+            }
+
+            $strNormalized = trim(strtolower($this->firmwareVersion));
+            $result = intval(preg_replace("/[^0-9]/", "", $strNormalized ));
+
+            if ($result<100) {
+                $result = $result * 100;
+            } else if ($result<1000) {
+                $result = $result * 10;
+            }
+        } catch (Exception $ex) {
+
+        }
+
+        return $result;
+
+    }
+
     /**
      * Set softwareVersion
      *
@@ -681,6 +712,50 @@ class Cars {
     public function getSoftwareVersion() {
         return $this->softwareVersion;
     }
+
+    /**
+     * Return an integer rappresentation of software version.
+     * Example, for version star width "0.":
+     * 0.103.4-sk9 --> 10349
+     * 0.105.6tris --> 10563
+     * 0.106.7     --> 10670
+     * 0.107.2.3   --> 10723
+     * 0.107       --> 10700
+     *
+     * If dosn't start width "0.", use x.yyy.x
+     * @return integer
+     */
+    private function getSoftwareVersionNumber() {
+        $result = 0;
+
+        try {
+            if(is_null($this->softwareVersion)) {
+                return $result;
+            }
+
+            $strNormalized = trim(strtolower($this->softwareVersion));
+
+            if (substr( $strNormalized, 0, 2 )=='0.' ) {  // ver 0.xxx.y.z
+                $strNormalized = str_replace("bis","2",$strNormalized);
+                $strNormalized = str_replace("tris","3",$strNormalized);
+                $result = intval(preg_replace("/[^0-9]/", "", $strNormalized ));
+
+                if($result==105 || $result==107) {
+                    $result = $result * 100;
+                } else if($result>=100 && $result<10000) {
+                   $result = $result * 10;
+                }
+            } else {    //ver x.yyy.z es 1.001.0 -->10010 2.004.3 --> 20043
+                $ver_str_array = explode(".", $strNormalized);
+                $result = intval($ver_str_array[0].$ver_str_array[1].$ver_str_array[2]);
+            }
+        } catch (Exception $ex) {
+        }
+
+        return $result;
+
+    }
+
 
     /**
      * Set mac
