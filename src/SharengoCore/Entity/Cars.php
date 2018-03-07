@@ -667,7 +667,7 @@ class Cars {
      * V4.7.3   --> 4730
      * @return int
      */
-    private function getFirmwareVersionNumber() {
+    public function getFirmwareVersionNumber() {
         $result = 0;
 
         try {
@@ -725,7 +725,7 @@ class Cars {
      * If dosn't start width "0.", use x.yyy.x
      * @return integer
      */
-    private function getSoftwareVersionNumber() {
+    public function getSoftwareVersionNumber() {
         $result = 0;
 
         try {
