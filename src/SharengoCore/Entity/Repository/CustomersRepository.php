@@ -271,9 +271,9 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         return $row["sng_checkmobile"];
     }
     
-    public function partnerData($name)
+    public function partnerData($param)
     {
-        $sql = "SELECT partnerData('".$name."')";
+        $sql = "SELECT partnerData('".$param."')";
         $query = $this->getEntityManager()->getConnection()->query($sql);
         $row = $query->fetch();
         return $row['partnerdata'];
