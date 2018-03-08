@@ -227,7 +227,7 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersRepository->checkMobileNumber($mobile);
     }
     
-    public function partnerData($param) {
+    public function partnerData($param){
         return $this->customersRepository->partnerData($param);
     }
 
