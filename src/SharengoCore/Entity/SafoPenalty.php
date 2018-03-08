@@ -8,7 +8,7 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
  * SafoPenalty
  *
  * @ORM\Table(name="safo_penalty")
- * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\SafoRepository")
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\SafoPenaltyRepository")
  */
 class SafoPenalty
 {
@@ -168,6 +168,182 @@ class SafoPenalty
      * @ORM\Column(name="complete", type="boolean", nullable=false)
      */
     private $complete = false;
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPenaltyId()
+    {
+        return $this->penaltyId;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getInsertTs()
+    {
+        return $this->insertTs;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCharged()
+    {
+        return $this->charged;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getConsumedTs()
+    {
+        return $this->consumedTs;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCustomerId()
+    {
+        return $this->customerId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getVehicleFleetId()
+    {
+        return $this->vehicleFleetId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getViolationCategory()
+    {
+        return $this->violationCategory;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTripId()
+    {
+        return $this->tripId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCarPlate()
+    {
+        return $this->carPlate;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getViolationTimestamp()
+    {
+        return $this->violationTimestamp;
+    }
+
+    /**
+     * @return string
+     */
+    public function getViolationAuthority()
+    {
+        return $this->violationAuthority;
+    }
+
+    /**
+     * @return string
+     */
+    public function getViolationNumber()
+    {
+        return $this->violationNumber;
+    }
+
+    /**
+     * @return string
+     */
+    public function getViolationDescription()
+    {
+        return $this->violationDescription;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRusId()
+    {
+        return $this->rusId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getViolationRequestType()
+    {
+        return $this->violationRequestType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getViolationStatus()
+    {
+        return $this->violationStatus;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getEmailSentTimestamp()
+    {
+        return $this->emailSentTimestamp;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEmailSentOk()
+    {
+        return $this->emailSentOk;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPenaltyOk()
+    {
+        return $this->penaltyOk;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isComplete()
+    {
+        return $this->complete;
+    }
 
 
 }
