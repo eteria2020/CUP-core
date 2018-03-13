@@ -190,7 +190,7 @@ class FreeFaresService {
 
         } if ($carConditions['type'] == 'unplug') { 
             if ($carConditions['value'] > 0) {
-                if (self::verifyFilterPlugUnPlug($flagPlug, $trip, $this->eventsService)) {
+                if (self::verifyFilterUnPlug($trip, $this->eventsService)) {
                     $start = $trip->getTimestampBeginning();
                     $end = clone $start;
                     $end->modify('+' . $carConditions['value'] . ' minutes');
@@ -266,28 +266,24 @@ class FreeFaresService {
 
     /**
      *
-     * @param bool $flagPlug
      * @param Trips $trip
      * @param EventsRepository $eventsService
      * @return boolean
      */
-    static function verifyFilterPlugUnPlug($flagPlug, Trips $trip, EventsService $eventsService) {
+    static function verifyFilterUnPlug(Trips $trip, EventsService $eventsService) {
         $result = false;
         try {
-
-            if(!$flagPlug) {    // unplug condition
-                $events = $eventsService->getEventsByTrip($trip);
-                $eventLastMaintenance = null;
-                foreach ($events as $event) {
-                    if ($event->getEventId() == 21) {            // event MAINTENANCE
-                        $eventLastMaintenance = $event;
-                    }
+            $events = $eventsService->getEventsByTrip($trip);
+            $eventLastMaintenance = null;
+            foreach ($events as $event) {
+                if ($event->getEventId() == 21) {            // event MAINTENANCE
+                    $eventLastMaintenance = $event;
                 }
+            }
 
-                if (!is_null($eventLastMaintenance)) {
-                    if (strtolower($eventLastMaintenance->getTxtval()) === "endcharging") {
-                        $result = true;
-                    }
+            if (!is_null($eventLastMaintenance)) {
+                if (strtolower($eventLastMaintenance->getTxtval()) === "endcharging") {
+                    $result = true;
                 }
             }
         } catch (Exception $ex) {
