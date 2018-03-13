@@ -190,7 +190,7 @@ class FreeFaresService {
 
         } if ($carConditions['type'] == 'unplug') { 
             if ($carConditions['value'] > 0) {
-                if (self::verifyFilterPlugUnPlug($trip, $this->eventsService)) {
+                if (self::verifyFilterUnPlug($trip, $this->eventsService)) {
                     $start = $trip->getTimestampBeginning();
                     $end = clone $start;
                     $end->modify('+' . $carConditions['value'] . ' minutes');
@@ -270,7 +270,7 @@ class FreeFaresService {
      * @param EventsRepository $eventsService
      * @return boolean
      */
-    static function verifyFilterPlugUnPlug(Trips $trip, EventsService $eventsService) {
+    static function verifyFilterUnPlug(Trips $trip, EventsService $eventsService) {
         $result = false;
         try {
             $events = $eventsService->getEventsByTrip($trip);
