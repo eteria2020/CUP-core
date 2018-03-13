@@ -24,10 +24,11 @@ class WebusersService
      * @param EntityManager $entityManager
      */
     public function __construct(
-        EntityManager $entityManager
+        EntityManager $entityManager,
+        WebusersRepository $webusersRepository
     ) {
         $this->entityManager = $entityManager;
-        $this->webusersRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Webuser');
+        $this->webusersRepository = $webusersRepository;
     }
 
     public function findById($id)

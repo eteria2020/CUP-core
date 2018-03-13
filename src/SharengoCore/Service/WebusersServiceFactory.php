@@ -11,9 +11,11 @@ class WebusersServiceFactory implements FactoryInterface
     {
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
+        
+        $webusersRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Webuser');
 
         return new WebusersService(
-            $entityManager
+            $entityManager, $webusersRepository
         );
     }
 }
