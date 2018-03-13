@@ -32,8 +32,12 @@ class WebusersService
 
     public function findById($id)
     {
-        //return $this->webusersRepository->findById($id);
         return $this->webusersRepository->findById($id)[0];
+    }
+    
+    public function findByEmail($email)
+    {
+        return $this->webusersRepository->findByEmail($email)[0];
     }
     
 }
