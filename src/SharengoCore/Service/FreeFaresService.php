@@ -10,6 +10,7 @@ use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\FreeFares;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Utils\Interval;
+use SharengoCore\Service\EventsService;
 
 class FreeFaresService {
 
@@ -25,12 +26,18 @@ class FreeFaresService {
      */
     private $reservationsRepository;
 
+    /**
+     *
+     * @var EventsService
+     */
+    private $eventsService;
+
     public function __construct(
-    TripsRepository $tripsRepository, ReservationsREpository $reservationsRepository, EntityManager $entityManager
-    ) {
+    TripsRepository $tripsRepository, ReservationsREpository $reservationsRepository, EntityManager $entityManager, EventsService $eventsService) {
         $this->tripsRepository = $tripsRepository;
         $this->reservationsRepository = $reservationsRepository;
         $this->entityManager = $entityManager;
+        $this->eventsService = $eventsService;
     }
 
     /**
@@ -157,8 +164,8 @@ class FreeFaresService {
 
     /**
      * @param Intervals[] $intervals
-     * @param array $carConditions has keys type, hour  minutes
-     * @param Trips $trip
+     * @param array carConditions has keys type, hour  minutes
+     * @param Trips trip
      * @return Intervals[]
      */
     private function filterCar(array $intervals, Trips $trip, array $carConditions) {
@@ -177,6 +184,24 @@ class FreeFaresService {
 
                     if ($intersection) {
                         $newIntervals[] = $intersection;
+                    }
+                }
+            } 
+
+        } if ($carConditions['type'] == 'unplug') { 
+            if ($carConditions['value'] > 0) {
+                if (self::verifyFilterPlugUnPlug($flagPlug, $trip, $this->eventsService)) {
+                    $start = $trip->getTimestampBeginning();
+                    $end = clone $start;
+                    $end->modify('+' . $carConditions['value'] . ' minutes');
+                    $plugInterval = new Interval($start, $end);
+
+                    foreach ($intervals as $interval) {
+                        $intersection = $interval->intersection($plugInterval);
+
+                        if ($intersection) {
+                            $newIntervals[] = $intersection;
+                        }
                     }
                 }
             }
@@ -237,6 +262,39 @@ class FreeFaresService {
         } else {
             return false;
         }
+    }
+
+    /**
+     *
+     * @param bool $flagPlug
+     * @param Trips $trip
+     * @param EventsRepository $eventsService
+     * @return boolean
+     */
+    static function verifyFilterPlugUnPlug($flagPlug, Trips $trip, EventsService $eventsService) {
+        $result = false;
+        try {
+
+            if(!$flagPlug) {    // unplug condition
+                $events = $eventsService->getEventsByTrip($trip);
+                $eventLastMaintenance = null;
+                foreach ($events as $event) {
+                    if ($event->getEventId() == 21) {            // event MAINTENANCE
+                        $eventLastMaintenance = $event;
+                    }
+                }
+
+                if (!is_null($eventLastMaintenance)) {
+                    if (strtolower($eventLastMaintenance->getTxtval()) === "endcharging") {
+                        $result = true;
+                    }
+                }
+            }
+        } catch (Exception $ex) {
+
+        }
+
+        return $result;
     }
 
 }
