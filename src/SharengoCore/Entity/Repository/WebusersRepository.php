@@ -4,7 +4,6 @@ namespace SharengoCore\Entity\Repository;
 
 use SharengoCore\Entity\Webuser;
 
-
 class WebusersRepository extends \Doctrine\ORM\EntityRepository
 {
     /**

@@ -3,7 +3,6 @@
 namespace SharengoCore\Service;
 
 // Internals
-use SharengoCore\Entity\Webuser;
 use SharengoCore\Entity\Repository\WebusersRepository;
 // Externals
 use Doctrine\ORM\EntityManager;
@@ -21,24 +20,25 @@ class WebusersService
     private $webusersRepository;
 
     /**
+     * @param WebusersRepository $webusersRepository
      * @param EntityManager $entityManager
+     * 
      */
     public function __construct(
-        EntityManager $entityManager,
-        WebusersRepository $webusersRepository
+    //WebusersRepository $webusersRepository,
+    EntityManager $entityManager
     ) {
         $this->entityManager = $entityManager;
-        $this->webusersRepository = $webusersRepository;
+        //$this->webusersRepository = $webusersRepository;
+        $this->webusersRepository = $entityManager->getRepository('\SharengoCore\Entity\Webuser');
     }
 
-    public function findById($id)
-    {
+    public function findById($id) {
         return $this->webusersRepository->findById($id)[0];
     }
-    
-    public function findByEmail($email)
-    {
+
+    public function findByEmail($email) {
         return $this->webusersRepository->findByEmail($email)[0];
     }
-    
+
 }

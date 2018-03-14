@@ -4,18 +4,21 @@ namespace SharengoCore\Service;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\EventManager\EventManager;
 
-class WebusersServiceFactory implements FactoryInterface
-{
-    public function createService(ServiceLocatorInterface $serviceLocator)
-    {
-        // Dependencies are fetched from Service Manager
+class WebusersServiceFactory implements FactoryInterface {
+
+    public function createService(ServiceLocatorInterface $serviceLocator) {
+        
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         
-        $webusersRepository = $this->entityManager->getRepository('\SharengoCore\Entity\Webuser');
+        //$freeFaresRepository = $entityManager->getRepository('\SharengoCore\Entity\FreeFares');
+        //$webusersRepository = $entityManager->getRepository('\SharengoCore\Entity\Webuser');
 
         return new WebusersService(
-            $entityManager, $webusersRepository
+                //$webusersRepository,
+                $entityManager
         );
     }
+
 }
