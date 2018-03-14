@@ -12,7 +12,6 @@ class WebusersServiceFactory implements FactoryInterface {
         
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         
-        //$freeFaresRepository = $entityManager->getRepository('\SharengoCore\Entity\FreeFares');
         $webusersRepository = $entityManager->getRepository('\SharengoCore\Entity\Webuser');
 
         return new WebusersService(

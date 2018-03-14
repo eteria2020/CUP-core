@@ -30,7 +30,6 @@ class WebusersService
     ) {
         $this->entityManager = $entityManager;
         $this->webusersRepository = $webusersRepository;
-        //$this->webusersRepository = $entityManager->getRepository('\SharengoCore\Entity\Webuser');
     }
 
     public function findById($id) {
