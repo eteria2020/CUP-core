@@ -11,9 +11,13 @@ class PartnerServiceFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
+        $customersRepository = $entityManager->getRepository('\SharengoCore\Entity\Customers');
+        $fleetService = $serviceLocator->get('SharengoCore\Service\FleetService');
 
         return new PartnerService(
-            $entityManager
+            $entityManager,
+            $customersRepository,
+            $fleetService
         );
     }
 }
