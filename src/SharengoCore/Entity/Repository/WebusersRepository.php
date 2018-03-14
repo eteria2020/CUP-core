@@ -23,7 +23,7 @@ class WebusersRepository extends \Doctrine\ORM\EntityRepository
     public function findByEmail($email)
     {
         $em = $this->getEntityManager();
-        $query = $em->createQuery('SELECT c FROM \SharengoCore\Entity\Webuser c WHERE email = :email');
+        $query = $em->createQuery('SELECT c FROM \SharengoCore\Entity\Webuser c WHERE lower(email) = lower(:email)');
         $query->setParameter('email', $email);
 
         return $query->getResult();
