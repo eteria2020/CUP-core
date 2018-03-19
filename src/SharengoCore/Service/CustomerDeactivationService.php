@@ -419,7 +419,6 @@ class CustomerDeactivationService
      * Reactivates Customer with only FIRST_PAYMENT_NOT_COMPLETED from admin
      *
      * @param Customers $customer
-     * @param \DateTime|null $endTs
      * @param Webuser $webuser
      */
     public function reactivateCustomerForFirstPaymentFromAdmin(
