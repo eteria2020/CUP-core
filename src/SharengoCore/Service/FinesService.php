@@ -56,9 +56,9 @@ class FinesService
      * @param integer $tripPaymentId
      * @return TripPayments
      */
-    public function getTripPaymentById($tripPaymentId)
+    public function getSafoPenaltyById($finesId)
     {
-        return $this->tripPaymentsRepository->findOneById($tripPaymentId);
+        return $this->safoPenaltyRepository->findOneById($finesId);
     }
 
     /**
