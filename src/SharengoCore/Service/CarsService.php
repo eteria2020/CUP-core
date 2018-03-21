@@ -254,7 +254,12 @@ class CarsService
             $carsMaintenance = new CarsMaintenance();
             $carsMaintenance->setCarPlate($car);
             $carsMaintenance->setLocation($location);
-            $carsMaintenance->setNotes($carsMaintenance->getNotes() . '||' . $postData['note']);
+            //$carsMaintenance->setNotes($carsMaintenance->getNotes() . '||' . $postData['note']);
+            if (is_null($carsMaintenance->getNotes())){
+                $carsMaintenance->setNotes($postData['note']);
+            }else{
+                $carsMaintenance->setNotes($carsMaintenance->getNotes() . '||' . $postData['note']);
+            }
             $carsMaintenance->setUpdateTs(new \DateTime());
             $carsMaintenance->setWebuser($webuser);
             $motivation = $this->maintenanceMotivationsService->getById($postData["motivation"])[0];
