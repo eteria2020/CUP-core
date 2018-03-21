@@ -254,12 +254,7 @@ class CarsService
             $carsMaintenance = new CarsMaintenance();
             $carsMaintenance->setCarPlate($car);
             $carsMaintenance->setLocation($location);
-            //$carsMaintenance->setNotes($carsMaintenance->getNotes() . '||' . $postData['note']);
-            if ($param && !is_null($carsMaintenance->getNotes())){
-                $carsMaintenance->setNotes($carsMaintenance->getNotes() . '||' . $postData['note']);
-            }else{
-                $carsMaintenance->setNotes($postData['note']);
-            }
+            $carsMaintenance->setNotes($postData['note']);
             $carsMaintenance->setUpdateTs(new \DateTime());
             $carsMaintenance->setWebuser($webuser);
             $motivation = $this->maintenanceMotivationsService->getById($postData["motivation"])[0];
@@ -304,7 +299,9 @@ class CarsService
                             // Update CarsMaintenance endTs if necessary
                             $maintenance = $this->getLastCarsMaintenance($car->getPlate());
                             if ($maintenance instanceof CarsMaintenance && !$maintenance->isEnded()) {
-
+                                if($param){
+                                    $maintenance->setNotes($maintenance->getNotes() . '||' . $postData['note']);
+                                }
                                 $maintenance->setEndWebuser($webuser);
                                 $maintenance->setEndTs(date_create());
                                 $this->entityManager->persist($maintenance);
