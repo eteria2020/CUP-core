@@ -300,7 +300,7 @@ class CarsService
                             $maintenance = $this->getLastCarsMaintenance($car->getPlate());
                             if ($maintenance instanceof CarsMaintenance && !$maintenance->isEnded()) {
                                 if($param){
-                                    $maintenance->setNotes($maintenance->getNotes() . '||' . $postData['note']);
+                                    $maintenance->setNotes($maintenance->getNotes() . ' || ' . $postData['note']);
                                 }
                                 $maintenance->setEndWebuser($webuser);
                                 $maintenance->setEndTs(date_create());
