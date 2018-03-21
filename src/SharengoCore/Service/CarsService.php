@@ -245,7 +245,7 @@ class CarsService
      * @param mixed[] $postData
      * @param Webuser $webuser
      */
-    public function updateCar(Cars $car, $lastStatus, $postData, Webuser $webuser)
+    public function updateCar(Cars $car, $lastStatus, $postData, Webuser $webuser, $param = false)
     {
         $location = !empty($postData['location']) ? $postData['location'] : null;
 
@@ -299,7 +299,9 @@ class CarsService
                             // Update CarsMaintenance endTs if necessary
                             $maintenance = $this->getLastCarsMaintenance($car->getPlate());
                             if ($maintenance instanceof CarsMaintenance && !$maintenance->isEnded()) {
-
+                                if($param){
+                                    $maintenance->setNotes($maintenance->getNotes() . ' || ' . $postData['note']);
+                                }
                                 $maintenance->setEndWebuser($webuser);
                                 $maintenance->setEndTs(date_create());
                                 $this->entityManager->persist($maintenance);

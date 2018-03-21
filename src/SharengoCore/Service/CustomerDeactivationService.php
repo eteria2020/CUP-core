@@ -416,6 +416,30 @@ class CustomerDeactivationService
     }
 
     /**
+     * Reactivates Customer with only FIRST_PAYMENT_NOT_COMPLETED from admin
+     *
+     * @param Customers $customer
+     * @param Webuser $webuser
+     */
+    public function reactivateCustomerForFirstPaymentFromAdmin(
+    Customers $customer, Webuser $webuser
+    ) {
+
+        $c_d = $this->getAllActive($customer);
+        if (count($c_d) == 1) {
+            if ($c_d[0]->getReason() == CustomerDeactivation::FIRST_PAYMENT_NOT_COMPLETED) {
+                $this->reactivateByWebuser($c_d[0], $webuser, '', new \Datetime());
+            }
+        } else {
+            foreach ($c_d as $cd) {
+                if ($cd->getReason() == CustomerDeactivation::FIRST_PAYMENT_NOT_COMPLETED) {
+                    $this->reactivate($cd, [], new \Datetime(), $webuser);
+                }
+            }
+        }
+    }
+
+    /**
      * Close the CustomerDeactivation when the Webuser removes it
      *
      * @param CustomerDeactivation $customerDeactivation
