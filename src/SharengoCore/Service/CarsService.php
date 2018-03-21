@@ -258,6 +258,7 @@ class CarsService
             if (is_null($carsMaintenance->getNotes())){
                 $carsMaintenance->setNotes($postData['note']);
             }else{
+                error_log($carsMaintenance->getNotes() . '||' . $postData['note']);
                 $carsMaintenance->setNotes($carsMaintenance->getNotes() . '||' . $postData['note']);
             }
             $carsMaintenance->setUpdateTs(new \DateTime());
