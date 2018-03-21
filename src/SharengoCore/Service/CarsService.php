@@ -54,6 +54,8 @@ class CarsService
      */
     private $translator;
 
+    private $maintenanceMotivationsService;
+
     /**
      * @param EntityManager $entityManager
      * @param CarsRepository $carsRepository
@@ -70,7 +72,8 @@ class CarsService
         FleetRepository $fleetsRepository,
         DatatableServiceInterface $datatableService,
         ReservationsService $reservationsService,
-        Translator $translator
+        Translator $translator,
+        MaintenanceMotivationsService $maintenanceMotivationsService
     ) {
         $this->entityManager = $entityManager;
         $this->carsRepository = $carsRepository;
@@ -80,6 +83,7 @@ class CarsService
         $this->datatableService = $datatableService;
         $this->reservationsService = $reservationsService;
         $this->translator = $translator;
+        $this->maintenanceMotivationsService = $maintenanceMotivationsService;
     }
 
     /**
@@ -241,7 +245,7 @@ class CarsService
      * @param mixed[] $postData
      * @param Webuser $webuser
      */
-    public function updateCar(Cars $car, $lastStatus, $postData, Webuser $webuser)
+    public function updateCar(Cars $car, $lastStatus, $postData, Webuser $webuser, $param = false)
     {
         $location = !empty($postData['location']) ? $postData['location'] : null;
 
@@ -253,6 +257,8 @@ class CarsService
             $carsMaintenance->setNotes($postData['note']);
             $carsMaintenance->setUpdateTs(new \DateTime());
             $carsMaintenance->setWebuser($webuser);
+            $motivation = $this->maintenanceMotivationsService->getById($postData["motivation"])[0];
+            $carsMaintenance->setMotivation($motivation);
             $this->entityManager->persist($carsMaintenance);
         }
 
@@ -293,7 +299,9 @@ class CarsService
                             // Update CarsMaintenance endTs if necessary
                             $maintenance = $this->getLastCarsMaintenance($car->getPlate());
                             if ($maintenance instanceof CarsMaintenance && !$maintenance->isEnded()) {
-
+                                if($param){
+                                    $maintenance->setNotes($maintenance->getNotes() . ' || ' . $postData['note']);
+                                }
                                 $maintenance->setEndWebuser($webuser);
                                 $maintenance->setEndTs(date_create());
                                 $this->entityManager->persist($maintenance);

@@ -50,7 +50,13 @@ class BuyCustomerBonusPackage
         $this->entityManager->beginTransaction();
 
         try {
-            if($package->getType() === "Pacchetto"){
+            if($package->getType() === "Pacchetto" && ($package->getCode()=="WOMEN" && (date_create() >= date_create('2018-03-08 06:00:00') && date_create() <= date_create('2018-03-09 04:55:00')))){
+                $bonus = $package->generateCustomerWomenBonus($customer);
+                $this->entityManager->persist($bonus);
+                $this->entityManager->flush();
+            }
+            else if($package->getType() === "Pacchetto"){
+
                 $cartasiResponse = $this->payments->sendPaymentRequest($customer, $package->getCost());
 
                 if ($cartasiResponse->getCompletedCorrectly()) {
