@@ -245,7 +245,7 @@ class CarsService
      * @param mixed[] $postData
      * @param Webuser $webuser
      */
-    public function updateCar(Cars $car, $lastStatus, $postData, Webuser $webuser)
+    public function updateCar(Cars $car, $lastStatus, $postData, Webuser $webuser, $param = false)
     {
         $location = !empty($postData['location']) ? $postData['location'] : null;
 
@@ -255,11 +255,10 @@ class CarsService
             $carsMaintenance->setCarPlate($car);
             $carsMaintenance->setLocation($location);
             //$carsMaintenance->setNotes($carsMaintenance->getNotes() . '||' . $postData['note']);
-            if (is_null($carsMaintenance->getNotes())){
-                $carsMaintenance->setNotes($postData['note']);
-            }else{
-                error_log($carsMaintenance->getNotes() . '||' . $postData['note']);
+            if ($param && !is_null($carsMaintenance->getNotes())){
                 $carsMaintenance->setNotes($carsMaintenance->getNotes() . '||' . $postData['note']);
+            }else{
+                $carsMaintenance->setNotes($postData['note']);
             }
             $carsMaintenance->setUpdateTs(new \DateTime());
             $carsMaintenance->setWebuser($webuser);
