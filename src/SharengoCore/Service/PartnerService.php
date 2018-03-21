@@ -5,6 +5,8 @@ namespace SharengoCore\Service;
 use SharengoCore\Entity\Repository\CustomersRepository;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Service\FleetService;
+use Cartasi\Entity\Contracts;
+use Cartasi\Entity\Transactions;
 
 use Doctrine\ORM\EntityManager;
 
@@ -113,7 +115,7 @@ class PartnerService implements ValidatorServiceInterface
 
             $customer->setAddress($data['address']['street']);
             $customer->setAddressInfo('');
-            $customer->setTaxCode($data['address']['town']);
+            $customer->setTown($data['address']['town']);
             $customer->setZipCode($data['address']['zip']);
             $customer->setProvince($data['address']['province']);
             $customer->setCountry($data['address']['country']);
@@ -155,6 +157,8 @@ class PartnerService implements ValidatorServiceInterface
             $this->entityManager->getConnection()->commit();
 
             //$result = $this->customersService->getUserFromHash($hash);  //TODO: improve
+            $contract = $this->newContract($customer);
+            $this->newTransaction($contract, 0, 'EUR', 'TPAY', 'TELEPASS+TPAY+PREPAID+-+-N', true);
             $result = $customer;
 
         } catch (\Exception $e) {
@@ -164,5 +168,58 @@ class PartnerService implements ValidatorServiceInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Create a new contract
+     * 
+     * @param \SharengoCore\Service\Customers $customer
+     * @return Contracts
+     */
+    private function newContract(Customers $customer) {
+
+        $contract = new Contracts();
+        $contract->setCustomer($customer);
+
+        $this->entityManager->persist($contract);
+        $this->entityManager->flush();
+
+        return $contract;
+    }
+
+    /**
+     * Create a new transiction.
+     * 
+     * @param Contracts $contract
+     * @param int $amount
+     * @param string $currency
+     * @param string $brand
+     * @param string $productType
+     * @param bool $isFirstPayment
+     * @return Transactions
+     */
+    private function newTransaction(Contracts $contract, $amount, $currency, $brand, $productType, $isFirstPayment) {
+
+        $transaction = new Transactions();
+        $transaction->setContract($contract);
+        $transaction->setEmail($contract->getCustomer()->getEmail());
+        $transaction->setAmount($amount);
+        $transaction->setCurrency($currency);
+        $transaction->setName($contract->getCustomer()->getName());
+        $transaction->setSurname($contract->getCustomer()->getSurname());
+        $transaction->setBrand($brand);
+
+        $transaction->setOutcome('OK');
+        $transaction->setDatetime(date_create());
+        $transaction->setMessage('Message OK - subscription');
+        $transaction->setRegion('EUROPE');
+        $transaction->setCountry('ITA');
+        $transaction->setProductType($productType);
+        $transaction->setIsFirstPayment($isFirstPayment);
+
+        $this->entityManager->persist($transaction);
+        $this->entityManager->flush();
+
+        return $transaction;
     }
 }

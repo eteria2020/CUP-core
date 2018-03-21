@@ -256,6 +256,7 @@ return [
             'SharengoCore\Service\MaintenanceMotivationsService' => 'SharengoCore\Service\MaintenanceMotivationsServiceFactory',
             'SharengoCore\Service\PartnerService' => 'SharengoCore\Service\PartnerServiceFactory',
             'SharengoCore\Service\UserEventsService' => 'SharengoCore\Service\UserEventsServiceFactory',
+            'SharengoCore\Service\TelepassPayService' => 'SharengoCore\Service\TelepassPayServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
             'SharengoCore\Listener\DisableContractListener' => 'SharengoCore\Listener\DisableContractListenerFactory',
