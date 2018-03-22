@@ -374,7 +374,6 @@ class PaymentsService
             if ($response->getCompletedCorrectly()) {
                 $this->markExtraAsPayed($extraPayment);
             } else {
-                $a = "";
                 $this->unpayableExtraConsequences(
                         $customer,
                         $extraPayment,

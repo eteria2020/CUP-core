@@ -157,7 +157,8 @@ class ExtraPayments
     public function __construct(
         Customers $customer,
         Fleet $fleet,
-        Transactions $transaction,
+        //Transactions $transaction,
+        $transaction,
         $amount,
         $paymentType,
         $reasons
@@ -285,6 +286,23 @@ class ExtraPayments
     }
     
     /**
+     * @return Transactions
+     */
+    public function getTransaction()
+    {
+        return $this->transaction;
+    }
+
+    /**
+     * @param Transactions
+     */
+    public function setTransaction(Transactions $transaction)
+    {
+        $this->transaction = $transaction;
+        return $this;
+    }
+    
+    /**
      * @return boolean
      */
     public function isFirstExtraTryTsSet()
@@ -316,6 +334,14 @@ class ExtraPayments
     public function setWrongExtra()
     {
         return $this->setStatus(self::STATUS_WRONG_PAYMENT);
+    }
+    
+    /**
+     * @return ExtraPayments
+     */
+    public function setPayedCorrectly()
+    {
+        return $this->setStatus(self::STATUS_PAYED_CORRECTLY);
     }
 
 }

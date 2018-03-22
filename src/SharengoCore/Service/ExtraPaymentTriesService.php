@@ -54,7 +54,7 @@ class ExtraPaymentTriesService
      * @param string $outcome
      * @return ExtraPaymentTries
      */
-    public function registerPaymentTry(ExtraPayments $extraPayment, Transactions $transaction, $outcome)
+    public function registerExtraTry(ExtraPayments $extraPayment, Transactions $transaction, $outcome)
     {
         $extraPaymentTry = $this->extraPaymentTriesRepository->findExtraPaymentTry($extraPayment, $transaction);
 
@@ -77,7 +77,7 @@ class ExtraPaymentTriesService
      * @param Webuser|null $webuser
      * @return ExtraPaymentTries
      */
-    public function generateExtraPaymentTry(ExtraPayments $extraPayment, $outcome, Transactions $transaction = null, Webuser $webuser = null)
+    public function generateExtraPaymentTry(ExtraPayments $extraPayment, $outcome, $transaction = null, Webuser $webuser = null)
     {
         $extraPaymentTry = new ExtraPaymentTries($extraPayment, $outcome, $transaction, $webuser);
         if (!$extraPayment->isFirstExtraTryTsSet()) {

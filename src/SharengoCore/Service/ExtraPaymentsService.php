@@ -67,7 +67,8 @@ class ExtraPaymentsService
     public function registerExtraPayment(
         Customers $customer,
         Fleet $fleet,
-        Transactions $transaction,
+        //Transactions $transaction,
+        $transaction,
         $amount,
         $type,
         $penalty,
@@ -208,5 +209,28 @@ class ExtraPaymentsService
     public function getExtraPaymentById($extraPaymentId) {
         return $this->extraPaymentsRepository->findOneById($extraPaymentId);
     }
+    
+    public function setStatusPayedCorrectly(ExtraPayments $extraPayment) {
+        $extraPayment->setPayedCorrectly();
+        $this->entityManager->persist($extraPayment);
+        $this->entityManager->flush();
 
+        return $extraPayment;
+    }
+    
+    public function setStatusWrongPayment(ExtraPayments $extraPayment) {
+        $extraPayment->setWrongExtra();
+        $this->entityManager->persist($extraPayment);
+        $this->entityManager->flush();
+
+        return $extraPayment;
+    }
+    
+    public function setTrasaction(ExtraPayments $extraPayment, Transaction $transaction) {
+        $extraPayment->setTransaction($transaction);
+        $this->entityManager->persist($extraPayment);
+        $this->entityManager->flush();
+
+        return $extraPayment;
+    }
 }
