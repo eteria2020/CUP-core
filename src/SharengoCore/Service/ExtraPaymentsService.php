@@ -210,8 +210,9 @@ class ExtraPaymentsService
         return $this->extraPaymentsRepository->findOneById($extraPaymentId);
     }
     
-    public function setStatusPayedCorrectly(ExtraPayments $extraPayment) {
+    public function setPayedCorrectly(ExtraPayments $extraPayment) {
         $extraPayment->setPayedCorrectly();
+        $extraPayment->setFirstExtraTryTs(new \DateTime());
         $this->entityManager->persist($extraPayment);
         $this->entityManager->flush();
 
