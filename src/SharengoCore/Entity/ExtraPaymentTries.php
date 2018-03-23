@@ -76,6 +76,7 @@ class ExtraPaymentTries
      */
     public function __construct(ExtraPayments $extraPayment, $outcome, Transactions $transaction = null, Webuser $webuser = null)
     {
+        error_log("dentro al costruttore della tries");
         $this->extraPayment = $extraPayment;
         $this->outcome = $outcome;
         $this->transaction = $transaction;

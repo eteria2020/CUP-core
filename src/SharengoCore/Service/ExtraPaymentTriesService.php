@@ -79,8 +79,10 @@ class ExtraPaymentTriesService
      */
     public function generateExtraPaymentTry(ExtraPayments $extraPayment, $outcome, $transaction = null, Webuser $webuser = null)
     {
+        error_log("dentro la funzio generateExtraPaymentTry");
         $extraPaymentTry = new ExtraPaymentTries($extraPayment, $outcome, $transaction, $webuser);
         if (!$extraPayment->isFirstExtraTryTsSet()) {
+            error_log("set della data)");
             $extraPayment->setFirstExtraTryTs($extraPaymentTry->getTs());
         }
         return $extraPaymentTry;
