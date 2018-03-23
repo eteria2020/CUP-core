@@ -69,6 +69,14 @@ class ExtraPaymentTriesService
 
         return $extraPaymentTry;
     }
+    
+    public function createExtraPaymentTry(ExtraPayments $extraPayment, $outcome, $transaction = null, Webuser $webuser = null)
+    {
+        $extraPaymentTry = $this->generateExtraPaymentTry($extraPayment, $outcome, $transaction, $webuser);
+        
+        $this->entityManager->persist($extraPaymentTry);
+        $this->entityManager->flush()
+    }
 
     /**
      * @param ExtraPayments $extraPayment
