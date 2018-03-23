@@ -75,7 +75,7 @@ class ExtraPaymentTriesService
         $extraPaymentTry = $this->generateExtraPaymentTry($extraPayment, $outcome, $transaction, $webuser);
         
         $this->entityManager->persist($extraPaymentTry);
-        $this->entityManager->flush()
+        $this->entityManager->flush();
     }
 
     /**
