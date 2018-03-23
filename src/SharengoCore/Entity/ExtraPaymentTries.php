@@ -82,7 +82,7 @@ class ExtraPaymentTries
         $this->transaction = $transaction;
         $this->webuser = $webuser;
         $this->ts = date_create(date('Y-m-d H:i:s'));
-        error_log(var_dump($this));
+        //error_log(var_dump($this));
     }
     
     
