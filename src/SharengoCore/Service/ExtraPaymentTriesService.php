@@ -73,7 +73,7 @@ class ExtraPaymentTriesService
     /**
      * @param ExtraPayments $extraPayment
      * @param string $outcome
-     * @param Transactions|null $transaction
+     * @param $transaction
      * @param Webuser|null $webuser
      * @return ExtraPaymentTries
      */
