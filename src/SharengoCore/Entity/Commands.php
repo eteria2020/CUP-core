@@ -143,14 +143,13 @@ class Commands
         self::REBOT => ['label' => 'Rebot (107.4)', 'command'=>'FORCE_REBOOT', 'params' => ['txtarg1' => ''], 'ttl' => 60],
         self::START_TRIP => ['label' => 'Apri corsa', 'command'=>'START_TRIP', 'params' => ['txtarg1' => ''], 'ttl' => 60]
     ];
-
     /**
      * @param Cars $car
      * @param integer $commandIndex
      * @param Webuser|null $webuser
      * @return Commands
      */
-    public static function createCommand(Cars $car, $commandIndex, Webuser $webuser = null)
+    public static function createCommand(Cars $car, $commandIndex, Webuser $webuser = null, $intArg1, $intArg2, $txtArg1, $txtArg2)
     {
         if (!array_key_exists($commandIndex, self::$codes)) {
             throw new \InvalidArgumentException('Command not found');
@@ -162,6 +161,8 @@ class Commands
         $command->setCarPlate($car->getPlate());
         $command->setCommand($commandData['command']);
 
+        $commandData['params'] = $command->setDynamicParameters($commandData['params'], $intArg1, $intArg2, $txtArg1, $txtArg2);
+        
         foreach ($commandData['params'] as $param => $value) {
             $methodName = 'set' . ucfirst($param);
             $command->$methodName($value);
@@ -173,6 +174,24 @@ class Commands
         $command->setWebuser($webuser);
 
         return $command;
+    }
+    
+    public function setDynamicParameters($commandDataParams, $intArg1, $intArg2, $txtArg1, $txtArg2) {
+        $commandData = null;
+        if (array_key_exists('intarg1', $commandDataParams)) {
+            $commandData['intArg1'] = $intArg1;
+        }
+        if (array_key_exists('intarg2', $commandDataParams)) {
+            $commandData['intArg2'] = $intArg2;
+        }
+        if (array_key_exists('txtarg1', $commandDataParams)) {
+            $a = '';
+            $commandData['txtarg1'] = $txtArg1;
+        }
+        if (array_key_exists('txtarg2', $commandDataParams)) {
+            $commandData['txtarg2'] = $txtArg2;
+        }
+        return $commandData;
     }
 
     /**
@@ -484,4 +503,5 @@ class Commands
     {
         return $this->webuser;
     }
+    
 }
