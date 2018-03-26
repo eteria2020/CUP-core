@@ -2,26 +2,29 @@
 
 namespace SharengoCore\Service;
 
-// Externals
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class PartnerServiceFactory implements FactoryInterface
+class TelepassServiceFactory implements FactoryInterface
 {
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
+
         $customersRepository = $entityManager->getRepository('\SharengoCore\Entity\Customers');
         $partnersRepository = $entityManager->getRepository('\SharengoCore\Entity\Partners');
-        $fleetService = $serviceLocator->get('SharengoCore\Service\FleetService');
-        $telepassService = $serviceLocator->get('SharengoCore\Service\TelepassService');
+        $provincesRepository = $entityManager->getRepository('\SharengoCore\Entity\Provinces');
 
-        return new PartnerService(
+        $fleetService = $serviceLocator->get('SharengoCore\Service\FleetService');
+        $userEventsService = $serviceLocator->get('SharengoCore\Service\UserEventsService');
+
+        return new TelepassService(
             $entityManager,
             $customersRepository,
             $partnersRepository,
             $fleetService,
-            $telepassService
+            $provincesRepository,
+            $userEventsService
         );
     }
 }

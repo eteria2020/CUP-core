@@ -16,13 +16,15 @@ class TelepassPayServiceFactory implements FactoryInterface
         $tripsService = $serviceLocator->get('SharengoCore\Service\TripsService');
         $extraPaymentsService = $serviceLocator->get('SharengoCore\Service\ExtraPaymentsService');
         $cartasiContractsService = $serviceLocator->get('Cartasi\Service\CartasiContracts');
+        $partnersRepository = $entityManager->getRepository('\SharengoCore\Entity\Partners');
 
         return new TelepassPayService(
             $telepassPayConfig,
             $entityManager,
             $tripsService,
             $extraPaymentsService,
-            $cartasiContractsService
+            $cartasiContractsService,
+            $partnersRepository
         );
     }
 }

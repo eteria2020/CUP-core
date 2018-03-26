@@ -9,7 +9,7 @@ use SharengoCore\Entity\Webuser;
  * UserEvents
  *
  * @ORM\Table(name="user_events", indexes={@ORM\Index(name="idx_d96cf1ff49279951", columns={"webuser_id"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\UserEventsRepository")
  */
 class UserEvents {
 

@@ -10,11 +10,16 @@ use Cartasi\Entity\CartasiResponse;
 use Cartasi\Service\CartasiContractsService;
 use Cartasi\Entity\Transactions;
 use Cartasi\Entity\Contracts;
+use SharengoCore\Entity\Repository\PartnersRepository;
 
 use Zend\Http\Request;
 use Zend\Http\Client;
 
 class TelepassPayService {
+
+    private $code ='telepass';
+
+    private $partner;
 
     /**
      *
@@ -40,22 +45,38 @@ class TelepassPayService {
      */
     private $extraPaymentsService;
 
+    /**
+     *
+     * @var HttpClient httpClient
+     */
     private $httpClient;
 
+    /**
+     *
+     * @var CartasiContractsService cartasiContractsService
+     */
     private $cartasiContractsService;
+
+    /**
+     *
+     * @var PartnersRepository partnersRepository
+     */
+    private $partnersRepository;
 
     public function __construct(
         array $telepassPayConfig,
         EntityManager $entityManager,
         TripsService $tripsService,
         ExtraPaymentsService $extraPaymentsService,
-        CartasiContractsService $cartasiContractsService
+        CartasiContractsService $cartasiContractsService,
+        PartnersRepository $partnersRepository
     ) {
         $this->telepassPayConfig = $telepassPayConfig;
         $this->entityManager = $entityManager;
         $this->tripsService = $tripsService;
         $this->extraPaymentsService = $extraPaymentsService;
         $this->cartasiContractsService = $cartasiContractsService;
+        $this->partnersRepository = $partnersRepository;
 
         $this->httpClient = new Client();
         $this->httpClient->setMethod(Request::METHOD_POST);
@@ -71,6 +92,8 @@ class TelepassPayService {
                 'Authorization' => $this->telepassPayConfig['authorization']
             )
         );
+
+        $this->partner = $this->partnersRepository->findOneBy(array('code' => $this->code, 'enabled' => true));
     }
 
     /**
@@ -241,7 +264,7 @@ class TelepassPayService {
      *
      * @param TripPayments $tripPayment
      * @param boolean $avoidHittingTelepassPay
-     * @return array
+     * @return CartasiResponse
      */
     public function sendPaymentRequest(
         TripPayments $tripPayment,
@@ -251,12 +274,22 @@ class TelepassPayService {
         $response = new CartasiResponse(false, 'KO', null);
 
         if(!$avoidHittingTelepassPay) {
-            $responseTelepass = '';
+            $responseTelepass = 'message KO - no contract';
             $currency = 'EUR';
             $customer  = $tripPayment->getCustomer();
 
+            $transaction = new Transactions();
+            $transaction->setName($customer->getName());
+            $transaction->setSurname($customer->getSurname());
+            $transaction->setEmail($customer->getEmail());
+            $transaction->setAmount(0);
+            $transaction->setCurrency($currency);
+            $transaction->setOutcome('KO');
+            $transaction->setIsFirstPayment(false);
+
             if($this->cartasiContractsService->hasCartasiContract($customer)) {
                 $contract = $this->cartasiContractsService->getCartasiContract($customer);
+
                 $transaction = $this->newTransaction($contract,
                     $tripPayment->getTotalCost(),
                     $currency);
@@ -286,6 +319,8 @@ class TelepassPayService {
                     }
                 }
             }
+            //var_dump($transaction);
+            var_dump($this->partner->getParamsDecode());
 
             $transaction->setMessage(json_encode($responseTelepass));
             $transaction->setDatetime(date_create());
@@ -312,6 +347,7 @@ class TelepassPayService {
 
         $transaction->setBrand('TPAY');
         $transaction->setOutcome('KO');
+        $transaction->setMessage('KO - no contract');
         $transaction->setDatetime(date_create());
         $transaction->setRegion('EUROPE');
         $transaction->setCountry('ITA');
