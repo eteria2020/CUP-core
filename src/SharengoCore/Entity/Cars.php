@@ -12,8 +12,8 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @ORM\Table(name="cars")
  * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CarsRepository")
  */
-class Cars
-{
+class Cars {
+
     /**
      * @var string
      *
@@ -298,6 +298,13 @@ class Cars
     private $carsInfo;
 
     /**
+     * @var \CarsBonus
+     *
+     * @ORM\OneToOne(targetEntity="CarsBonus", mappedBy="plate")
+     */
+    private $carsBonus;
+
+    /**
      * Bidirectional - One-To-Many (INVERSE SIDE)
      *
      * @ORM\OneToMany(targetEntity="Reservations", mappedBy="car", cascade={"remove"})
@@ -318,20 +325,16 @@ class Cars
      */
     private $maintenances;
 
-
-    public function __construct()
-    {
+    public function __construct() {
         $this->trips = new ArrayCollection();
     }
-
 
     /**
      * Get plate
      *
      * @return string
      */
-    public function getPlate()
-    {
+    public function getPlate() {
         return $this->plate;
     }
 
@@ -340,8 +343,7 @@ class Cars
      *
      * @param string $plate
      */
-    public function setPlate($plate)
-    {
+    public function setPlate($plate) {
         $this->plate = $plate;
     }
 
@@ -352,8 +354,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setManufactures($manufactures)
-    {
+    public function setManufactures($manufactures) {
         $this->manufactures = $manufactures;
 
         return $this;
@@ -364,8 +365,7 @@ class Cars
      *
      * @return string
      */
-    public function getManufactures()
-    {
+    public function getManufactures() {
         return $this->manufactures;
     }
 
@@ -376,8 +376,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setModel($model)
-    {
+    public function setModel($model) {
         $this->model = $model;
 
         return $this;
@@ -388,8 +387,7 @@ class Cars
      *
      * @return string
      */
-    public function getModel()
-    {
+    public function getModel() {
         return $this->model;
     }
 
@@ -400,8 +398,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setLabel($label)
-    {
+    public function setLabel($label) {
         $this->label = $label;
 
         return $this;
@@ -412,8 +409,7 @@ class Cars
      *
      * @return string
      */
-    public function getLabel()
-    {
+    public function getLabel() {
         return $this->label;
     }
 
@@ -424,8 +420,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setActive($active)
-    {
+    public function setActive($active) {
         $this->active = $active;
 
         return $this;
@@ -436,8 +431,7 @@ class Cars
      *
      * @return boolean
      */
-    public function getActive()
-    {
+    public function getActive() {
         return $this->active;
     }
 
@@ -448,8 +442,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setIntCleanliness($intCleanliness)
-    {
+    public function setIntCleanliness($intCleanliness) {
         $this->intCleanliness = $intCleanliness;
 
         return $this;
@@ -460,8 +453,7 @@ class Cars
      *
      * @return string
      */
-    public function getIntCleanliness()
-    {
+    public function getIntCleanliness() {
         return $this->intCleanliness;
     }
 
@@ -472,8 +464,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setExtCleanliness($extCleanliness)
-    {
+    public function setExtCleanliness($extCleanliness) {
         $this->extCleanliness = $extCleanliness;
 
         return $this;
@@ -484,8 +475,7 @@ class Cars
      *
      * @return string
      */
-    public function getExtCleanliness()
-    {
+    public function getExtCleanliness() {
         return $this->extCleanliness;
     }
 
@@ -496,8 +486,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setNotes($notes)
-    {
+    public function setNotes($notes) {
         $this->notes = $notes;
 
         return $this;
@@ -508,8 +497,7 @@ class Cars
      *
      * @return string
      */
-    public function getNotes()
-    {
+    public function getNotes() {
         return $this->notes;
     }
 
@@ -520,8 +508,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setLongitude($longitude)
-    {
+    public function setLongitude($longitude) {
         $this->longitude = $longitude;
 
         return $this;
@@ -532,8 +519,7 @@ class Cars
      *
      * @return string
      */
-    public function getLongitude()
-    {
+    public function getLongitude() {
         return $this->longitude;
     }
 
@@ -544,8 +530,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setLatitude($latitude)
-    {
+    public function setLatitude($latitude) {
         $this->latitude = $latitude;
 
         return $this;
@@ -556,8 +541,7 @@ class Cars
      *
      * @return string
      */
-    public function getLatitude()
-    {
+    public function getLatitude() {
         return $this->latitude;
     }
 
@@ -568,10 +552,9 @@ class Cars
      *
      * @return Cars
      */
-    public function setDamages(array $damages = null)
-    {
+    public function setDamages(array $damages = null) {
         if (count($damages) > 0 &&
-            null != $damages) {
+                null != $damages) {
             $this->damages = json_encode($damages);
         } else {
             $this->damages = null;
@@ -585,8 +568,7 @@ class Cars
      *
      * @return string
      */
-    public function getDamages()
-    {
+    public function getDamages() {
         return $this->damages;
     }
 
@@ -597,8 +579,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setBattery($battery)
-    {
+    public function setBattery($battery) {
         $this->battery = $battery;
 
         return $this;
@@ -609,8 +590,7 @@ class Cars
      *
      * @return integer
      */
-    public function getBattery()
-    {
+    public function getBattery() {
         return $this->battery;
     }
 
@@ -621,8 +601,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setFrame($frame)
-    {
+    public function setFrame($frame) {
         $this->frame = $frame;
 
         return $this;
@@ -633,8 +612,7 @@ class Cars
      *
      * @return string
      */
-    public function getFrame()
-    {
+    public function getFrame() {
         return $this->frame;
     }
 
@@ -645,8 +623,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setLocation($location)
-    {
+    public function setLocation($location) {
         $this->location = $location;
 
         return $this;
@@ -657,8 +634,7 @@ class Cars
      *
      * @return string
      */
-    public function getLocation()
-    {
+    public function getLocation() {
         return $this->location;
     }
 
@@ -669,8 +645,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setFirmwareVersion($firmwareVersion)
-    {
+    public function setFirmwareVersion($firmwareVersion) {
         $this->firmwareVersion = $firmwareVersion;
 
         return $this;
@@ -681,9 +656,39 @@ class Cars
      *
      * @return string
      */
-    public function getFirmwareVersion()
-    {
+    public function getFirmwareVersion() {
         return $this->firmwareVersion;
+    }
+
+    /** Return an integer rappresentation of software version.
+     * Example, for version star width "0.":
+     * V4.6     --> 4600
+     * V4.7.2~1 --> 4721
+     * V4.7.3   --> 4730
+     * @return int
+     */
+    public function getFirmwareVersionNumber() {
+        $result = 0;
+
+        try {
+            if(is_null($this->firmwareVersion)) {
+                return $result;
+            }
+
+            $strNormalized = trim(strtolower($this->firmwareVersion));
+            $result = intval(preg_replace("/[^0-9]/", "", $strNormalized ));
+
+            if ($result<100) {
+                $result = $result * 100;
+            } else if ($result<1000) {
+                $result = $result * 10;
+            }
+        } catch (Exception $ex) {
+
+        }
+
+        return $result;
+
     }
 
     /**
@@ -693,8 +698,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setSoftwareVersion($softwareVersion)
-    {
+    public function setSoftwareVersion($softwareVersion) {
         $this->softwareVersion = $softwareVersion;
 
         return $this;
@@ -705,10 +709,53 @@ class Cars
      *
      * @return string
      */
-    public function getSoftwareVersion()
-    {
+    public function getSoftwareVersion() {
         return $this->softwareVersion;
     }
+
+    /**
+     * Return an integer rappresentation of software version.
+     * Example, for version star width "0.":
+     * 0.103.4-sk9 --> 10349
+     * 0.105.6tris --> 10563
+     * 0.106.7     --> 10670
+     * 0.107.2.3   --> 10723
+     * 0.107       --> 10700
+     *
+     * If dosn't start width "0.", use x.yyy.x
+     * @return integer
+     */
+    public function getSoftwareVersionNumber() {
+        $result = 0;
+
+        try {
+            if(is_null($this->softwareVersion)) {
+                return $result;
+            }
+
+            $strNormalized = trim(strtolower($this->softwareVersion));
+
+            if (substr( $strNormalized, 0, 2 )=='0.' ) {  // ver 0.xxx.y.z
+                $strNormalized = str_replace("bis","2",$strNormalized);
+                $strNormalized = str_replace("tris","3",$strNormalized);
+                $result = intval(preg_replace("/[^0-9]/", "", $strNormalized ));
+
+                if($result==105 || $result==107) {
+                    $result = $result * 100;
+                } else if($result>=100 && $result<10000) {
+                   $result = $result * 10;
+                }
+            } else {    //ver x.yyy.z es 1.001.0 -->10010 2.004.3 --> 20043
+                $ver_str_array = explode(".", $strNormalized);
+                $result = intval($ver_str_array[0].$ver_str_array[1].$ver_str_array[2]);
+            }
+        } catch (Exception $ex) {
+        }
+
+        return $result;
+
+    }
+
 
     /**
      * Set mac
@@ -717,8 +764,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setMac($mac)
-    {
+    public function setMac($mac) {
         $this->mac = $mac;
 
         return $this;
@@ -729,8 +775,7 @@ class Cars
      *
      * @return string
      */
-    public function getMac()
-    {
+    public function getMac() {
         return $this->mac;
     }
 
@@ -741,8 +786,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setImei($imei)
-    {
+    public function setImei($imei) {
         $this->imei = $imei;
 
         return $this;
@@ -753,8 +797,7 @@ class Cars
      *
      * @return string
      */
-    public function getImei()
-    {
+    public function getImei() {
         return $this->imei;
     }
 
@@ -765,8 +808,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setLastContact($lastContact)
-    {
+    public function setLastContact($lastContact) {
         $this->lastContact = $lastContact;
 
         return $this;
@@ -777,8 +819,7 @@ class Cars
      *
      * @return \DateTime
      */
-    public function getLastContact()
-    {
+    public function getLastContact() {
         return $this->lastContact;
     }
 
@@ -789,8 +830,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setLastLocationTime($lastLocationTime)
-    {
+    public function setLastLocationTime($lastLocationTime) {
         $this->lastLocationTime = $lastLocationTime;
 
         return $this;
@@ -801,8 +841,7 @@ class Cars
      *
      * @return \DateTime
      */
-    public function getLastLocationTime()
-    {
+    public function getLastLocationTime() {
         return $this->lastLocationTime;
     }
 
@@ -813,11 +852,18 @@ class Cars
      *
      * @return Cars
      */
-    public function setBusy($busy)
-    {
+    public function setBusy($busy) {
         $this->busy = $busy;
 
         return $this;
+    }
+
+    /**
+     * Get UnplugEnable
+     * @return boolen
+     */
+    public function getCarsBonusUnplugEnable() {
+        return $this->carsBonus->getUnplugEnable();
     }
 
     /**
@@ -825,8 +871,7 @@ class Cars
      *
      * @return boolean
      */
-    public function getBusy()
-    {
+    public function getBusy() {
         return $this->busy;
     }
 
@@ -837,8 +882,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setHidden($hidden)
-    {
+    public function setHidden($hidden) {
         $this->hidden = $hidden;
 
         return $this;
@@ -849,8 +893,7 @@ class Cars
      *
      * @return boolean
      */
-    public function getHidden()
-    {
+    public function getHidden() {
         return $this->hidden;
     }
 
@@ -861,8 +904,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setRpm($rpm)
-    {
+    public function setRpm($rpm) {
         $this->rpm = $rpm;
 
         return $this;
@@ -873,8 +915,7 @@ class Cars
      *
      * @return integer
      */
-    public function getRpm()
-    {
+    public function getRpm() {
         return $this->rpm;
     }
 
@@ -885,8 +926,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setSpeed($speed)
-    {
+    public function setSpeed($speed) {
         $this->speed = $speed;
 
         return $this;
@@ -897,8 +937,7 @@ class Cars
      *
      * @return integer
      */
-    public function getSpeed()
-    {
+    public function getSpeed() {
         return $this->speed;
     }
 
@@ -909,8 +948,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setObcInUse($obcInUse)
-    {
+    public function setObcInUse($obcInUse) {
         $this->obcInUse = $obcInUse;
 
         return $this;
@@ -921,8 +959,7 @@ class Cars
      *
      * @return integer
      */
-    public function getObcInUse()
-    {
+    public function getObcInUse() {
         return $this->obcInUse;
     }
 
@@ -933,8 +970,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setObcWlSize($obcWlSize)
-    {
+    public function setObcWlSize($obcWlSize) {
         $this->obcWlSize = $obcWlSize;
 
         return $this;
@@ -945,8 +981,7 @@ class Cars
      *
      * @return integer
      */
-    public function getObcWlSize()
-    {
+    public function getObcWlSize() {
         return $this->obcWlSize;
     }
 
@@ -957,8 +992,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setKm($km)
-    {
+    public function setKm($km) {
         $this->km = $km;
 
         return $this;
@@ -969,8 +1003,7 @@ class Cars
      *
      * @return integer
      */
-    public function getKm()
-    {
+    public function getKm() {
         return $this->km;
     }
 
@@ -981,8 +1014,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setRunning($running)
-    {
+    public function setRunning($running) {
         $this->running = $running;
 
         return $this;
@@ -993,8 +1025,7 @@ class Cars
      *
      * @return boolean
      */
-    public function getRunning()
-    {
+    public function getRunning() {
         return $this->running;
     }
 
@@ -1005,8 +1036,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setParking($parking)
-    {
+    public function setParking($parking) {
         $this->parking = $parking;
 
         return $this;
@@ -1017,8 +1047,7 @@ class Cars
      *
      * @return boolean
      */
-    public function getParking()
-    {
+    public function getParking() {
         return $this->parking;
     }
 
@@ -1029,8 +1058,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setStatus($status)
-    {
+    public function setStatus($status) {
         $this->status = $status;
 
         return $this;
@@ -1041,8 +1069,7 @@ class Cars
      *
      * @return string
      */
-    public function getStatus()
-    {
+    public function getStatus() {
         return $this->status;
     }
 
@@ -1053,8 +1080,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setSoc($soc)
-    {
+    public function setSoc($soc) {
         $this->soc = $soc;
 
         return $this;
@@ -1065,11 +1091,9 @@ class Cars
      *
      * @return int
      */
-    public function getSoc()
-    {
+    public function getSoc() {
         return $this->soc;
     }
-
 
     /**
      * Set key vin
@@ -1078,8 +1102,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setVin($vin)
-    {
+    public function setVin($vin) {
         $this->vin = $vin;
 
         return $this;
@@ -1090,8 +1113,7 @@ class Cars
      *
      * @return string
      */
-    public function getVin()
-    {
+    public function getVin() {
         return $this->vin;
     }
 
@@ -1102,8 +1124,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setKeystatus($keyStatus)
-    {
+    public function setKeystatus($keyStatus) {
         $this->keyStatus = $keyStatus;
 
         return $this;
@@ -1114,8 +1135,7 @@ class Cars
      *
      * @return string
      */
-    public function getKeystatus()
-    {
+    public function getKeystatus() {
         return $this->keyStatus;
     }
 
@@ -1123,8 +1143,7 @@ class Cars
      * @param DoctrineHydrator
      * @return mixed[]
      */
-    public function toArray(DoctrineHydrator $hydrator)
-    {
+    public function toArray(DoctrineHydrator $hydrator) {
         $extractedCar = $hydrator->extract($this);
 
         $extractedCar['fleet'] = $this->getFleet()->toArray($hydrator);
@@ -1135,8 +1154,7 @@ class Cars
     /**
      * @return boolean
      */
-    public function getCharging()
-    {
+    public function getCharging() {
         return $this->charging;
     }
 
@@ -1144,8 +1162,7 @@ class Cars
      * @param boolean
      * @return Cars
      */
-    public function setCharging($charging)
-    {
+    public function setCharging($charging) {
         $this->charging = $charging;
         return $this;
     }
@@ -1155,8 +1172,7 @@ class Cars
      *
      * @return \SharengoCore\Entity\Fleet
      */
-    public function getFleet()
-    {
+    public function getFleet() {
         return $this->fleet;
     }
 
@@ -1167,8 +1183,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setFleet(\SharengoCore\Entity\Fleet $fleet)
-    {
+    public function setFleet(\SharengoCore\Entity\Fleet $fleet) {
         $this->fleet = $fleet;
 
         return $this;
@@ -1179,8 +1194,7 @@ class Cars
      *
      * @return \SharengoCore\Entity\CarsInfo gps
      */
-    public function getCarsInfoGps()
-    {
+    public function getCarsInfoGps() {
         return $this->carsInfo->getGps();
     }
 
@@ -1189,8 +1203,7 @@ class Cars
      *
      * @return \SharengoCore\Entity\CarsInfo softwareVersion
      */
-    public function getCarsInfoSoftwareVersion()
-    {
+    public function getCarsInfoSoftwareVersion() {
         return $this->carsInfo->getSoftwareVersion();
     }
 
@@ -1199,18 +1212,17 @@ class Cars
      *
      * @return \SharengoCore\Entity\CarsInfo firmwareVersion
      */
-    public function getCarsInfoFirmwareVersion()
-    {
+    public function getCarsInfoFirmwareVersion() {
         return $this->carsInfo->getFirmwareVersion();
     }
+
 
     /**
      * Get batterySafety
      *
      * @return boolean
      */
-    public function getBatterySafety()
-    {
+    public function getBatterySafety() {
         return $this->batterySafety;
     }
 
@@ -1221,8 +1233,7 @@ class Cars
      *
      * @return Cars
      */
-    public function setBatterySafety($batterySafety)
-    {
+    public function setBatterySafety($batterySafety) {
         $this->batterySafety = $batterySafety;
 
         return $this;
@@ -1233,8 +1244,7 @@ class Cars
      *
      * @return \DateTime
      */
-    public function getBatterySafetyTs()
-    {
+    public function getBatterySafetyTs() {
         return $this->batterySafetyTs;
     }
 
@@ -1243,8 +1253,7 @@ class Cars
      *
      * @return boolean
      */
-    public function getNogps()
-    {
+    public function getNogps() {
         return $this->nogps;
     }
 

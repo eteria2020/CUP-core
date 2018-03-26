@@ -254,6 +254,8 @@ return [
             'SharengoCore\Service\PreauthorizationsService' => 'SharengoCore\Service\PreauthorizationsServiceFactory',
             'SharengoCore\Service\CustomersPointsService' => 'SharengoCore\Service\CustomersPointsServiceFactory',
             'SharengoCore\Service\MaintenanceMotivationsService' => 'SharengoCore\Service\MaintenanceMotivationsServiceFactory',
+            'SharengoCore\Service\PartnerService' => 'SharengoCore\Service\PartnerServiceFactory',
+            'SharengoCore\Service\WebusersService' => 'SharengoCore\Service\WebusersServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
             'SharengoCore\Listener\DisableContractListener' => 'SharengoCore\Listener\DisableContractListenerFactory',
