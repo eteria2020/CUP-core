@@ -76,13 +76,11 @@ class ExtraPaymentTries
      */
     public function __construct(ExtraPayments $extraPayment, $outcome, Transactions $transaction = null, Webuser $webuser = null)
     {
-        error_log("dentro al costruttore della tries");
         $this->extraPayment = $extraPayment;
         $this->outcome = $outcome;
         $this->transaction = $transaction;
         $this->webuser = $webuser;
         $this->ts = date_create(date('Y-m-d H:i:s'));
-        //error_log(var_dump($this));
     }
     
     
