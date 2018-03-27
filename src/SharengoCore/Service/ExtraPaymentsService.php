@@ -211,9 +211,11 @@ class ExtraPaymentsService
     }
     
     public function setPayedCorrectly(ExtraPayments $extraPayment) {
+        error_log('in ExtraPaymentsService al set della pagamento corretto');
         $extraPayment->setPayedCorrectly();
         $this->entityManager->persist($extraPayment);
         $this->entityManager->flush();
+        error_log('in ExtraPaymentsService dopo il set del pagamento corretto');
 
         return $extraPayment;
     }
@@ -235,10 +237,13 @@ class ExtraPaymentsService
         return $extraPayment;
     }
     
-    public function setTrasaction(ExtraPayments $extraPayment, Transaction $transaction) {
+    public function setTrasaction(ExtraPayments $extraPayment, $transaction) {
+        error_log('in ExtraPaymentsService al set della transaction');
+        error_log($transaction->getId());
         $extraPayment->setTransaction($transaction);
         $this->entityManager->persist($extraPayment);
         $this->entityManager->flush();
+        error_log('in ExtraPaymentsService dopo scrittura transaction e salvataggio');
 
         return $extraPayment;
     }
