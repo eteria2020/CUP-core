@@ -92,20 +92,6 @@ class FinesService
         if ($count) {
             return $fines;
         }
-        if(isset($filters['searchValue'])&&($filters['searchValue']!="")){
-            if($filters['column']=="e.vehicleFleetId"){
-                switch ($filters['searchValue']){
-                    case "Milano":
-                        $filters['searchValue']=1;
-                        error_log($filters['searchValue']);
-                        break;
-                    case "Firenze":
-                        $filters['searchValue']=2;
-                        break;
-                }
-            }
-            
-        }
 
         $a = array_map(function (SafoPenalty $fine) {
             return [
