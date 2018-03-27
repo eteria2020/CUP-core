@@ -11,8 +11,8 @@ use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
  * @ORM\Table(name="pois")
  * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\PoisRepository")
  */
-class Pois
-{
+class Pois {
+
     /**
      * @var integer
      *
@@ -101,11 +101,17 @@ class Pois
     private $update;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="unplug_enable", type="boolean", nullable=false)
+     */
+    private $unplugEnable;
+
+    /**
      * @param DoctrineHydrator $hydrator
      * @return mixed
      */
-    public function toArray(DoctrineHydrator $hydrator)
-    {
+    public function toArray(DoctrineHydrator $hydrator) {
         return $hydrator->extract($this);
     }
 
@@ -114,8 +120,7 @@ class Pois
      *
      * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -126,8 +131,7 @@ class Pois
      *
      * @return Pois
      */
-    public function setType($type)
-    {
+    public function setType($type) {
         $this->type = $type;
 
         return $this;
@@ -138,8 +142,7 @@ class Pois
      *
      * @return string
      */
-    public function getType()
-    {
+    public function getType() {
         return $this->type;
     }
 
@@ -150,8 +153,7 @@ class Pois
      *
      * @return Pois
      */
-    public function setCode($code)
-    {
+    public function setCode($code) {
         $this->code = $code;
 
         return $this;
@@ -162,8 +164,7 @@ class Pois
      *
      * @return string
      */
-    public function getCode()
-    {
+    public function getCode() {
         return $this->code;
     }
 
@@ -174,8 +175,7 @@ class Pois
      *
      * @return Pois
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -186,8 +186,7 @@ class Pois
      *
      * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -198,8 +197,7 @@ class Pois
      *
      * @return Pois
      */
-    public function setBrand($brand)
-    {
+    public function setBrand($brand) {
         $this->brand = $brand;
 
         return $this;
@@ -210,8 +208,7 @@ class Pois
      *
      * @return string
      */
-    public function getBrand()
-    {
+    public function getBrand() {
         return $this->brand;
     }
 
@@ -222,8 +219,7 @@ class Pois
      *
      * @return Pois
      */
-    public function setAddress($address)
-    {
+    public function setAddress($address) {
         $this->address = $address;
 
         return $this;
@@ -234,8 +230,7 @@ class Pois
      *
      * @return string
      */
-    public function getAddress()
-    {
+    public function getAddress() {
         return $this->address;
     }
 
@@ -246,8 +241,7 @@ class Pois
      *
      * @return Pois
      */
-    public function setTown($town)
-    {
+    public function setTown($town) {
         $this->town = $town;
 
         return $this;
@@ -258,8 +252,7 @@ class Pois
      *
      * @return string
      */
-    public function getTown()
-    {
+    public function getTown() {
         return $this->town;
     }
 
@@ -270,8 +263,7 @@ class Pois
      *
      * @return Pois
      */
-    public function setZipCode($zipCode)
-    {
+    public function setZipCode($zipCode) {
         $this->zipCode = $zipCode;
 
         return $this;
@@ -282,8 +274,7 @@ class Pois
      *
      * @return string
      */
-    public function getZipCode()
-    {
+    public function getZipCode() {
         return $this->zipCode;
     }
 
@@ -294,8 +285,7 @@ class Pois
      *
      * @return Pois
      */
-    public function setProvince($province)
-    {
+    public function setProvince($province) {
         $this->province = $province;
 
         return $this;
@@ -306,8 +296,7 @@ class Pois
      *
      * @return string
      */
-    public function getProvince()
-    {
+    public function getProvince() {
         return $this->province;
     }
 
@@ -318,8 +307,7 @@ class Pois
      *
      * @return Pois
      */
-    public function setLon($lon)
-    {
+    public function setLon($lon) {
         $this->lon = $lon;
 
         return $this;
@@ -330,8 +318,7 @@ class Pois
      *
      * @return string
      */
-    public function getLon()
-    {
+    public function getLon() {
         return $this->lon;
     }
 
@@ -342,8 +329,7 @@ class Pois
      *
      * @return Pois
      */
-    public function setLat($lat)
-    {
+    public function setLat($lat) {
         $this->lat = $lat;
 
         return $this;
@@ -354,8 +340,7 @@ class Pois
      *
      * @return string
      */
-    public function getLat()
-    {
+    public function getLat() {
         return $this->lat;
     }
 
@@ -366,8 +351,7 @@ class Pois
      *
      * @return Pois
      */
-    public function setUpdate($update)
-    {
+    public function setUpdate($update) {
         $this->update = $update;
 
         return $this;
@@ -378,9 +362,30 @@ class Pois
      *
      * @return integer
      */
-    public function getUpdate()
-    {
+    public function getUpdate() {
         return $this->update;
     }
-}
 
+    /**
+     * Set unplugEnable
+     *
+     * @param boolean unplugEnable
+     *
+     * @return Pois
+     */
+    public function setUnplugEnable($unplugEnable) {
+        $this->unplugEnable = $unplugEnable;
+
+        return $this;
+    }
+
+    /**
+     * Get unplugEnable
+     *
+     * @return boolean
+     */
+    public function getUnplugEnable() {
+        return $this->unplugEnable;
+    }
+
+}
