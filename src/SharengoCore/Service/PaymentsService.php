@@ -8,6 +8,7 @@ use SharengoCore\Entity\Repository\FreeFaresRepository;
 use SharengoCore\Entity\Reservations;
 use SharengoCore\Service\TripPaymentTriesService;
 use SharengoCore\Service\FreeFaresService as FreeFares;
+use SharengoCore\Service\TelepassPayService;
 use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Repository\ReservationsRepository;
 use SharengoCore\Entity\Customers;
@@ -101,6 +102,11 @@ class PaymentsService
      */
     private $reservationsRepository;
 
+     /**
+     * @var TelepassPayService
+     */
+    private $telepassPayService;
+
     /**
      * @param CartasiCustomerPaymentsInterface $cartasiCustomerPayments
      * @param CartasiContractsService $cartasiContractService
@@ -115,6 +121,7 @@ class PaymentsService
      * @param FreeFaresRepository $freeFaresRepository
      * @param TripsRepository $tripsRepository
      * @param ReservationsRepository $reservationsRepository
+     * @param TelepassPayService $telepassPayService
      *
      */
     public function __construct(
@@ -130,7 +137,8 @@ class PaymentsService
         $preauthorizationsAmount,
         FreeFaresRepository $freeFaresRepository,
         TripsRepository $tripsRepository,
-        ReservationsRepository $reservationsRepository
+        ReservationsRepository $reservationsRepository,
+        TelepassPayService $telepassPayService
 
     ) {
         $this->cartasiCustomerPayments = $cartasiCustomerPayments;
@@ -146,6 +154,7 @@ class PaymentsService
         $this->freeFaresRepository = $freeFaresRepository;
         $this->tripsRepository = $tripsRepository;
         $this->reservationsRepository = $reservationsRepository;
+        $this->telepassPayService = $telepassPayService;
     }
 
     /**
@@ -252,11 +261,25 @@ class PaymentsService
         Webuser $webuser = null,
         $avoidDisableUser = false
     ) {
-        $response = $this->cartasiCustomerPayments->sendPaymentRequest(
-            $customer,
-            $tripPayment->getTotalCost(),
-            $this->avoidCartasi
-        );
+        $contract = $this->cartasiContractsService->getCartasiContract($customer);
+
+        if(!is_null($contract->getPartner())) { // contract width partner
+            if($contract->getPartner()->getCode()=='telepass') {
+                $response = $this->telepassPayService->sendPaymentRequest(
+                    $customer,
+                    $tripPayment->getTotalCost(),
+                    $this->avoidCartasi
+                );
+            } else {
+                return;
+            }
+        } else {
+            $response = $this->cartasiCustomerPayments->sendPaymentRequest(
+                $customer,
+                $tripPayment->getTotalCost(),
+                $this->avoidCartasi
+            );
+        }
 
         $this->entityManager->beginTransaction();
 

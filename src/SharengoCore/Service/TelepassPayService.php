@@ -5,11 +5,15 @@ namespace SharengoCore\Service;
 use Doctrine\ORM\EntityManager;
 use SharengoCore\Service\TripsService;
 use SharengoCore\Service\ExtraPaymentsService;
+
 use SharengoCore\Entity\TripPayments;
-use Cartasi\Entity\CartasiResponse;
-use Cartasi\Service\CartasiContractsService;
-use Cartasi\Entity\Transactions;
+use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Repository\PartnersRepository;
+
+use Cartasi\Entity\CartasiResponse;
+use Cartasi\Entity\Transactions;
+use Cartasi\Service\CartasiContractsService;
+
 
 use Zend\Http\Request;
 use Zend\Http\Client;
@@ -267,30 +271,30 @@ class TelepassPayService {
         return $result;
     }
 
+
     /**
-     * Send a payment request to TelepassPay (via Urbi).
-     *
-     * @param TripPayments $tripPayment
+     * Send a payment request to Telepass in two step (pre-authorization and carging account).
+     * 
+     * @param Customers $customer
+     * @param integer $amount
      * @param boolean $avoidHittingTelepassPay
      * @return CartasiResponse
      */
     public function sendPaymentRequest(
-        TripPayments $tripPayment,
+        Customers $customer,
+        $amount,
         $avoidHittingTelepassPay = false
     ) {
-
         $response = new CartasiResponse(false, 'KO', null);
 
         if(!$avoidHittingTelepassPay) {
             $responseTelepass = '';
-            $transaction = $this->newTransaction($tripPayment);
-            $customer  = $tripPayment->getCustomer();
+            $transaction = $this->newTransactionCustomer($customer, $amount);
 
             if($this->cartasiContractsService->hasCartasiContract($customer)) {
                 $contract = $this->cartasiContractsService->getCartasiContract($customer);
 
                 $transaction->setContract($contract);
-                //var_dump($transaction->getId());
                 $response = new CartasiResponse(false, 'KO', $transaction);
 
                 if($this->sendPreAthorization(
@@ -299,17 +303,16 @@ class TelepassPayService {
                     array(
                         'reason'=> 'trip payment',
                         'transaction' => $transaction->getId()),
-                    $tripPayment->getTotalCost(),
+                    $amount,
                     $this->currency,
                     $responseTelepass)) {
 
-                    var_dump($responseTelepass);
                     $transaction->setCodAut($responseTelepass['preAuthId']);
 
                     if($this->tryCharginAccount(
                         $transaction->getId(),
                         $responseTelepass['preAuthId'],
-                        $tripPayment->getTotalCost(),
+                        $amount,
                         $this->currency,
                         $responseTelepass)) {
 
@@ -329,22 +332,24 @@ class TelepassPayService {
         }
 
         return $response;
+
     }
 
     /**
-     * Create a new Tpay transaction.
-     *
-     * @param TripPayments $tripPayment
+     * Create a new Tpay transaction from customers and amount
+     * 
+     * @param Customers $customer
+     * @param integer $amount
      * @return Transactions
      */
-    private function newTransaction (TripPayments $tripPayment) {
+    private function newTransactionCustomer (Customers $customer, $amount) {
 
         $transaction = new Transactions();
         $transaction->setDatetime(date_create());
-        $transaction->setName($tripPayment->getCustomer()->getName());
-        $transaction->setSurname($tripPayment->getCustomer()->getSurname());
-        $transaction->setEmail($tripPayment->getCustomer()->getEmail());
-        $transaction->setAmount($tripPayment->getTotalCost());
+        $transaction->setName($customer->getName());
+        $transaction->setSurname($customer->getSurname());
+        $transaction->setEmail($customer->getEmail());
+        $transaction->setAmount($amount);
         $transaction->setCurrency($this->currency);
         $transaction->setOutcome('KO');
 

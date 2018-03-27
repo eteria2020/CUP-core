@@ -587,13 +587,14 @@ class TelepassService
 
             $this->entityManager->persist($customer);
             $this->entityManager->flush();
-            $this->entityManager->getConnection()->commit();
+
 
             //$result = $this->customersService->getUserFromHash($hash);  //TODO: improve
             $this->newPartnersCustomers($partner, $customer);
-            $contract = $this->newContract($customer);
+            $contract = $this->newContract($partner, $customer);
             $this->newTransaction($contract, 0, 'EUR', 'TPAY', 'TELEPASS+TPAY+PREPAID+-+-N', true);
             $result = $customer;
+            $this->entityManager->getConnection()->commit();
 
         } catch (\Exception $e) {
             $this->entityManager->getConnection()->rollback();
@@ -625,13 +626,15 @@ class TelepassService
      /**
      * Create a new contract
      * 
-     * @param \SharengoCore\Service\Customers $customer
+     * @param Partners $partner
+     * @param Customers $customer
      * @return Contracts
      */
-    private function newContract(Customers $customer) {
+    private function newContract(Partners $partner, Customers $customer) {
 
         $contract = new Contracts();
         $contract->setCustomer($customer);
+        $contract->setParter($partner);
 
         $this->entityManager->persist($contract);
         $this->entityManager->flush();
