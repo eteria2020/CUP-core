@@ -2,14 +2,17 @@
 
 namespace SharengoCore\Service;
 
+use SharengoCore\Service\FleetService;
+use SharengoCore\Service\UserEventsService;
 use SharengoCore\Entity\Repository\CustomersRepository;
 use SharengoCore\Entity\Repository\PartnersRepository;
 use SharengoCore\Entity\Repository\ProvincesRepository;
 use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\Partners;
+use SharengoCore\Entity\PartnersCustomers;
+
 use Cartasi\Entity\Contracts;
 use Cartasi\Entity\Transactions;
-use SharengoCore\Service\FleetService;
-use SharengoCore\Service\UserEventsService;
 
 
 use Doctrine\ORM\EntityManager;
@@ -65,7 +68,7 @@ class TelepassService
         $this->userEventsService = $userEventsService;
     }
 
-    public function signup($contentArray, &$partnerResponse) {
+    public function signup(Partners $partner, $contentArray, &$partnerResponse) {
         $partnerResponse = null;
         $response = 200;
         $debug = "";
@@ -81,7 +84,7 @@ class TelepassService
 //            return;
 
             if (is_null($customerOld)) {
-                $customerNew = $this->saveNewCustomer($contentArray);
+                $customerNew = $this->saveNewCustomer($partner, $contentArray);
                 if (!is_null($customerNew)) {
                     $partnerResponse = array(
                         "created" => true,
@@ -507,11 +510,12 @@ class TelepassService
         /**
      * Insert a new customer
      * 
+     * @param Partners $partner
      * @param type $data
      * @return type
      * @throws \Exception
      */
-    private function saveNewCustomer($data)
+    private function saveNewCustomer(Partners $partner, $data)
     {
         $result = null;
 
@@ -586,6 +590,7 @@ class TelepassService
             $this->entityManager->getConnection()->commit();
 
             //$result = $this->customersService->getUserFromHash($hash);  //TODO: improve
+            $this->newPartnersCustomers($partner, $customer);
             $contract = $this->newContract($customer);
             $this->newTransaction($contract, 0, 'EUR', 'TPAY', 'TELEPASS+TPAY+PREPAID+-+-N', true);
             $result = $customer;
@@ -599,7 +604,25 @@ class TelepassService
         return $result;
     }
 
-        /**
+    /**
+     * 
+     * @param Partners $partner
+     * @param Customers $customer
+     * @return PartnersCustomers
+     */
+    private function newPartnersCustomers(Partners $partner, Customers $customer ) {
+
+        $partnersCustomers = new PartnersCustomers();
+        $partnersCustomers->setPartner($partner);
+        $partnersCustomers->setCustomer($customer);
+
+        $this->entityManager->persist($partnersCustomers);
+        $this->entityManager->flush();
+
+        return $partnersCustomers;
+    }
+
+     /**
      * Create a new contract
      * 
      * @param \SharengoCore\Service\Customers $customer

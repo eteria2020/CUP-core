@@ -9,7 +9,6 @@ use SharengoCore\Entity\TripPayments;
 use Cartasi\Entity\CartasiResponse;
 use Cartasi\Service\CartasiContractsService;
 use Cartasi\Entity\Transactions;
-use Cartasi\Entity\Contracts;
 use SharengoCore\Entity\Repository\PartnersRepository;
 
 use Zend\Http\Request;
@@ -18,14 +17,20 @@ use Zend\Http\Client;
 class TelepassPayService {
 
     private $code ='telepass';
+    private $currency ='EUR';
 
+    /**
+     *
+     * @var Partners partner
+     */
     private $partner;
 
     /**
      *
-     * @var array telepassPayConfig
+     * @var array params
      */
-    private $telepassPayConfig;
+    private $parms;
+
 
     /**
      *
@@ -64,14 +69,12 @@ class TelepassPayService {
     private $partnersRepository;
 
     public function __construct(
-        array $telepassPayConfig,
         EntityManager $entityManager,
         TripsService $tripsService,
         ExtraPaymentsService $extraPaymentsService,
         CartasiContractsService $cartasiContractsService,
         PartnersRepository $partnersRepository
-    ) {
-        $this->telepassPayConfig = $telepassPayConfig;
+    ) {;
         $this->entityManager = $entityManager;
         $this->tripsService = $tripsService;
         $this->extraPaymentsService = $extraPaymentsService;
@@ -81,19 +84,22 @@ class TelepassPayService {
         $this->httpClient = new Client();
         $this->httpClient->setMethod(Request::METHOD_POST);
         $this->httpClient->setOptions([
-             'maxredirects' => 0,
+            'maxredirects' => 0,
             'timeout' => 90
         ]);
+
+        $this->partner = $this->partnersRepository->findOneBy(array('code' => $this->code, 'enabled' => true));
+        $this->parms = $this->partner->getParamsDecode();
 
         $this->httpClient->setHeaders(
             array(
                 'Content-type' => 'application/json',
                 'charset' => 'UTF-8',
-                'Authorization' => $this->telepassPayConfig['authorization']
+                'Authorization' => $this->parms['payments']['authorization']
             )
         );
 
-        $this->partner = $this->partnersRepository->findOneBy(array('code' => $this->code, 'enabled' => true));
+
     }
 
     /**
@@ -107,7 +113,7 @@ class TelepassPayService {
      * @param string $currency The currency of the pre-authorization (ISO 4217 Currency Codes)
      * @param array $response Response from Telepass
      */
-    public function sendPreAthorization(
+    private function sendPreAthorization(
         $userId,
         $referenceId,
         array $metadata,
@@ -115,6 +121,7 @@ class TelepassPayService {
         $currency,
         &$response) {
 
+        $uriPreAuth ='/pay/preauth';
         $result = false;
         $response = null;
 
@@ -145,7 +152,7 @@ class TelepassPayService {
             );
 
             $request = new Request();
-            $request->setUri($this->telepassPayConfig['uri']. '/pay/preauth');
+            $request->setUri($this->parms['payments']['uri'] . $uriPreAuth);
 //            $request->setMetadata('POST');
 //            $request->getPost()->set('userId', $userId);
 //            $request->getPost()->set('referenceId', $referenceId);
@@ -155,18 +162,18 @@ class TelepassPayService {
 //            $request->getHeaders()->addHeaders(
 //                array(
 //                    //'Content-type' => 'application/json'
-//                    'Authorization' => $this->telepassPayConfig['authorization']
+//                    'Authorization' => $this->parms['payments']['authorization']
 //                )
 //            );
 
 
-            $this->httpClient->setUri($this->telepassPayConfig['uri']. '/pay/preauth');
+            $this->httpClient->setUri($this->parms['payments']['uri'] . $uriPreAuth);
             $this->httpClient->setRawBody($json);
             $this->httpClient->setHeaders(
                 array(
                     'Content-type' => 'application/json',
                     'charset' => 'UTF-8',
-                    'Authorization' => $this->telepassPayConfig['authorization']
+                    'Authorization' => $this->parms['payments']['authorization']
                 )
             );
 
@@ -194,7 +201,7 @@ class TelepassPayService {
 
         } catch (\Exception $ex) {
             $response = array(
-                'uri' => '/pay/preauth',
+                'uri' => $uriPreAuth,
                 'status' => 401,
                 'statusFromProvider' => false,
                 'message' => $ex->getMessage());
@@ -214,13 +221,14 @@ class TelepassPayService {
      * @param array $response Response of server
      * @return boolean
      */
-    public function tryCharginAccount(
+    private function tryCharginAccount(
         $referenceId,
         $preAuthId,
         $amount,
         $currency,
         &$response) {
 
+        $uriCharge = '/pay/charge';
         $result = false;
         $response = null;
 
@@ -235,22 +243,22 @@ class TelepassPayService {
             );
 
             $request = new Request();
-            $request->setUri($this->telepassPayConfig['uri']. '/pay/charge');
+            $request->setUri($this->parms['payments']['uri'] . $uriCharge);
 
-            $this->httpClient->setUri($this->telepassPayConfig['uri']. '/pay/charge');
+            $this->httpClient->setUri($this->parms['payments']['uri'] . $uriCharge);
             $this->httpClient->setRawBody($json);
 
             $httpResponse = $this->httpClient->send();
             $response = json_decode($httpResponse->getBody(), true);
 
             if (isset($response['chargeSuccessful'])) {
-                if (strtolower(trim($response['chargeSuccessful']))==='true') {
+                if ($response['chargeSuccessful']==true) {
                     $result = true;
                 }
             }
         } catch (\Exception $ex) {
             $response = array(
-                'uri' => '/pay/charge',
+                'uri' => $uriCharge,
                 'status' => 401,
                 'statusFromProvider' => false,
                 'message' => $ex->getMessage());
@@ -274,57 +282,45 @@ class TelepassPayService {
         $response = new CartasiResponse(false, 'KO', null);
 
         if(!$avoidHittingTelepassPay) {
-            $responseTelepass = 'message KO - no contract';
-            $currency = 'EUR';
+            $responseTelepass = '';
+            $transaction = $this->newTransaction($tripPayment);
             $customer  = $tripPayment->getCustomer();
-
-            $transaction = new Transactions();
-            $transaction->setName($customer->getName());
-            $transaction->setSurname($customer->getSurname());
-            $transaction->setEmail($customer->getEmail());
-            $transaction->setAmount(0);
-            $transaction->setCurrency($currency);
-            $transaction->setOutcome('KO');
-            $transaction->setIsFirstPayment(false);
 
             if($this->cartasiContractsService->hasCartasiContract($customer)) {
                 $contract = $this->cartasiContractsService->getCartasiContract($customer);
 
-                $transaction = $this->newTransaction($contract,
-                    $tripPayment->getTotalCost(),
-                    $currency);
-
+                $transaction->setContract($contract);
+                //var_dump($transaction->getId());
                 $response = new CartasiResponse(false, 'KO', $transaction);
 
                 if($this->sendPreAthorization(
-                    $customer->getId(),
-                    $tripPayment->getId(),
+                    $customer->getEmail(),
+                    $transaction->getId(),
                     array(
                         'reason'=> 'trip payment',
                         'transaction' => $transaction->getId()),
                     $tripPayment->getTotalCost(),
-                    $currency,
+                    $this->currency,
                     $responseTelepass)) {
 
-                    $transaction->setCodAut($response['preAuthId']);
+                    var_dump($responseTelepass);
+                    $transaction->setCodAut($responseTelepass['preAuthId']);
 
                     if($this->tryCharginAccount(
-                        $tripPayment->getId(),
-                        $response['preAuthId'],
+                        $transaction->getId(),
+                        $responseTelepass['preAuthId'],
                         $tripPayment->getTotalCost(),
-                        $currency,
+                        $this->currency,
                         $responseTelepass)) {
 
                         $transaction->setOutcome('OK');
                     }
                 }
             }
-            //var_dump($transaction);
-            var_dump($this->partner->getParamsDecode());
 
             $transaction->setMessage(json_encode($responseTelepass));
             $transaction->setDatetime(date_create());
-            $this->entityManager->persist($transaction);
+            $this->entityManager->merge($transaction);
             $this->entityManager->flush();
 
             if($transaction->getOutcome()=='OK') {
@@ -335,22 +331,27 @@ class TelepassPayService {
         return $response;
     }
 
-    private function newTransaction(Contracts $contract, $amount, $currency) {
+    /**
+     * Create a new Tpay transaction.
+     *
+     * @param TripPayments $tripPayment
+     * @return Transactions
+     */
+    private function newTransaction (TripPayments $tripPayment) {
 
         $transaction = new Transactions();
-        $transaction->setContract($contract);
-        $transaction->setEmail($contract->getCustomer()->getEmail());
-        $transaction->setAmount($amount);
-        $transaction->setCurrency($currency);
-        $transaction->setName($contract->getCustomer()->getName());
-        $transaction->setSurname($contract->getCustomer()->getSurname());
+        $transaction->setDatetime(date_create());
+        $transaction->setName($tripPayment->getCustomer()->getName());
+        $transaction->setSurname($tripPayment->getCustomer()->getSurname());
+        $transaction->setEmail($tripPayment->getCustomer()->getEmail());
+        $transaction->setAmount($tripPayment->getTotalCost());
+        $transaction->setCurrency($this->currency);
+        $transaction->setOutcome('KO');
 
         $transaction->setBrand('TPAY');
-        $transaction->setOutcome('KO');
-        $transaction->setMessage('KO - no contract');
-        $transaction->setDatetime(date_create());
         $transaction->setRegion('EUROPE');
         $transaction->setCountry('ITA');
+        $transaction->setMessage('KO - init fail');
         $transaction->setProductType('TELEPASS+TPAY+PREPAID+-+-N');
         $transaction->setIsFirstPayment(false);
 

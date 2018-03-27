@@ -85,10 +85,11 @@ class PartnerService implements ValidatorServiceInterface
      * @return array
      */
     public function signup(Partners $partner, $contentArray, &$partnerResponse){
-        $reuslt = 404;
+        $result = 404;
+        $partnerResponse ="";
 
         if($partner->getCode()=='telepass') {
-            $result = $this->telepassService->signup($contentArray, $partnerResponse);
+            $result = $this->telepassService->signup($partner, $contentArray, $partnerResponse);
         }
 
         return $result;
