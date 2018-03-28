@@ -321,7 +321,7 @@ class TelepassPayService {
                 }
             }
 
-            $transaction->setMessage(json_encode($responseTelepass));
+            $transaction->setMessage(substr(json_encode($responseTelepass), 0, 255));
             $transaction->setDatetime(date_create());
             $this->entityManager->merge($transaction);
             $this->entityManager->flush();

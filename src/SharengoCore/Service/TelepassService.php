@@ -86,11 +86,6 @@ class TelepassService
                 $contentArray['fiscalCode'],
                 $contentArray['drivingLicense']['number']);
 
-//            var_dump($contentArray['birthDate']);
-//            var_dump($contentArray['drivingLicense']['releaseDate']);
-//            var_dump($this->provincesRepository->findOneBy(array('code' => 'RE')));
-//            return;
-
             if (is_null($customerOld)) {    //it's a new customer
                 $customerNew = $this->saveNewCustomer($partner, $contentArray);
                 if (!is_null($customerNew)) {
@@ -606,8 +601,6 @@ class TelepassService
 
         } catch (\Exception $e) {
             $this->entityManager->getConnection()->rollback();
-            var_dump($e);
-            //throw $e;
         }
 
         return $result;
