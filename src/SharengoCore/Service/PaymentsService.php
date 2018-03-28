@@ -261,7 +261,7 @@ class PaymentsService
         Webuser $webuser = null,
         $avoidDisableUser = false
     ) {
-        $contract = $this->cartasiContractsService->getCartasiContract($customer);
+        $contract = $this->cartasiContractService->getCartasiContract($customer);
 
         if(!is_null($contract->getPartner())) { // contract width partner
             if($contract->getPartner()->getCode()=='telepass') {

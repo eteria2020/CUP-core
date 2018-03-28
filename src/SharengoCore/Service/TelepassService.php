@@ -50,8 +50,6 @@ class TelepassService
      */
     private $userEventsService;
 
-
-
     public function __construct(
         EntityManager $entityManager,
         CustomersRepository $customersRepository,
@@ -68,6 +66,14 @@ class TelepassService
         $this->userEventsService = $userEventsService;
     }
 
+    /**
+     * Signup for customer.
+     * 
+     * @param Partners $partner
+     * @param array $contentArray
+     * @param array $partnerResponse
+     * @return int
+     */
     public function signup(Partners $partner, $contentArray, &$partnerResponse) {
         $partnerResponse = null;
         $response = 200;
@@ -76,14 +82,16 @@ class TelepassService
         if ($this->checkAndFormatData($contentArray, $partnerResponse)) {
 
             $customerOld = $this->findCustomerByMainFields(
-                    $contentArray['email'], $contentArray['fiscalCode'], $contentArray['drivingLicense']['number']);
+                $contentArray['email'],
+                $contentArray['fiscalCode'],
+                $contentArray['drivingLicense']['number']);
 
 //            var_dump($contentArray['birthDate']);
 //            var_dump($contentArray['drivingLicense']['releaseDate']);
 //            var_dump($this->provincesRepository->findOneBy(array('code' => 'RE')));
 //            return;
 
-            if (is_null($customerOld)) {
+            if (is_null($customerOld)) {    //it's a new customer
                 $customerNew = $this->saveNewCustomer($partner, $contentArray);
                 if (!is_null($customerNew)) {
                     $partnerResponse = array(
@@ -102,7 +110,7 @@ class TelepassService
                         "debug" => $debug,
                     );
                 }
-            } else { // else, customer alredy exist
+            } else { // customer alredy exist
                 $partnerResponse = array(
                     "created" => false,
                     "userId" => $customerOld->getId(),
@@ -481,9 +489,9 @@ class TelepassService
 
         /**
      * Find a customer tha match email or tax code or driver license
-     * @param type $email
-     * @param type $taxCode
-     * @param type $driverLicense
+     * @param string $email
+     * @param string $taxCode
+     * @param string $driverLicense
      * @return Customers
      */
     public function findCustomerByMainFields($email, $taxCode, $driverLicense)
