@@ -151,6 +151,7 @@ class Commands
      */
     public static function createCommand(Cars $car, $commandIndex, Webuser $webuser = null, $intArg1, $intArg2, $txtArg1, $txtArg2)
     {
+        error_log("createCommand log");
         if (!array_key_exists($commandIndex, self::$codes)) {
             throw new \InvalidArgumentException('Command not found');
         }
@@ -185,7 +186,6 @@ class Commands
             $commandData['intArg2'] = $intArg2;
         }
         if (array_key_exists('txtarg1', $commandDataParams)) {
-            $a = '';
             $commandData['txtarg1'] = $txtArg1;
         }
         if (array_key_exists('txtarg2', $commandDataParams)) {
