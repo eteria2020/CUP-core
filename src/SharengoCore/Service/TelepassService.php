@@ -77,9 +77,8 @@ class TelepassService
     public function signup(Partners $partner, $contentArray, &$partnerResponse) {
         $partnerResponse = null;
         $response = 200;
-        $debug = "";
 
-        if ($this->checkAndFormatData($contentArray, $partnerResponse)) {
+        if ($this->validateAndFormat($contentArray, $partnerResponse)) {
 
             $customerOld = $this->findCustomerByMainFields(
                 $contentArray['email'],
@@ -93,16 +92,14 @@ class TelepassService
                         "created" => true,
                         "userId" => $customerNew->getId(),
                         "password" => $customerNew->getPassword(),
-                        "pin" => $customerNew->getPrimaryPin(),
-                        "debug" => $debug,
+                        "pin" => $customerNew->getPrimaryPin()
                     );
                 } else {
                     $partnerResponse = array(
                         "uri" => "partner/signup",
                         "status" => 401,
                         "statusFromProvider" => false,
-                        "message" => "insert fail",
-                        "debug" => $debug,
+                        "message" => "insert fail"
                     );
                 }
             } else { // customer alredy exist
@@ -111,7 +108,6 @@ class TelepassService
                     "userId" => $customerOld->getId(),
                     "password" => $customerOld->getPassword(),
                     "pin" => $customerOld->getPrimaryPin(),
-                    "debug" => $debug,
                 );
             }
         } else {
@@ -128,8 +124,7 @@ class TelepassService
      * @param array $response
      * @return boolean
      */
-    private function checkAndFormatData(&$contentArray, &$response) {
-        $debug = "";
+    private function validateAndFormat(&$contentArray, &$response) {
         $strError = "";
 
         try {
@@ -158,7 +153,7 @@ class TelepassService
                 $strError .= sprintf('Invalid value [%s]. ', $key);
             }
 
-            $key = 'name';
+            $key = 'firstName';  // name
             $value = $this->getDataFormatedLower($contentArray, $key, FALSE);
             if (strlen($value) >= 3) {
                 $contentArray[$key] = $value;
@@ -166,7 +161,7 @@ class TelepassService
                 $strError .= sprintf('Invalid value [%s]. ', $key);
             }
 
-            $key = 'surname';
+            $key = 'lastName';   // surname
             $value = $this->getDataFormatedLower($contentArray, $key, FALSE);
             if (strlen($value) >= 3) {
                 $contentArray[$key] = $value;
@@ -177,12 +172,17 @@ class TelepassService
             $key = 'birthDate';
             $value = $this->getDataFormatedDateTime($contentArray, $key);
             if (!is_null($value)) {
-                
+                $validator = new \Application\Form\Validator\EighteenDate();
+                if($validator->isValid($value)) {
+
+                } else {
+                    $strError .= sprintf('Invalid value [%s]. ', $key);
+                }
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
             }
 
-            $key = 'birthTown';
+            $key = 'birthCity'; // birthTown
             $value = $this->getDataFormatedLower($contentArray, $key);
             if (strlen($value) > 0) {
                 $contentArray[$key] = strtoupper($value);
@@ -207,10 +207,10 @@ class TelepassService
                 $strError .= sprintf('Invalid value [%s]. ', $key);
             }
 
-
             $key = 'fiscalCode';    //TODO: additional check
             $value = $this->getDataFormatedLower($contentArray, $key);
-            if (strlen($value) > 0) {
+            $validator = new \Application\Form\Validator\TaxCode();
+            if ($validator->isValid($value)) {
                 $contentArray[$key] = strtoupper($value);
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
@@ -218,7 +218,17 @@ class TelepassService
 
             $key = 'vat';
             $value = $this->getDataFormatedLower($contentArray, $key);
-            $contentArray[$key] = strtoupper($value);
+            $value = strtoupper($value);
+            if(strlen($value)>0){
+                $validator = new \Application\Form\Validator\VatNumber();
+                if ($validator->isValid($value)) {
+                    $contentArray[$key] = $value;
+                } else {
+                    $strError .= sprintf('Invalid value [%s]. ', $key);
+                }
+            } else {
+                $contentArray[$key] = $value;
+            }
 
             $key = 'phone';
             $value = $this->getDataFormatedLower($contentArray, $key);
@@ -234,15 +244,15 @@ class TelepassService
 
             $key = 'email'; //TODO: additional check
             $value = $this->getDataFormatedLower($contentArray, $key);
-            if (strlen($value) > 0) {
+            if (filter_var($value, FILTER_VALIDATE_EMAIL)) {
                 $contentArray[$key] = $value;
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
             }
 
             $key = 'password';
-            $value = $this->getDataFormatedLower($contentArray, $key, FALSE);
-            if (strlen($value) > 0) {
+            $value = $this->getDataFormatedLower($contentArray, $key, false);
+            if ($this->isValidMd5($value)) {
                 $contentArray[$key] = $value;
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
@@ -267,13 +277,7 @@ class TelepassService
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
                 }
 
-//                $key2 = 'streetNumber';
-//                $value = $this->getDataFormatedLower($address, $key2, FALSE);
-//                if(strlen($value)>0){
-//                    $contentArray['address']['street'] = sprintf('%s, %s' , $contentArray['address']['street'], $value);
-//                }
-
-                $key2 = 'town';
+                $key2 = 'city';     //town
                 $value = $this->getDataFormatedLower($address, $key2, FALSE);
                 if (strlen($value) > 0) {
                     $contentArray['address'][$key2] = $value;
@@ -329,7 +333,7 @@ class TelepassService
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
                 }
 
-                $key2 = 'town';
+                $key2 = 'city';     //town 
                 $value = $this->getDataFormatedLower($drivingLicense, $key2, FALSE);
                 if (strlen($value) > 0) {
                     $contentArray[$key][$key2] = $value;
@@ -361,7 +365,7 @@ class TelepassService
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
                 }
 
-                $key2 = 'firstname';
+                $key2 = 'firstName';    // firstname
                 $value = $this->getDataFormatedLower($drivingLicense, $key2, FALSE);
                 if (strlen($value) > 0) {
                     $contentArray[$key][$key2] = $value;
@@ -369,7 +373,7 @@ class TelepassService
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
                 }
 
-                $key2 = 'surname';
+                $key2 = 'lastName';      // surname
                 $value = $this->getDataFormatedLower($drivingLicense, $key2, FALSE);
                 if (strlen($value) > 0) {
                     $contentArray[$key][$key2] = $value;
@@ -387,8 +391,8 @@ class TelepassService
 
                 $key2 = 'foreign';
                 $value = $this->getDataFormatedLower($drivingLicense, $key2);
-                if ($value == 'true' || $value == 'false') {
-                    $contentArray[$key][$key2] = $value;
+                if (is_bool($value)) {
+
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
                 }
@@ -398,32 +402,32 @@ class TelepassService
 
             $key = 'generalCondition1';
             $value = $this->getDataFormatedLower($contentArray, $key);
-            if ($value == 'true' || $value == 'false') {
-                $contentArray[$key] = $value;
+            if (is_bool($value)) {
+
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
             }
 
             $key = 'generalCondition2';
             $value = $this->getDataFormatedLower($contentArray, $key);
-            if ($value == 'true' || $value == 'false') {
-                $contentArray[$key] = $value;
+            if (is_bool($value)) {
+
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
             }
 
             $key = 'privacyCondition';
             $value = $this->getDataFormatedLower($contentArray, $key);
-            if ($value == 'true' || $value == 'false') {
-                $contentArray[$key] = $value;
+            if (is_bool($value)) {
+
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
             }
 
             $key = 'privacyInformation';
             $value = $this->getDataFormatedLower($contentArray, $key);
-            if ($value == 'true' || $value == 'false') {
-                $contentArray[$key] = $value;
+            if (is_bool($value)) {
+
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
             }
@@ -438,7 +442,6 @@ class TelepassService
                     "status" => 401,
                     "statusFromProvider" => false,
                     "message" => $strError,
-                    "debug" => $debug,
                 );
             }
         } catch (\Exception $ex) {
@@ -458,10 +461,14 @@ class TelepassService
         $result = "";
 
         if (isset($contentArray[$keyValue])) {
-            if ($toLower) {
-                $result = trim(strtolower($contentArray[$keyValue]));
+            if(is_bool($contentArray[$keyValue])) {
+                $result = $contentArray[$keyValue];
             } else {
-                $result = trim($contentArray[$keyValue]);
+                if ($toLower) {
+                    $result = trim(strtolower($contentArray[$keyValue]));
+                } else {
+                    $result = trim($contentArray[$keyValue]);
+                }
             }
         }
         return $result;
@@ -510,6 +517,15 @@ class TelepassService
         return null;
     }
 
+    /**
+     * 
+     * @param string $md5
+     * @return boolean
+     */
+    private function isValidMd5($md5 ='') {
+        return strlen($md5) == 32 && ctype_xdigit($md5);
+    }
+
         /**
      * Insert a new customer
      * 
@@ -529,12 +545,12 @@ class TelepassService
             $customer->setInsertedTs(date_create());
             //$customer->setPartner($data['partnerName']);
             $customer->setGender($data['gender']);
-            $customer->setSurname($data['surname']);
-            $customer->setName($data['name']);
+            $customer->setSurname($data['lastName']);
+            $customer->setName($data['firstName']);
             //$customer->setBirthDate(new \DateTime(sprintf('%s-%s-%s 00:00:00',$data['birthDate'][0], $data['birthDate'][1], $data['birthDate'][2])));
             $customer->setBirthDate(new \DateTime(sprintf('%s 00:00:00',implode('-', $data['birthDate']))));
 
-            $customer->setBirthTown($data['birthTown']);
+            $customer->setBirthTown($data['birthCity']);
             $customer->setBirthProvince($data['birthProvince']);
             $customer->setBirthCountry($data['birthCountry']);
 
@@ -551,7 +567,7 @@ class TelepassService
 
             $customer->setAddress($data['address']['street']);
             $customer->setAddressInfo('');
-            $customer->setTown($data['address']['town']);
+            $customer->setTown($data['address']['city']);
             $customer->setZipCode($data['address']['zip']);
             $customer->setProvince($data['address']['province']);
             $customer->setCountry($data['address']['country']);
@@ -561,8 +577,8 @@ class TelepassService
             $customer->setDriverLicenseAuthority($data['drivingLicense']['authority']);
             $customer->setDriverLicenseReleaseDate(new \DateTime(sprintf('%s 00:00:00',implode('-', $data['drivingLicense']['releaseDate']))));
             $customer->setDriverLicenseExpire(new \DateTime(sprintf('%s 00:00:00',implode('-', $data['drivingLicense']['expire']))));
-            $customer->setDriverLicenseName($data['drivingLicense']['firstname']);
-            $customer->setDriverLicenseSurname($data['drivingLicense']['surname']);
+            $customer->setDriverLicenseName($data['drivingLicense']['firstName']);
+            $customer->setDriverLicenseSurname($data['drivingLicense']['lastName']);
             $customer->setDriverLicenseCategories($data['drivingLicense']['category']);
             $customer->setDriverLicenseForeign($data['drivingLicense']['foreign']);
 
@@ -667,7 +683,7 @@ class TelepassService
 
         $transaction->setOutcome('OK');
         $transaction->setDatetime(date_create());
-        $transaction->setMessage('Message OK - subscription');
+        $transaction->setMessage('Message OK');
         $transaction->setRegion('EUROPE');
         $transaction->setCountry('ITA');
         $transaction->setProductType($productType);
