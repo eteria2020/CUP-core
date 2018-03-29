@@ -264,14 +264,17 @@ class PaymentsService
         $contract = $this->cartasiContractService->getCartasiContract($customer);
 
         if(!is_null($contract->getPartner())) { // contract width partner
+            $response = null;
             if($contract->getPartner()->getCode()=='telepass') {
                 $response = $this->telepassPayService->sendPaymentRequest(
                     $customer,
                     $tripPayment->getTotalCost(),
                     $this->avoidCartasi
                 );
-            } else {
-                return;
+            } 
+
+            if(is_null($response)) {
+                return $response;
             }
         } else {
             $response = $this->cartasiCustomerPayments->sendPaymentRequest(

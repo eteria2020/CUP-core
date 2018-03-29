@@ -129,7 +129,7 @@ class TelepassPayService {
         $result = false;
         $response = null;
 
-
+        try {
 //            $uri = new Http($this->telepassConfig['uri']);
 //            $url = $this->url->__invoke(
 //                    'pay/preauth', [], [
@@ -145,18 +145,18 @@ class TelepassPayService {
 //                    ]
 //            );
 
-        $json = json_encode(
-            array(
-                'userId' => $userId,
-                'referenceId' => $referenceId,
-                'metadata' => json_encode($metadata),
-                'amount' => $amount,
-                'currency' => $currency
-            )
-        );
+            $json = json_encode(
+                array(
+                    'userId' => $userId,
+                    'referenceId' => $referenceId,
+                    'metadata' => json_encode($metadata),
+                    'amount' => $amount,
+                    'currency' => $currency
+                )
+            );
 
-        $request = new Request();
-        $request->setUri($this->parms['payments']['uri'] . $uriPreAuth);
+            $request = new Request();
+            $request->setUri($this->parms['payments']['uri'] . $uriPreAuth);
 //            $request->setMetadata('POST');
 //            $request->getPost()->set('userId', $userId);
 //            $request->getPost()->set('referenceId', $referenceId);
@@ -171,15 +171,15 @@ class TelepassPayService {
 //            );
 
 
-        $this->httpClient->setUri($this->parms['payments']['uri'] . $uriPreAuth);
-        $this->httpClient->setRawBody($json);
-        $this->httpClient->setHeaders(
-            array(
-                'Content-type' => 'application/json',
-                'charset' => 'UTF-8',
-                'Authorization' => $this->parms['payments']['authorization']
-            )
-        );
+            $this->httpClient->setUri($this->parms['payments']['uri'] . $uriPreAuth);
+            $this->httpClient->setRawBody($json);
+            $this->httpClient->setHeaders(
+                array(
+                    'Content-type' => 'application/json',
+                    'charset' => 'UTF-8',
+                    'Authorization' => $this->parms['payments']['authorization']
+                )
+            );
 
 //            $this->httpClient->setParameterPost(
 //                array(
@@ -191,16 +191,17 @@ class TelepassPayService {
 //                )
 //            );
 
-            //$httpResponse = $this->httpClient->send($request);
-        $httpResponse = $this->httpClient->send();
+                //$httpResponse = $this->httpClient->send($request);
+            $httpResponse = $this->httpClient->send();
+            $response = json_decode($httpResponse->getBody(), true);
 
-        $response = json_decode($httpResponse->getBody(), true);
-        //var_dump($response);
-
-        if (isset($response['preAuthId'])) {
-            if (strlen(trim($response['preAuthId']))>0) {
-                $result = true;
+            if (isset($response['preAuthId'])) {    // if there is an error (mis match on referenceId) this field dosn't exists
+                if (strlen(trim($response['preAuthId']))>0) {
+                    $result = true;
+                }
             }
+        } catch (\Exception $ex) {
+            $response = null;
         }
 
         return $result;
@@ -228,28 +229,32 @@ class TelepassPayService {
         $result = false;
         $response = null;
 
-        $json = json_encode(
-            array(
-                'referenceId' => $referenceId,
-                'preAuthId' => $preAuthId,
-                'amount' => $amount,
-                'currency' => $currency
-            )
-        );
+        try {
 
-        $request = new Request();
-        $request->setUri($this->parms['payments']['uri'] . $uriCharge);
+            $json = json_encode(
+                array(
+                    'referenceId' => $referenceId,
+                    'preAuthId' => $preAuthId,
+                    'amount' => $amount,
+                    'currency' => $currency
+                )
+            );
 
-        $this->httpClient->setUri($this->parms['payments']['uri'] . $uriCharge);
-        $this->httpClient->setRawBody($json);
+            $request = new Request();
+            $request->setUri($this->parms['payments']['uri'] . $uriCharge);
 
-        $httpResponse = $this->httpClient->send();
-        $response = json_decode($httpResponse->getBody(), true);
+            $this->httpClient->setUri($this->parms['payments']['uri'] . $uriCharge);
+            $this->httpClient->setRawBody($json);
 
-        if (isset($response['chargeSuccessful'])) {
+            $httpResponse = $this->httpClient->send();
+            $response = json_decode($httpResponse->getBody(), true);
+
             if ($response['chargeSuccessful']==true) {
                 $result = true;
             }
+
+        } catch (\Exception $ex) {
+            $response = null;
         }
 
         return $result;
@@ -269,10 +274,12 @@ class TelepassPayService {
         $amount,
         $avoidHittingTelepassPay = false
     ) {
-        $response = new CartasiResponse(false, 'KO', null);
+        $response = null;
 
         if(!$avoidHittingTelepassPay) {
-            $responseTelepass = '';
+            $response = new CartasiResponse(false, 'KO', null);
+
+            $responseTelepass = null;
             $transaction = $this->newTransactionCustomer($customer, $amount);
 
             if($this->cartasiContractsService->hasCartasiContract($customer)) {
@@ -303,6 +310,10 @@ class TelepassPayService {
                         $transaction->setOutcome('OK');
                     }
                 }
+            }
+
+            if(is_null($responseTelepass)) { // if it's happen a system error like remote server down
+                return null;
             }
 
             $transaction->setMessage(substr(json_encode($responseTelepass), 0, 255));
