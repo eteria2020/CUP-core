@@ -42,16 +42,16 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }*/
 
-    public function countTotalFailedPayments()
+    public function countTotalExtra()
     {
         $em = $this->getEntityManager();
 
-        $dql = 'SELECT COUNT(ep) FROM SharengoCore\Entity\ExtraPayments ep '.
-            'WHERE ep.status = :status';
+        $dql = 'SELECT COUNT(ep) FROM SharengoCore\Entity\ExtraPayments ep ';
+            //. 'WHERE ep.status = :status';
 
         $query = $em->createQuery($dql);
 
-        $query->setParameter('status', TripPayments::STATUS_WRONG_PAYMENT);
+        //$query->setParameter('status', TripPayments::STATUS_WRONG_PAYMENT);
 
         return $query->getSingleScalarResult();
     }

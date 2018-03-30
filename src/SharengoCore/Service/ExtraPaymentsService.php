@@ -179,27 +179,23 @@ class ExtraPaymentsService
             return [
                 'e' => [
                     'generatedTs' => $extra->getGeneratedTs()->format('Y-m-d H:i:s'),
-                    /*'trip' => $payment->getTrip()->getId(),
-                    'tripMinutes' => $payment->getTripMinutes(),
-                    'parkingMinutes' => $payment->getParkingMinutes(),
-                    'discountPercentage' => $payment->getDiscountPercentage(),*/
-                    'totalCost' => $extra->getAmount()
+                    'totalCost' => $extra->getAmount(),
+                    'reasons' => $extra->getReasons(),
+                    'payed' => ($extra->getStatus() == 'payed_correctly') ? true : false,
                 ],
                 'cu' => [
                     'id' => $customer->getId(),
-                    'name' => $customer->getName(),
-                    'surname' => $customer->getSurname(),
+                    'name_surname' => $customer->getName() . ' ' . $customer->getSurname(),
                     'mobile' => $customer->getMobile(),
-                    'email' => $customer->getEmail()
                 ],
                 'button' => $extra->getId()
             ];
         }, $extra);
     }
     
-    public function getTotalFailedExtra()
+    public function getTotalExtra()
     {
-        return $this->extraPaymentsRepository->countTotalFailedPayments();
+        return $this->extraPaymentsRepository->countTotalExtra();
     }
     
     /**
@@ -243,4 +239,5 @@ class ExtraPaymentsService
 
         return $extraPayment;
     }
+
 }
