@@ -18,6 +18,7 @@ class TripPayments
     const STATUS_PAYED_CORRECTLY = 'payed_correctly';
     const STATUS_WRONG_PAYMENT = 'wrong_payment';
     const STATUS_INVOICED = 'invoiced';
+    const STATUS_TO_BE_PAYED_PREAUT = 'to_be_payed_preaut';
 
     /**
      * @var integer

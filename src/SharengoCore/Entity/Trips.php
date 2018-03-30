@@ -205,6 +205,13 @@ class Trips {
     private $tripPayment;
 
     /**
+     * @var Preauthorizations
+     *
+     * @ORM\OneToOne(targetEntity="Preauthorizations", mappedBy="trip")
+     */
+    private $preauthorization;
+
+    /**
      * @var TripBills
      *
      * @ORM\OneToMany(targetEntity="TripBills", mappedBy="trip")
@@ -764,6 +771,15 @@ class Trips {
      */
     public function getTripPayment() {
         return $this->tripPayment;
+    }
+
+    /**
+     * Get preauthorization
+     *
+     * @return Preauthorizations
+     */
+    public function getPreauthorization() {
+        return $this->preauthorization;
     }
 
     /**
