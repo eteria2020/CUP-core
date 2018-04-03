@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Service;
 
+use SharengoCore\Entity\Preauthorizations;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\TripPaymentTries;
@@ -28,6 +29,11 @@ class TripCostService
     private $entityManager;
 
     /**
+     * @var PreauthorizationsService
+     */
+    private $preauthorizationsService;
+
+    /**
      * @var boolean
      */
     private $avoidPersistance = true;
@@ -35,11 +41,13 @@ class TripCostService
     public function __construct(
         FaresService $faresService,
         TripFaresService $tripFaresService,
-        EntityManager $entityManager
+        EntityManager $entityManager,
+        PreauthorizationsService $preauthorizationsService
     ) {
         $this->faresService = $faresService;
         $this->tripFaresService = $tripFaresService;
         $this->entityManager = $entityManager;
+        $this->preauthorizationsService = $preauthorizationsService;
     }
 
     /**
@@ -60,6 +68,10 @@ class TripCostService
             $this->entityManager->getConnection()->beginTransaction();
 
             $this->tripCostComputed($trip);
+
+            if($trip->getPreauthorization() instanceof Preauthorizations){
+               $this->preauthorizationsService->computeTrip($trip->getPreauthorization(),$tripPayment );
+            }
 
             if ($tripPayment->getTotalCost() > 0) {
                 $this->saveTripPayment($tripPayment);
