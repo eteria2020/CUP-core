@@ -130,7 +130,7 @@ class PreauthorizationsService
 //                $this->savePreauthorizations($preauthorizations);
 //            } else {
 //                //unpayableConsequences: disabled the customer?
-                $this->toBePayedPreaut($tripPayment);
+                //$this->toBePayedPreaut($tripPayment);
                 $preauthorizations->setStatus(Preauthorizations::STATUS_TO_BE_PAYED_CHANGE);
                 $preauthorizations->setStatusFrom($now);
                 $this->savePreauthorizations($preauthorizations);
@@ -195,7 +195,7 @@ class PreauthorizationsService
 
     private function toBePayedPreaut(TripPayments &$tripPayment)
     {
-        $tripPayment->setStatus(TripPayments::STATUS_TO_BE_PAYED_PREAUT);
+        $tripPayment->setStatus(TripPayments::STATUS_TO_BE_PAYED); //STATUS_TO_BE_PAYED_PREAUT
     }
 
 }
