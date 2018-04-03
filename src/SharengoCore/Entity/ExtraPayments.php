@@ -184,6 +184,8 @@ class ExtraPayments
 
     /**
      * @return Customers
+     * 
+     * @return \SharengoCore\Entity\Customers
      */
     public function getCustomer()
     {

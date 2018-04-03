@@ -125,14 +125,14 @@ class CustomerDeactivationService
      */
     public function deactivateForExtraPaymentTry(
         Customers $customer,
-        ExtraPaymentTries $extraPaymentTry,
+        $extraPaymentTry,
         \DateTime $startTs = null
     ) {
         $details = ['extra_payment_try_id' => $extraPaymentTry->getId()];
 
         $this->deactivate(
             $customer,
-            CustomerDeactivation::FAILED_PAYMENT,
+            CustomerDeactivation::FAILED_EXTRA_PAYMENT,
             $details,
             $startTs
         );
