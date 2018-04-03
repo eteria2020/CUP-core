@@ -341,7 +341,7 @@ class TelepassService
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
                 }
 
-                $key2 = 'authority';
+                $key2 = 'issuedBy';
                 $value = $this->getDataFormatedLower($drivingLicense, $key2);
                 if ($value == 'dtt' || $value == 'mc' || $value == 'co' || $value == 'ae' || $value == 'uco' || $value == 'pre') {
                     $contentArray[$key][$key2] = strtoupper($value);
@@ -349,7 +349,7 @@ class TelepassService
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
                 }
 
-                $key2 = 'releaseDate';
+                $key2 = 'issueDate';
                 $value = $this->getDataFormatedDateTime($drivingLicense, $key2);
                 if (!is_null($value)) {
                     
@@ -357,7 +357,7 @@ class TelepassService
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
                 }
 
-                $key2 = 'expire';
+                $key2 = 'expirationDate';
                 $value = $this->getDataFormatedDateTime($drivingLicense, $key2);
                 if (!is_null($value)) {
                     
@@ -574,9 +574,9 @@ class TelepassService
 
             $customer->setDriverLicense($data['drivingLicense']['number']);
             $customer->setDriverLicenseCountry($data['drivingLicense']['country']);
-            $customer->setDriverLicenseAuthority($data['drivingLicense']['authority']);
-            $customer->setDriverLicenseReleaseDate(new \DateTime(sprintf('%s 00:00:00',implode('-', $data['drivingLicense']['releaseDate']))));
-            $customer->setDriverLicenseExpire(new \DateTime(sprintf('%s 00:00:00',implode('-', $data['drivingLicense']['expire']))));
+            $customer->setDriverLicenseAuthority($data['drivingLicense']['issuedBy']);
+            $customer->setDriverLicenseReleaseDate(new \DateTime(sprintf('%s 00:00:00',implode('-', $data['drivingLicense']['issueDate']))));
+            $customer->setDriverLicenseExpire(new \DateTime(sprintf('%s 00:00:00',implode('-', $data['drivingLicense']['expirationDate']))));
             $customer->setDriverLicenseName($data['drivingLicense']['firstName']);
             $customer->setDriverLicenseSurname($data['drivingLicense']['lastName']);
             $customer->setDriverLicenseCategories($data['drivingLicense']['category']);
