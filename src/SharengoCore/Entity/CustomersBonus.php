@@ -130,6 +130,13 @@ class CustomersBonus
      * })
      */
     private $promocode;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="note", type="text", nullable=true)
+     */
+    private $note;
 
     /**
      * @param Customers $customer
@@ -138,6 +145,7 @@ class CustomersBonus
      * @param string $validTo
      * @param string|null $validFrom
      * @param string|null $type
+     * @param string|null $note
      * @return CustomersBonus
      */
     public static function createBonus(
@@ -146,7 +154,8 @@ class CustomersBonus
         $description,
         $validTo,
         $validFrom = null,
-        $type = null
+        $type = null,
+        $note = null
     ) {
         $bonus = new CustomersBonus();
         $bonus->setCustomer($customer);
@@ -159,6 +168,7 @@ class CustomersBonus
         if ($type !== null) {
             $bonus->setType($type);
         }
+        $bonus->setNote($note);
 
         return $bonus;
     }
@@ -583,6 +593,31 @@ class CustomersBonus
     public function getPromocode()
     {
         return $this->promocode;
+    }
+    
+    
+    /**
+     * Get note
+     *
+     * @return string
+     */
+    public function getNote()
+    {
+        return $this->note;
+    }
+    
+    /**
+     * Set note
+     *
+     * @param string $note
+     *
+     * @return CustomersBonus
+     */
+    public function setNote($note)
+    {
+        $this->note = $note;
+
+        return $this;
     }
 
     /**
