@@ -76,6 +76,8 @@ class ExtraPaymentTriesService
         
         $this->entityManager->persist($extraPaymentTry);
         $this->entityManager->flush();
+        
+        return $extraPaymentTry;
     }
 
     /**
