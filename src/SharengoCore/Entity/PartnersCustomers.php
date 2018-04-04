@@ -30,11 +30,11 @@ class PartnersCustomers
     private $insertedTs;
 
     /**
-     * @var boolean
+     * @var \DateTime
      *
-     * @ORM\Column(name="enabled", type="boolean", nullable=false)
+     * @ORM\Column(name="disabled_ts", type="datetime", nullable=true)
      */
-    private $enabled = true;
+    private $disabledTs = true;
 
     /**
      * @var \Customers
@@ -58,6 +58,7 @@ class PartnersCustomers
 
     public function __construct() {
         $this->insertedTs = new \DateTime("now");
+        $this->disabledTs = null;
     }
 
     /**

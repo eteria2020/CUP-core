@@ -4,6 +4,8 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Service\FleetService;
 use SharengoCore\Service\UserEventsService;
+use SharengoCore\Service\DriversLicenseValidationService;
+
 use SharengoCore\Entity\Repository\CustomersRepository;
 use SharengoCore\Entity\Repository\PartnersRepository;
 use SharengoCore\Entity\Repository\ProvincesRepository;
@@ -14,12 +16,16 @@ use SharengoCore\Entity\PartnersCustomers;
 use Cartasi\Entity\Contracts;
 use Cartasi\Entity\Transactions;
 
-
 use Doctrine\ORM\EntityManager;
 
 class TelepassService
 {
-    
+    /**
+     *
+     * @var string
+     */
+    private $partnerName = 'telepass';
+
     /**
      * @var EntityManager
      */
@@ -50,13 +56,20 @@ class TelepassService
      */
     private $userEventsService;
 
+    /**
+     *
+     * @var DriversLicenseValidationService 
+     */
+    private $driversLicenseValidationService;
+
     public function __construct(
         EntityManager $entityManager,
         CustomersRepository $customersRepository,
         PartnersRepository $partnersRepository,
         FleetService $fleetService,
         ProvincesRepository $provincesRepository,
-        UserEventsService $userEventsService
+        UserEventsService $userEventsService,
+        DriversLicenseValidationService $driversLicenseValidationService
     ) {
         $this->entityManager = $entityManager;
         $this->customersRepository = $customersRepository;
@@ -64,6 +77,7 @@ class TelepassService
         $this->fleetService = $fleetService;
         $this->provincesRepository = $provincesRepository;
         $this->userEventsService = $userEventsService;
+        $this->driversLicenseValidationService = $driversLicenseValidationService;
     }
 
     /**
@@ -128,12 +142,9 @@ class TelepassService
         $strError = "";
 
         try {
-
-            //if($contentArray["partnerName"]=="telepass") {
-            //if($contentArray->{'username'}=="telepass") {
             $key = 'partnerName';
             $value = $this->getDataFormatedLower($contentArray, $key);
-            if ($value == 'telepass') {
+            if ($this->partnerName == $value) {
                 $contentArray[$key] = $value;
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
@@ -611,7 +622,8 @@ class TelepassService
             //$result = $this->customersService->getUserFromHash($hash);  //TODO: improve
             $this->newPartnersCustomers($partner, $customer);
             $contract = $this->newContract($partner, $customer);
-            $this->newTransaction($contract, 0, 'EUR', 'TPAY', 'TELEPASS+TPAY+PREPAID+-+-N', true);
+            $this->newTransaction($contract, 0, 'EUR', 'TPAY', strtoupper($this->partnerName).'+TPAY+PREPAID+-+-N', true);
+            $this->newDriverLicenseValidation($customer, $data['drivingLicense']);
             $result = $customer;
             $this->entityManager->getConnection()->commit();
 
@@ -623,6 +635,7 @@ class TelepassService
     }
 
     /**
+     * Create a new Partner-Customer row
      * 
      * @param Partners $partner
      * @param Customers $customer
@@ -693,6 +706,38 @@ class TelepassService
         $this->entityManager->flush();
 
         return $transaction;
+    }
+
+    /**
+     * Create a new Driver License Validation
+     * 
+     * @param Customers $customer
+     * @param array $drivingLicenseData
+     * @return DriversLicenseValidation
+     */
+    private function newDriverLicenseValidation(Customers $customer, array $drivingLicenseData) {
+        $code = 'IG0023';
+        $message = 'PATENTE VALIDA';
+
+        $data = array($customer->getEmail(),
+            $drivingLicenseData['firstName'],
+            $drivingLicenseData['lastName'],
+            $drivingLicenseData['number'],
+            $customer->getTaxCode(),
+            $drivingLicenseData['number'],
+            sprintf('%s 00:00:00.000000',implode('-', $drivingLicenseData['expirationDate'])),
+            $drivingLicenseData['country'],
+            $customer->getProvince(),
+            $customer->getTown(),
+            '1',
+            $code,
+            $message,
+            $this->partnerName
+            );
+
+        $result = $this->driversLicenseValidationService->addFromData($customer, true, $code, $message, $data, true, true , false);
+
+        return $result;
     }
 }
 
