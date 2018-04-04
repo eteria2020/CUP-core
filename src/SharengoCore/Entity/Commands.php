@@ -143,10 +143,15 @@ class Commands
         self::REBOT => ['label' => 'Rebot (107.4)', 'command'=>'FORCE_REBOOT', 'params' => ['txtarg1' => ''], 'ttl' => 60],
         self::OPEN_TRIP => ['label' => 'Apri corsa', 'command'=>'START_TRIP', 'params' => ['txtarg1' => ''], 'ttl' => 60]
     ];
+    
     /**
      * @param Cars $car
      * @param integer $commandIndex
      * @param Webuser|null $webuser
+     * @param integer $intArg1
+     * @param integer $intArg2
+     * @param String $txtArg1
+     * @param String $txtArg2
      * @return Commands
      */
     public static function createCommand(Cars $car, $commandIndex, Webuser $webuser = null, $intArg1, $intArg2, $txtArg1, $txtArg2)
@@ -176,6 +181,14 @@ class Commands
         return $command;
     }
     
+    /**
+     * @param array $commandDataParams
+     * @param integer $intArg1
+     * @param integer $intArg2
+     * @param String $txtArg1
+     * @param String $txtArg2
+     * @return array
+     */
     public function setDynamicParameters($commandDataParams, $intArg1, $intArg2, $txtArg1, $txtArg2) {
         $commandData = null;
         if (array_key_exists('intarg1', $commandDataParams)) {
