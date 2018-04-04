@@ -141,7 +141,7 @@ class Commands
         self::GPRS_COORDINATES => ['label' => 'Usa coordinate GPRS', 'command' => 'SET_CONFIG', 'params' => ['txtarg1' => '{UseExternalGPS : true}'], 'ttl' => 0],
         self::ANDROID_COORDINATES => ['label' => 'Usa coordinate ANDROID', 'command' => 'SET_CONFIG', 'params' => ['txtarg1' => '{UseExternalGPS : false}'], 'ttl' => 0],
         self::REBOT => ['label' => 'Rebot (107.4)', 'command'=>'FORCE_REBOOT', 'params' => ['txtarg1' => ''], 'ttl' => 60],
-        self::OPEN_TRIP => ['label' => 'Apri corsa', 'command'=>'START_TRIP', 'params' => ['txtarg1' => ''], 'ttl' => 60]
+        self::OPEN_TRIP => ['label' => 'Apri corsa', 'command'=>'OPEN_TRIP', 'params' => ['txtarg1' => ''], 'ttl' => 60]
     ];
     
     /**
