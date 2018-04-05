@@ -37,7 +37,7 @@ class CommandsService {
      * @param type $txtArg1
      * @param type $txtArg2
      */
-    public function sendCommand(Cars $car, $commandIndex, Webuser $webuser = null, $intArg1 = null, $intArg2 = null, $txtArg1 = null, $txtArg2 = null, $ttl = null) {
+    public function sendCommand(Cars $car, $commandIndex, Webuser $webuser = null, $intArg1 = 0, $intArg2 = 0, $txtArg1 = '', $txtArg2 = '', $ttl = 0) {
         $command = Commands::createCommand($car, $commandIndex, $webuser, $intArg1, $intArg2, $txtArg1, $txtArg2);
 
         if (!is_null($intArg1)) {
