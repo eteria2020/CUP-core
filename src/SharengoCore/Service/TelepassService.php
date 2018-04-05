@@ -12,6 +12,7 @@ use SharengoCore\Entity\Repository\ProvincesRepository;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Partners;
 use SharengoCore\Entity\PartnersCustomers;
+use SharengoCore\Entity\CustomerDeactivation;
 
 use Cartasi\Entity\Contracts;
 use Cartasi\Entity\Transactions;
@@ -78,6 +79,14 @@ class TelepassService
         $this->provincesRepository = $provincesRepository;
         $this->userEventsService = $userEventsService;
         $this->driversLicenseValidationService = $driversLicenseValidationService;
+    }
+
+    /**
+     * 
+     * @return string
+     */
+    public function getPartnerName() {
+        return $this->partnerName;
     }
 
     /**
@@ -500,8 +509,9 @@ class TelepassService
         return $result;
     }
 
-        /**
+     /**
      * Find a customer tha match email or tax code or driver license
+     * 
      * @param string $email
      * @param string $taxCode
      * @param string $driverLicense
@@ -618,12 +628,12 @@ class TelepassService
             $this->entityManager->persist($customer);
             $this->entityManager->flush();
 
-
             //$result = $this->customersService->getUserFromHash($hash);  //TODO: improve
             $this->newPartnersCustomers($partner, $customer);
             $contract = $this->newContract($partner, $customer);
             $this->newTransaction($contract, 0, 'EUR', 'TPAY', strtoupper($this->partnerName).'+TPAY+PREPAID+-+-N', true);
             $this->newDriverLicenseValidation($customer, $data['drivingLicense']);
+            $this->newCustomerDeactivations($customer,  $data['drivingLicense']);
             $result = $customer;
             $this->entityManager->getConnection()->commit();
 
@@ -738,6 +748,27 @@ class TelepassService
         $result = $this->driversLicenseValidationService->addFromData($customer, true, $code, $message, $data, true, true , false);
 
         return $result;
+    }
+
+    /**
+     * Insert a CustomerDeactivation fake because we consider the driver license from Telepass always valid.
+     * 
+     * @param Customers $customer
+     * @param array $drivingLicense
+     * @return CustomerDeactivation
+     */
+    private function newCustomerDeactivations(Customers $customer, $drivingLicense) {
+
+        $details = array('deactivation' => $drivingLicense);
+        $customerDeactivations = new CustomerDeactivation($customer, CustomerDeactivation::INVALID_DRIVERS_LICENSE, $details);
+
+        $details = array('reactivation' => $drivingLicense,);
+        $customerDeactivations->reactivate($details, date_create(), null);
+
+        $this->entityManager->persist($customerDeactivations);
+        $this->entityManager->flush();
+
+        return $customerDeactivations;
     }
 }
 
