@@ -346,4 +346,19 @@ class ExtraPayments
         return $this->setStatus(self::STATUS_PAYED_CORRECTLY);
     }
 
+    
+    /**
+     * @return String
+     */
+    public function getPaymentType()
+    {
+        return $this->paymentType;
+    }
+    
+    /**
+     * @return Date
+     */
+    public function getFirstExtraTryTs() {
+         return $this->firstExtraTryTs;
+    }
 }
