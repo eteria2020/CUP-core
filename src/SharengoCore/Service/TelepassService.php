@@ -140,7 +140,7 @@ class TelepassService
         return $response;
     }
 
-        /**
+     /**
      * Check the Json data match with the constarints
      * 
      * @param array $contentArray
