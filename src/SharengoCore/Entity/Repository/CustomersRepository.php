@@ -270,13 +270,43 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         $row = $query->fetch();
         return $row["sng_checkmobile"];
     }
-    
+
     public function partnerData($param)
     {
         $sql = "SELECT partnerData('".$param."')";
         $query = $this->getEntityManager()->getConnection()->query($sql);
         $row = $query->fetch();
         return $row['partnerdata'];
+    }
+
+    public function findCustomersDriverLicenseCheckOld($lastCheckDate = null) {
+        $em = $this->getEntityManager();
+
+        if(is_null($lastCheckDate)) {
+            $lastCheckDate = date("Y-m-d", strtotime("-1 year", time()));
+        }
+
+        $query = $em->createQuery("SELECT c.id, c.email, c.driver_license, c.tax_code, c.driver_license_country, c.driver_license_firstname, c.driver_license_surname, c.birth_date, c.birth_province, c.birth_country ".
+            "FROM customers c ".
+            "INNER JOIN ( ".
+                "SELECT max(generated_ts) generated_max, customer_id FROM drivers_license_validations ".
+                "WHERE  valid = true  ".
+                "GROUP BY customer_id  ".
+                "HAVING max(generated_ts)< :lastCheckDate) dlv ".
+            "ON (c.id = dlv.customer_id) ".
+            "INNER JOIN ( ".
+                "SELECT count(*), customer_id  ".
+                "FROM trips ".
+                "WHERE timestamp_end > now() - interval '1 month' ".
+                "GROUP BY customer_id) t ".
+            "ON (c.id = t.customer_id) ".
+            "WHERE ".
+            "c.enabled=true AND c.maintainer=false AND c.gold_list=false AND c.driver_license_foreign = false ".
+            "ORDER BY c.id "
+        );
+
+        $query->setParameter('lastCheckDate', $lastCheckDate);
+        return $query->getResult();
     }
 
 }
