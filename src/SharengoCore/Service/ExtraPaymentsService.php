@@ -178,6 +178,7 @@ class ExtraPaymentsService
             $customer = $extra->getCustomer();
             return [
                 'e' => [
+                    'id' => $extra->getId(),
                     'generatedTs' => $extra->getGeneratedTs()->format('Y-m-d H:i:s'),
                     'totalCost' => $extra->getAmount(),
                     'reasons' => $extra->getReasons(),

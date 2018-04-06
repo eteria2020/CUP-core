@@ -15,17 +15,14 @@ class ExtraPaymentsServiceFactory implements FactoryInterface
         
         /** @var DatatableServiceInterface **/
         $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
-/*
+
         $datatableService->setQueryBuilder(
             new DatatableQueryBuilders\Customers(
-                new DatatableQueryBuilders\Trips(
-                    new DatatableQueryBuilders\Basic()
-                ),
-                't'
-            )
+                new DatatableQueryBuilders\Basic()
+            ), 'cu'
         );
- */
- 
+
+
 
         return new ExtraPaymentsService($entityManager, $invoicesService, $datatableService, $extraPaymentsRepository);
     }
