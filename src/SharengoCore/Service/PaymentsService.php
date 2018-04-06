@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use Cartasi\Service\CartasiCustomerPaymentsInterface;
 use Cartasi\Service\CartasiContractsService;
+use SharengoCore\Entity\Preauthorizations;
 use SharengoCore\Entity\Repository\FreeFaresRepository;
 use SharengoCore\Entity\Reservations;
 use SharengoCore\Service\TripPaymentTriesService;
@@ -254,7 +255,7 @@ class PaymentsService
     ) {
         $response = $this->cartasiCustomerPayments->sendPaymentRequest(
             $customer,
-            $tripPayment->getTotalCost(),
+            $this->preauthorizationsService->calculateAmount($tripPayment),
             $this->avoidCartasi
         );
 
@@ -270,6 +271,8 @@ class PaymentsService
 
             if ($response->getCompletedCorrectly()) {
                 $this->markTripAsPayed($tripPayment);
+                //if we have done a preauthorization and its status is 'to be payed'
+                $this->preauthorizationsService->markPreautAsDone($tripPayment);
             } else {
                 $this->unpayableConsequences(
                     $customer,
@@ -294,7 +297,6 @@ class PaymentsService
 
         return $response;
     }
-
     /**
      * tries to pay a set of trips and
      * writes in database, for each trip, a record in the trip_payment_tries table
@@ -316,7 +318,8 @@ class PaymentsService
         $totalCost = 0;
 
         foreach ($trips as $trip) {
-             $totalCost += $trip->getTripPayment()->getTotalCost();
+            error_log(gettype($trip->getTripPayment()));
+             $totalCost += $this->preauthorizationsService->calculateAmount($trip->getTripPayment());//$trip->getTripPayment()->getTotalCost();
         }
 
         if (!$this->cartasiContractService->hasCartasiContract($customer)) {
@@ -344,6 +347,7 @@ class PaymentsService
 
                 if ($response->getCompletedCorrectly()) {
                     $this->markTripAsPayed($tripPayment);
+                    $this->preauthorizationsService->markPreautAsDone($tripPayment);
                 } else {
 //                    $this->unpayableConsequences(
 //                        $customer,
@@ -363,6 +367,7 @@ class PaymentsService
                     null,
                     new \DateTime(),
                     true);
+                // set preauthorizations as done
             }
 
             if (!$this->avoidPersistance) {

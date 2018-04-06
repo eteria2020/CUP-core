@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Preauthorizations
 {
-    const STATUS_TO_BE_PAYED_CHANGE = 'to_be_payed';
+    const STATUS_TO_BE_PAYED = 'to_be_payed';
     const STATUS_REFUND = 'to_be_refund';
     const STATUS_WRONG = 'wrong';
     const STATUS_COMPLETED = 'done';
