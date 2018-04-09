@@ -148,13 +148,10 @@ class Commands
      * @param Cars $car
      * @param integer $commandIndex
      * @param Webuser|null $webuser
-     * @param integer $intArg1
-     * @param integer $intArg2
      * @param String $txtArg1
-     * @param String $txtArg2
      * @return Commands
      */
-    public static function createCommand(Cars $car, $commandIndex, Webuser $webuser = null, $intArg1, $intArg2, $txtArg1, $txtArg2, $ttl)
+    public static function createCommand(Cars $car, $commandIndex, Webuser $webuser = null, $txtArg1)
     {
         if (!array_key_exists($commandIndex, self::$codes)) {
             throw new \InvalidArgumentException('Command not found');
@@ -166,7 +163,7 @@ class Commands
         $command->setCarPlate($car->getPlate());
         $command->setCommand($commandData['command']);
 
-        $commandData['params'] = $command->setDynamicParameters($commandData['params'], $intArg1, $intArg2, $txtArg1, $txtArg2);
+        $commandData['params'] = $command->setDynamicParameters($commandData['params'], $txtArg1);
         
         foreach ($commandData['params'] as $param => $value) {
             $methodName = 'set' . ucfirst($param);
@@ -183,27 +180,15 @@ class Commands
     
     /**
      * @param array $commandDataParams
-     * @param integer $intArg1
-     * @param integer $intArg2
      * @param String $txtArg1
-     * @param String $txtArg2
      * @return array
      */
-    public function setDynamicParameters($commandDataParams, $intArg1, $intArg2, $txtArg1, $txtArg2) {
+    public function setDynamicParameters($commandDataParams, $txtArg1) {
         $commandData = null;
-        if (array_key_exists('intarg1', $commandDataParams)) {
-            $commandData['intArg1'] = $intArg1;
+        if (array_key_exists('txtarg1', $commandDataParams) && $txtArg1 != '') {
+            $commandDataParams['txtarg1'] = $txtArg1;
         }
-        if (array_key_exists('intarg2', $commandDataParams)) {
-            $commandData['intArg2'] = $intArg2;
-        }
-        if (array_key_exists('txtarg1', $commandDataParams)) {
-            $commandData['txtarg1'] = $txtArg1;
-        }
-        if (array_key_exists('txtarg2', $commandDataParams)) {
-            $commandData['txtarg2'] = $txtArg2;
-        }
-        return $commandData;
+        return $commandDataParams;
     }
 
     /**
