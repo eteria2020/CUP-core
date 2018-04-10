@@ -184,7 +184,6 @@ class Commands
      * @return array
      */
     public function setDynamicParameters($commandDataParams, $txtArg1) {
-        $commandData = null;
         if (array_key_exists('txtarg1', $commandDataParams) && $txtArg1 != '') {
             $commandDataParams['txtarg1'] = $txtArg1;
         }
