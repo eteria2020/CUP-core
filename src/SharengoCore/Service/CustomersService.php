@@ -969,7 +969,7 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersBonusRepository->getCustomerBonusNivea($descriptionBonusNivea);
     }
 
-    public function getCustomersDriverLicenseCheckOld($lastCheckDate = null, $maxCustomers = null) {
-        return $this->customersRepository->findCustomersDriverLicenseCheckOld($lastCheckDate, $maxCustomers);
+    public function getCustomersValidLicenseOldCheck($lastCheckDate = null, $maxCustomers = null) {
+        return $this->customersRepository->findCustomersValidLicenseOldCheck($lastCheckDate, $maxCustomers);
     }
 }

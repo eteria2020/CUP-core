@@ -280,7 +280,19 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         return $row['partnerdata'];
     }
 
-    public function findCustomersDriverLicenseCheckOld($lastCheckDate = null, $maxCustomers = null) {
+    /**
+     * Return an array of customers_id that Customers have:
+     * - driver validation old that $lastCheckDate (default 1 year)
+     * - at least one trip in the last month
+     * - enabled
+     * - not maintainer and not gold list
+     * - driver license id not foreign
+     * 
+     * @param datetime $lastCheckDate
+     * @param integer $maxCustomers
+     * @return array
+     */
+    public function findCustomersValidLicenseOldCheck($lastCheckDate = null, $maxCustomers = null) {
 
         $customersLimit = "";
 
@@ -289,7 +301,7 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         }
 
         if(!is_null($maxCustomers)){
-            $customersLimit = " limit 10 ";
+            $customersLimit = " LIMIT 10 ";
         }
 
         $sql = sprintf("SELECT c.id ".
