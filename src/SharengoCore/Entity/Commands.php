@@ -26,7 +26,7 @@ class Commands
     const ANDROID_COORDINATES = 11;
     const REBOT = 12;
     const OPEN_TRIP = 13;
-    const OPEN_TRIP_BREAK = 14;
+    const UNPARK_TRIP = 14;
 
     /**
      * @var integer
@@ -143,7 +143,7 @@ class Commands
         self::ANDROID_COORDINATES => ['label' => 'Usa coordinate ANDROID', 'command' => 'SET_CONFIG', 'params' => ['txtarg1' => '{UseExternalGPS : false}'], 'ttl' => 0],
         self::REBOT => ['label' => 'Rebot (107.4)', 'command'=>'FORCE_REBOOT', 'params' => ['txtarg1' => ''], 'ttl' => 60],
         self::OPEN_TRIP => ['label' => 'Apri corsa', 'command'=>'OPEN_TRIP', 'params' => ['txtarg1' => ''], 'ttl' => 60],
-        self::OPEN_TRIP_BREAK => ['label' => 'Apri corsa in sosta', 'command'=>'OPEN_TRIP', 'params' => ['txtarg1' => ''], 'ttl' => 60]
+        self::UNPARK_TRIP => ['label' => 'Apri corsa in sosta', 'command'=>'UNPARK_TRIP', 'params' => ['txtarg1' => ''], 'ttl' => 60]
     ];
     
     /**
