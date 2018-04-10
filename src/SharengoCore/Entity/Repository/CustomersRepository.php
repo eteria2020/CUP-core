@@ -5,6 +5,7 @@ namespace SharengoCore\Entity\Repository;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonus;
 use SharengoCore\Entity\TripPayments;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 class CustomersRepository extends \Doctrine\ORM\EntityRepository
 {
@@ -279,34 +280,42 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         return $row['partnerdata'];
     }
 
-    public function findCustomersDriverLicenseCheckOld($lastCheckDate = null) {
-        $em = $this->getEntityManager();
+    public function findCustomersDriverLicenseCheckOld($lastCheckDate = null, $maxCustomers = null) {
+
+        $customersLimit = "";
 
         if(is_null($lastCheckDate)) {
             $lastCheckDate = date("Y-m-d", strtotime("-1 year", time()));
         }
 
-        $query = $em->createQuery("SELECT c.id, c.email, c.driver_license, c.tax_code, c.driver_license_country, c.driver_license_firstname, c.driver_license_surname, c.birth_date, c.birth_province, c.birth_country ".
+        if(!is_null($maxCustomers)){
+            $customersLimit = " limit 10 ";
+        }
+
+        $sql = sprintf("SELECT c.id ".
             "FROM customers c ".
             "INNER JOIN ( ".
                 "SELECT max(generated_ts) generated_max, customer_id FROM drivers_license_validations ".
                 "WHERE  valid = true  ".
                 "GROUP BY customer_id  ".
-                "HAVING max(generated_ts)< :lastCheckDate) dlv ".
+                "HAVING max(generated_ts)< '%s') dlv ".
             "ON (c.id = dlv.customer_id) ".
             "INNER JOIN ( ".
-                "SELECT count(*), customer_id  ".
+                "SELECT count(*), customer_id ".
                 "FROM trips ".
                 "WHERE timestamp_end > now() - interval '1 month' ".
                 "GROUP BY customer_id) t ".
             "ON (c.id = t.customer_id) ".
             "WHERE ".
             "c.enabled=true AND c.maintainer=false AND c.gold_list=false AND c.driver_license_foreign = false ".
-            "ORDER BY c.id "
-        );
+            "ORDER BY c.id %s",
+            $lastCheckDate,
+            $customersLimit);
 
-        $query->setParameter('lastCheckDate', $lastCheckDate);
-        return $query->getResult();
+        $stm = $this->getEntityManager()->getConnection()->query($sql);
+        $result = $stm->fetchAll();
+
+        return $result;
     }
 
 }
