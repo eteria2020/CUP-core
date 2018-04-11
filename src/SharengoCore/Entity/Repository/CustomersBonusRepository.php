@@ -150,4 +150,36 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         
         return $query->getResult();
     }
+    
+    public function getCustomerBonusAlgebris($descriptionBonusNivea) {
+        $em = $this->getEntityManager();
+        $dql = "SELECT c " .
+                "FROM \SharengoCore\Entity\Customers c " .
+                "WHERE 1=1 " .
+                "AND c.insertedTs >= :start " .
+                "AND c.insertedTs  < :end " .
+                "AND c.id IN ( " .
+                    "SELECT cu.id " .
+                    "FROM \SharengoCore\Entity\Trips t " .
+                    "JOIN \SharengoCore\Entity\Customers cu WITH t.customer = cu.id " .
+                    "WHERE t.timestampBeginning >= :start " .
+                    "AND t.timestampBeginning < :end ".
+                    "AND t.fleet = :fleet " .
+                    ") " .
+                "AND c.id NOT IN ( ". 
+                    "SELECT cus.id " .
+                    "FROM \SharengoCore\Entity\CustomersBonus cb " .
+                    "JOIN \SharengoCore\Entity\Customers cus WITH cb.customer = cus.id " .
+                    "WHERE cb.description = :description " .
+                    ") ";
+        
+        $query = $em->createQuery($dql);
+        
+        $query->setParameter('start', '2018-02-01 00:00:00');
+        $query->setParameter('end', '2018-05-01 00:00:00');
+        $query->setParameter('fleet', 1);
+        $query->setParameter('description', $descriptionBonusNivea);
+        
+        return $query->getResult();
+    }
 }
