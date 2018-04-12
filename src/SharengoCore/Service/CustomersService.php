@@ -973,7 +973,7 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersRepository->findCustomersValidLicenseOldCheck($lastCheckDate, $maxCustomers);
     }
     
-    public function getCustomerBonusAlgebris($descriptionBonusAlgebris) {
-        return $this->customersBonusRepository->getCustomerBonusAlgebris($descriptionBonusAlgebris);
+    public function getCustomerBonusAlgebris($descriptionBonusAlgebris, $startMonth, $endMonth) {
+        return $this->customersBonusRepository->getCustomerBonusAlgebris($descriptionBonusAlgebris, $startMonth, $endMonth);
     }
 }
