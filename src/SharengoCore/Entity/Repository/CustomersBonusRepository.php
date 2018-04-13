@@ -156,34 +156,52 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         $dql = "SELECT c " .
                 "FROM \SharengoCore\Entity\Customers c  " .
                 "WHERE 1=1  " .
+                "AND c.fleet = 1 " .
                 "AND c.id NOT IN (  " .
                                 "SELECT cus.id  " .
                                 "FROM \SharengoCore\Entity\CustomersBonus cb  " .
                                 "JOIN \SharengoCore\Entity\Customers cus WITH cb.customer = cus.id  " .
                                 "WHERE cb.description = :description  " .
                                 ") " .
-                "AND c.id NOT IN (  " .
+                /*"AND c.id NOT IN (  " .
                                 "SELECT cu.id  " .
                                 "FROM \SharengoCore\Entity\Trips t  " .
                                 "JOIN \SharengoCore\Entity\Customers cu WITH t.customer = cu.id  " .
                                 "WHERE t.timestampBeginning < :dateZero " .
-                                ")  " .
+                                ")  " .*/
                 "AND c.id  IN (  " .
                                 "SELECT cust.id " .
                                 "FROM \SharengoCore\Entity\Trips ti  " .
                                 "JOIN \SharengoCore\Entity\Customers cust WITH ti.customer = cust.id  " .
                                 "WHERE ti.timestampBeginning >= :startMonth " .
-                                "AND ti.timestampBeginning <= :endMonth " .
+                                "AND ti.timestampBeginning < :endMonth " .
                                 "GRUOP BY cust.id " .
                                 "HAVING count(cust)>=3 " .
+                //--------------------------------------------------flett = 1???
                                 ") ";
         
         $query = $em->createQuery($dql);
         
-        $query->setParameter('dateZero', '2018-04-01 00:00:00'); 
+        //$query->setParameter('dateZero', '2018-04-01 00:00:00'); 
         $query->setParameter('startMonth', $startMonth);
         $query->setParameter('endMonth', $endMonth);
         $query->setParameter('description', $descriptionBonusNivea);
+        
+        return $query->getResult();
+    }
+    
+    public function checkIfCustomerRunBeforeAprilMonth($customer) {
+        $em = $this->getEntityManager();
+        $dql = "SELECT COUNT(t.id)  " .
+                "FROM \SharengoCore\Entity\Trips t  " .
+                "WHERE t.timestampBeginning < :dateZero " .
+                "AND t.customer = :customer " .
+                "ORDER BY 1 ASC  ";
+        
+        $query = $em->createQuery($dql);
+        
+        $query->setParameter('dateZero', '2018-04-01 00:00:00'); 
+        $query->setParameter('customer', $customer); 
         
         return $query->getResult();
     }
