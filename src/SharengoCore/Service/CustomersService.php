@@ -977,7 +977,7 @@ class CustomersService implements ValidatorServiceInterface
         return $this->customersBonusRepository->getCustomerBonusAlgebris($descriptionBonusAlgebris, $startMonth, $endMonth);
     }
     
-    public function checkIfCustomerRunBeforeAprilMonth($customer) {
+    public function checkIfCustomerRunBeforeAprilMonth(Customers $customer) {
         return $this->customersBonusRepository->checkIfCustomerRunBeforeAprilMonth($customer);
     }
 }
