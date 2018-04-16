@@ -192,7 +192,7 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
                 "FROM \SharengoCore\Entity\Trips t  " .
                 "WHERE t.timestampBeginning < :dateZero " .
                 "AND t.customer = :customer " .
-                "ORDER BY 1 ASC  ";
+                "ORDER BY t.id ASC  ";
         
         $query = $em->createQuery($dql);
         
