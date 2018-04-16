@@ -191,8 +191,8 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         $dql = "SELECT COUNT(t.id)  " .
                 "FROM \SharengoCore\Entity\Trips t  " .
                 "WHERE t.timestampBeginning < :dateZero " .
-                "AND t.customer = :customer " .
-                "ORDER BY t.id ASC  ";
+                "AND t.customer = :customer " ;
+                //"ORDER BY t.id ASC  ";
         
         $query = $em->createQuery($dql);
         
