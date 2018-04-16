@@ -26,6 +26,7 @@ class Commands
     const ANDROID_COORDINATES = 11;
     const REBOT = 12;
     const OPEN_TRIP = 13;
+    const UNPARK_TRIP = 14;
 
     /**
      * @var integer
@@ -141,20 +142,18 @@ class Commands
         self::GPRS_COORDINATES => ['label' => 'Usa coordinate GPRS', 'command' => 'SET_CONFIG', 'params' => ['txtarg1' => '{UseExternalGPS : true}'], 'ttl' => 0],
         self::ANDROID_COORDINATES => ['label' => 'Usa coordinate ANDROID', 'command' => 'SET_CONFIG', 'params' => ['txtarg1' => '{UseExternalGPS : false}'], 'ttl' => 0],
         self::REBOT => ['label' => 'Rebot (107.4)', 'command'=>'FORCE_REBOOT', 'params' => ['txtarg1' => ''], 'ttl' => 60],
-        self::OPEN_TRIP => ['label' => 'Apri corsa', 'command'=>'OPEN_TRIP', 'params' => ['txtarg1' => ''], 'ttl' => 60]
+        self::OPEN_TRIP => ['label' => 'Apri corsa', 'command'=>'OPEN_TRIP', 'params' => ['txtarg1' => ''], 'ttl' => 60],
+        self::UNPARK_TRIP => ['label' => 'Apri corsa in sosta', 'command'=>'UNPARK_TRIP', 'params' => ['txtarg1' => ''], 'ttl' => 60]
     ];
     
     /**
      * @param Cars $car
      * @param integer $commandIndex
      * @param Webuser|null $webuser
-     * @param integer $intArg1
-     * @param integer $intArg2
      * @param String $txtArg1
-     * @param String $txtArg2
      * @return Commands
      */
-    public static function createCommand(Cars $car, $commandIndex, Webuser $webuser = null, $intArg1, $intArg2, $txtArg1, $txtArg2)
+    public static function createCommand(Cars $car, $commandIndex, Webuser $webuser = null, $txtArg1)
     {
         if (!array_key_exists($commandIndex, self::$codes)) {
             throw new \InvalidArgumentException('Command not found');
@@ -166,7 +165,7 @@ class Commands
         $command->setCarPlate($car->getPlate());
         $command->setCommand($commandData['command']);
 
-        $commandData['params'] = $command->setDynamicParameters($commandData['params'], $intArg1, $intArg2, $txtArg1, $txtArg2);
+        $commandData['params'] = $command->setDynamicParameters($commandData['params'], $txtArg1);
         
         foreach ($commandData['params'] as $param => $value) {
             $methodName = 'set' . ucfirst($param);
@@ -183,27 +182,15 @@ class Commands
     
     /**
      * @param array $commandDataParams
-     * @param integer $intArg1
-     * @param integer $intArg2
      * @param String $txtArg1
-     * @param String $txtArg2
      * @return array
+     * 
      */
-    public function setDynamicParameters($commandDataParams, $intArg1, $intArg2, $txtArg1, $txtArg2) {
-        $commandData = null;
-        if (array_key_exists('intarg1', $commandDataParams)) {
-            $commandData['intArg1'] = $intArg1;
+    public function setDynamicParameters($commandDataParams, $txtArg1) {
+        if (array_key_exists('txtarg1', $commandDataParams) && $txtArg1 != '') {
+            $commandDataParams['txtarg1'] = $txtArg1;
         }
-        if (array_key_exists('intarg2', $commandDataParams)) {
-            $commandData['intArg2'] = $intArg2;
-        }
-        if (array_key_exists('txtarg1', $commandDataParams)) {
-            $commandData['txtarg1'] = $txtArg1;
-        }
-        if (array_key_exists('txtarg2', $commandDataParams)) {
-            $commandData['txtarg2'] = $txtArg2;
-        }
-        return $commandData;
+        return $commandDataParams;
     }
 
     /**
