@@ -186,7 +186,7 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
     
-    public function checkIfCustomerRunBeforeAprilMonth(Customers $customer) {
+    public function checkIfCustomerRunBeforeDate(Customers $customer, $date_zero) {
         $em = $this->getEntityManager();
         $dql = "SELECT COUNT(t.id)  " .
                 "FROM \SharengoCore\Entity\Trips t  " .
@@ -195,7 +195,7 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         
         $query = $em->createQuery($dql);
         
-        $query->setParameter('dateZero', '2018-04-01 00:00:00'); 
+        $query->setParameter('dateZero', $date_zero); 
         $query->setParameter('customer', $customer); 
         
         return $query->getResult();
