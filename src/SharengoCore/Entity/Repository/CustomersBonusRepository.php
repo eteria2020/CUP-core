@@ -170,7 +170,7 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
                                 "WHERE ti.timestampBeginning >= :startMonth " .
                                 "AND ti.timestampBeginning < :endMonth " .
                                 "AND ti.fleet = :fleet " .
-                                "AND ti.payed = :payed " .
+                                "AND ti.payable = :payable " .
                                 "GROUP BY cust.id " .
                                 "HAVING count(cust)>=3 " .
                                 ") ";
@@ -178,7 +178,7 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         $query = $em->createQuery($dql);
         
         $query->setParameter('fleet', 1);
-        $query->setParameter('payed', "TRUE");
+        $query->setParameter('payable', "TRUE");
         $query->setParameter('startMonth', $startMonth);
         $query->setParameter('endMonth', $endMonth);
         $query->setParameter('description', $descriptionBonusNivea);
