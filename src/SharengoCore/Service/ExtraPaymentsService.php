@@ -217,6 +217,7 @@ class ExtraPaymentsService
     
     public function setPayedCorrectlyFirstTime(ExtraPayments $extraPayment) {
         $extraPayment->setPayedCorrectly();
+        $extraPayment->setInvoiceAble(true);
         $extraPayment->setFirstExtraTryTs(new \DateTime());
         $this->entityManager->persist($extraPayment);
         $this->entityManager->flush();

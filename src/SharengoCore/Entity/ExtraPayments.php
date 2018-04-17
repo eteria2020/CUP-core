@@ -169,7 +169,7 @@ class ExtraPayments
         $this->amount = $amount;
         $this->paymentType = $paymentType;
         $this->reasons = $reasons;
-        $this->invoiceAble = true;
+        $this->invoiceAble = false;
         $this->status = self::STATUS_TO_BE_PAYED;
         $this->generatedTs = date_create();
     }
@@ -360,5 +360,22 @@ class ExtraPayments
      */
     public function getFirstExtraTryTs() {
          return $this->firstExtraTryTs;
+    }
+    
+    /**
+     * @return Bool
+     */
+    public function getInvoiceAble(){
+        return $this->invoiceAble;
+    }
+    
+    /**
+     * @param Boolean $invoiceAble
+     * @return ExtraPayments
+     */
+    public function setInvoiceAble($invoiceAble)
+    {
+        $this->invoiceAble = $invoiceAble;
+        return $this;
     }
 }
