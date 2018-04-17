@@ -150,4 +150,54 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         
         return $query->getResult();
     }
+    
+    public function getCustomerBonusAlgebris($descriptionBonusNivea, $startMonth, $endMonth) {
+        $em = $this->getEntityManager();
+        $dql = "SELECT c " .
+                "FROM \SharengoCore\Entity\Customers c  " .
+                "WHERE 1=1  " .
+                "AND c.fleet = :fleet " .
+                "AND c.id NOT IN (  " .
+                                "SELECT cus.id  " .
+                                "FROM \SharengoCore\Entity\CustomersBonus cb  " .
+                                "JOIN \SharengoCore\Entity\Customers cus WITH cb.customer = cus.id  " .
+                                "WHERE cb.description = :description  " .
+                                ") " .
+                "AND c.id  IN (  " .
+                                "SELECT cust.id " .
+                                "FROM \SharengoCore\Entity\Trips ti " .
+                                "JOIN \SharengoCore\Entity\Customers cust WITH ti.customer = cust.id " .
+                                "WHERE ti.timestampBeginning >= :startMonth " .
+                                "AND ti.timestampBeginning < :endMonth " .
+                                "AND ti.fleet = :fleet " .
+                                "AND ti.payable = :payable " .
+                                "GROUP BY cust.id " .
+                                "HAVING count(cust)>=3 " .
+                                ") ";
+        
+        $query = $em->createQuery($dql);
+        
+        $query->setParameter('fleet', 1);
+        $query->setParameter('payable', "TRUE");
+        $query->setParameter('startMonth', $startMonth);
+        $query->setParameter('endMonth', $endMonth);
+        $query->setParameter('description', $descriptionBonusNivea);
+        
+        return $query->getResult();
+    }
+    
+    public function checkIfCustomerRunBeforeDate(Customers $customer, $date_zero) {
+        $em = $this->getEntityManager();
+        $dql = "SELECT COUNT(t.id)  " .
+                "FROM \SharengoCore\Entity\Trips t  " .
+                "WHERE t.timestampBeginning < :dateZero " .
+                "AND t.customer = :customer " ;
+        
+        $query = $em->createQuery($dql);
+        
+        $query->setParameter('dateZero', $date_zero); 
+        $query->setParameter('customer', $customer); 
+        
+        return $query->getResult();
+    }
 }

@@ -399,14 +399,14 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->entityManager->persist($point);
         $this->entityManager->flush();
-        
+
         return $point;
     }
-    
+
     public function clearEntityManager(){
-        
+
         //$identity = $this->entityManager->getUnitOfWork()->getIdentityMap();
-        
+
         $this->entityManager->clear('SharengoCore\Entity\Trips');
         $this->entityManager->clear('SharengoCore\Entity\Cars');
         $this->entityManager->clear('SharengoCore\Entity\Customers');
@@ -422,7 +422,7 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->clear('SharengoCore\Entity\CustomersBonus');
 
     }
-    
+
     public function clearEntityManagerBonus(){
         //$identity = $this->entityManager->getUnitOfWork()->getIdentityMap();
         $this->entityManager->clear('SharengoCore\Entity\Cards');
@@ -453,11 +453,11 @@ class CustomersService implements ValidatorServiceInterface
     public function getCustomerPointsByCustomer($customerId){
         return $this->customersPointsRepository->findCustomerPointsByCustomer($customerId);
     }
-    
+
     public function  getTripsByCustomerForAddPointClusterLastMonth($customerId, $dateTodayStart, $dateStartCurrentMonth){
         return $this->customersPointsRepository->getTripsByCustomerForAddPointClusterLastMonth($customerId, $dateTodayStart, $dateStartCurrentMonth);
     }
-    
+
     public function  getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartCurrentMonth){
         return $this->customersPointsRepository->getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartCurrentMonth);
     }
@@ -465,7 +465,7 @@ class CustomersService implements ValidatorServiceInterface
     public function checkCustomerIfAlreadyAddPointsThisMonth($customerId, $dateCurrentMonthStart, $dateNextMonthStart){
         return $this->customersPointsRepository->checkCustomerIfAlreadyAddPointsThisMonth($customerId, $dateCurrentMonthStart, $dateNextMonthStart);
     }
-    
+
     public function getAllCustomerInCustomersPoints($dateStart, $dateEnd){
         return $this->customersPointsRepository->getAllCustomerInCustomersPoints($dateStart, $dateEnd);
     }
@@ -948,24 +948,36 @@ class CustomersService implements ValidatorServiceInterface
     public function getCustomersRunThisMonth($dateTodayStart, $dateStartCurrentMonth){
         return $this->customersPointsRepository->getCustomersRunThisMonth($dateTodayStart, $dateStartCurrentMonth);
     }
-    
+
     public function disableCustomer(Customers $customer){
         //disable customersPaymentAble
         $customer->setPaymentAble(false);
         //disable user
         $customer->disable();
-        
+
         $this->entityManager->persist($customer);
         $this->entityManager->flush();
-        
+
     }
-    
+
     public function clearAllEntityManager(){
-        $identity = $this->entityManager->getUnitOfWork()->getIdentityMap(); 
+        $identity = $this->entityManager->getUnitOfWork()->getIdentityMap();
         $this->entityManager->clear();
     }
-    
+
     public function getCustomerBonusNivea($descriptionBonusNivea) {
         return $this->customersBonusRepository->getCustomerBonusNivea($descriptionBonusNivea);
+    }
+
+    public function getCustomersValidLicenseOldCheck($lastCheckDate = null, $maxCustomers = null) {
+        return $this->customersRepository->findCustomersValidLicenseOldCheck($lastCheckDate, $maxCustomers);
+    }
+    
+    public function getCustomerBonusAlgebris($descriptionBonusAlgebris, $startMonth, $endMonth) {
+        return $this->customersBonusRepository->getCustomerBonusAlgebris($descriptionBonusAlgebris, $startMonth, $endMonth);
+    }
+    
+    public function checkIfCustomerRunBeforeDate(Customers $customer, $date_zero) {
+        return $this->customersBonusRepository->checkIfCustomerRunBeforeDate($customer, $date_zero);
     }
 }
