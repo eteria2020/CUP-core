@@ -46,6 +46,13 @@ class Configurations
     private $configValue;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="config_spec", type="text", nullable=true)
+     */
+    private $configSpecific;
+
+    /**
      * @return int
      */
     public function getId()
@@ -99,5 +106,21 @@ class Configurations
     public function setConfigValue($configValue)
     {
         $this->configValue = $configValue;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConfigSpecific()
+    {
+        return $this->configSpecific;
+    }
+
+    /**
+     * @param string $configSpecific
+     */
+    public function setConfigSpecific($configSpecific)
+    {
+        $this->configSpecific = $configSpecific;
     }
 }

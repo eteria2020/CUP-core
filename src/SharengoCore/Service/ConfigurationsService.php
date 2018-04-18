@@ -59,7 +59,19 @@ class ConfigurationsService
         foreach($configArray as $config) {
             $result[$config['configKey']] = $config['configValue'];
         }
-        
+
+        return $result;
+    }
+
+    public function getConfigurationsSpecificValueBySlug($slug)
+    {
+        $result = [];
+
+        $configArray = $this->configurationsRepository->findBySlug($slug, true);
+        foreach($configArray as $config) {
+            $result[$config['configKey']] = $config['configSpecific'];
+        }
+
         return $result;
     }
 
