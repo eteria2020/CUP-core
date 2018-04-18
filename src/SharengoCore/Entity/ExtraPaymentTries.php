@@ -144,5 +144,11 @@ class ExtraPaymentTries
         return $this->transaction;
     }
 
+    /**
+     * @return ExtraPayments
+     */
+    public function getExtraPayment() {
+        return $this->extraPayment;
+    }
 }
 
