@@ -102,12 +102,54 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
  
         return $query->getResult();
     }
+*/
+    
+    public function findWrongExtraPaymentsTime(Customers $customer = null, $start, $end, $idCondition = null, $limit = null)
+    {
+        $em = $this->getEntityManager();
 
+        $dql = 'SELECT ep FROM SharengoCore\Entity\ExtraPayments ep '.
+            'JOIN ep.customer c '.
+            'WHERE ep.status = :status '.
+            'AND ep.generatedTs >= :start '.
+            'AND ep.generatedTs <= :end ';
+
+        if ($customer instanceof Customers) {
+            $dql .= 'AND c = :customer ';
+        }
+
+        if ($idCondition !== null){
+            $dql .= 'AND ep.id > :condition ';
+        }
+
+        $dql .= ' ORDER BY ep.id ASC';
+
+        $query = $em->createQuery($dql);
+
+        $query->setParameter('status', TripPayments::STATUS_WRONG_PAYMENT);
+        $query->setParameter('start', date_create($start));
+        $query->setParameter('end', date_create($end));
+
+        if ($customer instanceof Customers) {
+            $query->setParameter('customer', $customer);
+        }
+
+        if ($idCondition !== null){
+            $query->setParameter('condition', $idCondition);
+        }
+
+        if ($limit !== null){
+            $query->setMaxResults($limit);
+        }
+
+        return $query->getResult();
+    }
+/*
     public function getCountTripPaymentsForPayment($timestampEndParam = null, $idCondition = null, $limit = null)
     {
         $em = $this->getEntityManager();
-        $main = "SELECT tp.id as id FROM trip_payments as tp LEFT JOIN trips as t ON tp.trip_id = t.id ".
-               "WHERE tp.status = 'to_be_payed' AND t.timestamp_end < (date 'now()' + time '00:00:00') ";
+        $main = "SELECT ep.id as id FROM extra_payments as ep LEFT JOIN extra as e ON ep.extra_id = e.id ".
+               "WHERE ep.status = 'to_be_payed' AND e.timestamp_end < (date 'now()' + time '00:00:00') ";
 
         if ($timestampEndParam !== null){
             $main .= "AND t.timestamp_end >= (CURRENT_DATE -INTERVAL '".$timestampEndParam."')::date + time '00:00:00'";
@@ -131,25 +173,26 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
+    
+*/
 
-    public function findTripPaymentsWrong(Customers $customer = null, $timestampEndParam = null)
+    public function findExtraPaymentsWrong(Customers $customer = null, $timestampEndParam = null)
     {
         $em = $this->getEntityManager();
 
-        $dql = 'SELECT tp FROM SharengoCore\Entity\TripPayments tp '.
-            'JOIN tp.trip t '.
-            'JOIN t.customer c '.
-            'WHERE tp.status = :status '.
-            'AND t.timestampEnd < :midnight ';
+        $dql = 'SELECT ep FROM SharengoCore\Entity\ExtraPayments ep '.
+            'JOIN ep.customer c '.
+            'WHERE ep.status = :status '.
+            'AND ep.generatedTs < :midnight ';
 
         if ($customer instanceof Customers) {
             $dql .= 'AND c = :customer ';
         }
         if ($timestampEndParam !== null){
-            $dql .= 'AND t.timestampEnd >= :timestampEndParam ';
+            $dql .= 'AND ep.generatedTs >= :timestampEndParam ';
         }
 
-        $dql .= ' ORDER BY t.timestampBeginning ASC';
+        $dql .= ' ORDER BY ep.generatedTs ASC';
 
         $query = $em->createQuery($dql);
 
@@ -166,7 +209,32 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
  
         return $query->getResult();
     }
-*/
+    
+    public function getCountWrongExtraPayments($start, $end, $idCondition = null, $limit = null)
+    {
+        $em = $this->getEntityManager();
+        $main = "SELECT ep.id as id FROM extra_payments as ep ".
+            "WHERE ep.status = 'wrong_payment' AND e.generatedTs >= '".$start."' AND e.generatedTs <= '".$end."' ";
+
+        if ($idCondition !== null){
+            $main .= 'AND ep.id > '.$idCondition;
+        }
+
+        $main .= ' ORDER BY ep.id ASC';
+
+        if ($limit !== null){
+            $main .= ' LIMIT '.$limit;
+        }
+        $sql = "SELECT (SELECT count(id) FROM (".$main.") as ep) as count, (SELECT id FROM (".$main.") as ep ORDER BY id DESC LIMIT 1) as last";
+
+        $rsm = new ResultSetMapping;
+        $rsm->addScalarResult('count', 'count');
+        $rsm->addScalarResult('last', 'last');
+        $query = $em->createNativeQuery($sql, $rsm);
+
+        return $query->getResult();
+    }
+
     /**
      * 
      * @param Customers $customer

@@ -31,7 +31,7 @@ class ExtraPaymentsService
     private $datatableService;
     
     /**
-     * @var ExtraPayments
+     * @var ExtraPaymentsRepository
      */
     private $extraPaymentsRepository;
 
@@ -241,5 +241,26 @@ class ExtraPaymentsService
 
         return $extraPayment;
     }
+    
+    public function getExtraPaymentsWrong(Customers $customer = null, $timestampEndParam = null)
+    {
+        return $this->extraPaymentsRepository->findExtraPaymentsWrong($customer, $timestampEndParam);
+    }
+    
+    public function getExtraPaymentsWrongTime(Customers $customer = null, $start, $end, $condition = null, $limit = null)
+    {
+        return $this->extraPaymentsRepository->findWrongExtraPaymentsTime($customer, $start, $end, $condition, $limit);
+    }
 
+    /**
+     * @param $start
+     * @param $end
+     * @param $condition
+     * @param $limit
+     * @return array
+     */
+    public function getWrongExtraPaymentsDetails($start, $end, $condition = null, $limit = null)
+    {
+        return $this->tripPaymentsRepository->getCountWrongExtraPayments($start, $end, $condition, $limit);
+    }
 }

@@ -197,6 +197,44 @@ class PaymentsService
 
         //$this->clearEntityManager();
     }
+    
+    /**
+     * tries to pay the extraPayment, checking first if the extra can be payed and
+     * otherwise sending a payment request to the customer
+     *
+     * @param ExtraPayments $extraPayment
+     */
+    public function tryPaymentExtra(
+        ExtraPayments $extraPayment,
+        $avoidEmail = false,
+        $avoidCartasi = false,
+        $avoidPersistance = false
+    ) {
+        $this->avoidEmail = $avoidEmail;
+        $this->avoidCartasi = $avoidCartasi;
+        $this->avoidPersistance = $avoidPersistance;
+
+        $customer = $extraPayment->getCustomer();
+
+        if ($this->cartasiContractService->hasCartasiContract($customer)) {
+            $this->tryCustomerExtraPayment(
+                $customer,
+                $extraPayment
+            );
+        } else {
+            if ($customer->getPaymentAble()) {
+                // enable hooks on the event that the customer doesn't have a valid contract
+                $this->eventManager->trigger('notifyCustomerPayExtra', $this, [
+                    'customer' => $customer,
+                    'extraPayment' => $extraPayment
+                ]);
+            }
+
+            $this->disableCustomer($customer);
+        }
+
+        //$this->clearEntityManager();
+    }
 
     /**
      * @var Customers $customer
