@@ -213,6 +213,7 @@ return [
             'SharengoCore\Service\TripCostComputerService' => 'SharengoCore\Service\TripCostComputerServiceFactory',
             'SharengoCore\Service\PaymentsService' => 'SharengoCore\Service\PaymentsServiceFactory',
             'SharengoCore\Service\TripPaymentTriesService' => 'SharengoCore\Service\TripPaymentTriesServiceFactory',
+            'SharengoCore\Service\ExtraPaymentTriesService' => 'SharengoCore\Service\ExtraPaymentTriesServiceFactory',
             'SharengoCore\Service\EditTripsService' => 'SharengoCore\Service\EditTripsServiceFactory',
             'SharengoCore\Service\ExtraPaymentsService' => 'SharengoCore\Service\ExtraPaymentsServiceFactory',
             'SharengoCore\Service\PenaltiesService' => 'SharengoCore\Service\PenaltiesServiceFactory',

@@ -115,6 +115,28 @@ class CustomerDeactivationService
             $startTs
         );
     }
+    
+    /**
+     * Deactivate Customer that failed to pay a ExtraPayment
+     *
+     * @param Customers $customer
+     * @param ExtraPaymentTries $extraPaymentTry
+     * @param \DateTime|null $startTs
+     */
+    public function deactivateForExtraPaymentTry(
+        Customers $customer,
+        $extraPaymentTry,
+        \DateTime $startTs = null
+    ) {
+        $details = ['extra_payment_try_id' => $extraPaymentTry->getId()];
+
+        $this->deactivate(
+            $customer,
+            CustomerDeactivation::FAILED_EXTRA_PAYMENT,
+            $details,
+            $startTs
+        );
+    }
 
     /**
      * Deactivate Customer that has an invalid driver's license

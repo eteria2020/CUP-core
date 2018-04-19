@@ -11,7 +11,19 @@ class ExtraPaymentsServiceFactory implements FactoryInterface
     {
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $invoicesService = $serviceLocator->get('SharengoCore\Service\Invoices');
+        $extraPaymentsRepository = $entityManager->getRepository('\SharengoCore\Entity\ExtraPayments');
+        
+        /** @var DatatableServiceInterface **/
+        $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
 
-        return new ExtraPaymentsService($entityManager, $invoicesService);
+        $datatableService->setQueryBuilder(
+            new DatatableQueryBuilders\Customers(
+                new DatatableQueryBuilders\Basic()
+            ), 'cu'
+        );
+
+
+
+        return new ExtraPaymentsService($entityManager, $invoicesService, $datatableService, $extraPaymentsRepository);
     }
 }
