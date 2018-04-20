@@ -258,6 +258,8 @@ return [
             'SharengoCore\Service\FinesService' => 'SharengoCore\Service\FinesServiceFactory',
             'SharengoCore\Service\PartnerService' => 'SharengoCore\Service\PartnerServiceFactory',
             'SharengoCore\Service\WebusersService' => 'SharengoCore\Service\WebusersServiceFactory',
+            'SharengoCore\Service\ExtraScriptRunsService' => 'SharengoCore\Service\ExtraScriptRunsServiceFactory',
+            'SharengoCore\Service\ProcessExtraService' => 'SharengoCore\Service\ProcessExtraServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
             'SharengoCore\Listener\DisableContractListener' => 'SharengoCore\Listener\DisableContractListenerFactory',

@@ -101,7 +101,7 @@ class ProcessExtraService
 
         foreach ($extraPayments as $extraPayment) {
             try {
-                $this->logger->log( date_create()->format('H:i:s').";INF;processPayments;tripPayment;".$extraPayment->getId() . ";trip;".$extraPayment->getTripId().";customer;".$extraPayment->getCustomer()->getId()."\n");
+                $this->logger->log( date_create()->format('H:i:s').";INF;processPayments;extraPayment;".$extraPayment->getId() . ";customer;".$extraPayment->getCustomer()->getId()."\n");
                 $this->paymentsService->tryPaymentExtra(
                     $extraPayment,
                     $avoidEmails,
