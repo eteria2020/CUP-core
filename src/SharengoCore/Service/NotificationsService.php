@@ -75,7 +75,11 @@ class NotificationsService {
                 't' => [
                     'carPlate' => $notifications->getMeta()['car_plate'],
                     'tripId' => $notifications->getMeta()['trip_id'],
-                    'callMobile' => $notifications->getMeta()['txtval']
+                    'callMobile' => $notifications->getMeta()['txtval'],
+                    'sosType' => (isset($notifications->getMeta()['sosType']) ?
+                            (($notifications->getMeta()['sosType'] == 1) ?
+                                'Richiesta assistenza' : 'Segnalazione danno') : '---')
+                    //'sosType' => ($notifications->getMeta()['txtval'] == 1) ? 'Richiesta assistenza' : 'Segnalazione danno'
                 ],
                 'c' => $this->getCustomer($this->customerService->findById($notifications->getMeta()['customer_id']))
             ];
