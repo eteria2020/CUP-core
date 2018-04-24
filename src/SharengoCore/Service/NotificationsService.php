@@ -67,9 +67,6 @@ class NotificationsService {
                     'submitDate' =>
                     ($notifications->getSubmitDate() instanceof DateTime) ?
                     $notifications->getSubmitDate()->getTimestamp() : null,
-                    'sentDate' =>
-                    ($notifications->getSentDate() instanceof DateTime) ?
-                    $notifications->getSentDate()->getTimestamp() : null,
                     'acknowledgeDate' =>
                     ($notifications->getAcknowledgeDate() instanceof DateTime) ?
                     $notifications->getAcknowledgeDate()->getTimestamp() : null,
