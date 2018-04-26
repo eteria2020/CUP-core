@@ -11,6 +11,6 @@ class ExtraScriptRunsServiceFactory implements FactoryInterface
     {
         $connection = $serviceLocator->get('doctrine.connection.orm_default');
 
-        return new PaymentScriptRunsService($connection);
+        return new ExtraScriptRunsService($connection);
     }
 }

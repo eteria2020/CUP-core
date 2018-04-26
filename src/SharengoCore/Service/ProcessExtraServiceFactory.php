@@ -21,7 +21,7 @@ class ProcessExtraServiceFactory implements FactoryInterface
 
         $usersService = $serviceLocator->get('SharengoCore\Service\UsersService');
 
-        return new ProcessPaymentsService(
+        return new ProcessExtraService(
             $eventManager,
             $logger,
             $paymentEmailListener,
