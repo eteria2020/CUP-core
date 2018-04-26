@@ -261,6 +261,6 @@ class ExtraPaymentsService
      */
     public function getWrongExtraPaymentsDetails($start, $end, $condition = null, $limit = null)
     {
-        return $this->tripPaymentsRepository->getCountWrongExtraPayments($start, $end, $condition, $limit);
+        return $this->extraPaymentsRepository->getCountWrongExtraPayments($start, $end, $condition, $limit);
     }
 }

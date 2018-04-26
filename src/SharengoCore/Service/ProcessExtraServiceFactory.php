@@ -16,6 +16,7 @@ class ProcessExtraServiceFactory implements FactoryInterface
         $notifyCustomerPayListener = $serviceLocator->get('SharengoCore\Listener\NotifyCustomerPayListener');
         $paymentsService = $serviceLocator->get('SharengoCore\Service\PaymentsService');
         $tripPaymentsService = $serviceLocator->get('SharengoCore\Service\TripPaymentsService');
+        $extraPaymentsService = $serviceLocator->get('SharengoCore\Service\ExtraPaymentsService');
         $customerDeactivationService = $serviceLocator->get('SharengoCore\Service\CustomerDeactivationService');
         $customersService = $serviceLocator->get('SharengoCore\Service\CustomersService');
 
@@ -28,6 +29,7 @@ class ProcessExtraServiceFactory implements FactoryInterface
             $notifyCustomerPayListener,
             $paymentsService,
             $tripPaymentsService,
+            $extraPaymentsService,
             $customerDeactivationService,
             $usersService,
             $customersService

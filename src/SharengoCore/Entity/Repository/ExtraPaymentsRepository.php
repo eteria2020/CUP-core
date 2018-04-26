@@ -206,21 +206,21 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
         if ($timestampEndParam !== null){
             $query->setParameter('timestampEndParam', date_create($timestampEndParam));
         }
- 
+        
         return $query->getResult();
     }
     
     public function getCountWrongExtraPayments($start, $end, $idCondition = null, $limit = null)
     {
         $em = $this->getEntityManager();
-        $main = "SELECT ep.id as id FROM extra_payments as ep ".
-            "WHERE ep.status = 'wrong_payment' AND e.generatedTs >= '".$start."' AND e.generatedTs <= '".$end."' ";
+        $main = "SELECT e.id as id FROM extra_payments as e ".
+            "WHERE e.status = 'wrong_payment' AND e.generated_Ts >= '".$start."' AND e.generated_Ts <= '".$end."' ";
 
         if ($idCondition !== null){
-            $main .= 'AND ep.id > '.$idCondition;
+            $main .= 'AND e.id > '.$idCondition;
         }
 
-        $main .= ' ORDER BY ep.id ASC';
+        $main .= ' ORDER BY e.id ASC';
 
         if ($limit !== null){
             $main .= ' LIMIT '.$limit;
