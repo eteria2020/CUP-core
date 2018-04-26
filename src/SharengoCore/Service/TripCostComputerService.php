@@ -68,6 +68,7 @@ class TripCostComputerService
      * @param int $tripParkSeconds
      * @param string $customerGender could be 'male' or 'female'
      * @param int $customerBonus
+     * @param int $customerDiscount
      * @return int cost in eurocents
      */
     public function computeCost(
@@ -75,9 +76,11 @@ class TripCostComputerService
         \DateTime $tripEnd,
         $tripParkSeconds,
         $customerGender,
-        $customerBonus
+        $customerBonus,
+        $customerDiscount = 0
     ) {
         $customer = $this->buildCustomer($customerGender);
+        $customer->setDiscountRate($customerDiscount);
         $trip = $this->buildTrip($tripBeginning, $tripEnd, $tripParkSeconds, $customer);
         $bonus = $this->buildBonus($customerBonus, $tripBeginning, $tripEnd);
 

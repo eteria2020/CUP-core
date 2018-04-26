@@ -24,8 +24,8 @@ class CountriesRepository extends \Doctrine\ORM\EntityRepository
                 $return = array();
                 $return[0] = $result[$i];
                 // Add the elements before and after the $i index
-                $return += array_slice($result, 0, $i, true) +
-                    array_slice($result, $i+1, count($result)-$i, true);
+                $return = array_merge($return, array_slice($result, 0, $i, true),
+                    array_slice($result, $i+1, count($result)-$i, true));
                 break;
             }
         }
