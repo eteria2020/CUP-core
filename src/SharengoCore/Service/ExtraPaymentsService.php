@@ -182,7 +182,7 @@ class ExtraPaymentsService
                     'generatedTs' => $extra->getGeneratedTs()->format('Y-m-d H:i:s'),
                     'totalCost' => $extra->getAmount(),
                     'reasons' => $extra->getReasons(),
-                    'payed' => ($extra->getStatus() == 'payed_correctly') ? true : false,
+                    'payed' => ($extra->getStatus() == 'payed_correctly' || $extra->getStatus() == 'invoiced') ? true : false,
                 ],
                 'cu' => [
                     'id' => $customer->getId(),
