@@ -51,7 +51,11 @@ class OldCustomerDiscountsService
     }
 
     /**
-     * @param Customers
+     * 
+     * @param Customers $customer
+     * @param type $persist
+     * @param type $sendEmail
+     * @throws \Exception
      */
     public function disableCustomerDiscount(Customers $customer, $persist = true, $sendEmail = true)
     {
@@ -78,7 +82,7 @@ class OldCustomerDiscountsService
                 if ($customer->hasDiscountStatus()) {
                     $this->entityManager->persist($discountStatus);
                 }
-                
+
                 $this->entityManager->flush();
             }
 
@@ -87,6 +91,62 @@ class OldCustomerDiscountsService
 //                // the others have their discount cancelled without notifications
 //                $this->sendEmail($customer->getEmail(), $customer->getName(), $customer->getLanguage());
 //            }
+
+            $this->entityManager->commit();
+        } catch (\Exception $e) {
+            $this->entityManager->rollback();
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Renew the customer's discount after a year.
+     * 
+     * @param Customers $customer
+     * @param type $persist
+     * @param type $sendEmail
+     * @param type $newDiscount
+     * @throws \Exception
+     */
+    public function renewCustomerDiscount(Customers $customer, $persist = true, $sendEmail = true, $newDiscount = 0)
+    {
+        $this->entityManager->beginTransaction();
+
+        try {
+            $discountRate = $customer->getDiscountRate();
+
+            $oldDiscount = new OldCustomerDiscount(
+                $customer,
+                $discountRate,
+                date_create()
+            );
+
+            $customer->setDiscountRate($newDiscount);
+            if ($customer->hasDiscountStatus()) {
+                $discountStatus = $customer->discountStatus();
+                if($newDiscount==0) {
+                    $discountStatus = $discountStatus->updateStatus('0|0');
+                } else {
+                    $discountStatus = $discountStatus->updateStatus('9|'.$newDiscount);
+                }
+            }
+
+            if ($persist) {
+                $this->entityManager->persist($customer);
+                $this->entityManager->persist($oldDiscount);
+                if ($customer->hasDiscountStatus()) {
+                    $this->entityManager->persist($discountStatus);
+                }
+
+                $this->entityManager->flush();
+            }
+
+            if ($sendEmail && $customer->getFirstPaymentCompleted()) {
+                // we send the mail only to the customers who payed the first payment
+                // the others have their discount cancelled without notifications
+                $this->sendEmail($customer->getEmail(), $customer->getName(), $customer->getLanguage());
+            }
 
             $this->entityManager->commit();
         } catch (\Exception $e) {
