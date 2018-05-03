@@ -209,6 +209,7 @@ class ExtraPaymentsService
     
     public function setPayedCorrectly(ExtraPayments $extraPayment) {
         $extraPayment->setPayedCorrectly();
+        $extraPayment->setInvoiceAble(true);
         $this->entityManager->persist($extraPayment);
         $this->entityManager->flush();
 
