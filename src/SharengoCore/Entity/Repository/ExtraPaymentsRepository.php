@@ -55,33 +55,31 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getSingleScalarResult();
     }
-/*
-    public function findTripPaymentsForPayment(Customers $customer = null, $timestampEndParam = null, $idCondition = null, $limit = null)
+
+    public function findExtraPaymentsForPayment(Customers $customer = null, $timestampEndParam = null, $idCondition = null, $limit = null)
     {
         $em = $this->getEntityManager();
 
-        $dql = 'SELECT tp FROM SharengoCore\Entity\TripPayments tp '.
-            'JOIN tp.trip t '.
-            'JOIN t.customer c '.
-            'WHERE tp.status = :status '.
-            'AND t.timestampEnd < :midnight ';
+        $dql = 'SELECT ep FROM SharengoCore\Entity\ExtraPayments ep '.
+            'JOIN ep.customer c '.
+            'WHERE ep.status = :status '.
+            'AND ep.generatedTs < :midnight ';
 
         if ($customer instanceof Customers) {
             $dql .= 'AND c = :customer ';
         }
         if ($timestampEndParam !== null){
-            $dql .= 'AND t.timestampEnd >= :timestampEndParam ';
+            $dql .= 'AND ep.generatedTs >= :timestampEndParam ';
         }
 
         if ($idCondition !== null){
-            $dql .= 'AND tp.id > :condition ';
+            $dql .= 'AND ep.id > :condition ';
         }
-        $dql .= ' ORDER BY tp.id ASC';
-        //$dql .= ' ORDER BY t.timestampBeginning ASC';
+        $dql .= ' ORDER BY ep.id ASC';
 
         $query = $em->createQuery($dql);
 
-        $query->setParameter('status', TripPayments::STATUS_TO_BE_PAYED);
+        $query->setParameter('status', ExtraPayments::STATUS_TO_BE_PAYED);
         $query->setParameter('midnight', date_create('midnight'));
 
         if ($customer instanceof Customers) {
@@ -102,7 +100,7 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
  
         return $query->getResult();
     }
-*/
+
     
     public function findWrongExtraPaymentsTime(Customers $customer = null, $start, $end, $idCondition = null, $limit = null)
     {
@@ -144,22 +142,22 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
-/*
-    public function getCountTripPaymentsForPayment($timestampEndParam = null, $idCondition = null, $limit = null)
+    
+    public function getCountExtraPaymentsForPayment($timestampEndParam = null, $idCondition = null, $limit = null)
     {
         $em = $this->getEntityManager();
-        $main = "SELECT ep.id as id FROM extra_payments as ep LEFT JOIN extra as e ON ep.extra_id = e.id ".
-               "WHERE ep.status = 'to_be_payed' AND e.timestamp_end < (date 'now()' + time '00:00:00') ";
+        $main = "SELECT ep.id as id FROM extra_payments as ep ".
+               "WHERE ep.status = 'to_be_payed' AND ep.generated_Ts < (date 'now()' + time '00:00:00') ";
 
         if ($timestampEndParam !== null){
-            $main .= "AND t.timestamp_end >= (CURRENT_DATE -INTERVAL '".$timestampEndParam."')::date + time '00:00:00'";
+            $main .= "AND ep.generated_Ts >= (CURRENT_DATE -INTERVAL '".$timestampEndParam."')::date + time '00:00:00'";
         }
 
         if ($idCondition !== null){
-            $main .= 'AND tp.id > '.$idCondition;
+            $main .= 'AND ep.id > '.$idCondition;
         }
 
-        $main .= ' ORDER BY tp.id ASC';
+        $main .= ' ORDER BY ep.id ASC';
 
         if ($limit !== null){
             $main .= ' LIMIT '.$limit;
@@ -174,7 +172,6 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
     
-*/
 
     public function findExtraPaymentsWrong(Customers $customer = null, $timestampEndParam = null)
     {
@@ -196,7 +193,7 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
 
         $query = $em->createQuery($dql);
 
-        $query->setParameter('status', TripPayments::STATUS_WRONG_PAYMENT);
+        $query->setParameter('status', ExtraPayments::STATUS_WRONG_PAYMENT);
         $query->setParameter('midnight', date_create('midnight'));
 
         if ($customer instanceof Customers) {

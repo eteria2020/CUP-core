@@ -263,4 +263,26 @@ class ExtraPaymentsService
     {
         return $this->extraPaymentsRepository->getCountWrongExtraPayments($start, $end, $condition, $limit);
     }
+    
+    /**
+     * @param null $timestampEndParam
+     * @param null $condition
+     * @param null $limit
+     * @return array
+     */
+
+    public function getExtraPaymentsForPaymentDetails($timestampEndParam = null, $condition = null, $limit = null)
+    {
+        return $this->extraPaymentsRepository->getCountExtraPaymentsForPayment($timestampEndParam, $condition, $limit);
+    }
+    
+    /**
+     * @param Customers $customer optional parameter to filter the results by
+     *  customer
+     * @return PersistentCollection
+     */
+    public function getExtraPaymentsForPayment(Customers $customer = null, $timestampEndParam = null, $condition = null, $limit = null)
+    {
+        return $this->extraPaymentsRepository->findExtraPaymentsForPayment($customer, $timestampEndParam, $condition, $limit);
+    }
 }
