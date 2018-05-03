@@ -203,7 +203,7 @@ class ExtraPaymentsService
      * @param integer $extraPaymentId
      * @return TripPayments
      */
-    public function getExtraPaymentById($extraPaymentId) {
+    public function getExtraPaymentById($extraPaymentId){
         return $this->extraPaymentsRepository->findOneById($extraPaymentId);
     }
     
