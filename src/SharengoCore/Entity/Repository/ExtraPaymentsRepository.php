@@ -326,22 +326,22 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->execute();
     }
 */
+    
     /**
      * @param Customers $customer
      * @return TripPayments[]
      */
-    /*public function findFailedByCustomer(Customers $customer)
+    public function findFailedByCustomer(Customers $customer)
     {
         $em = $this->getEntityManager();
 
-        $dql = "SELECT tp
-            FROM SharengoCore\Entity\TripPayments tp
-            LEFT JOIN SharengoCore\Entity\TripPaymentTries tpt WITH tpt.tripPayment = tp
-            JOIN tp.trip t
-            WHERE t.customer = :customerParam
-            AND tpt.outcome = 'KO'
-            GROUP BY tp.id
-            ORDER BY tp.id DESC";
+        $dql = "SELECT ep
+            FROM SharengoCore\Entity\ExtraPayments ep
+            LEFT JOIN SharengoCore\Entity\ExtraPaymentTries ept WITH ept.extraPayment = ep
+            WHERE ep.customer = :customerParam
+            AND ept.outcome = 'KO'
+            GROUP BY ep.id
+            ORDER BY ep.id DESC";
 
         $query = $em->createQuery($dql);
 
@@ -349,7 +349,7 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
-*/
+
     /**
      * @param Trips $trip
      * @return TripPayments
