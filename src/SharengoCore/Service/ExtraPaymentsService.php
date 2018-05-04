@@ -286,4 +286,13 @@ class ExtraPaymentsService
     {
         return $this->extraPaymentsRepository->findExtraPaymentsForPayment($customer, $timestampEndParam, $condition, $limit);
     }
+    
+    /**
+     * @param Customers $customer
+     * @return ExtraPayments[]
+     */
+    public function getFailedByCustomer(Customers $customer)
+    {
+        return $this->extraPaymentsRepository->findFailedByCustomer($customer);
+    }
 }
