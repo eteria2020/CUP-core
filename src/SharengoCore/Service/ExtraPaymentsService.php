@@ -182,7 +182,7 @@ class ExtraPaymentsService
                     'generatedTs' => $extra->getGeneratedTs()->format('Y-m-d H:i:s'),
                     'totalCost' => $extra->getAmount(),
                     'reasons' => $extra->getReasons(),
-                    'payed' => ($extra->getStatus() == 'payed_correctly') ? true : false,
+                    'payed' => ($extra->getStatus() == 'payed_correctly' || $extra->getStatus() == 'invoiced') ? true : false,
                 ],
                 'cu' => [
                     'id' => $customer->getId(),
@@ -203,12 +203,13 @@ class ExtraPaymentsService
      * @param integer $extraPaymentId
      * @return TripPayments
      */
-    public function getExtraPaymentById($extraPaymentId) {
+    public function getExtraPaymentById($extraPaymentId){
         return $this->extraPaymentsRepository->findOneById($extraPaymentId);
     }
     
     public function setPayedCorrectly(ExtraPayments $extraPayment) {
         $extraPayment->setPayedCorrectly();
+        $extraPayment->setInvoiceAble(true);
         $this->entityManager->persist($extraPayment);
         $this->entityManager->flush();
 
