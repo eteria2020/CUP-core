@@ -109,13 +109,13 @@ class ProcessExtraService
                     $avoidPersistance
                 );
             } catch(\Doctrine\ORM\ORMException $de){
-                $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;doctrine exception;tripPayment->getId;".$extraPayment->getId() . "\n");
+                $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;doctrine exception;ExtraPayment->getId;".$extraPayment->getId() . "\n");
                 $this->logger->log($de->getMessage() . " " . $de->getFile() . " line " . $de->getLine() . "\n");
                 $this->logger->log($de->getTraceAsString(). "\n");
                 // \Doctrine\Common\Util\Debug::dump($tripPayment);
                 break;
             } catch (\Exception $e) {
-                $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;general exception;tripPayment->getId;".$extraPayment->getId() . "\n");
+                $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;general exception;ExtraPayment->getId;".$extraPayment->getId() . "\n");
                 $this->logger->log($e->getMessage() . " " . $e->getFile() . " line " . $e->getLine() . "\n");
                 $this->logger->log($e->getTraceAsString(). "\n");
                 // \Doctrine\Common\Util\Debug::dump($tripPayment);

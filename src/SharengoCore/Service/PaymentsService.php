@@ -537,6 +537,7 @@ class PaymentsService
     private function markExtraAsPayed(ExtraPayments $extraPayment)
     {
         $extraPayment->setPayedCorrectly();
+        $extraPayment->setInvoiceAble(true);
 
         $this->entityManager->persist($extraPayment);
         $this->entityManager->flush();
