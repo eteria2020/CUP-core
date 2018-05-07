@@ -295,4 +295,10 @@ class ExtraPaymentsService
     {
         return $this->extraPaymentsRepository->findFailedByCustomer($customer);
     }
+    
+    public function setPayable(ExtraPayments $extraPayment, $payable) {
+        $extraPayment->setPayable(!$payable);
+        $this->entityManager->persist($extraPayment);
+        $this->entityManager->flush();
+    }
 }

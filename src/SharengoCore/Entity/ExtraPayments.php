@@ -146,6 +146,13 @@ class ExtraPayments
     private $firstExtraTryTs;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="payable", type="boolean", nullable=false, options={"default" = TRUE})
+     */
+    private $payable;
+    
+    /**
      * @param Customer $customer
      * @param Fleet $fleet
      * @param Transactions $transaction
@@ -376,6 +383,23 @@ class ExtraPayments
     public function setInvoiceAble($invoiceAble)
     {
         $this->invoiceAble = $invoiceAble;
+        return $this;
+    }
+    
+    /**
+     * @return Bool
+     */
+    public function getPayable(){
+        return $this->payable;
+    }
+    
+    /**
+     * @param Boolean $payable
+     * @return ExtraPayments
+     */
+    public function setPayable($payable)
+    {
+        $this->payable = $payable;
         return $this;
     }
 }
