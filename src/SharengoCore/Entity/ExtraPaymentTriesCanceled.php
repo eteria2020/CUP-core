@@ -1,14 +1,15 @@
 <?php
 
-
+namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Cartasi\Entity\Transactions;
 
 /**
  * ExtraPaymentTriesCanceled
  *
- * @ORM\Table(name="extra_payment_tries_canceled", indexes={@ORM\Index(name="IDX_6CD7263B2FC0CB0F", columns={"transaction_id"}), @ORM\Index(name="IDX_6CD7263B49279951", columns={"webuser_id"}), @ORM\Index(name="IDX_6CD7263BFF48346C", columns={"extra_payment_canceled_id"})})
- * @ORM\Entity
+ * @ORM\Table(name="extra_payment_tries_canceled")
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\ExtraPaymentTriesCanceledRepository")
  */
 class ExtraPaymentTriesCanceled
 {
