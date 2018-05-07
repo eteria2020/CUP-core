@@ -73,7 +73,85 @@ class ExtraPaymentTriesCanceled
      * })
      */
     private $extraPaymentCanceled;
+    
+    public function __construct(
+        ExtraPaymentTries $extraPaymentTry,
+        ExtraPaymentsCanceled $extraPaymentCanceled
+    ) {
+        $this->insertedTs = date_create();
+        $this->tripPaymentCanceled = $extraPaymentCanceled;
+        $this->webuser = $extraPaymentTry->getWebuser();
+        $this->transaction = $extraPaymentTry->getTransaction();
+        $this->ts = $extraPaymentTry->getTs();
+        $this->outcome = $extraPaymentTry->getOutcome();
+    }
+    
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
+    /**
+     * @return DateTime
+     */
+    public function getTs()
+    {
+        return $this->ts;
+    }
+
+    /**
+     * @return Webuser
+     */
+    public function getWebuser()
+    {
+        return $this->webuser;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWebuserName()
+    {
+        if ($this->webuser) {
+            return $this->webuser->getDisplayName();
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getOutcome()
+    {
+        return $this->outcome;
+    }
+
+    /**
+     * @param string $outcome
+     * @return ExtraPaymentTries
+     */
+    public function setOutcome($outcome)
+    {
+        $this->outcome = $outcome;
+        return $this;
+    }
+
+    /**
+     * @return Transactions
+     */
+    public function getTransaction()
+    {
+        return $this->transaction;
+    }
+
+    /**
+     * @return ExtraPaymentsCanceled
+     */
+    public function getExtraPaymentCanceled() {
+        return $this->extraPaymentCanceled;
+    }
 
 }
 

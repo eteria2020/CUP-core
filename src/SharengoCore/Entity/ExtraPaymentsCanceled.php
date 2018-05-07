@@ -1,14 +1,15 @@
 <?php
 
+namespace SharengoCore\Entity;
 
-
+use Cartasi\Entity\Transactions;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ExtraPaymentsCanceled
  *
- * @ORM\Table(name="extra_payments_canceled", indexes={@ORM\Index(name="IDX_492E4DFA9395C3F3", columns={"customer_id"}), @ORM\Index(name="IDX_492E4DFA4B061DF9", columns={"fleet_id"}), @ORM\Index(name="IDX_492E4DFA49279951", columns={"webuser_id"}), @ORM\Index(name="IDX_492E4DFA2FC0CB0F", columns={"transaction_id"})})
- * @ORM\Entity
+ * @ORM\Table(name="extra_payments_canceled")
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\ExtraPaymentsCanceledRepository")
  */
 class ExtraPaymentsCanceled
 {
@@ -28,13 +29,6 @@ class ExtraPaymentsCanceled
      * @ORM\Column(name="inserted_ts", type="datetime", nullable=false)
      */
     private $insertedTs;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="original_end_ts", type="datetime", nullable=false)
-     */
-    private $originalEndTs;
 
     /**
      * @var integer
@@ -72,21 +66,21 @@ class ExtraPaymentsCanceled
     private $firstExtraTryTs;
 
     /**
-     * @var \Customers
+     * @var Customers
      *
      * @ORM\ManyToOne(targetEntity="Customers")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="customer_id", referencedColumnName="id", nullable=false)
      * })
      */
     private $customer;
 
     /**
-     * @var \Fleets
+     * @var Fleet
      *
-     * @ORM\ManyToOne(targetEntity="Fleets")
+     * @ORM\ManyToOne(targetEntity="Fleet")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="fleet_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="fleet_id", referencedColumnName="id", nullable=false)
      * })
      */
     private $fleet;
@@ -96,7 +90,7 @@ class ExtraPaymentsCanceled
      *
      * @ORM\ManyToOne(targetEntity="Webuser")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="webuser_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="webuser_id", referencedColumnName="id", nullable=false)
      * })
      */
     private $webuser;
@@ -106,11 +100,114 @@ class ExtraPaymentsCanceled
      *
      * @ORM\ManyToOne(targetEntity="Transactions")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id", nullable=true)
      * })
      */
     private $transaction;
+    
+    /**
+     * @param TripPayments $extraPayment
+     * @param Webuser $webuser
+     * @return ExtraPaymentsCanceled
+     */
+    public function __construct(ExtraPayments $extraPayment, Webuser $webuser)
+    {
+        $this->insertedTs = date_create();
+        $this->webuser = $webuser;
+        $this->customer = $extraPayment->getCustomer();
+        $this->amount = $extraPayment->getAmount();
+        $this->fleet = $extraPayment->getFleet();
+        $this->generatedTs = $extraPayment->getGeneratedTs();
+        $this->transaction = $extraPayment->getTransaction();
+        $this->reasons = $extraPayment->getReasons();
+        $this->paymentType = $extraPayment->getPaymentType();
+        $this->firstExtraTryTs = $extraPayment->getFirstExtraTryTs();
+    }
 
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
+    /**
+     * @return Customers
+     * 
+     * @return \SharengoCore\Entity\Customers
+     */
+    public function getCustomer()
+    {
+        return $this->customer;
+    }
+
+    /**
+     * @return Fleet
+     */
+    public function getFleet()
+    {
+        return $this->fleet;
+    }
+
+    /**
+     * @return string
+     */
+    public function getReasons()
+    {
+        return $this->reasons;
+    }
+
+    /**
+     * @param int
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+    
+    public function getGeneratedTs(){
+        return $this->generatedTs;
+    }
+
+    /**
+     * @return Transactions
+     */
+    public function getTransaction()
+    {
+        return $this->transaction;
+    }
+
+    /**
+     * @param Transactions
+     */
+    public function setTransaction(Transactions $transaction)
+    {
+        $this->transaction = $transaction;
+        return $this;
+    }
+    
+    /**
+     * @return Date
+     */
+    public function getFirstExtraTryTs() {
+         return $this->firstExtraTryTs;
+    }
+    
+    /**
+     * @return Webuser
+     */
+    public function getWebuser()
+    {
+        return $this->webuser;
+    }
+
+    /**
+     * @return Webuser
+     */
+    public function getInsertedTs()
+    {
+        return $this->insertedTs;
+    }
 }
 

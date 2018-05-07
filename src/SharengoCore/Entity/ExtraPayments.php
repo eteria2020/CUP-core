@@ -402,4 +402,14 @@ class ExtraPayments
         $this->payable = $payable;
         return $this;
     }
+    
+    /**
+     * @return boolean true if at least one extraPaymentTry has been created
+     * for this extra
+     */
+    public function isPaymentTried() {
+        $isAttempted = false;
+        $isAttempted = count($extraPaymentTries = $this->getExtraPaymentTries()) != 0;
+        return $isAttempted;
+    }
 }

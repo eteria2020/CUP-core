@@ -297,8 +297,63 @@ class ExtraPaymentsService
     }
     
     public function setPayable(ExtraPayments $extraPayment, $payable) {
-        $extraPayment->setPayable(!$payable);
+        $extraPayment->setPayable($payable);
         $this->entityManager->persist($extraPayment);
         $this->entityManager->flush();
     }
+    
+    public function setExtraFree(ExtraPayments $extraPayment, $payable, Webuser $webuser = null) {
+        try {
+            if ($extraPayment->isPaymentTried()) {
+                if ($webuser instanceof Webuser) {
+                    $this->cancelExtraPaymentTries($extraPayment, $webuser);
+                } else {
+                    
+                }
+            }
+
+            $extraPayment = $this->setPayable($extraPayment, $payable);
+            
+            $this->deleteExtraPayments($extraPayment);
+            
+            $this->entityManager->flush();
+            $this->entityManager->commit();
+        } catch (\Exception $e) {
+            $this->entityManager->rollback();
+            throw $e;
+        }
+    }
+    
+    /**
+     * This method is called if TripPaymentTries are present for the trip.
+     *
+     * First backup copies of the TripPayments are generated. Then those of the
+     * TripPaymentTries are. Finally all TripPaymentTries are removed.
+     *
+     * @param Trips $trip
+     * @param Webuser $webuser
+     */
+    private function cancelExtraPaymentTries(ExtraPayments $extraPayment, Webuser $webuser)//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    {
+        foreach ($this->tripPaymentsService->getByTrip($trip) as $tripPayment) {
+            $tripPaymentCanceled = new TripPaymentsCanceled(
+                $tripPayment,//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                $webuser
+            );//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            $this->entityManager->persist($tripPaymentCanceled);//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+            foreach ($this->tripPaymentTriesService->getByTripPayment($tripPayment) as $tripPaymentTry) {
+                $tripPaymentTryCanceled = new TripPaymentTriesCanceled(
+                    $tripPaymentTry,//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                    $tripPaymentCanceled
+                );//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                $this->entityManager->persist($tripPaymentTryCanceled);
+                $this->entityManager->remove($tripPaymentTry);
+            }//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        }
+        // Set customer's paymentAble to true to enable new cost computation
+        // and to enable payment to be triggered by script
+        $this->customersService->enableCustomerPayment($trip->getCustomer());
+        $this->entityManager->flush();
+    }//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 }
