@@ -22,13 +22,13 @@ class FinesServiceFactory implements FactoryInterface
             )
         );
 
-        $faresService = $serviceLocator->get('SharengoCore\Service\FaresService');
+        $fleetService = $serviceLocator->get('SharengoCore\Service\fleetService');
 
         return new FinesService(
             $safoPenaltyRepository,
             $datatableService,
             $entityManager,
-            $faresService
+            $fleetService
         );
     }
 }

@@ -6,20 +6,12 @@ namespace SharengoCore\Service;
 use SharengoCore\Entity\Repository\SafoPenaltyRepository;
 use SharengoCore\Entity\SafoPenalty;
 use SharengoCore\Service\DatatableServiceInterface;
-use SharengoCore\Entity\Trips;
-use SharengoCore\Entity\Customers;
-use SharengoCore\Entity\Commands\SetCustomerWrongPaymentsAsToBePayed;
-use SharengoCore\Exception\TripPaymentWithoutDateException;
+use SharengoCore\Service\FleetService;
 // Externals
 use Doctrine\ORM\EntityManager;
 
 class FinesService
 {
-    /**
-     * @var TripPayments
-     */
-    private $tripPaymentsRepository;
-
     /**
      * @var DatatableServiceInterface
      */
@@ -33,7 +25,7 @@ class FinesService
      /**
      * @var FaresService
      */
-    private $faresService;
+    private $fleetService;
 
     /**
      * @param TripPaymentsRepository $tripPaymentsRepository
@@ -44,12 +36,12 @@ class FinesService
         SafoPenaltyRepository $safoPenaltyRepository,
         DatatableServiceInterface $datatableService,
         EntityManager $entityManager,
-        FaresService $faresService
+        FleetService $fleetService
     ) {
         $this->safoPenaltyRepository = $safoPenaltyRepository;
         $this->datatableService = $datatableService;
         $this->entityManager = $entityManager;
-        $this->faresService = $faresService;
+        $this->fleetService = $fleetService;
     }
 
     /**
@@ -62,32 +54,21 @@ class FinesService
     }
 
     /**
-     * @return [[[[TripPayments]]]]
-     */
-    public function getTripPaymentsNoInvoiceGrouped($firstDay = null, $lastDay = null)
-    {
-        return $this->groupTripPayments($this->tripPaymentsRepository->findTripPaymentsNoInvoice($firstDay, $lastDay), $lastDay);
-    }
-
-    public function getOneGrouped($tripPaymentId)
-    {
-        $tripPayment = $this->tripPaymentsRepository->findOneById($tripPaymentId);
-
-        if (!$tripPayment instanceof TripPayments) {
-            throw new \Exception('No trip payment present with this id');
-        } elseif ($tripPayment->getStatus() !== TripPayments::STATUS_PAYED_CORRECTLY ||
-            is_null($tripPayment->getPayedSuccessfullyAt())) {
-            throw new \Exception('The trip payment was not correctly payed');
-        }
-
-        return $this->groupTripPayments([$tripPayment]);
-    }
-
-    /**
      * retrieved the data for the datatable in the admin area
      */
     public function getFinesData(array $filters = [], $count = false)
     {
+        if(isset($filters['searchValue'])&&($filters['searchValue']!="")){
+            if($filters['column']=="e.vehicleFleetId"){
+                $fleets = $this->fleetService->getFleetsSelectorArray();
+                foreach ($fleets as $i => $fleet) {
+                    if(strtolower($filters['searchValue'])==strtolower($fleet)){
+                        $filters['searchValue']=$i;
+                    }
+                }
+            }
+        }
+
         $fines = $this->datatableService->getData('SafoPenalty', $filters, $count);
         if ($count) {
             return $fines;
@@ -105,7 +86,8 @@ class FinesService
                     'violationAuthority' => $fine->getViolationAuthority(),
                     'violationDescription' => $fine->getViolationDescription(),
                     'amount' => $fine->getAmount(),
-                    'complete' => $fine->isComplete()
+                    'complete' => $fine->isComplete(),
+                    'violationTimestamp' => $fine->getViolationTimestamp()->format('Y/m/d H:i:s')
                 ]
             ];
         }, $fines);
