@@ -51,6 +51,8 @@ class OldCustomerDiscountsService
     }
 
     /**
+     * Disable the discount because it's expire.
+     * Set the customer discount rate to 0 and inser a new row in OldCustomerDiscount.
      * 
      * @param Customers $customer
      * @param type $persist
@@ -102,7 +104,7 @@ class OldCustomerDiscountsService
 
     /**
      * Renew the customer's discount after a year.
-     * 
+     *
      * @param Customers $customer
      * @param type $persist
      * @param type $sendEmail
@@ -125,7 +127,7 @@ class OldCustomerDiscountsService
             $customer->setDiscountRate($newDiscount);
             if ($customer->hasDiscountStatus()) {
                 $discountStatus = $customer->discountStatus();
-                if($newDiscount==0) {
+                if($newDiscount == 0) {
                     $discountStatus = $discountStatus->updateStatus('0|0');
                 } else {
                     $discountStatus = $discountStatus->updateStatus('9|'.$newDiscount);
@@ -156,6 +158,12 @@ class OldCustomerDiscountsService
         }
     }
 
+    /**
+     * Send an email.
+     * @param type $email
+     * @param type $name
+     * @param type $language
+     */
     private function sendEmail($email, $name, $language)
     {
         $urlHelper = $this->urlHelper;
@@ -171,12 +179,16 @@ class OldCustomerDiscountsService
 
         $this->emailService->sendEmail(
             $email,
-            $mail->getSubject(), //'OGGI PUOI RICALCOLARE LO SCONTO CHE TI SPETTA',
+            $mail->getSubject(),
             $content,
             $attachments
         );
     }
 
+    /**
+     * Notify that the discount is going to expire (next week).
+     * @param type $customer
+     */
     public function notifyCustomer($customer)
     {
         $mail = $this->emailService->getMail(17, $customer->getLanguage());
