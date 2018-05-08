@@ -147,7 +147,7 @@ class ProcessPaymentsService
         $avoidEmails = true,
         $avoidCartasi = true,
         $avoidPersistance = true,
-        $checkTime = "-8 days"
+        $timestampEndParam = null
     ) {
 
         // extract list of customers belog of trip payments worng
@@ -161,7 +161,7 @@ class ProcessPaymentsService
         $this->logger->log(date_create()->format('H:i:s').";INF;processCustomersDisabledAfterReProcess;count(arrayOfCustomers);" . count($arrayOfCustomers) . "\n");
         foreach ($arrayOfCustomers as $customer) {
             //error_log(print_r("customer ".$customer->getId()." ". count($this->tripPaymentsService->getTripPaymentsWrong($customer, '-275 days')), TRUE));
-            if(count($this->tripPaymentsService->getTripPaymentsWrong($customer, $checkTime))===0){
+            if(count($this->tripPaymentsService->getTripPaymentsWrong($customer, $timestampEndParam))===0){
                 $this->logger->log(date_create()->format('H:i:s').";INF;processCustomersDisabledAfterReProcess;" . $customer->getId() . ";enabled\n");
                 $webuser = $this->usersService->findUserById(12);
                 $this->customersService->enableCustomerPayment($customer);
