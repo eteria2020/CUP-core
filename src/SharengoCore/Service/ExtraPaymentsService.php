@@ -4,7 +4,12 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Repository\ExtraPaymentsRepository;
 use SharengoCore\Entity\ExtraPayments;
+use SharengoCore\Entity\ExtraPaymentsCanceled;
+use SharengoCore\Entity\ExtraPaymentTriesCanceled;
+use SharengoCore\Service\ExtraPaymentTriesService;
+use SharengoCore\Service\CustomersService;
 use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\Webuser;
 use SharengoCore\Service\InvoicesService;
 use SharengoCore\Entity\Fleet;
 use SharengoCore\Entity\Queries\AllExtraPaymentTypes;
@@ -34,23 +39,38 @@ class ExtraPaymentsService
      * @var ExtraPaymentsRepository
      */
     private $extraPaymentsRepository;
+    
+    /**
+     * @var ExtraPaymentTriesService
+     */
+    private $extraPaymentTriesService;
+    
+    /**
+     * @var CustomersService
+     */
+    private $customersService;
 
     /**
      * @param EntityManager $entityManager
      * @param InvoicesService $invoicesService
      * @param DatatableServiceInterface $datatableService
      * @param ExtraPaymentsRepository $extraPaymentsRepository
+     * @param CustomersService $customersService
      */
     public function __construct(
         EntityManager $entityManager,
         InvoicesService $invoicesService,
         DatatableServiceInterface $datatableService,
-        ExtraPaymentsRepository $extraPaymentsRepository
+        ExtraPaymentsRepository $extraPaymentsRepository,
+        ExtraPaymentTriesService $extraPaymentTriesService,
+        CustomersService $customersService
     ) {
         $this->entityManager = $entityManager;
         $this->invoicesService = $invoicesService;
         $this->datatableService = $datatableService;
         $this->extraPaymentsRepository = $extraPaymentsRepository;
+        $this->extraPaymentTriesService = $extraPaymentTriesService;
+        $this->customersService = $customersService;
     }
 
     /**
@@ -180,7 +200,7 @@ class ExtraPaymentsService
                 'e' => [
                     'id' => $extra->getId(),
                     'generatedTs' => $extra->getGeneratedTs()->format('Y-m-d H:i:s'),
-                    'totalCost' => $extra->getAmount(),
+                    'totalCost' =>  ($extra->getPayable()) ?  $extra->getAmount() : "FREE",
                     'reasons' => $extra->getReasons(),
                     'payed' => ($extra->getStatus() == 'payed_correctly' || $extra->getStatus() == 'invoiced') ? true : false,
                 ],
@@ -307,17 +327,12 @@ class ExtraPaymentsService
             if ($extraPayment->isPaymentTried()) {
                 if ($webuser instanceof Webuser) {
                     $this->cancelExtraPaymentTries($extraPayment, $webuser);
-                } else {
-                    
+                    $extraPayment = $this->setPayable($extraPayment, $payable);
                 }
             }
 
-            $extraPayment = $this->setPayable($extraPayment, $payable);
-            
-            $this->deleteExtraPayments($extraPayment);
-            
-            $this->entityManager->flush();
-            $this->entityManager->commit();
+            //$this->entityManager->flush();
+            //$this->entityManager->commit();
         } catch (\Exception $e) {
             $this->entityManager->rollback();
             throw $e;
@@ -325,16 +340,41 @@ class ExtraPaymentsService
     }
     
     /**
-     * This method is called if TripPaymentTries are present for the trip.
+     * This method is called if ExtraPaymentTries are present for the extra.
      *
-     * First backup copies of the TripPayments are generated. Then those of the
-     * TripPaymentTries are. Finally all TripPaymentTries are removed.
+     * First backup copies of the ExtraPayments are generated. Then those of the
+     * ExtraPaymentTries are. Finally all ExtraPaymentTries are removed.
      *
-     * @param Trips $trip
+     * @param ExtraPayments $extraPayment
      * @param Webuser $webuser
      */
-    private function cancelExtraPaymentTries(ExtraPayments $extraPayment, Webuser $webuser)//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    {
+    private function cancelExtraPaymentTries(ExtraPayments $extraPayment, Webuser $webuser) {
+        $extraPaymentCanceled = new ExtraPaymentsCanceled(
+                $extraPayment,
+                $webuser
+        );
+        $this->entityManager->persist($extraPaymentCanceled); 
+
+        foreach ($this->extraPaymentTriesService->getByExtraPayment($extraPayment) as $extraPaymentTry) {
+            $extraPaymentTryCanceled = new ExtraPaymentTriesCanceled(
+                    $extraPaymentTry,
+                    $extraPaymentCanceled
+            );
+            $this->entityManager->persist($extraPaymentTryCanceled);
+            $this->entityManager->remove($extraPaymentTry);
+        }
+        // Set customer's paymentAble to true to enable new cost computation
+        // and to enable payment to be triggered by script
+        $this->customersService->enableCustomerPayment($extraPayment->getCustomer());
+        $this->entityManager->flush();
+
+
+
+
+
+/*
+
+
         foreach ($this->tripPaymentsService->getByTrip($trip) as $tripPayment) {
             $tripPaymentCanceled = new TripPaymentsCanceled(
                 $tripPayment,//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -356,4 +396,7 @@ class ExtraPaymentsService
         $this->customersService->enableCustomerPayment($trip->getCustomer());
         $this->entityManager->flush();
     }//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * 
+ */
+    }
 }

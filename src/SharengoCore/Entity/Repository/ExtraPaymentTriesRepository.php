@@ -8,10 +8,10 @@ class ExtraPaymentTriesRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $dql = 'SELECT t
-        FROM SharengoCore\Entity\ExtraPaymentTries t
-        WHERE t.extraPayment = :extraPayment
-        AND t.transaction = :transaction';
+        $dql = 'SELECT e
+        FROM SharengoCore\Entity\ExtraPaymentTries e
+        WHERE e.extraPayment = :extraPayment
+        AND e.transaction = :transaction';
 
         $query = $em->createQuery($dql);
         $query->setParameter('extraPayment', $extraPayment);

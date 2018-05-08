@@ -102,6 +102,6 @@ class ExtraPaymentTriesService
      */
     public function getByExtraPayment(ExtraPayments $extraPayment)
     {
-        return $this->extraPaymentTriesRepository->findByTripPayment($extraPayment);
+        return $this->extraPaymentTriesRepository->findByExtraPayment($extraPayment);
     }
 }

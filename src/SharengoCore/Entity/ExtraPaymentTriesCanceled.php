@@ -45,11 +45,11 @@ class ExtraPaymentTriesCanceled
     private $outcome;
 
     /**
-     * @var \Transactions
+     * @var Transactions
      *
-     * @ORM\ManyToOne(targetEntity="Transactions")
+     * @ORM\ManyToOne(targetEntity="\Cartasi\Entity\Transactions")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id", nullable=true)
      * })
      */
     private $transaction;
@@ -65,9 +65,9 @@ class ExtraPaymentTriesCanceled
     private $webuser;
 
     /**
-     * @var \ExtraPayments
+     * @var \ExtraPaymentsCanceled
      *
-     * @ORM\ManyToOne(targetEntity="ExtraPayments")
+     * @ORM\ManyToOne(targetEntity="ExtraPaymentsCanceled")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="extra_payment_canceled_id", referencedColumnName="id")
      * })
@@ -79,7 +79,7 @@ class ExtraPaymentTriesCanceled
         ExtraPaymentsCanceled $extraPaymentCanceled
     ) {
         $this->insertedTs = date_create();
-        $this->tripPaymentCanceled = $extraPaymentCanceled;
+        $this->extraPaymentCanceled = $extraPaymentCanceled;
         $this->webuser = $extraPaymentTry->getWebuser();
         $this->transaction = $extraPaymentTry->getTransaction();
         $this->ts = $extraPaymentTry->getTs();

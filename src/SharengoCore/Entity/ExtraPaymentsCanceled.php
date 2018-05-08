@@ -45,9 +45,9 @@ class ExtraPaymentsCanceled
     private $generatedTs;
 
     /**
-     * @var string
+     * @var array
      *
-     * @ORM\Column(name="reasons", type="string", nullable=false)
+     * @ORM\Column(name="reasons", type="json_array", nullable=false)
      */
     private $reasons;
 
@@ -96,9 +96,9 @@ class ExtraPaymentsCanceled
     private $webuser;
 
     /**
-     * @var \Transactions
+     * @var Transactions
      *
-     * @ORM\ManyToOne(targetEntity="Transactions")
+     * @ORM\ManyToOne(targetEntity="\Cartasi\Entity\Transactions")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id", nullable=true)
      * })
