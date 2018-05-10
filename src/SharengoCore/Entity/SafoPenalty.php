@@ -51,11 +51,14 @@ class SafoPenalty
     private $consumedTs;
 
     /**
-     * @var integer
+     * @var Customers
      *
-     * @ORM\Column(name="customer_id", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Customers")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="customer_id", referencedColumnName="id", nullable=false)
+     * })
      */
-    private $customerId;
+    private $customer;
 
     /**
      * @var integer
@@ -72,18 +75,24 @@ class SafoPenalty
     private $violationCategory;
 
     /**
-     * @var integer
+     * @var Trips
      *
-     * @ORM\Column(name="trip_id", type="integer", nullable=false)
+     * @ORM\OneToOne(targetEntity="Trips", inversedBy="tripPayment")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="trip_id", referencedColumnName="id", nullable=false)
+     * })
      */
-    private $tripId;
+    private $trip;
 
     /**
-     * @var string
+     * @var \Cars
      *
-     * @ORM\Column(name="car_plate", type="text", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Cars", inversedBy="trips")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="car_plate", referencedColumnName="plate")
+     * })
      */
-    private $carPlate;
+    private $car;
 
     /**
      * @var \DateTime
@@ -214,7 +223,7 @@ class SafoPenalty
      */
     public function getCustomerId()
     {
-        return $this->customerId;
+        return is_null($this->customer) ? null : $this->customer->getId();
     }
 
     /**
@@ -238,7 +247,7 @@ class SafoPenalty
      */
     public function getTripId()
     {
-        return $this->tripId;
+        return is_null($this->trip) ? null : $this->trip->getId();
     }
 
     /**
@@ -246,7 +255,7 @@ class SafoPenalty
      */
     public function getCarPlate()
     {
-        return $this->carPlate;
+        return is_null($this->car) ? null : $this->car->getPlate();
     }
 
     /**
@@ -352,7 +361,33 @@ class SafoPenalty
     {
         return $this->charged;
     }
+    
+    /**
+     * @return Customers
+     * 
+     * @return \SharengoCore\Entity\Customers
+     */
+    public function getCustomer()
+    {
+        return $this->customer;
+    }
 
+    /**
+     * @return Trips
+     */
+    public function getTrip()
+    {
+        return $this->trip;
+    }
+    
+    /**
+     * Get getCar
+     *
+     * @return \SharengoCore\Entity\Cars
+     */
+    public function getCar() {
+        return $this->car;
+    }
 
 }
 
