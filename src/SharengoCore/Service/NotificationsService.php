@@ -121,7 +121,7 @@ class NotificationsService {
             ];
     }
     
-    private function differtSosType($intval) {
+    private function differtSosType($intval){
         switch ($intval){
             case 0: return "---";
             case 1: return "SOS";
