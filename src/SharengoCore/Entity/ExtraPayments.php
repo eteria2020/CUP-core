@@ -179,6 +179,7 @@ class ExtraPayments
         $this->invoiceAble = false;
         $this->status = self::STATUS_TO_BE_PAYED;
         $this->generatedTs = date_create();
+        $this->payable = true;
     }
 
     /**
