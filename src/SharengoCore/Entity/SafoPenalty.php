@@ -344,6 +344,14 @@ class SafoPenalty
     {
         return $this->complete;
     }
+    
+    /**
+     * @return bool
+     */
+    public function getCharged()
+    {
+        return $this->charged;
+    }
 
 
 }

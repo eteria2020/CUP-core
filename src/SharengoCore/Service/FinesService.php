@@ -78,6 +78,7 @@ class FinesService
             return [
                 'fines' => [
                     'id' => $fine->getId(),
+                    'checkable' => $this->isCheckable($fine),
                     'charged' => $fine->isCharged(),
                     'customerId' => $fine->getCustomerId(),
                     'vehicleFleetId' => $fine->getVehicleFleetId(),
@@ -105,4 +106,18 @@ class FinesService
      * @param null $limit
      * @return array
      */
+    
+    
+    
+    public function isCheckable($fine) {
+        if($fine->getCharged()){
+            return 0;
+        }else{
+            if($fine->getCustomerId() != 0 && $fine->getTripId() != 0 && $fine->isComplete()){
+                return 1;
+            }else{
+                return 2;
+            }
+        }
+    }
 }
