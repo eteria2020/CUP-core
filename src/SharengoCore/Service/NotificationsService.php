@@ -67,9 +67,6 @@ class NotificationsService {
                     'submitDate' =>
                     ($notifications->getSubmitDate() instanceof DateTime) ?
                     $notifications->getSubmitDate()->getTimestamp() : null,
-                    'sentDate' =>
-                    ($notifications->getSentDate() instanceof DateTime) ?
-                    $notifications->getSentDate()->getTimestamp() : null,
                     'acknowledgeDate' =>
                     ($notifications->getAcknowledgeDate() instanceof DateTime) ?
                     $notifications->getAcknowledgeDate()->getTimestamp() : null,
@@ -78,7 +75,8 @@ class NotificationsService {
                 't' => [
                     'carPlate' => $notifications->getMeta()['car_plate'],
                     'tripId' => $notifications->getMeta()['trip_id'],
-                    'callMobile' => $notifications->getMeta()['txtval']
+                    'callMobile' => $notifications->getMeta()['txtval'],
+                    'sosType' => $this->differtSosType($notifications->getMeta()['intval'])
                 ],
                 'c' => $this->getCustomer($this->customerService->findById($notifications->getMeta()['customer_id']))
             ];
@@ -121,6 +119,15 @@ class NotificationsService {
                 'nameSurname' => null,
                 'mobile' => null
             ];
+    }
+    
+    private function differtSosType($intval){
+        switch ($intval){
+            case 0: return "---";
+            case 1: return "SOS";
+            case 2: return "Segnalazione danno";
+            default: return $intval;
+        }
     }
 
 }
