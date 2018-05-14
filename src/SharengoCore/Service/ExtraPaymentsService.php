@@ -367,36 +367,5 @@ class ExtraPaymentsService
         // and to enable payment to be triggered by script
         $this->customersService->enableCustomerPayment($extraPayment->getCustomer());
         $this->entityManager->flush();
-
-
-
-
-
-/*
-
-
-        foreach ($this->tripPaymentsService->getByTrip($trip) as $tripPayment) {
-            $tripPaymentCanceled = new TripPaymentsCanceled(
-                $tripPayment,//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                $webuser
-            );//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-            $this->entityManager->persist($tripPaymentCanceled);//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-            foreach ($this->tripPaymentTriesService->getByTripPayment($tripPayment) as $tripPaymentTry) {
-                $tripPaymentTryCanceled = new TripPaymentTriesCanceled(
-                    $tripPaymentTry,//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                    $tripPaymentCanceled
-                );//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                $this->entityManager->persist($tripPaymentTryCanceled);
-                $this->entityManager->remove($tripPaymentTry);
-            }//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        }
-        // Set customer's paymentAble to true to enable new cost computation
-        // and to enable payment to be triggered by script
-        $this->customersService->enableCustomerPayment($trip->getCustomer());
-        $this->entityManager->flush();
-    }//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * 
- */
     }
 }
