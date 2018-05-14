@@ -22,4 +22,22 @@ class SafoPenaltyRepository extends \Doctrine\ORM\EntityRepository {
 
         return $query->getSingleScalarResult();
     }
+    
+    public function getFinesBetweenDate($from, $to) {
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT sp.id FROM SharengoCore\Entity\SafoPenalty sp ' .
+                'WHERE sp.customer IS NOT NULL ' .
+                'AND sp.trip IS NOT NULL ' .
+                'AND sp.complete = FALSE ' .
+                'AND sp.insertTs >= :from ' .
+                'AND sp.insertTs < :to '
+                ;
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('from', $from);
+        $query->setParameter('to', $to);
+
+        return $query->getResult();
+    }
 }

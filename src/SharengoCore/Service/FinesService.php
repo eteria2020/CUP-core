@@ -120,4 +120,8 @@ class FinesService
             }
         }
     }
+    
+    public function getFinesBetweenDate($from, $to) {
+        return $this->safoPenaltyRepository->getFinesBetweenDate($from, $to);
+    }
 }
