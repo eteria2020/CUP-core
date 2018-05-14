@@ -186,7 +186,7 @@ class ExtraPaymentsService
         return sprintf('%.2f €', intval($amount) / 100);
     }
     
-    public function getFailedExtraData(array $filters = [], $count = false){
+    public function getFailedExtraData(array $filters = [], $count = false) {
         $extra = $this->datatableService->getData('ExtraPayments', $filters, $count);
 
         if ($count) {
