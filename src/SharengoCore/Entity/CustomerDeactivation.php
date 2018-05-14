@@ -43,6 +43,11 @@ class CustomerDeactivation
      * @var string
      */
     const EXPIRED_CREDIT_CARD = 'EXPIRED_CREDIT_CARD';
+    
+    /**
+     * @var string
+     */
+    const FAILED_EXTRA_PAYMENT = 'FAILED_EXTRA_PAYMENT';
 
     /**
      * @var integer
@@ -186,6 +191,9 @@ class CustomerDeactivation
                 break;
             case self::EXPIRED_CREDIT_CARD:
                 return 'Carta di credito scaduta';
+                break;
+            case self::FAILED_EXTRA_PAYMENT:
+                return 'Pagamento penale fallito';
                 break;
         }
     }
