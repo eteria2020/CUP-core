@@ -268,6 +268,10 @@ class ExtraPaymentsService
         return $this->extraPaymentsRepository->findExtraPaymentsWrong($customer, $timestampEndParam);
     }
     
+    public function getExtraPaymentsWrongAndPayable(Customers $customer) {
+        return $this->extraPaymentsRepository->getExtraPaymentsWrongAndPayable($customer);
+    }
+    
     public function getExtraPaymentsWrongTime(Customers $customer = null, $start, $end, $condition = null, $limit = null)
     {
         return $this->extraPaymentsRepository->findWrongExtraPaymentsTime($customer, $start, $end, $condition, $limit);
