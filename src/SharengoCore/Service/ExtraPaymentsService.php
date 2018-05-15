@@ -263,7 +263,7 @@ class ExtraPaymentsService
         return $extraPayment;
     }
     
-    public function getExtraPaymentsWrong(Customers $customer = null, $timestampEndParam = null)
+    public function getExtraPaymentsWrong(Customers $customer = null, $timestampEndParam = null) 
     {
         return $this->extraPaymentsRepository->findExtraPaymentsWrong($customer, $timestampEndParam);
     }
