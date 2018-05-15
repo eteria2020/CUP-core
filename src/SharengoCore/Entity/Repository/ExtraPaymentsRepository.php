@@ -33,7 +33,8 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
         $dql = 'SELECT ep FROM SharengoCore\Entity\ExtraPayments ep '.
             'JOIN ep.customer c '.
             'WHERE ep.status = :status '.
-            'AND ep.generatedTs < :midnight ';
+            'AND ep.generatedTs < :midnight '.
+            'AND ep.payable = TRUE ';
 
         if ($customer instanceof Customers) {
             $dql .= 'AND c = :customer ';
@@ -80,7 +81,8 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
             'JOIN ep.customer c '.
             'WHERE ep.status = :status '.
             'AND ep.generatedTs >= :start '.
-            'AND ep.generatedTs <= :end ';
+            'AND ep.generatedTs <= :end '.
+            'AND ep.payable = TRUE ';
 
         if ($customer instanceof Customers) {
             $dql .= 'AND c = :customer ';
@@ -117,7 +119,7 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
         $main = "SELECT ep.id as id FROM extra_payments as ep ".
-               "WHERE ep.status = 'to_be_payed' AND ep.generated_Ts < (date 'now()' + time '00:00:00') ";
+               "WHERE ep.status = 'to_be_payed' AND ep.payable = TRUE AND ep.generated_Ts < (date 'now()' + time '00:00:00') ";
 
         if ($timestampEndParam !== null){
             $main .= "AND ep.generated_Ts >= (CURRENT_DATE -INTERVAL '".$timestampEndParam."')::date + time '00:00:00'";
@@ -150,7 +152,8 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
         $dql = 'SELECT ep FROM SharengoCore\Entity\ExtraPayments ep '.
             'JOIN ep.customer c '.
             'WHERE ep.status = :status '.
-            'AND ep.generatedTs < :midnight ';
+            'AND ep.generatedTs < :midnight '.
+            'AND ep.payable = TRUE ';
 
         if ($customer instanceof Customers) {
             $dql .= 'AND c = :customer ';
@@ -198,7 +201,7 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
         $main = "SELECT e.id as id FROM extra_payments as e ".
-            "WHERE e.status = 'wrong_payment' AND e.generated_Ts >= '".$start."' AND e.generated_Ts <= '".$end."' ";
+            "WHERE e.status = 'wrong_payment' AND e.payable = TRUE AND e.generated_Ts >= '".$start."' AND e.generated_Ts <= '".$end."' ";
 
         if ($idCondition !== null){
             $main .= 'AND e.id > '.$idCondition;
