@@ -177,6 +177,23 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
     
+    public function getExtraPaymentsWrongAndPayable(Customers $customer) {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT ep
+            FROM SharengoCore\Entity\ExtraPayments ep
+            WHERE ep.customer = :customerParam
+            AND ep.payable = TRUE 
+            AND ep.status = :status ";
+
+        $query = $em->createQuery($dql);
+
+        $query->setParameter('customerParam', $customer);
+        $query->setParameter('status', ExtraPayments::STATUS_WRONG_PAYMENT);
+
+        return $query->getResult();
+    }
+    
     public function getCountWrongExtraPayments($start, $end, $idCondition = null, $limit = null)
     {
         $em = $this->getEntityManager();
