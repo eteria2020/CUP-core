@@ -11,36 +11,6 @@ use Doctrine\ORM\Query\ResultSetMapping;
 
 class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
 {
-    /*public function findTripPaymentsNoInvoice($firstDay = null, $lastDay = null)
-    {
-        $em = $this->getEntityManager();
-
-        $dql = 'SELECT tp
-            FROM SharengoCore\Entity\TripPayments tp
-            JOIN tp.trip t
-            WHERE tp.status = :status ';
-
-        if ($firstDay instanceof \DateTime &&  $lastDay instanceof \DateTime) {
-            $dql .= ' AND tp.payedSuccessfullyAt  >= :firstDay
-            AND tp.payedSuccessfullyAt <= :lastDay ';
-        }
-
-        $dql .= ' AND tp.invoice IS NULL
-            AND tp.totalCost != 0
-            ORDER BY t.timestampBeginning ASC';
-
-        $query = $em->createQuery($dql);
-
-        if ($firstDay instanceof \DateTime && $lastDay instanceof \DateTime) {
-            $query->setParameter('firstDay', $firstDay->setTime(00,00,00));
-            $query->setParameter('lastDay', $lastDay->setTime(23,59,59));
-        }
-
-        $query->setParameter('status', TripPayments::STATUS_PAYED_CORRECTLY);
-
-
-        return $query->getResult();
-    }*/
 
     public function countTotalExtra()
     {
@@ -207,6 +177,23 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
     
+    public function getExtraPaymentsWrongAndPayable(Customers $customer) {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT ep
+            FROM SharengoCore\Entity\ExtraPayments ep
+            WHERE ep.customer = :customerParam
+            AND ep.payable = TRUE 
+            AND ep.status = :status ";
+
+        $query = $em->createQuery($dql);
+
+        $query->setParameter('customerParam', $customer);
+        $query->setParameter('status', ExtraPayments::STATUS_WRONG_PAYMENT);
+
+        return $query->getResult();
+    }
+    
     public function getCountWrongExtraPayments($start, $end, $idCondition = null, $limit = null)
     {
         $em = $this->getEntityManager();
@@ -231,101 +218,6 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
     }
-
-    /**
-     * 
-     * @param Customers $customer
-     * @param type $timestampEndParam
-     * @return type
-     */
-    /*public function findTripPaymentsToBePayedAndWrong(Customers $customer = null, $timestampEndParam = null)
-    {
-        $em = $this->getEntityManager();
-
-        $dql = 'SELECT tp FROM SharengoCore\Entity\TripPayments tp '.
-            'JOIN tp.trip t '.
-            'JOIN t.customer c '.
-            'WHERE t.payable = true '.
-            'AND tp.status IN (:status_to_be_payed, :status_wrong) ';
-
-        if ($customer instanceof Customers) {
-            $dql .= 'AND c = :customer ';
-        }
-        if ($timestampEndParam !== null){
-            $dql .= 'AND t.timestampEnd >= :timestampEndParam ';
-        }
-
-        $dql .= ' ORDER BY t.timestampBeginning ASC';
-
-        $query = $em->createQuery($dql);
-
-        $query->setParameter('status_to_be_payed', TripPayments::STATUS_TO_BE_PAYED);
-        $query->setParameter('status_wrong', TripPayments::STATUS_WRONG_PAYMENT);
-        //$query->setParameter('midnight', date_create('midnight'));
-
-        if ($customer instanceof Customers) {
-            $query->setParameter('customer', $customer);
-        }
-
-        if ($timestampEndParam !== null){
-            $query->setParameter('timestampEndParam', date_create($timestampEndParam));
-        }
- 
-        return $query->getResult();
-    }
-
-    public function findTripPaymentsForUserPayment($customer)
-    {
-        $em = $this->getEntityManager();
-
-        $dql = 'SELECT tp FROM SharengoCore\Entity\TripPayments tp '.
-            'JOIN tp.trip t '.
-            'WHERE tp.status = :status '.
-            'AND t.customer = :customer';
-
-        $query = $em->createQuery($dql);
-
-        $query->setParameter('status', TripPayments::STATUS_TO_BE_PAYED);
-        $query->setParameter('customer', $customer);
-
-        return $query->getResult();
-    }
-
-    public function findFirstTripPaymentNotPayedByCustomer($customer)
-    {
-        $em = $this->getEntityManager();
-
-        $dql = 'SELECT tp
-            FROM SharengoCore\Entity\TripPayments tp
-            JOIN tp.trip t
-            WHERE t.customer = :customer
-            AND (tp.status = :to_be_payed
-            OR tp.status = :wrong_payment)
-            ORDER BY t.timestampBeginning ASC';
-
-        $query = $em->createQuery($dql);
-        $query->setParameter('customer', $customer);
-        $query->setParameter('to_be_payed', TripPayments::STATUS_TO_BE_PAYED);
-        $query->setParameter('wrong_payment', TripPayments::STATUS_WRONG_PAYMENT);
-        $query->setMaxResults(1);
-
-        return $query->getOneOrNullResult();
-    }
-*/
-    /**
-     * @param Trips $trip
-     */
-    /*public function deleteTripPaymentsByTrip(Trips $trip)
-    {
-        $dql = "DELETE FROM \SharengoCore\Entity\TripPayments tb ".
-            "WHERE tb.trip = :trip";
-
-        $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameter('trip', $trip);
-
-        return $query->execute();
-    }
-*/
     
     /**
      * @param Customers $customer
@@ -350,22 +242,4 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
-    /**
-     * @param Trips $trip
-     * @return TripPayments
-     */
-    /*public function findTripPaymentForTrip(Trips $trip)
-    {
-        $em = $this->getEntityManager();
-
-        $dql = 'SELECT tp
-            FROM SharengoCore\Entity\TripPayments tp
-            WHERE tp.trip = :trip';
-
-        $query = $em->createQuery($dql);
-        $query->setMaxResults(1);
-        $query->setParameter('trip', $trip);
-
-        return $query->getOneOrNullResult();
-    }*/
 }

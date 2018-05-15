@@ -460,6 +460,20 @@ class CustomerDeactivationService
             }
         }
     }
+    
+    /**
+     * Reactivates Customer with only FAILED_EXTRA_PAYMENT from admin after passed payed extra
+     *
+     * @param Customers $customer
+     */
+    public function reactivateCustomerForExtraPayed(Customers $customer) {
+        $c_d = $this->getAllActive($customer);
+        foreach ($c_d as $cd) {
+            if ($cd->getReason() == CustomerDeactivation::FAILED_EXTRA_PAYMENT) {
+                $this->reactivate($cd, [], new \Datetime());
+            }
+        }
+    }
 
     /**
      * Close the CustomerDeactivation when the Webuser removes it
