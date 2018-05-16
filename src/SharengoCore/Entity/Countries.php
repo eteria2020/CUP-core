@@ -36,6 +36,12 @@ class Countries
      */
     private $mctc;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="cadastral_code", type="string")
+     */
+    private $cadastralCode;
 
 
     /**
@@ -80,5 +86,15 @@ class Countries
     public function getMctc()
     {
         return $this->mctc;
+    }
+
+    /**
+     * Get code for stato estero cf
+     *
+     * @return string
+     */
+    public function getCadastralCode()
+    {
+        return $this->cadastralCode;
     }
 }

@@ -540,8 +540,8 @@ class CustomerDeactivationService
             'driver_license_categories' => $customer->getDriverLicenseCategories(),
             'driver_license_authority' => $customer->getDriverLicenseAuthority(),
             'driver_license_country' => $customer->getDriverLicenseCountry(),
-            'driver_license_release_date' => $customer->getDriverLicenseReleaseDate()->format('Y-m-d H:i:s'),
-            'driver_license_expire' => $customer->getDriverLicenseExpire()->format('Y-m-d H:i:s'),
+            'driver_license_release_date' => (is_null($customer->getDriverLicenseReleaseDate())) ? null : $customer->getDriverLicenseReleaseDate()->format('Y-m-d H:i:s'),
+            'driver_license_expire' => (is_null($customer->getDriverLicenseExpire())) ? null : $customer->getDriverLicenseExpire()->format('Y-m-d H:i:s'),
             'driver_license_name' => $customer->getDriverLicenseName(),
             'driver_license_surname' => $customer->getDriverLicenseSurname()
         ];
