@@ -167,7 +167,9 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
         $query = $em->createQuery($dql);
 
         $query->setParameter('status', ExtraPayments::STATUS_WRONG_PAYMENT);
-        $query->setParameter('midnight', date_create('midnight'));
+        $date = date_create('midnight');
+        $date = $date->modify('+1 day');
+        $query->setParameter('midnight', $date);
 
         if ($customer instanceof Customers) {
             $query->setParameter('customer', $customer);
