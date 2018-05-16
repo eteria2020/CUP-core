@@ -186,7 +186,7 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
         $dql = "SELECT ep
             FROM SharengoCore\Entity\ExtraPayments ep
             WHERE ep.customer = :customerParam
-            AND ep.payable = TRUE 
+            AND ep.payable = TRUE  
             AND ep.status = :status ";
 
         $query = $em->createQuery($dql);
