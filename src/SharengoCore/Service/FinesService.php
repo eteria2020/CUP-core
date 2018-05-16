@@ -46,7 +46,7 @@ class FinesService
 
     /**
      * @param integer $finesId
-     * @return TripPayments
+     * @return SafoPenalty
      */
     public function getSafoPenaltyById($finesId)
     {
