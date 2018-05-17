@@ -15,6 +15,7 @@ use SharengoCore\Entity\Fleet;
 use SharengoCore\Entity\Queries\AllExtraPaymentTypes;
 use Cartasi\Entity\Transactions;
 use SharengoCore\Service\DatatableServiceInterface;
+use SharengoCore\Service\CustomerDeactivationService;
 
 use Doctrine\ORM\EntityManager;
 
@@ -49,6 +50,11 @@ class ExtraPaymentsService
      * @var CustomersService
      */
     private $customersService;
+    
+    /**
+     * @var CustomerDeactivationService
+     */
+    private $deactivationService;
 
     /**
      * @param EntityManager $entityManager
@@ -63,7 +69,8 @@ class ExtraPaymentsService
         DatatableServiceInterface $datatableService,
         ExtraPaymentsRepository $extraPaymentsRepository,
         ExtraPaymentTriesService $extraPaymentTriesService,
-        CustomersService $customersService
+        CustomersService $customersService,
+        CustomerDeactivationService $deactivationService
     ) {
         $this->entityManager = $entityManager;
         $this->invoicesService = $invoicesService;
@@ -71,6 +78,7 @@ class ExtraPaymentsService
         $this->extraPaymentsRepository = $extraPaymentsRepository;
         $this->extraPaymentTriesService = $extraPaymentTriesService;
         $this->customersService = $customersService;
+        $this->deactivationService = $deactivationService;;
     }
 
     /**
@@ -372,4 +380,39 @@ class ExtraPaymentsService
         $this->customersService->enableCustomerPayment($extraPayment->getCustomer());
         $this->entityManager->flush();
     }
+    
+    public function processWrongPayment(ExtraPayments $extraPayment, $response, $webuser = null) {
+        //set status worn_payment in extra_paymnets
+        $extraPayment = $this->setStatusWrongPayment($extraPayment);
+
+        //extrapyaments tries
+        $extraPaymentTry = $this->extraPaymentTriesService->createExtraPaymentTry(
+                $extraPayment, $response->getOutcome(), $response->getTransaction(), $webuser
+        );
+
+        //disable customer
+        $this->deactivationService->deactivateForExtraPaymentTry($extraPayment->getCustomer(), $extraPaymentTry);
+        
+        return $extraPaymentTry;
+    }
+    
+    
+    public function processPayedCorrectly(ExtraPayments $extraPayment, $response, $webuser = null) {
+        //set status payed in extra_payment
+        $extraPayment = $this->setPayedCorrectlyFirstTime($extraPayment);
+
+        $this->checkIfEnable($extraPayment);
+
+        //scrivere un record sulla extra_payments_tries
+        $extraPaymentTry = $this->extraPaymentTriesService->createExtraPaymentTry($extraPayment, $response->getOutcome(), $response->getTransaction(), $webuser);
+        
+        return $extraPaymentTry;
+    }
+    
+    private function checkIfEnable($extraPayment) {
+        if(count($this->getExtraPaymentsWrongAndPayable($extraPayment->getCustomer())) == 0){
+            $this->deactivationService->reactivateCustomerForExtraPayed($extraPayment->getCustomer());
+        }
+    }
+
 }

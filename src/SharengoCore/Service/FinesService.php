@@ -5,6 +5,8 @@ namespace SharengoCore\Service;
 // Internals
 use SharengoCore\Entity\Repository\SafoPenaltyRepository;
 use SharengoCore\Entity\SafoPenalty;
+use SharengoCore\Entity\Penalty;
+use SharengoCore\Entity\ExtraPayments;
 use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\FleetService;
 // Externals
@@ -123,5 +125,26 @@ class FinesService
     
     public function getFinesBetweenDate($from, $to) {
         return $this->safoPenaltyRepository->getFinesBetweenDate($from, $to);
+    }
+    
+    public function createExtraPayment(SafoPenalty $fine, Penalty $penalty, $transaction) {
+        $extra_payment = new ExtraPayments(
+                $fine->getCustomer(), $fine->getCustomer()->getFleet(), $transaction, $penalty->getAmount(), $penalty->getType() == 'penalties' ? "penalty" : "extra", $penalty->getReason()//"[[['Notifica sanzioni e multe'], ['20.00 €']]]"
+        );
+        $this->entityManager->persist($extra_payment);
+        
+        $fine = $fine->setExtraPayment($extra_payment);
+        $fine = $fine->setCharged(true);
+        
+        $this->entityManager->persist($fine);
+        $this->entityManager->flush();
+        
+        return $extra_payment;
+    }
+    
+    public function clearEntityManager() {
+        $identity = $this->entityManager->getUnitOfWork()->getIdentityMap();
+        //$this->entityManager->clear();
+        $a = '';
     }
 }

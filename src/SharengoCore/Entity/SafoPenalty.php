@@ -177,6 +177,16 @@ class SafoPenalty
      * @ORM\Column(name="complete", type="boolean", nullable=false)
      */
     private $complete = false;
+    
+    /**
+     * @var ExtraPayments
+     *
+     * @ORM\OneToOne(targetEntity="ExtraPayments")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="extra_payment_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $extrapayment;
 
     /**
      * @return int
@@ -388,6 +398,26 @@ class SafoPenalty
     public function getCar() {
         return $this->car;
     }
+    
+    /**
+     * Get getExtraPayment
+     *
+     * @return \SharengoCore\Entity\ExtraPayments
+     */
+    public function getExtraPayment() {
+        return $this->extrapayment;
+    }
+    
+    public function setExtraPayment(ExtraPayments $extraPayments) {
+        $this->extrapayment = $extraPayments;
+        return $this;
+    }
+    
+    public function setCharged($param){
+        $this->charged = $param;
+        return $this;
+    }
+    
 
 }
 
