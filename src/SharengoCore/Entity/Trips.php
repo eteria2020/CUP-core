@@ -6,6 +6,8 @@ use SharengoCore\Utils\Interval;
 use SharengoCore\Exception\EditTripDeniedException;
 use SharengoCore\Exception\EditTripWrongDateException;
 use SharengoCore\Exception\EditTripNotDateTimeException;
+use SharengoCore\Exception\EditTripExceed24HoursException;
+
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 
@@ -1039,8 +1041,14 @@ class Trips {
         }
         if ($endDate !== null) {
             if ($endDate instanceof \DateTime) {
-                if ($endDate < $this->getTimestampBeginning()) {
+                $difference = $endDate->getTimestamp() - $this->getTimestampBeginning()->getTimestamp();
+
+                if ($difference < 0) {
                     throw new EditTripWrongDateException();
+                }
+
+                if(($difference/3600)>=24) {
+                    throw new EditTripExceed24HoursException();
                 }
             } else {
                 throw new EditTripNotDateTimeException();
