@@ -115,6 +115,28 @@ class CustomerDeactivationService
             $startTs
         );
     }
+    
+    /**
+     * Deactivate Customer that failed to pay a ExtraPayment
+     *
+     * @param Customers $customer
+     * @param ExtraPaymentTries $extraPaymentTry
+     * @param \DateTime|null $startTs
+     */
+    public function deactivateForExtraPaymentTry(
+        Customers $customer,
+        $extraPaymentTry,
+        \DateTime $startTs = null
+    ) {
+        $details = ['extra_payment_try_id' => $extraPaymentTry->getId()];
+
+        $this->deactivate(
+            $customer,
+            CustomerDeactivation::FAILED_EXTRA_PAYMENT,
+            $details,
+            $startTs
+        );
+    }
 
     /**
      * Deactivate Customer that has an invalid driver's license
@@ -435,6 +457,20 @@ class CustomerDeactivationService
                 if ($cd->getReason() == CustomerDeactivation::FIRST_PAYMENT_NOT_COMPLETED) {
                     $this->reactivate($cd, [], new \Datetime(), $webuser);
                 }
+            }
+        }
+    }
+    
+    /**
+     * Reactivates Customer with only FAILED_EXTRA_PAYMENT from admin after passed payed extra
+     *
+     * @param Customers $customer
+     */
+    public function reactivateCustomerForExtraPayed(Customers $customer) {
+        $c_d = $this->getAllActive($customer);
+        foreach ($c_d as $cd) {
+            if ($cd->getReason() == CustomerDeactivation::FAILED_EXTRA_PAYMENT) {
+                $this->reactivate($cd, [], new \Datetime());
             }
         }
     }

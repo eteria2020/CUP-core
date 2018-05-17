@@ -7,6 +7,7 @@ use Cartasi\Service\CartasiContractsService;
 use SharengoCore\Entity\Repository\FreeFaresRepository;
 use SharengoCore\Entity\Reservations;
 use SharengoCore\Service\TripPaymentTriesService;
+use SharengoCore\Service\CustomerDeactivationService;
 use SharengoCore\Service\FreeFaresService as FreeFares;
 use SharengoCore\Service\TelepassPayService;
 use SharengoCore\Entity\Repository\TripsRepository;
@@ -16,6 +17,8 @@ use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\Webuser;
 use SharengoCore\Entity\TripPaymentTries;
+use SharengoCore\Entity\ExtraPayments;
+use SharengoCore\Entity\ExtraPaymentTries;
 
 use Doctrine\ORM\EntityManager;
 use Zend\EventManager\EventManager;
@@ -51,6 +54,11 @@ class PaymentsService
      * @var TripPaymentTriesService
      */
     private $tripPaymentTriesService;
+    
+    /**
+     * @var ExtraPaymentTriesService
+     */
+    private $extraPaymentTriesService;
 
     /**
      * @var string
@@ -114,6 +122,7 @@ class PaymentsService
      * @param EmailService $emailService
      * @param EventManager $eventManager
      * @param TripPaymentTriesService $tripPaymentTriesService
+     * @param ExtraPaymentTriesService $extraPaymentTriesService
      * @param string $url
      * @param CustomerDeactivationService $deactivationService
      * @param PreauthorizationsService $preauthorizationsService
@@ -131,6 +140,7 @@ class PaymentsService
         EmailService $emailService,
         EventManager $eventManager,
         TripPaymentTriesService $tripPaymentTriesService,
+        ExtraPaymentTriesService $extraPaymentTriesService,
         $url,
         CustomerDeactivationService $deactivationService,
         PreauthorizationsService $preauthorizationsService,
@@ -147,6 +157,7 @@ class PaymentsService
         $this->emailService = $emailService;
         $this->eventManager = $eventManager;
         $this->tripPaymentTriesService = $tripPaymentTriesService;
+        $this->extraPaymentTriesService = $extraPaymentTriesService;
         $this->url = $url;
         $this->deactivationService = $deactivationService;
         $this->preauthorizationsService = $preauthorizationsService;
@@ -187,6 +198,44 @@ class PaymentsService
                 $this->eventManager->trigger('notifyCustomerPay', $this, [
                     'customer' => $customer,
                     'tripPayment' => $tripPayment
+                ]);
+            }
+
+            $this->disableCustomer($customer);
+        }
+
+        //$this->clearEntityManager();
+    }
+    
+    /**
+     * tries to pay the extraPayment, checking first if the extra can be payed and
+     * otherwise sending a payment request to the customer
+     *
+     * @param ExtraPayments $extraPayment
+     */
+    public function tryPaymentExtra(
+        ExtraPayments $extraPayment,
+        $avoidEmail = false,
+        $avoidCartasi = false,
+        $avoidPersistance = false
+    ) {
+        $this->avoidEmail = $avoidEmail;
+        $this->avoidCartasi = $avoidCartasi;
+        $this->avoidPersistance = $avoidPersistance;
+
+        $customer = $extraPayment->getCustomer();
+
+        if ($this->cartasiContractService->hasCartasiContract($customer)) {
+            $this->tryCustomerExtraPayment(
+                $customer,
+                $extraPayment
+            );
+        } else {
+            if ($customer->getPaymentAble()) {
+                // enable hooks on the event that the customer doesn't have a valid contract
+                $this->eventManager->trigger('notifyCustomerPayExtra', $this, [
+                    'customer' => $customer,
+                    'extraPayment' => $extraPayment
                 ]);
             }
 
@@ -244,6 +293,40 @@ class PaymentsService
             $avoidDisableUser
         );
     }
+    
+    /**
+     * tries to pay the extra amount
+     * writes in database a record in the extra_payment_tries table
+     *
+     * @param TripPayments $extraPayment
+     * @param Webuser $webuser
+     * @param boolean $avoidEmail
+     * @param boolean $avoidCartasi
+     * @param boolean $avoidPersistance
+     * @param boolean $avoidDisableUser
+     * @return CartasiResponse
+     */
+    public function tryExtraPayment(
+        ExtraPayments $extraPayment,
+        Webuser $webuser,
+        $avoidEmail = false,
+        $avoidCartasi = false,
+        $avoidPersistance = false,
+        $avoidDisableUser = false
+    ) {
+        $this->avoidEmail = $avoidEmail;
+        $this->avoidCartasi = $avoidCartasi;
+        $this->avoidPersistance = $avoidPersistance;
+
+        $customer = $extraPayment->getCustomer();
+
+        return $this->tryCustomerExtraPayment(
+            $customer,
+            $extraPayment,
+            $webuser,
+            $avoidDisableUser
+        );
+    }
 
     /**
      * tries to pay the trip amount
@@ -297,7 +380,7 @@ class PaymentsService
             if ($response->getCompletedCorrectly()) {
                 $this->markTripAsPayed($tripPayment);
             } else {
-                $this->unpayableConsequences(
+                $this->unpayablePaymentConsequences(
                     $customer,
                     $tripPayment,
                     $tripPaymentTry,
@@ -306,6 +389,65 @@ class PaymentsService
             }
 
             $this->entityManager->persist($tripPaymentTry);
+            $this->entityManager->flush();
+
+            if (!$this->avoidPersistance) {
+                $this->entityManager->commit();
+            } else {
+                $this->entityManager->rollback();
+            }
+        } catch (\Exception $e) {
+            $this->entityManager->rollback();
+            throw $e;
+        }
+
+        return $response;
+    }
+    
+    /**
+     * tries to pay the extra amount
+     * writes in database a record in the extra_payment_tries table
+     *
+     * @param Customers $customer
+     * @param TripPayments $tripPayment
+     * @param Webuser|null $webuser
+     * @param boolean $avoidDisableUser
+     * @return CartasiResponse
+     */
+    private function tryCustomerExtraPayment(
+        Customers $customer,
+        ExtraPayments $extraPayment,
+        Webuser $webuser = null,
+        $avoidDisableUser = false
+    ) {
+        $response = $this->cartasiCustomerPayments->sendPaymentRequest(
+            $customer,
+            $extraPayment->getAmount(),
+            $this->avoidCartasi
+        );
+
+        $this->entityManager->beginTransaction();
+
+        try {
+            $extraPaymentTry = $this->extraPaymentTriesService->generateExtraPaymentTry(
+                $extraPayment,
+                $response->getOutcome(),
+                $response->getTransaction(),
+                $webuser
+            );
+
+            if ($response->getCompletedCorrectly()) {
+                $this->markExtraAsPayed($extraPayment);
+            } else {
+                $this->unpayableExtraConsequences(
+                        $customer,
+                        $extraPayment,
+                        $extraPaymentTry,
+                        $avoidDisableUser
+                );
+            }
+
+            $this->entityManager->persist($extraPaymentTry);
             $this->entityManager->flush();
 
             if (!$this->avoidPersistance) {
@@ -414,6 +556,18 @@ class PaymentsService
         $this->entityManager->persist($tripPayment);
         $this->entityManager->flush();
     }
+    
+    /**
+     * @param ExtraPayments $extraPayment
+     */
+    private function markExtraAsPayed(ExtraPayments $extraPayment)
+    {
+        $extraPayment->setPayedCorrectly();
+        $extraPayment->setInvoiceAble(true);
+
+        $this->entityManager->persist($extraPayment);
+        $this->entityManager->flush();
+    }
 
     /**
      * If the payment of a trip does not complete correctly we:
@@ -426,7 +580,7 @@ class PaymentsService
      * @param TripPaymentTries $tripPaymentTry
      * @param boolean $avoidDisableUser
      */
-    private function unpayableConsequences(
+    private function unpayablePaymentConsequences(
         Customers $customer,
         TripPayments $tripPayment,
         TripPaymentTries $tripPaymentTry,
@@ -456,6 +610,49 @@ class PaymentsService
         ]);
     }
 
+    /**
+     * If the extra of a trip does not complete correctly we:
+     * - disable the customer
+     * - extra payment set as not payed
+     * - send mail to notify customer
+     *
+     * @param Customers $customer
+     * @param ExtraPayments $extraPayment
+     * @param ExtraPaymentTries $extraPaymentTry
+     * @param boolean $avoidDisableUser
+     */
+    private function unpayableExtraConsequences(
+        Customers $customer,
+        ExtraPayments $extraPayment,
+        ExtraPaymentTries $extraPaymentTry,
+        $avoidDisableUser
+    ) {
+        // disable the customer
+        if (!$avoidDisableUser) {
+            $this->deactivationService->deactivateForExtraPaymentTry(
+                $customer,
+                $extraPaymentTry
+            );
+        }
+        $customer->setPaymentAble(false);
+
+        $this->entityManager->persist($customer);
+
+        // set the extra payment as wrong payment
+        $extraPayment->setWrongExtra();
+
+        $this->entityManager->persist($extraPayment);
+        $this->entityManager->flush();
+
+        
+        // other unpayable consequences not mentionable here for respect of the childrens
+        $this->eventManager->trigger('wrongExtraPayment', $this, [
+            'customer' => $customer,
+            'extraPayment' => $extraPayment
+        ]);
+        
+    }
+    
     public function tryPreAuthorization(Customers $customer, Trips $trip, $avoidEmails = false, $avoidCartasi = false, $avoidPersistance = false){
 
         $message = 22; //default ok

@@ -15,6 +15,7 @@ class PaymentsServiceFactory implements FactoryInterface
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $emailService = $serviceLocator->get('SharengoCore\Service\EmailService');
         $tripPaymentTriesService = $serviceLocator->get('SharengoCore\Service\TripPaymentTriesService');
+        $extraPaymentTriesService = $serviceLocator->get('SharengoCore\Service\ExtraPaymentTriesService');
         $eventManager = new EventManager();
         $eventManager->setIdentifiers(['PaymentsService']);
         $url = $serviceLocator->get('Configuration')['website']['uri'];
@@ -33,6 +34,7 @@ class PaymentsServiceFactory implements FactoryInterface
             $emailService,
             $eventManager,
             $tripPaymentTriesService,
+            $extraPaymentTriesService,
             $url,
             $deactivationService,
             $preauthorizationsService,
