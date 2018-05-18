@@ -82,6 +82,7 @@ class FinesService
                     'id' => $fine->getId(),
                     'checkable' => $this->isCheckable($fine),
                     'charged' => $fine->isCharged(),
+                    'payed' => (is_null($fine->getExtraPayment())) ? null : (($fine->getExtraPayment()->getStatus() == 'payed_correctly' || $fine->getExtraPayment()->getStatus() == 'invoiced') ? 'Si' : 'No') ,
                     'customerId' => $fine->getCustomerId(),
                     'vehicleFleetId' => $fine->getFleetCode(),
                     'tripId' => $fine->getTripId(),
