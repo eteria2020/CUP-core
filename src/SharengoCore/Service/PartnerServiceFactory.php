@@ -14,14 +14,16 @@ class PartnerServiceFactory implements FactoryInterface
         $customersRepository = $entityManager->getRepository('\SharengoCore\Entity\Customers');
         $partnersRepository = $entityManager->getRepository('\SharengoCore\Entity\Partners');
         $fleetService = $serviceLocator->get('SharengoCore\Service\FleetService');
-        $telepassService = $serviceLocator->get('SharengoCore\Service\TelepassService');
+        $telepassService = $serviceLocator->get('SharengoCore\Service\Partner\TelepassService');
+        $nugoService = $serviceLocator->get('SharengoCore\Service\Partner\NugoService');
 
         return new PartnerService(
             $entityManager,
             $customersRepository,
             $partnersRepository,
             $fleetService,
-            $telepassService
+            $telepassService,
+            $nugoService
         );
     }
 }

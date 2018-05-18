@@ -1,12 +1,11 @@
 <?php
 
-namespace SharengoCore\Service;
+namespace SharengoCore\Service\Partner;
 
 use Doctrine\ORM\EntityManager;
 use SharengoCore\Service\TripsService;
 use SharengoCore\Service\ExtraPaymentsService;
 
-use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Repository\PartnersRepository;
 
@@ -18,9 +17,11 @@ use Cartasi\Service\CartasiContractsService;
 use Zend\Http\Request;
 use Zend\Http\Client;
 
-class TelepassPayService {
+class NugoPayService {
 
-    private $code ='telepass';
+    const PAYMENT_LABEL = 'NUGOPAY';
+
+    private $code ='nugo';
     private $currency ='EUR';
 
     /**
@@ -115,7 +116,7 @@ class TelepassPayService {
      * @param array $metadata Optional, free-form JSON structure to hold additional metadata for the payment (e.g., a reason for the payment)
      * @param int $amount The amount of money (in Euro cents) to be preauthorized on the payment gateway
      * @param string $currency The currency of the pre-authorization (ISO 4217 Currency Codes)
-     * @param array $response Response from Telepass
+     * @param array $response Response from Nugo
      */
     private function sendPreAthorization(
         $userId,
@@ -130,21 +131,6 @@ class TelepassPayService {
         $response = null;
 
         try {
-//            $uri = new Http($this->telepassConfig['uri']);
-//            $url = $this->url->__invoke(
-//                    'pay/preauth', [], [
-//                'force_canonical' => true,
-//                'query' => [
-//                    'userId' => $userId,
-//                    'referenceId' => $referenceId,
-//                    'metadata' => json_encode($metadata),
-//                    'amount' => $amount,
-//                    'currency' => $currency
-//                ],
-//                'uri' => $uri
-//                    ]
-//            );
-
             $json = json_encode(
                 array(
                     'userId' => $userId,
@@ -157,19 +143,6 @@ class TelepassPayService {
 
             $request = new Request();
             $request->setUri($this->parms['payments']['uri'] . $uriPreAuth);
-//            $request->setMetadata('POST');
-//            $request->getPost()->set('userId', $userId);
-//            $request->getPost()->set('referenceId', $referenceId);
-//            $request->getPost()->set('metadata', $metadata);
-//            $request->getPost()->set('amount', $amount);
-//            $request->getPost()->set('currency', $currency);
-//            $request->getHeaders()->addHeaders(
-//                array(
-//                    //'Content-type' => 'application/json'
-//                    'Authorization' => $this->parms['payments']['authorization']
-//                )
-//            );
-
 
             $this->httpClient->setUri($this->parms['payments']['uri'] . $uriPreAuth);
             $this->httpClient->setRawBody($json);
@@ -262,24 +235,24 @@ class TelepassPayService {
 
 
     /**
-     * Send a payment request to Telepass in two step (pre-authorization and carging account).
+     * Send a payment request to Nugo in two step (pre-authorization and carging account).
      * 
      * @param Customers $customer
      * @param integer $amount
-     * @param boolean $avoidHittingTelepassPay
+     * @param boolean $avoidHittingPay
      * @return CartasiResponse
      */
     public function sendPaymentRequest(
         Customers $customer,
         $amount,
-        $avoidHittingTelepassPay = false
+        $avoidHittingPay = false
     ) {
         $response = null;
 
-        if(!$avoidHittingTelepassPay) {
+        if(!$avoidHittingPay) {
             $response = new CartasiResponse(false, 'KO', null);
 
-            $responseTelepass = null;
+            $responsePayment = null;
             $transaction = $this->newTransactionCustomer($customer, $amount);
 
             if($this->cartasiContractsService->hasCartasiContract($customer)) {
@@ -296,27 +269,27 @@ class TelepassPayService {
                         'transaction' => $transaction->getId()),
                     $amount,
                     $this->currency,
-                    $responseTelepass)) {
+                    $responsePayment)) {
 
-                    $transaction->setCodAut($responseTelepass['preAuthId']);
+                    $transaction->setCodAut($responsePayment['preAuthId']);
 
                     if($this->tryCharginAccount(
                         $transaction->getId(),
-                        $responseTelepass['preAuthId'],
+                        $responsePayment['preAuthId'],
                         $amount,
                         $this->currency,
-                        $responseTelepass)) {
+                        $responsePayment)) {
 
                         $transaction->setOutcome('OK');
                     }
                 }
             }
 
-            if(is_null($responseTelepass)) { // if it's happen a system error like remote server down
+            if(is_null($responsePayment)) { // if it's happen a system error like remote server down
                 return null;
             }
 
-            $transaction->setMessage(substr(json_encode($responseTelepass), 0, 255));
+            $transaction->setMessage(substr(json_encode($responsePayment), 0, 255));
             $transaction->setDatetime(date_create());
             $this->entityManager->merge($transaction);
             $this->entityManager->flush();
@@ -352,7 +325,7 @@ class TelepassPayService {
         $transaction->setRegion('EUROPE');
         $transaction->setCountry('ITA');
         $transaction->setMessage('KO - init fail');
-        $transaction->setProductType('TELEPASS+TPAY+PREPAID+-+-N');
+        $transaction->setProductType(self::PAYMENT_LABEL.'+PREPAID+-+-N');
         $transaction->setIsFirstPayment(false);
 
         $this->entityManager->persist($transaction);

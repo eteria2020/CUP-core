@@ -5,7 +5,8 @@ namespace SharengoCore\Service;
 use SharengoCore\Entity\Repository\CustomersRepository;
 use SharengoCore\Entity\Repository\PartnersRepository;
 use SharengoCore\Service\FleetService;
-use SharengoCore\Service\TelepassService;
+use SharengoCore\Service\Partner\TelepassService;
+use SharengoCore\Service\Partner\NugoService;
 use SharengoCore\Entity\Partners;
 
 use Doctrine\ORM\EntityManager;
@@ -38,18 +39,34 @@ class PartnerService implements ValidatorServiceInterface
      */
     private $telepassService;
 
+    /*
+     * @var NugoService
+     */
+    private $nugoService;
+
+    /**
+     * 
+     * @param EntityManager $entityManager
+     * @param CustomersRepository $customersRepository
+     * @param PartnersRepository $partnersRepository
+     * @param FleetService $fleetService
+     * @param TelepassService $telepassService
+     * @param NugoService $nugoService
+     */
     public function __construct(
         EntityManager $entityManager,
         CustomersRepository $customersRepository,
         PartnersRepository $partnersRepository,
         FleetService $fleetService,
-        TelepassService $telepassService
+        TelepassService $telepassService,
+        NugoService $nugoService
     ) {
         $this->entityManager = $entityManager;
         $this->customersRepository = $customersRepository;
         $this->partnersRepository = $partnersRepository;
         $this->fleetService = $fleetService;
         $this->telepassService = $telepassService;
+        $this->nugoService = $nugoService;
     }
 
     public function findByEmail($email)
@@ -90,6 +107,8 @@ class PartnerService implements ValidatorServiceInterface
 
         if($partner->getCode() == $this->telepassService->getPartnerName()) {
             $result = $this->telepassService->signup($partner, $contentArray, $partnerResponse);
+        } elseif ($partner->getCode() == $this->nugoService->getPartnerName()) {
+            $result = $this->nugoService->signup($partner, $contentArray, $partnerResponse);
         }
 
         return $result;
