@@ -61,11 +61,14 @@ class SafoPenalty
     private $customer;
 
     /**
-     * @var integer
+     * @var Fleet
      *
-     * @ORM\Column(name="vehicle_fleet_id", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Fleet")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="vehicle_fleet_id", referencedColumnName="id", nullable=true)
+     * })
      */
-    private $vehicleFleetId;
+    private $fleet;
 
     /**
      * @var integer
@@ -235,13 +238,21 @@ class SafoPenalty
     {
         return is_null($this->customer) ? null : $this->customer->getId();
     }
-
+    
     /**
-     * @return int
+     * @return Fleet
      */
-    public function getVehicleFleetId()
+    public function getFleet()
     {
-        return $this->vehicleFleetId;
+        return $this->fleet;
+    }
+    
+    /**
+     * @return Fleet
+     */
+    public function getFleetCode()
+    {
+        return is_null($this->fleet) ? null : $this->fleet->getCode();
     }
 
     /**
