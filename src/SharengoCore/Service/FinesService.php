@@ -81,7 +81,6 @@ class FinesService
                 'fines' => [
                     'id' => $fine->getId(),
                     'checkable' => $this->isCheckable($fine),
-                    'charged' => $fine->isCharged(),
                     'payed' => (is_null($fine->getExtraPayment())) ? null : (($fine->getExtraPayment()->getStatus() == 'payed_correctly' || $fine->getExtraPayment()->getStatus() == 'invoiced') ? 'Si' : 'No') ,
                     'customerId' => $fine->getCustomerId(),
                     'vehicleFleetId' => $fine->getFleetCode(),
@@ -129,8 +128,13 @@ class FinesService
     }
     
     public function createExtraPayment(SafoPenalty $fine, Penalty $penalty, $transaction) {
+        $reasonsAmounts = [];
+        array_push(
+            $reasonsAmounts,
+            [[$penalty->getReason() . " (" .$this->formatAmount($penalty->getAmount()). ")"], [$penalty->getReason()], [$this->formatAmount($penalty->getAmount())]]
+        );
         $extra_payment = new ExtraPayments(
-                $fine->getCustomer(), $fine->getCustomer()->getFleet(), $transaction, $penalty->getAmount(), $penalty->getType() == 'penalties' ? "penalty" : "extra", $penalty->getReason()//"[[['Notifica sanzioni e multe'], ['20.00 €']]]"
+                $fine->getCustomer(), is_null($fine->getFleet()) ? $fine->getCar()->getFleet() : $fine->getFleet(), $transaction, $penalty->getAmount(), $penalty->getType() == 'penalties' ? "penalty" : "extra", $reasonsAmounts
         );
         $this->entityManager->persist($extra_payment);
         
@@ -156,5 +160,14 @@ class FinesService
         $this->entityManager->clear('SharengoCore\Entity\ExtraPayments');
         $this->entityManager->clear('SharengoCore\Entity\ExtraPaymentTries');
         $this->entityManager->clear('SharengoCore\Entity\CustomerDeactivation');
+    }
+    
+    /**
+     * @param string $amount
+     * @return string
+     */
+    private function formatAmount($amount)
+    {
+        return sprintf('%.2f €', intval($amount) / 100);
     }
 }

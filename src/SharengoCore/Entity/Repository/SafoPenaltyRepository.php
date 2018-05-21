@@ -29,9 +29,10 @@ class SafoPenaltyRepository extends \Doctrine\ORM\EntityRepository {
         $dql = 'SELECT sp.id FROM SharengoCore\Entity\SafoPenalty sp ' .
                 'WHERE sp.customer IS NOT NULL ' .
                 'AND sp.trip IS NOT NULL ' .
-                'AND sp.complete = FALSE ' .
+                'AND sp.complete = TRUE ' .
                 'AND sp.insertTs >= :from ' .
-                'AND sp.insertTs < :to '
+                'AND sp.insertTs < :to ' .
+                'AND sp.charged = FLASE '
                 ;
 
         $query = $em->createQuery($dql);
