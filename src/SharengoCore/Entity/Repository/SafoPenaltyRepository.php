@@ -26,13 +26,14 @@ class SafoPenaltyRepository extends \Doctrine\ORM\EntityRepository {
     public function getFinesBetweenDate($from, $to) {
         $em = $this->getEntityManager();
 
-        $dql = 'SELECT sp.id FROM SharengoCore\Entity\SafoPenalty sp ' .
+        $dql = 'SELECT sp FROM SharengoCore\Entity\SafoPenalty sp ' .
                 'WHERE sp.customer IS NOT NULL ' .
                 'AND sp.trip IS NOT NULL ' .
                 'AND sp.complete = TRUE ' .
                 'AND sp.insertTs >= :from ' .
                 'AND sp.insertTs < :to ' .
-                'AND sp.charged = FLASE '
+                'AND sp.charged = FALSE ' .
+                'ORDER BY sp.id '
                 ;
 
         $query = $em->createQuery($dql);

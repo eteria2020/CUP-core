@@ -28,6 +28,11 @@ class FinesService
      * @var FaresService
      */
     private $fleetService;
+    
+    /**
+     * @var afoPenaltyRepository
+     */
+    private $safoPenaltyRepository;
 
     /**
      * @param TripPaymentsRepository $tripPaymentsRepository
@@ -60,7 +65,7 @@ class FinesService
      */
     public function getFinesData(array $filters = [], $count = false)
     {
-        if(isset($filters['searchValue'])&&($filters['searchValue']!="")){
+        /*if(isset($filters['searchValue'])&&($filters['searchValue']!="")){
             if($filters['column']=="e.vehicleFleetId"){
                 $fleets = $this->fleetService->getFleetsSelectorArray();
                 foreach ($fleets as $i => $fleet) {
@@ -69,14 +74,14 @@ class FinesService
                     }
                 }
             }
-        }
-
+        }*/
+        
         $fines = $this->datatableService->getData('SafoPenalty', $filters, $count);
         if ($count) {
             return $fines;
         }
 
-        $a = array_map(function (SafoPenalty $fine) {
+        return array_map(function (SafoPenalty $fine) {
             return [
                 'fines' => [
                     'id' => $fine->getId(),
@@ -90,11 +95,11 @@ class FinesService
                     'violationDescription' => $fine->getViolationDescription(),
                     'amount' => $fine->getAmount(),
                     'complete' => $fine->isComplete(),
-                    'violationTimestamp' => $fine->getViolationTimestamp()->format('Y/m/d H:i:s')
+                    'violationTimestamp' => $fine->getViolationTimestamp()->format('Y/m/d H:i:s'),
+                    'insertTs' => $fine->getInsertTs()->format('Y/m/d H:i:s')
                 ]
             ];
         }, $fines);
-        return $a;
     }
 
     public function getTotalFines()

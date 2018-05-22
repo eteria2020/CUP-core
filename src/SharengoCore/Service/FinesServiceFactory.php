@@ -15,14 +15,22 @@ class FinesServiceFactory implements FactoryInterface
 
         /** @var DatatableServiceInterface **/
         $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
+        $fleetService = $serviceLocator->get('SharengoCore\Service\fleetService');
 
         $datatableService->setQueryBuilder(
-            new DatatableQueryBuilders\SafoPenalty(
-                new DatatableQueryBuilders\Basic()
+            new DatatableQueryBuilders\Trips(
+                new DatatableQueryBuilders\Cars(
+                    new DatatableQueryBuilders\Fleets(
+                        new DatatableQueryBuilders\Cards(
+                            new DatatableQueryBuilders\Customers(
+                                new DatatableQueryBuilders\Basic()
+                            ),
+                            'cu'
+                        )
+                    )
+                )
             )
         );
-
-        $fleetService = $serviceLocator->get('SharengoCore\Service\fleetService');
 
         return new FinesService(
             $safoPenaltyRepository,
