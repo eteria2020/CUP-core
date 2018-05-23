@@ -906,7 +906,15 @@ class Trips {
      * @return int
      */
     public function getDiscountPercentage() {
-        return $this->customer->getDiscountRate();
+        $result =0;
+
+        if(is_null($this->tripPayment)) {
+            $result = $this->customer->getDiscountRate();
+        } else {
+            $result = $this->tripPayment->getDiscountPercentage();
+        }
+
+        return $result;
     }
 
     /**
