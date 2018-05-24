@@ -198,13 +198,15 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
     }
 
     /**
-     * selects the trips that need to be
-     * processed for the bonus computation park
+     * selects the trips that need to be processed for the bonus computation park
      * at a given date
      *
+     * @param datetime $datestamp
+     * @param string $carplate
+     * @param integer $batteryEnd
      * @return Trips[]
      */
-    public function findTripsForBonusParkComputation($datestamp, $carplate) {
+    public function findTripsForBonusParkComputation($datestamp, $carplate, $batteryEnd) {
         $dateStart = date_create($datestamp . ' 00:00:00');
         $dateEnd = date_create($datestamp . ' 23:59:59');
 
@@ -217,7 +219,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         }
         $dql .= "AND tp.status = :status " .
                 "AND t.timestampEnd IS NOT NULL " . //only trips finished
-                "AND t.batteryEnd IS NOT NULL AND t.batteryEnd < 25 " . //battery level end trip
+                "AND t.batteryEnd IS NOT NULL AND t.batteryEnd < :batteryEnd " . //battery level end trip
                 "AND t.longitudeEnd > 0 AND t.latitudeEnd > 0 " .
                 "ORDER BY t.timestampEnd ASC";
 
@@ -225,6 +227,8 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         $query->setParameter('status', "invoiced");
         $query->setParameter('dateStart', date_sub($dateStart, date_interval_create_from_date_string('1 days')));
         $query->setParameter('dateEnd', date_sub($dateEnd, date_interval_create_from_date_string('1 days')));
+        $query->setParameter('batteryEnd', $batteryEnd);
+            
         return $query->getResult();
     }
 
