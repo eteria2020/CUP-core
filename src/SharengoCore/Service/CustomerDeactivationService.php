@@ -95,6 +95,21 @@ class CustomerDeactivationService
     }
 
     /**
+     * Create CustomerDeactivation for when Customer hasn't yet finished the
+     * registration
+     *
+     * @param Customers $customer
+     */
+    public function deactivateRegistrationNotCompleted(Customers $customer)
+    {
+        $this->deactivate(
+            $customer,
+            CustomerDeactivation::REGISTRATION_NOT_COMPLETED,
+            []
+        );
+    }
+
+    /**
      * Deactivate Customer that failed to pay a TripPayment
      *
      * @param Customers $customer
@@ -276,6 +291,22 @@ class CustomerDeactivationService
         $details = [
             'subscription_payment_id' => $subscriptionPayment->getId()
         ];
+
+        $this->reactivate($customerDeactivation, $details, $endTs);
+    }
+
+    /**
+     * Close the CustomerDeactivation when the Customer finishes the subscription
+     *
+     * @param CustomerDeactivation $customerDeactivation
+     * @param SubscriptionPayment $subscriptionPayment
+     * @param \DateTime|null $endTs
+     */
+    public function reactivateForRegistrationCompleted(
+        CustomerDeactivation $customerDeactivation,
+        \DateTime $endTs = null
+    ) {
+        $details = [];
 
         $this->reactivate($customerDeactivation, $details, $endTs);
     }
