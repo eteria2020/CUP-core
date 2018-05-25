@@ -204,31 +204,45 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
      * @param datetime $datestamp
      * @param string $carplate
      * @param integer $batteryEnd
+     * @param integer[] $fleets
      * @return Trips[]
      */
-    public function findTripsForBonusParkComputation($datestamp, $carplate, $batteryEnd) {
+    public function findTripsForBonusParkComputation($datestamp, $carplate, $batteryEnd, $fleets) {
+        $battery_condition = "";
+        $fleet_condition = "";
+
         $dateStart = date_create($datestamp . ' 00:00:00');
         $dateEnd = date_create($datestamp . ' 23:59:59');
 
-        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t " .
-                "LEFT JOIN \SharengoCore\Entity\TripPayments tp WITH t.id = tp.trip " .
-                "WHERE t.timestampEnd >= :dateStart AND t.timestampEnd <= :dateEnd " . //date
-                "AND t.fleet != 3 "; //only Milan & Florence
-        if (($carplate != 'all')) {
-            $dql .= "AND t.car IN ('DD30908', 'EG35685', 'EG35649') ";
+        if(!is_null($batteryEnd)) {
+            $battery_condition = " AND t.batteryEnd IS NOT NULL AND t.batteryEnd < " . $batteryEnd ." ";
         }
-        $dql .= "AND tp.status = :status " .
-                "AND t.timestampEnd IS NOT NULL " . //only trips finished
-                "AND t.batteryEnd IS NOT NULL AND t.batteryEnd < :batteryEnd " . //battery level end trip
-                "AND t.longitudeEnd > 0 AND t.latitudeEnd > 0 " .
-                "ORDER BY t.timestampEnd ASC";
+
+        if(!is_null($fleets)) {
+            if(count($fleets) > 0) {
+                $fleet_condition = " AND t.fleet IN (" . implode(",", $fleets) . ") ";
+            }
+        }
+
+        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t " .
+                "JOIN t.customer c " .
+                "WHERE t.timestampEnd IS NOT NULL AND t.timestampEnd >= :dateStart AND t.timestampEnd <= :dateEnd " . //date
+                //"AND t.longitudeEnd > 0 AND t.latitudeEnd > 0 " .
+                " AND c.goldList = false AND c.maintainer = false " .// no gold list and no maintainer
+                $battery_condition . // battery
+                $fleet_condition; //only on specific feelts
+
+        if ($carplate != 'all') {
+            $dql .= " AND t.car IN ('DD30908', 'EG35685', 'EG35649') ";
+        }
+
+        $dql .= " ORDER BY t.timestampEnd ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameter('status', "invoiced");
-        $query->setParameter('dateStart', date_sub($dateStart, date_interval_create_from_date_string('1 days')));
-        $query->setParameter('dateEnd', date_sub($dateEnd, date_interval_create_from_date_string('1 days')));
-        $query->setParameter('batteryEnd', $batteryEnd);
-            
+
+        $query->setParameter('dateStart', $dateStart);
+        $query->setParameter('dateEnd', $dateEnd);
+
         return $query->getResult();
     }
 

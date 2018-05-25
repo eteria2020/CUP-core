@@ -92,7 +92,7 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('carplate', $carplate);
         return $query->getResult();
     }
-    
+
     public function getWomenBonusPackage($customer) {
         $now = date("Y-m-d");
         $timeStart = date_create($now. "00:00:00");
