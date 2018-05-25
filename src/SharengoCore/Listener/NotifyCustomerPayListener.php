@@ -15,6 +15,11 @@ final class NotifyCustomerPayListener implements SharedListenerAggregateInterfac
      * @var array
      */
     private $tripPaymentsByCustomer = [];
+    
+    /**
+     * @var array
+     */
+    private $extraPaymentsByCustomer = [];
 
     /**
      * @var EmailService
@@ -40,6 +45,12 @@ final class NotifyCustomerPayListener implements SharedListenerAggregateInterfac
             [$this, 'notifyCustomerPay']
         );
 
+        $this->listeners[] = $events->attach(
+            'PaymentsService',
+            'notifyCustomerPayExtra',
+            [$this, 'notifyCustomerPayExtra']
+        );
+        
         $this->listeners[] = $events->attach(
             'ProcessPaymentsService',
             'processPaymentsCompleted',
@@ -70,6 +81,22 @@ final class NotifyCustomerPayListener implements SharedListenerAggregateInterfac
         }
 
         $tripPaymentsByCustomer[$customer->getId()]['tripPayments'][] = $tripPayment;
+    }
+    
+    public function notifyCustomerPayExtra(EventInterface $e)
+    {
+        $params = $e->getParams();
+        $customer = $params['customer'];
+        $extraPayment = $params['extraPayment'];
+
+        if (!isset($this->$extraPaymentsByCustomer[$customer->getId()])) {
+            $this->$extraPaymentsByCustomer[$customer->getId()] = [
+                'customer' => $customer,
+                'extraPayment' => []
+            ];
+        }
+
+        $extraPaymentsByCustomer[$customer->getId()]['extrasPayment'][] = $extraPayment;
     }
 
     public function sendEmailToCustomers(EventInterface $e)

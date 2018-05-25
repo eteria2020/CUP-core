@@ -11,6 +11,7 @@ use SharengoCore\Entity\TripPaymentTriesCanceled;
 use SharengoCore\Entity\Webuser;
 use SharengoCore\Exception\EditTripDeniedException;
 use SharengoCore\Exception\EditTripDeniedForScriptException;
+use SharengoCore\Exception\EditTripDeniedForB2BException;
 
 use Doctrine\ORM\EntityManager;
 
@@ -168,6 +169,10 @@ class EditTripsService
     {
         if ($this->paymentScriptRunsService->isScriptRunning() && $trip->getTripPayment() !== null) {
             throw new EditTripDeniedForScriptException();
+        }
+
+        if($trip->isBusiness()) {
+            throw new EditTripDeniedForB2BException();
         }
 
         $trip->checkIfEditable($endDate);
