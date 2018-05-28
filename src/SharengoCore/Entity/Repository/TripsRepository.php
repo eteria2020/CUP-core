@@ -207,30 +207,38 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
      * @param integer[] $fleets
      * @return Trips[]
      */
-    public function findTripsForBonusParkComputation($datestamp, $carplate, $batteryEnd, $fleets) {
-        $battery_condition = "";
-        $fleet_condition = "";
+    public function findTripsForBonusParkComputation($datestamp, $carplate, $tripMinutes = null, $batteryEnd = null, $fleets = null) {
+        $tripMinutesCondition = "";
+        $batteryCondition = "";
+        $fleetCondition = "";
 
         $dateStart = date_create($datestamp . ' 00:00:00');
         $dateEnd = date_create($datestamp . ' 23:59:59');
 
+        if(!is_null($tripMinutes)) {
+            $tripMinutesCondition = " AND tp.tripMinutes < " . $tripMinutes ." ";
+        }
+
         if(!is_null($batteryEnd)) {
-            $battery_condition = " AND t.batteryEnd IS NOT NULL AND t.batteryEnd < " . $batteryEnd ." ";
+            $batteryCondition = " AND t.batteryEnd IS NOT NULL AND t.batteryEnd < " . $batteryEnd ." ";
         }
 
         if(!is_null($fleets)) {
             if(count($fleets) > 0) {
-                $fleet_condition = " AND t.fleet IN (" . implode(",", $fleets) . ") ";
+                $fleetCondition = " AND t.fleet IN (" . implode(",", $fleets) . ") ";
             }
         }
 
         $dql = "SELECT t FROM \SharengoCore\Entity\Trips t " .
                 "JOIN t.customer c " .
+                "JOIN t.tripPayment tp " .
                 "WHERE t.timestampEnd IS NOT NULL AND t.timestampEnd >= :dateStart AND t.timestampEnd <= :dateEnd " . //date
+                "AND tp.status IN ('payed_correctly', 'invoiced') " .
                 //"AND t.longitudeEnd > 0 AND t.latitudeEnd > 0 " .
                 " AND c.goldList = false AND c.maintainer = false " .// no gold list and no maintainer
-                $battery_condition . // battery
-                $fleet_condition; //only on specific feelts
+                $tripMinutesCondition .
+                $batteryCondition . // battery
+                $fleetCondition; //only on specific feelts
 
         if ($carplate != 'all') {
             $dql .= " AND t.car IN ('DD30908', 'EG35685', 'EG35649') ";
