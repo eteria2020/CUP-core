@@ -254,6 +254,26 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+ /**
+     * Return the customer that promocode Member Get Member (XXXXX-XXXXX) match width part of hash code 
+     * (i.e D07D4-72E62 --> select * FROM customers WHERE hash LIKE LOWER('d_0_7_D_4_7_2_F_6_2%'))
+     * 
+     * @param type $promocode
+     * @return Customers
+     */
+    public function findByPromocodeMemberGetMember($promocode)
+    {
+        $value = strtolower( substr($promocode,0,1).'_'.substr($promocode,1,1).'_'.substr($promocode,2,1).'_'.substr($promocode,3,1).'_'.substr($promocode,4,1).'_'.
+            substr($promocode,6,1).'_'.substr($promocode,7,1).'_'.substr($promocode,8,1).'_'.substr($promocode,9,1).'_'.substr($promocode,10,1).'_'.
+            '%');
+
+        $em = $this->getEntityManager();
+        $query = $em->createQuery('SELECT c FROM \SharengoCore\Entity\Customers c WHERE c.hash LIKE :value');
+        $query->setParameter('value', $value);
+        return $query->getOneOrNullResult();
+    }
+
+    
     /**
      *
      * Check if mobile number already exists
