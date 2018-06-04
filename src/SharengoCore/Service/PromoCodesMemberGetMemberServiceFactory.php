@@ -15,6 +15,7 @@ class PromoCodesMemberGetMemberServiceFactory implements FactoryInterface
         $pcInfoRepository = $entityManager->getRepository('\SharengoCore\Entity\PromoCodesInfo');
         $pcOnceRepository = $entityManager->getRepository('\SharengoCore\Entity\PromoCodesOnce');
         $pcService = $serviceLocator->get('SharengoCore\Service\PromoCodesService');
+        $pcoService = $serviceLocator->get('SharengoCore\Service\PromoCodesOnceService');
 
         return new PromoCodesMemberGetMemberService(
             $entityManager,
@@ -22,7 +23,8 @@ class PromoCodesMemberGetMemberServiceFactory implements FactoryInterface
             $pcRepository,
             $pcInfoRepository,
             $pcOnceRepository,
-            $pcService
+            $pcService,
+            $pcoService
         );
     }
 }

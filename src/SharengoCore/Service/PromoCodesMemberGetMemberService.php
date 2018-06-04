@@ -4,6 +4,8 @@ namespace SharengoCore\Service;
 
 use Doctrine\ORM\EntityManager;
 use SharengoCore\Service\CustomersService;
+use SharengoCore\Service\PromoCodesService;
+use SharengoCore\Service\PromoCodesOnceService;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonus;
 use SharengoCore\Entity\PromoCodes;
@@ -46,6 +48,12 @@ class PromoCodesMemberGetMemberService
      * @var PromoCodesService
      */
     private $pcService;
+
+    /**
+     * @var PromoCodesOnceService
+     */
+    private $pcoService;
+
     /**
      * @param PromoCodesRepository $pcRepository
      * @param PromoCodesInfoRepository $pcInfoRepository
@@ -56,7 +64,8 @@ class PromoCodesMemberGetMemberService
         PromoCodesRepository $pcRepository,
         PromoCodesInfoRepository $pcInfoRepository,
         PromoCodesOnceRepository $pcOnceRepository,
-        PromoCodesService $pcService
+        PromoCodesService $pcService,
+        PromoCodesOnceService $pcoService
     ) {
         $this->entityManager = $entityManager;
         $this->customersService = $customersService;
@@ -64,6 +73,7 @@ class PromoCodesMemberGetMemberService
         $this->pcInfoRepository = $pcInfoRepository;
         $this->pcOnceRepository = $pcOnceRepository;
         $this->pcService = $pcService;
+        $this->pcoService = $pcoService;
     }
 
     /**
@@ -132,7 +142,7 @@ class PromoCodesMemberGetMemberService
             }
         }
 
-        return true;;
+        return true;
     }
 
     /**
@@ -206,6 +216,45 @@ class PromoCodesMemberGetMemberService
                     $result = new PromoCodesOnce($promoCodeInfo, $promoCodeOnceName);
                     $this->entityManager->persist($result);
                     $this->entityManager->flush();
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    public function assingCustomerBonusForNewCustomer(Customers $customerNew) {
+
+        $result = $this->pcRepository->getActivePromoCode(self::SHARENGO_MGM.'_NEW');
+        if(!is_null($result)) {
+            $customerBonus = CustomersBonus::createFromPromoCode($result);
+            $customerBonus->setCustomer($customerNew);
+            $this->entityManager->persist($customerBonus);
+            $this->entityManager->flush();
+
+            $customerNew->setDiscountRate($result->getPromoCodesInfo()->discountPercentage());
+        }
+
+        return $result;
+    }
+
+    public function assignPromoCodeOnceForOldCustomer($promoCodeMgmName, Customers $customerNew) {
+        $result = null;
+
+        if($this->isValid($promoCodeMgmName)) {
+            $customerOld = $this->customersService->findByPromocodeMemberGetMember($promoCodeMgmName);
+
+            if(!is_null($customerOld)){
+                $promoCodeFather = $this->pcRepository->getActivePromoCode(self::SHARENGO_MGM.'_OLD');
+                $promoCodeInfo = $promoCodeFather->getPromocodesinfo();
+
+                if(!is_null($promoCodeInfo)){
+                    $promoCodeOnceName = $promoCodeMgmName.'-'.$customerNew->getId();
+                    $result = new PromoCodesOnce($promoCodeInfo, $promoCodeOnceName);
+                    $this->entityManager->persist($result);
+                    $this->entityManager->flush();
+
+                    $this->pcoService->usePromoCode($customerOld, $promoCodeOnceName);
                 }
             }
         }
