@@ -154,25 +154,6 @@ class PromoCodesMemberGetMemberService
     }
 
     /**
-     * Return the old customer inside the string of promocode once.
-     * I.e. promocodeOnce= 'D07D4-72E62-28824' return customer 22577
-     * @param type $promoCodeOnce
-     * @return type
-     */
-    private function getCustomerOldFromPromocodeOnce($promoCodeOnce) {
-        $result = null;
-        $pcoArray = explode("-", trim(strtoupper($promoCodeOnce)));
-
-        if(count($pcoArray) == 3){
-            if (is_numeric($pcoArray[2])) {
-                $result = $this->customersService->findByPromocodeMemberGetMember($pcoArray[0].'-'.$pcoArray[1]);
-            }
-        }
-
-        return $result;
-    }
-
-    /**
      * Return the promocode name widthout customer id
      * @param string $promoCode
      * @param boolean $flagNewCustomer
@@ -193,42 +174,18 @@ class PromoCodesMemberGetMemberService
     }
 
     /**
-     * Create a new promocode once for the new customer (custome child).
-     * The new pomocode once it's contatenation from promocode Member Get Member (XXXXX-XXXXX) and customer id of new customer.
-     * This is because any promo code once must be unique.
+     * Assign a bonus to new customer
      * 
-     * @param string $promoCodeMgmName
      * @param Customers $customerNew
-     * @return PromoCodesOnce
+     * @return PromoCodes
      */
-    public function createPromoCodeOnceForNewCustomer($promoCodeMgmName, Customers $customerNew){
-        $result = null;
-
-        if($this->isValid($promoCodeMgmName)) {
-            $customerOld = $this->customersService->findByPromocodeMemberGetMember($promoCodeMgmName);
-
-            if(!is_null($customerOld)){
-                $promoCodeFather = $this->pcRepository->getActivePromoCode(self::SHARENGO_MGM.'_NEW');
-                $promoCodeInfo = $promoCodeFather->getPromocodesinfo();
-
-                if(!is_null($promoCodeInfo)){
-                    $promoCodeOnceName = $promoCodeMgmName.'-'.$customerNew->getId();
-                    $result = new PromoCodesOnce($promoCodeInfo, $promoCodeOnceName);
-                    $this->entityManager->persist($result);
-                    $this->entityManager->flush();
-                }
-            }
-        }
-
-        return $result;
-    }
-
     public function assingCustomerBonusForNewCustomer(Customers $customerNew) {
 
         $result = $this->pcRepository->getActivePromoCode(self::SHARENGO_MGM.'_NEW');
         if(!is_null($result)) {
             $customerBonus = CustomersBonus::createFromPromoCode($result);
             $customerBonus->setCustomer($customerNew);
+            $customerBonus->setType($result->getType());
             $this->entityManager->persist($customerBonus);
             $this->entityManager->flush();
 
@@ -238,6 +195,15 @@ class PromoCodesMemberGetMemberService
         return $result;
     }
 
+    /**
+     * Create a new promocode once for the old customer (customer father).
+     * The new pomocode once it's contatenation from promocode Member Get Member (XXXXX-XXXXX) and customer id of new customer.
+     * This is because any promo code once must be unique.
+     * 
+     * @param string $promoCodeMgmName
+     * @param Customers $customerNew
+     * @return PromoCodesOnce
+     */
     public function assignPromoCodeOnceForOldCustomer($promoCodeMgmName, Customers $customerNew) {
         $result = null;
 
@@ -251,44 +217,12 @@ class PromoCodesMemberGetMemberService
                 if(!is_null($promoCodeInfo)){
                     $promoCodeOnceName = $promoCodeMgmName.'-'.$customerNew->getId();
                     $result = new PromoCodesOnce($promoCodeInfo, $promoCodeOnceName);
+                    $result->getCustomerBonus()->setType($promoCodeInfo->getType());
                     $this->entityManager->persist($result);
                     $this->entityManager->flush();
 
                     $this->pcoService->usePromoCode($customerOld, $promoCodeOnceName);
                 }
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Assign a bonus to an old customer that the new customer received a promocode once.
-     * 
-     * @param Customers $customerNew
-     * @return CustomerBonus
-     */
-    public function assignBonusForOldCustomer(Customers $customerNew) {
-        $result = null;
-        $customerOld = null;
-
-        $promoCodeOnces = $this->pcOnceRepository->findByPromoCodeByCustomer($customerNew);
-
-        foreach($promoCodeOnces as $pco){   // find a promocode once for new customer
-            $customerOld = $this->getCustomerOldFromPromocodeOnce($pco->getPromocode());
-            if(!is_null($customerOld)){
-                 break;
-            }
-        }
-
-        if(!is_null($customerOld)){ // assign a bonus to old customer
-            $promoCode = $this->pcService->getPromoCode(self::SHARENGO_MGM.'_OLD');
-            if(!is_null($promoCode)){
-                $customerBonus = CustomersBonus::createFromPromoCode($promoCode);
-                $customerBonus->setCustomer($customerOld);
-                $this->entityManager->persist($customerBonus);
-                $this->entityManager->flush();
-                $result = $customerBonus;
             }
         }
 
