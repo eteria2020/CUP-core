@@ -140,7 +140,7 @@ class ExtraPaymentsService
      * @param bool $doFlush
      */
     public function generateInvoice(
-        ExtraPayment $extraPayment,
+        ExtraPayments $extraPayment,
         $doCommit = true
     ) {
         $this->entityManager->beginTransaction();
