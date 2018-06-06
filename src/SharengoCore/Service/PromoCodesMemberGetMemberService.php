@@ -185,7 +185,7 @@ class PromoCodesMemberGetMemberService
         if(!is_null($result)) {
             $customerBonus = CustomersBonus::createFromPromoCode($result);
             $customerBonus->setCustomer($customerNew);
-            $customerBonus->setType($result->getType());
+            $customerBonus->setType($result->getPromocodesinfo()->getType());
             $this->entityManager->persist($customerBonus);
             $this->entityManager->flush();
 
@@ -216,12 +216,18 @@ class PromoCodesMemberGetMemberService
 
                 if(!is_null($promoCodeInfo)){
                     $promoCodeOnceName = $promoCodeMgmName.'-'.$customerNew->getId();
-                    $result = new PromoCodesOnce($promoCodeInfo, $promoCodeOnceName);
-                    $result->getCustomerBonus()->setType($promoCodeInfo->getType());
-                    $this->entityManager->persist($result);
+                    $promoCodeOnce = new PromoCodesOnce($promoCodeInfo, $promoCodeOnceName);
+                    $this->entityManager->persist($promoCodeOnce);
                     $this->entityManager->flush();
 
                     $this->pcoService->usePromoCode($customerOld, $promoCodeOnceName);
+                    $promoCodeOnce = $this->pcoService->getByPromoCode($promoCodeOnceName);
+                    $customerBonus = $promoCodeOnce->getCustomerBonus();
+                    $customerBonus->setType($promoCodeInfo->getType());
+                    $this->entityManager->persist($customerBonus);
+                    $this->entityManager->flush();
+
+                    $result = $promoCodeOnce;
                 }
             }
         }
