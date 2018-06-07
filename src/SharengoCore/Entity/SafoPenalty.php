@@ -23,13 +23,6 @@ class SafoPenalty
     private $id;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="penalty_id", type="integer", nullable=true)
-     */
-    private $penaltyId;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(name="insert_ts", type="datetimetz", nullable=false)
@@ -197,14 +190,6 @@ class SafoPenalty
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPenaltyId()
-    {
-        return $this->penaltyId;
     }
 
     /**
