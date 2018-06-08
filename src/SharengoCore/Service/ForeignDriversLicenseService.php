@@ -145,6 +145,17 @@ class ForeignDriversLicenseService
         }
 
         return array_map(function (ForeignDriversLicenseUpload $driversLicense) {
+            $driversLicenseReleaseDate = '';
+            $driversLicenseExpire = '';
+
+            if(!is_null($driversLicense->driversLicenseReleaseDate())){
+                $driversLicenseReleaseDate = $driversLicense->driversLicenseReleaseDate()->format('Y-m-d');
+            }
+
+            if(!is_null($driversLicense->driversLicenseExpire())){
+                $driversLicenseExpire = $driversLicense->driversLicenseExpire()->format('Y-m-d');
+            }
+
             return [
                 'e' => [
                     'id' => $driversLicense->id(),
@@ -156,10 +167,10 @@ class ForeignDriversLicenseService
                     'driversLicenseNumber' => $driversLicense->driversLicenseNumber(),
                     'driversLicenseAuthority' => $driversLicense->driversLicenseAuthority(),
                     'driversLicenseCountry' => $driversLicense->driversLicenseCountry(),
-                    'driversLicenseReleaseDate' => $driversLicense->driversLicenseReleaseDate()->format('Y-m-d'),
+                    'driversLicenseReleaseDate' => $driversLicenseReleaseDate,
                     'driversLicenseName' => $driversLicense->driversLicenseName(),
                     'driversLicenseCategories' => $driversLicense->driversLicenseCategories(),
-                    'driversLicenseExpire' => $driversLicense->driversLicenseExpire()->format('Y-m-d'),
+                    'driversLicenseExpire' => $driversLicenseExpire,
                     'valid' => $driversLicense->valid(),
                     'first_time' => $driversLicense->isFirstTime()
                 ],
