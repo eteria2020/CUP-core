@@ -36,8 +36,7 @@ class SafoPenaltyRepository extends \Doctrine\ORM\EntityRepository {
                 'AND sp.insertTs >= :from ' .
                 'AND sp.insertTs < :to ' .
                 'AND sp.charged = FALSE ' .
-                'ORDER BY sp.id '
-                ;
+                'ORDER BY sp.id ';
         
         $query = $em->createQuery($dql);
         $query->setParameter('from', $from);
