@@ -12,14 +12,36 @@ use SharengoCore\Entity\SafoPenalty;
  */
 class SafoPenaltyRepository extends \Doctrine\ORM\EntityRepository {
 
-    public function countTotalFines()
+    public function countTotalFinesComplete()
     {
         $em = $this->getEntityManager();
 
-        $dql = 'SELECT COUNT(sp) FROM SharengoCore\Entity\SafoPenalty sp';
+        $dql = 'SELECT COUNT(sp) FROM SharengoCore\Entity\SafoPenalty sp ' .
+                'WHERE   sp.complete = TRUE ' .
+                'AND sp.customer IS NOT NULL ' .
+                'AND sp.trip IS NOT NULL ';
 
         $query = $em->createQuery($dql);
 
         return $query->getSingleScalarResult();
+    }
+    
+    public function getFinesBetweenDate($from, $to) {
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT sp.id FROM SharengoCore\Entity\SafoPenalty sp ' . 
+                'WHERE sp.customer IS NOT NULL ' .
+                'AND sp.trip IS NOT NULL ' .
+                'AND sp.complete = TRUE ' .
+                'AND sp.insertTs >= :from ' .
+                'AND sp.insertTs < :to ' .
+                'AND sp.charged = FALSE ' .
+                'ORDER BY sp.id ';
+        
+        $query = $em->createQuery($dql);
+        $query->setParameter('from', $from);
+        $query->setParameter('to', $to);
+
+        return $query->getResult();
     }
 }
