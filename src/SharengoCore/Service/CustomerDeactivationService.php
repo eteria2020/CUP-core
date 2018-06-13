@@ -95,6 +95,21 @@ class CustomerDeactivationService
     }
 
     /**
+     * Create CustomerDeactivation for when Customer hasn't yet finished the
+     * registration
+     *
+     * @param Customers $customer
+     */
+    public function deactivateRegistrationNotCompleted(Customers $customer)
+    {
+        $this->deactivate(
+            $customer,
+            CustomerDeactivation::REGISTRATION_NOT_COMPLETED,
+            []
+        );
+    }
+
+    /**
      * Deactivate Customer that failed to pay a TripPayment
      *
      * @param Customers $customer
@@ -276,6 +291,22 @@ class CustomerDeactivationService
         $details = [
             'subscription_payment_id' => $subscriptionPayment->getId()
         ];
+
+        $this->reactivate($customerDeactivation, $details, $endTs);
+    }
+
+    /**
+     * Close the CustomerDeactivation when the Customer finishes the subscription
+     *
+     * @param CustomerDeactivation $customerDeactivation
+     * @param SubscriptionPayment $subscriptionPayment
+     * @param \DateTime|null $endTs
+     */
+    public function reactivateForRegistrationCompleted(
+        CustomerDeactivation $customerDeactivation,
+        \DateTime $endTs = null
+    ) {
+        $details = [];
 
         $this->reactivate($customerDeactivation, $details, $endTs);
     }
@@ -576,8 +607,8 @@ class CustomerDeactivationService
             'driver_license_categories' => $customer->getDriverLicenseCategories(),
             'driver_license_authority' => $customer->getDriverLicenseAuthority(),
             'driver_license_country' => $customer->getDriverLicenseCountry(),
-            'driver_license_release_date' => $customer->getDriverLicenseReleaseDate()->format('Y-m-d H:i:s'),
-            'driver_license_expire' => $customer->getDriverLicenseExpire()->format('Y-m-d H:i:s'),
+            'driver_license_release_date' => (is_null($customer->getDriverLicenseReleaseDate())) ? null : $customer->getDriverLicenseReleaseDate()->format('Y-m-d H:i:s'),
+            'driver_license_expire' => (is_null($customer->getDriverLicenseExpire())) ? null : $customer->getDriverLicenseExpire()->format('Y-m-d H:i:s'),
             'driver_license_name' => $customer->getDriverLicenseName(),
             'driver_license_surname' => $customer->getDriverLicenseSurname()
         ];

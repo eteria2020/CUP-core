@@ -193,6 +193,10 @@ class CustomersService implements ValidatorServiceInterface
         ]);
     }
 
+    public function findByPromocodeMemberGetMember($promocode) {
+        return $this->customersRepository->findByPromocodeMemberGetMember($promocode);
+    }
+
     public function findByTaxCode($taxCode)
     {
         return $this->customersRepository->findByCI('taxCode', $taxCode);
@@ -791,6 +795,26 @@ class CustomersService implements ValidatorServiceInterface
         return $result;
     }
 
+/**
+     * Rerurn the Member Get Member promocode of customer.
+     * In the hash code, it's upper case of charactes in the position 0,2,4,6,8,10,12,14,16,18
+     *
+     * @param Customers $customer
+     * @return string
+     */
+    public function getPromocodeMemberGetMember(Customers $customer){
+        $result = null;
+
+        if(!is_null($customer)){
+            $hash = $customer->getHash();
+            $result = strtoupper(substr($hash, 0,1) . substr($hash, 2,1) . substr($hash, 4,1) . substr($hash, 6,1) . substr($hash, 8,1) . '-' .
+                    substr($hash, 10,1) . substr($hash, 12,1) . substr($hash, 14,1) . substr($hash, 16,1) . substr($hash, 18,1)
+            );
+        }
+
+        return $result;
+    }
+
     /**
      * @param Customers $customer
      * @return string
@@ -972,11 +996,11 @@ class CustomersService implements ValidatorServiceInterface
     public function getCustomersValidLicenseOldCheck($lastCheckDate = null, $maxCustomers = null) {
         return $this->customersRepository->findCustomersValidLicenseOldCheck($lastCheckDate, $maxCustomers);
     }
-    
+
     public function getCustomerBonusAlgebris($descriptionBonusAlgebris, $startMonth, $endMonth) {
         return $this->customersBonusRepository->getCustomerBonusAlgebris($descriptionBonusAlgebris, $startMonth, $endMonth);
     }
-    
+
     public function checkIfCustomerRunBeforeDate(Customers $customer, $date_zero) {
         return $this->customersBonusRepository->checkIfCustomerRunBeforeDate($customer, $date_zero);
     }
