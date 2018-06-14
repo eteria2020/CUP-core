@@ -12,12 +12,11 @@ use SharengoCore\Entity\SafoPenalty;
  */
 class SafoPenaltyRepository extends \Doctrine\ORM\EntityRepository {
 
-    public function countTotalFinesComplete()
+    public function countTotalFines()
     {
         $em = $this->getEntityManager();
 
-        $dql = 'SELECT COUNT(sp) FROM SharengoCore\Entity\SafoPenalty sp ' .
-                'WHERE   sp.complete = TRUE ' ;
+        $dql = 'SELECT COUNT(sp) FROM SharengoCore\Entity\SafoPenalty sp ' ;
                 
 
         $query = $em->createQuery($dql);
