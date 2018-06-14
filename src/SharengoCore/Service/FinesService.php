@@ -120,7 +120,7 @@ class FinesService
         if($fine->getCharged()){
             return 0;
         }else{
-            if(!is_null($fine->getCustomerId()) && !is_null($fine->getTripId()) && $fine->isComplete()){
+            if(!is_null($fine->getCustomerId()) && !is_null($fine->getTripId()) && !is_null($fine->getCarPlate())&& $fine->isComplete()){
                 return 1;
             }else{
                 return 2;
