@@ -102,9 +102,9 @@ class FinesService
         }, $fines);
     }
 
-    public function getTotalFinesComplete()
+    public function getTotalFines()
     {
-        return $this->safoPenaltyRepository->countTotalFinesComplete();
+        return $this->safoPenaltyRepository->countTotalFines();
     }
 
     /**
