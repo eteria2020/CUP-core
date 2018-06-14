@@ -17,11 +17,7 @@ class SafoPenaltyRepository extends \Doctrine\ORM\EntityRepository {
         $em = $this->getEntityManager();
 
         $dql = 'SELECT COUNT(sp) FROM SharengoCore\Entity\SafoPenalty sp ' .
-                'WHERE   sp.complete = TRUE ' /*.
-                'AND sp.customer IS NOT NULL ' .
-                'AND sp.car IS NOT NULL ' .
-                'AND sp.trip IS NOT NULL '
-                */
+                'WHERE   sp.complete = TRUE '
                 ;
                 
 
