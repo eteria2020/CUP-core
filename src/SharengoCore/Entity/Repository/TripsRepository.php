@@ -207,7 +207,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
      * @param integer[] $fleets
      * @return Trips[]
      */
-    public function findTripsForBonusParkComputation($datestamp, $carplate, $tripMinutes = null, $batteryEnd = null, $fleets = null) {
+    public function findTripsForBonusParkComputation($datestamp, $carplate, $tripMinutes = null, $batteryEnd = null, array $fleets = null) {
         $tripMinutesCondition = "";
         $batteryCondition = "";
         $fleetCondition = "";
@@ -222,6 +222,8 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         if(!is_null($batteryEnd)) {
             $batteryCondition = " AND t.batteryEnd IS NOT NULL AND t.batteryEnd < " . $batteryEnd ." ";
         }
+
+        var_dump($fleets);
 
         if(!is_null($fleets)) {
             if(count($fleets) > 0) {

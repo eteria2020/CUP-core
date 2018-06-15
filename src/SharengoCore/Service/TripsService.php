@@ -381,7 +381,7 @@ class TripsService {
      * @param integer[] $fleets
      * @return Trips[]
      */
-    public function getTripsForBonusParkComputation($datestamp, $carplate, $tripMinutes = null, $batteryEnd = null, $fleets = null) {
+    public function getTripsForBonusParkComputation($datestamp, $carplate, $tripMinutes = null, $batteryEnd = null, array $fleets = null) {
         return $this->tripRepository->findTripsForBonusParkComputation($datestamp, $carplate, $tripMinutes, $batteryEnd, $fleets);
     }
 
