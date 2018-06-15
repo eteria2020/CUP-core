@@ -67,6 +67,16 @@ class PromoCodesOnce {
     private $usedTs;
 
     /**
+     *
+     * @param PromoCodeInfo $promoCodesInfo
+     * @param string $promocode
+     */
+    public function __construct($promoCodesInfo, $promocode) {
+        $this->promocodesinfo = $promoCodesInfo;
+        $this->promocode = $promocode;
+    }
+
+    /**
      * Get getId
      *
      * @return int
@@ -119,11 +129,10 @@ class PromoCodesOnce {
         return $this->customer;
     }
 
-        /**
+    /**
      * Set CustomerBonus
      *
      * @param int $customerBonus
-     *
      * @return CustomerBonus
      */
     public function setCustomerBonus($customerBonus) {
@@ -163,9 +172,12 @@ class PromoCodesOnce {
         return $this->usedTs;
     }
 
-    public function __construct($promoCodesInfo, $promocode) {
-        $this->promocodesinfo = $promoCodesInfo;
-        $this->promocode = $promocode;
+    /**
+     * Get promocode string
+     * @return string
+     */
+    public function getPromocode() {
+        return $this->promocode;
     }
 
 }

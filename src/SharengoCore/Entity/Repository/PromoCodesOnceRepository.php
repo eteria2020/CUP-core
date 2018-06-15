@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity\Repository;
 
+use SharengoCore\Entity\Customers;
+
 /**
  * PromoCodesOnceRepository
  *
@@ -20,6 +22,28 @@ class PromoCodesOnceRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('promocode', $promoCode);
 
         return $query->getOneOrNullResult();
+    }
+
+    public function findByPromoCodeStartWith($promoCode) {
+        $dql = 'SELECT pco FROM \SharengoCore\Entity\PromoCodesOnce pco ' .
+                'WHERE pco.promocode LIKE :promocode';
+
+        $em = $this->getEntityManager();
+        $query = $em->createQuery($dql);
+        $query->setParameter('promocode', $promoCode . '%');
+
+        return $query->getResult();
+    }
+
+    public function findByPromoCodeByCustomer(Customers $customer) {
+        $dql = 'SELECT pco FROM \SharengoCore\Entity\PromoCodesOnce pco ' .
+                'WHERE pco.customer = :customer';
+
+        $em = $this->getEntityManager();
+        $query = $em->createQuery($dql);
+        $query->setParameter('customer', $customer);
+
+        return $query->getResult();
     }
 
 }

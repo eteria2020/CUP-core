@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Municipalities
  *
  * @ORM\Table(name="italian_municipalities")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\MunicipalityRepository")
  */
 class Municipality
 {
