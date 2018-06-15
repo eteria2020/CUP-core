@@ -35,4 +35,14 @@ class CountriesService
 
         return $country->getMctc();
     }
+
+    /**
+     * @param string
+     * @return string
+     */
+    public function getCountryByCadastralCode($code)
+    {
+        $country = $this->repository->findOneByCadastralCode($code);
+        return $country->getCode();
+    }
 }
