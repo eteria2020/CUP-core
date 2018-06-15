@@ -223,8 +223,6 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
             $batteryCondition = " AND t.batteryEnd IS NOT NULL AND t.batteryEnd < " . $batteryEnd ." ";
         }
 
-        var_dump($fleets);
-
         if(!is_null($fleets)) {
             if(count($fleets) > 0) {
                 $fleetCondition = " AND t.fleet IN (" . implode(",", $fleets) . ") ";
