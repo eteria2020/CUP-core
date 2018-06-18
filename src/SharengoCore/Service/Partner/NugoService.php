@@ -27,11 +27,6 @@ class NugoService
     const PAYMENT_LABEL = 'NUGOPAY';
 
     /**
-     * @var EventManager
-     */
-    private $events;
-
-    /**
      *
      * @var string
      */
@@ -73,24 +68,16 @@ class NugoService
      */
     private $driversLicenseValidationService;
 
-    /**
-     *
-     * @var CountriesService 
-     */
-    private $countriesService;
 
     public function __construct(
-        EventManager $events,
         EntityManager $entityManager,
         CustomersRepository $customersRepository,
         PartnersRepository $partnersRepository,
         FleetService $fleetService,
         ProvincesRepository $provincesRepository,
         UserEventsService $userEventsService,
-        DriversLicenseValidationService $driversLicenseValidationService,
-        CountriesService $countriesService
+        DriversLicenseValidationService $driversLicenseValidationService
     ) {
-        $this->events = $events;
         $this->entityManager = $entityManager;
         $this->customersRepository = $customersRepository;
         $this->partnersRepository = $partnersRepository;
@@ -98,7 +85,6 @@ class NugoService
         $this->provincesRepository = $provincesRepository;
         $this->userEventsService = $userEventsService;
         $this->driversLicenseValidationService = $driversLicenseValidationService;
-        $this->countriesService = $countriesService;
     }
 
     /**
@@ -800,22 +786,22 @@ class NugoService
      */
     private function newDriverLicenseEvent(Customers $customer) {
 
-        $data = [
-            'email' => $customer->getEmail(),
-            'driverLicense' => $customer->getDriverLicense(),
-            'taxCode' => $customer->getTaxCode(),
-            'driverLicenseName' => $customer->getDriverLicenseName(),
-            'driverLicenseSurname' => $customer->getDriverLicenseSurname(),
-            'birthDate' => ['date' => $customer->getBirthDate()->format('Y-m-d')],
-            'birthCountry' => $customer->getBirthCountry(),
-            'birthProvince' => $customer->getBirthProvince(),
-            'birthTown' => $customer->getBirthTown()
-        ];
-
-        $data['birthCountryMCTC'] = $this->countriesService->getMctcCode($data['birthCountry']);
-        $data['birthProvince'] = $this->driversLicenseValidationService->changeProvinceForValidationDriverLicense($data);
-
-        $this->events->trigger('secondFormCompleted', $this, $data); //driver license validation
+//        $data = [
+//            'email' => $customer->getEmail(),
+//            'driverLicense' => $customer->getDriverLicense(),
+//            'taxCode' => $customer->getTaxCode(),
+//            'driverLicenseName' => $customer->getDriverLicenseName(),
+//            'driverLicenseSurname' => $customer->getDriverLicenseSurname(),
+//            'birthDate' => ['date' => $customer->getBirthDate()->format('Y-m-d')],
+//            'birthCountry' => $customer->getBirthCountry(),
+//            'birthProvince' => $customer->getBirthProvince(),
+//            'birthTown' => $customer->getBirthTown()
+//        ];
+//
+//        $data['birthCountryMCTC'] = $this->countriesService->getMctcCode($data['birthCountry']);
+//        $data['birthProvince'] = $this->driversLicenseValidationService->changeProvinceForValidationDriverLicense($data);
+//
+//        $this->events->trigger('secondFormCompleted', $this, $data); //driver license validation
     }
 }
 
