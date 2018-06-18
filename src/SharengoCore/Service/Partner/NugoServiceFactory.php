@@ -18,7 +18,9 @@ class NugoServiceFactory implements FactoryInterface
 
         $fleetService = $serviceLocator->get('SharengoCore\Service\FleetService');
         $userEventsService = $serviceLocator->get('SharengoCore\Service\UserEventsService');
+        $countriesService = $serviceLocator->get('SharengoCore\Service\CountriesService');
         $driversLicenseValidationService = $serviceLocator->get('SharengoCore\Service\DriversLicenseValidationService');
+        $portaleAutomobilistaValidationService = $serviceLocator->get('MvLabsDriversLicenseValidation\PortaleAutomobilista');
 
         return new NugoService(
             $entityManager,
@@ -27,7 +29,9 @@ class NugoServiceFactory implements FactoryInterface
             $fleetService,
             $provincesRepository,
             $userEventsService,
-            $driversLicenseValidationService
+            $countriesService,
+            $driversLicenseValidationService,
+            $portaleAutomobilistaValidationService
         );
     }
 }

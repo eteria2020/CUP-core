@@ -7,6 +7,7 @@ use SharengoCore\Service\FleetService;
 use SharengoCore\Service\UserEventsService;
 use SharengoCore\Service\DriversLicenseValidationService;
 use SharengoCore\Service\CountriesService;
+use MvLabsDriversLicenseValidation\Service\PortaleAutomobilistaValidationService;
 
 use SharengoCore\Entity\Repository\CustomersRepository;
 use SharengoCore\Entity\Repository\PartnersRepository;
@@ -62,12 +63,15 @@ class NugoService
      */
     private $userEventsService;
 
+    private $countriesService;
+
     /**
      *
      * @var DriversLicenseValidationService 
      */
     private $driversLicenseValidationService;
 
+    private $portaleAutomobilistaValidationService;
 
     public function __construct(
         EntityManager $entityManager,
@@ -76,7 +80,9 @@ class NugoService
         FleetService $fleetService,
         ProvincesRepository $provincesRepository,
         UserEventsService $userEventsService,
-        DriversLicenseValidationService $driversLicenseValidationService
+        CountriesService $countriesService,
+        DriversLicenseValidationService $driversLicenseValidationService,
+        PortaleAutomobilistaValidationService $portaleAutomobilistaValidationService
     ) {
         $this->entityManager = $entityManager;
         $this->customersRepository = $customersRepository;
@@ -84,7 +90,9 @@ class NugoService
         $this->fleetService = $fleetService;
         $this->provincesRepository = $provincesRepository;
         $this->userEventsService = $userEventsService;
+        $this->countriesService = $countriesService;
         $this->driversLicenseValidationService = $driversLicenseValidationService;
+        $this->portaleAutomobilistaValidationService = $portaleAutomobilistaValidationService;
     }
 
     /**
@@ -637,7 +645,7 @@ class NugoService
             //$result = $this->customersService->getUserFromHash($hash);  //TODO: improve
             $this->newPartnersCustomers($partner, $customer);
             $contract = $this->newContract($partner, $customer);
-            $this->newDriverLicenseEvent($customer);
+            $this->newDriverLicenseEvent($customer, $data['drivingLicense']);
 //            $this->newTransaction($contract, 0, 'EUR', self::PAYMENT_LABEL, strtoupper($this->partnerName).'+'.self::PAYMENT_LABEL.'+PREPAID+-+-N', true);
 //            $this->newDriverLicenseValidation($customer, $data['drivingLicense']);
 //            $this->newCustomerDeactivations($customer,  $data['drivingLicense']);
@@ -784,7 +792,7 @@ class NugoService
      * 
      * @param Customers $customer
      */
-    private function newDriverLicenseEvent(Customers $customer) {
+    private function newDriverLicenseEvent(Customers $customer, $drivingLicense) {
 
 //        $data = [
 //            'email' => $customer->getEmail(),
@@ -802,6 +810,38 @@ class NugoService
 //        $data['birthProvince'] = $this->driversLicenseValidationService->changeProvinceForValidationDriverLicense($data);
 //
 //        $this->events->trigger('secondFormCompleted', $this, $data); //driver license validation
+        
+        $result = false;
+
+        $details = array('deactivation' => $drivingLicense);
+        $customerDeactivations = new CustomerDeactivation($customer, CustomerDeactivation::INVALID_DRIVERS_LICENSE, $details);
+
+        $data = [
+            'email' => $customer->getEmail(),
+            'driverLicense' => $customer->getDriverLicense(),
+            'taxCode' => $customer->getTaxCode(),
+            'driverLicenseName' => $customer->getDriverLicenseName(),
+            'driverLicenseSurname' => $customer->getDriverLicenseSurname(),
+            'birthDate' => ['date' => $customer->getBirthDate()->format('Y-m-d')],
+            'birthCountry' => $customer->getBirthCountry(),
+            'birthProvince' => $customer->getBirthProvince(),
+            'birthTown' => $customer->getBirthTown()
+        ];
+
+        $data['birthCountryMCTC'] = $this->countriesService->getMctcCode($data['birthCountry']);
+        $data['birthProvince'] = $this->driversLicenseValidationService->changeProvinceForValidationDriverLicense($data);
+
+        $response = $this->portaleAutomobilistaValidationService->validateDriversLicense($data);
+        $this->driversLicenseValidationService->addFromResponse($customer, $response, $data);
+        if ($response->valid()) {
+            $details = array('reactivation' => $drivingLicense,);
+            $customerDeactivations->reactivate($details, date_create(), null);
+            $result = true;
+        } else {
+
+        }
+
+        return $result;
     }
 }
 
