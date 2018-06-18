@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Service;
 
+use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Repository\CustomersRepository;
 use SharengoCore\Entity\Repository\PartnersRepository;
 use SharengoCore\Entity\Partners;
