@@ -11,17 +11,17 @@ class SafoPenalty implements DatatableQueryBuilderInterface
     /**
      * @var string
      */
-    //private $joinType;
+    private $joinType;
 
-    public function __construct(DatatableQueryBuilderInterface $queryBuilder)
+    public function __construct(DatatableQueryBuilderInterface $queryBuilder, $joinType = 'LEFT')
     {
         $this->queryBuilder = $queryBuilder;
-        //$this->joinType = $joinType;
+        $this->joinType = $joinType;
     }
 
     public function select()
     {
-        return $this->queryBuilder->select();
+        return $this->queryBuilder->select() . ', e';
     }
 
     public function join()

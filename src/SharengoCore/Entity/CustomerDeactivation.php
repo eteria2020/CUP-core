@@ -50,6 +50,11 @@ class CustomerDeactivation
     const FAILED_EXTRA_PAYMENT = 'FAILED_EXTRA_PAYMENT';
 
     /**
+     * @var string
+     */
+    const REGISTRATION_NOT_COMPLETED = 'REGISTRATION_NOT_COMPLETED';
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
@@ -194,6 +199,9 @@ class CustomerDeactivation
                 break;
             case self::FAILED_EXTRA_PAYMENT:
                 return 'Pagamento penale fallito';
+                break;
+            case self::REGISTRATION_NOT_COMPLETED:
+                return 'Registrazione non completata';
                 break;
         }
     }
