@@ -6,6 +6,7 @@ use Zend\EventManager\EventManager;
 use SharengoCore\Service\FleetService;
 use SharengoCore\Service\UserEventsService;
 use SharengoCore\Service\DriversLicenseValidationService;
+use SharengoCore\Service\CountriesService;
 
 use SharengoCore\Entity\Repository\CustomersRepository;
 use SharengoCore\Entity\Repository\PartnersRepository;
@@ -72,6 +73,12 @@ class NugoService
      */
     private $driversLicenseValidationService;
 
+    /**
+     *
+     * @var CountriesService 
+     */
+    private $countriesService;
+
     public function __construct(
         EventManager $events,
         EntityManager $entityManager,
@@ -80,7 +87,8 @@ class NugoService
         FleetService $fleetService,
         ProvincesRepository $provincesRepository,
         UserEventsService $userEventsService,
-        DriversLicenseValidationService $driversLicenseValidationService
+        DriversLicenseValidationService $driversLicenseValidationService,
+        CountriesService $countriesService
     ) {
         $this->events = $events;
         $this->entityManager = $entityManager;
@@ -90,6 +98,7 @@ class NugoService
         $this->provincesRepository = $provincesRepository;
         $this->userEventsService = $userEventsService;
         $this->driversLicenseValidationService = $driversLicenseValidationService;
+        $this->countriesService = $countriesService;
     }
 
     /**
