@@ -1,6 +1,7 @@
 <?php
 
 namespace SharengoCore\Service\Partner;
+use Zend\EventManager\EventManager;
 
 use SharengoCore\Service\FleetService;
 use SharengoCore\Service\UserEventsService;
@@ -23,6 +24,11 @@ class NugoService
 {
 
     const PAYMENT_LABEL = 'NUGOPAY';
+
+    /**
+     * @var EventManager
+     */
+    private $events;
 
     /**
      *
@@ -67,6 +73,7 @@ class NugoService
     private $driversLicenseValidationService;
 
     public function __construct(
+        EventManager $events,
         EntityManager $entityManager,
         CustomersRepository $customersRepository,
         PartnersRepository $partnersRepository,
@@ -75,6 +82,7 @@ class NugoService
         UserEventsService $userEventsService,
         DriversLicenseValidationService $driversLicenseValidationService
     ) {
+        $this->events = $events;
         $this->entityManager = $entityManager;
         $this->customersRepository = $customersRepository;
         $this->partnersRepository = $partnersRepository;
@@ -615,7 +623,7 @@ class NugoService
             $hash = hash("MD5", strtoupper($data['email']).strtoupper($data['password']));
             $customer->setHash($hash);
 
-            $customer->setEnabled(true);
+//            $customer->setEnabled(true);
             $customer->setFirstPaymentCompleted(true);
             $customer->setRegistrationCompleted(true);
             $customer->setDiscountRate(0);
@@ -634,9 +642,12 @@ class NugoService
             //$result = $this->customersService->getUserFromHash($hash);  //TODO: improve
             $this->newPartnersCustomers($partner, $customer);
             $contract = $this->newContract($partner, $customer);
-            $this->newTransaction($contract, 0, 'EUR', self::PAYMENT_LABEL, strtoupper($this->partnerName).'+'.self::PAYMENT_LABEL.'+PREPAID+-+-N', true);
-            $this->newDriverLicenseValidation($customer, $data['drivingLicense']);
-            $this->newCustomerDeactivations($customer,  $data['drivingLicense']);
+            $this->newDriverLicenseEvent($customer);
+//            $this->newTransaction($contract, 0, 'EUR', self::PAYMENT_LABEL, strtoupper($this->partnerName).'+'.self::PAYMENT_LABEL.'+PREPAID+-+-N', true);
+//            $this->newDriverLicenseValidation($customer, $data['drivingLicense']);
+//            $this->newCustomerDeactivations($customer,  $data['drivingLicense']);
+
+
             $result = $customer;
             $this->entityManager->getConnection()->commit();
 
@@ -772,6 +783,30 @@ class NugoService
         $this->entityManager->flush();
 
         return $customerDeactivations;
+    }
+
+    /**
+     * 
+     * @param Customers $customer
+     */
+    private function newDriverLicenseEvent(Customers $customer) {
+
+        $data = [
+            'email' => $customer->getEmail(),
+            'driverLicense' => $customer->getDriverLicense(),
+            'taxCode' => $customer->getTaxCode(),
+            'driverLicenseName' => $customer->getDriverLicenseName(),
+            'driverLicenseSurname' => $customer->getDriverLicenseSurname(),
+            'birthDate' => ['date' => $customer->getBirthDate()->format('Y-m-d')],
+            'birthCountry' => $customer->getBirthCountry(),
+            'birthProvince' => $customer->getBirthProvince(),
+            'birthTown' => $customer->getBirthTown()
+        ];
+
+        $data['birthCountryMCTC'] = $this->countriesService->getMctcCode($data['birthCountry']);
+        $data['birthProvince'] = $this->driversLicenseValidationService->changeProvinceForValidationDriverLicense($data);
+
+        $this->events->trigger('secondFormCompleted', $this, $data); //driver license validation
     }
 }
 
