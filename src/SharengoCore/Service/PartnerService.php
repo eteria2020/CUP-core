@@ -29,13 +29,11 @@ class PartnerService implements ValidatorServiceInterface
     private $customersRepository;
 
     /**
-     *
      * @var CountriesService 
      */
     private $countriesService;
 
     /**
-     *
      * @var DriversLicenseValidationService 
      */
     private $driversLicenseValidationService;
@@ -136,27 +134,4 @@ class PartnerService implements ValidatorServiceInterface
         return $result;
     }
 
-
-    public function getDataForDriverLicenseValidation(Partners $partner, Customers $customer){
-        $result = null;
-
-        if ($partner->getCode() == $this->nugoService->getPartnerName()) {
-            $result = [
-                'email' => $customer->getEmail(),
-                'driverLicense' => $customer->getDriverLicense(),
-                'taxCode' => $customer->getTaxCode(),
-                'driverLicenseName' => $customer->getDriverLicenseName(),
-                'driverLicenseSurname' => $customer->getDriverLicenseSurname(),
-                'birthDate' => ['date' => $customer->getBirthDate()->format('Y-m-d')],
-                'birthCountry' => $customer->getBirthCountry(),
-                'birthProvince' => $customer->getBirthProvince(),
-                'birthTown' => $customer->getBirthTown()
-            ];
-
-            $result['birthCountryMCTC'] = $this->countriesService->getMctcCode($result['birthCountry']);
-            $result['birthProvince'] = $this->driversLicenseValidationService->changeProvinceForValidationDriverLicense($result);
-        }
-
-        return $result;
-    }
 }

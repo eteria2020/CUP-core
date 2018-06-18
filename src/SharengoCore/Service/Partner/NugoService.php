@@ -645,7 +645,7 @@ class NugoService
             //$result = $this->customersService->getUserFromHash($hash);  //TODO: improve
             $this->newPartnersCustomers($partner, $customer);
             $contract = $this->newContract($partner, $customer);
-            $this->newDriverLicenseEvent($customer, $data['drivingLicense']);
+            $this->newDriverLicenseDirectValidation($customer, $data['drivingLicense']);
 //            $this->newTransaction($contract, 0, 'EUR', self::PAYMENT_LABEL, strtoupper($this->partnerName).'+'.self::PAYMENT_LABEL.'+PREPAID+-+-N', true);
 //            $this->newDriverLicenseValidation($customer, $data['drivingLicense']);
 //            $this->newCustomerDeactivations($customer,  $data['drivingLicense']);
@@ -791,30 +791,17 @@ class NugoService
     /**
      * 
      * @param Customers $customer
+     * @param string $drivingLicense
+     * @return Response
      */
-    private function newDriverLicenseEvent(Customers $customer, $drivingLicense) {
+    private function newDriverLicenseDirectValidation(Customers $customer, $drivingLicense) {
 
-//        $data = [
-//            'email' => $customer->getEmail(),
-//            'driverLicense' => $customer->getDriverLicense(),
-//            'taxCode' => $customer->getTaxCode(),
-//            'driverLicenseName' => $customer->getDriverLicenseName(),
-//            'driverLicenseSurname' => $customer->getDriverLicenseSurname(),
-//            'birthDate' => ['date' => $customer->getBirthDate()->format('Y-m-d')],
-//            'birthCountry' => $customer->getBirthCountry(),
-//            'birthProvince' => $customer->getBirthProvince(),
-//            'birthTown' => $customer->getBirthTown()
-//        ];
-//
-//        $data['birthCountryMCTC'] = $this->countriesService->getMctcCode($data['birthCountry']);
-//        $data['birthProvince'] = $this->driversLicenseValidationService->changeProvinceForValidationDriverLicense($data);
-//
-//        $this->events->trigger('secondFormCompleted', $this, $data); //driver license validation
-        
-        $result = false;
+        $response = null;
 
         $details = array('deactivation' => $drivingLicense);
         $customerDeactivations = new CustomerDeactivation($customer, CustomerDeactivation::INVALID_DRIVERS_LICENSE, $details);
+        $this->entityManager->persist($customerDeactivations);
+        $this->entityManager->flush();
 
         $data = [
             'email' => $customer->getEmail(),
@@ -836,12 +823,9 @@ class NugoService
         if ($response->valid()) {
             $details = array('reactivation' => $drivingLicense,);
             $customerDeactivations->reactivate($details, date_create(), null);
-            $result = true;
-        } else {
-
         }
 
-        return $result;
+        return $response;
     }
 }
 
