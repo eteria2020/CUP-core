@@ -645,8 +645,11 @@ class NugoService
             //$result = $this->customersService->getUserFromHash($hash);  //TODO: improve
             $this->newPartnersCustomers($partner, $customer);
             $contract = $this->newContract($partner, $customer);
+
+            $this->newTransaction($contract, 0, 'EUR', self::PAYMENT_LABEL, strtoupper($this->partnerName).'+'.self::PAYMENT_LABEL.'+PREPAID+-+-N', true);
             $this->newDriverLicenseDirectValidation($customer, $data['drivingLicense']);
-//            $this->newTransaction($contract, 0, 'EUR', self::PAYMENT_LABEL, strtoupper($this->partnerName).'+'.self::PAYMENT_LABEL.'+PREPAID+-+-N', true);
+
+//            
 //            $this->newDriverLicenseValidation($customer, $data['drivingLicense']);
 //            $this->newCustomerDeactivations($customer,  $data['drivingLicense']);
 
