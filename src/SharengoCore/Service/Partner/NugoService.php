@@ -828,6 +828,10 @@ class NugoService
             $customerDeactivations->reactivate($details, date_create(), null);
             $this->entityManager->persist($customerDeactivations);
             $this->entityManager->flush();
+
+            $customer->setEnabled(true);
+            $this->entityManager->persist($customer);
+            $this->entityManager->flush();
         }
 
         return $response;
