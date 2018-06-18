@@ -4,10 +4,13 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Repository\CustomersRepository;
 use SharengoCore\Entity\Repository\PartnersRepository;
+use SharengoCore\Entity\Partners;
+
 use SharengoCore\Service\FleetService;
 use SharengoCore\Service\Partner\TelepassService;
 use SharengoCore\Service\Partner\NugoService;
-use SharengoCore\Entity\Partners;
+use SharengoCore\Service\CountriesService;
+use SharengoCore\Service\DriversLicenseValidationService;
 
 use Doctrine\ORM\EntityManager;
 
@@ -23,6 +26,18 @@ class PartnerService implements ValidatorServiceInterface
      * @var CustomersRepository
      */
     private $customersRepository;
+
+    /**
+     *
+     * @var CountriesService 
+     */
+    private $countriesService;
+
+    /**
+     *
+     * @var DriversLicenseValidationService 
+     */
+    private $driversLicenseValidationService;
 
     /**
      * @var CustomersRepository
@@ -48,6 +63,8 @@ class PartnerService implements ValidatorServiceInterface
      * 
      * @param EntityManager $entityManager
      * @param CustomersRepository $customersRepository
+     * @param CountriesService $countriesService
+     * @param DriversLicenseValidationService $driversLicenseValidationService
      * @param PartnersRepository $partnersRepository
      * @param FleetService $fleetService
      * @param TelepassService $telepassService
@@ -56,6 +73,8 @@ class PartnerService implements ValidatorServiceInterface
     public function __construct(
         EntityManager $entityManager,
         CustomersRepository $customersRepository,
+        CountriesService $countriesService,
+        DriversLicenseValidationService $driversLicenseValidationService,
         PartnersRepository $partnersRepository,
         FleetService $fleetService,
         TelepassService $telepassService,
@@ -63,6 +82,8 @@ class PartnerService implements ValidatorServiceInterface
     ) {
         $this->entityManager = $entityManager;
         $this->customersRepository = $customersRepository;
+        $this->countriesService = $countriesService;
+        $this->driversLicenseValidationService = $driversLicenseValidationService;
         $this->partnersRepository = $partnersRepository;
         $this->fleetService = $fleetService;
         $this->telepassService = $telepassService;
@@ -114,4 +135,27 @@ class PartnerService implements ValidatorServiceInterface
         return $result;
     }
 
+
+    public function getDataForDriverLicenseValidation(Partners $partner, Customers $customer){
+        $result = null;
+
+        if ($partner->getCode() == $this->nugoService->getPartnerName()) {
+            $result = [
+                'email' => $customer->getEmail(),
+                'driverLicense' => $customer->getDriverLicense(),
+                'taxCode' => $customer->getTaxCode(),
+                'driverLicenseName' => $customer->getDriverLicenseName(),
+                'driverLicenseSurname' => $customer->getDriverLicenseSurname(),
+                'birthDate' => ['date' => $customer->getBirthDate()->format('Y-m-d')],
+                'birthCountry' => $customer->getBirthCountry(),
+                'birthProvince' => $customer->getBirthProvince(),
+                'birthTown' => $customer->getBirthTown()
+            ];
+
+            $result['birthCountryMCTC'] = $this->countriesService->getMctcCode($result['birthCountry']);
+            $result['birthProvince'] = $this->driversLicenseValidationService->changeProvinceForValidationDriverLicense($result);
+        }
+
+        return $result;
+    }
 }

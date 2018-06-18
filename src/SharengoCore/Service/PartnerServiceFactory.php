@@ -12,6 +12,8 @@ class PartnerServiceFactory implements FactoryInterface
     {
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $customersRepository = $entityManager->getRepository('\SharengoCore\Entity\Customers');
+        $countriesService = $serviceLocator->get('SharengoCore\Service\CountriesService');
+        $driversLicenseValidationService = $serviceLocator->get('SharengoCore\Service\DriversLicenseValidationService');
         $partnersRepository = $entityManager->getRepository('\SharengoCore\Entity\Partners');
         $fleetService = $serviceLocator->get('SharengoCore\Service\FleetService');
         $telepassService = $serviceLocator->get('SharengoCore\Service\Partner\TelepassService');
@@ -20,6 +22,8 @@ class PartnerServiceFactory implements FactoryInterface
         return new PartnerService(
             $entityManager,
             $customersRepository,
+            $countriesService,
+            $driversLicenseValidationService,
             $partnersRepository,
             $fleetService,
             $telepassService,
