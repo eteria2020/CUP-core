@@ -826,6 +826,8 @@ class NugoService
         if ($response->valid()) {
             $details = array('reactivation' => $drivingLicense,);
             $customerDeactivations->reactivate($details, date_create(), null);
+            $this->entityManager->persist($customerDeactivations);
+            $this->entityManager->flush();
         }
 
         return $response;
