@@ -15,6 +15,7 @@ class TelepassServiceFactory implements FactoryInterface
         $partnersRepository = $entityManager->getRepository('\SharengoCore\Entity\Partners');
         $provincesRepository = $entityManager->getRepository('\SharengoCore\Entity\Provinces');
 
+        $customersService = $serviceLocator->get('SharengoCore\Service\CustomersService');
         $fleetService = $serviceLocator->get('SharengoCore\Service\FleetService');
         $userEventsService = $serviceLocator->get('SharengoCore\Service\UserEventsService');
         $driversLicenseValidationService = $serviceLocator->get('SharengoCore\Service\DriversLicenseValidationService');
@@ -23,6 +24,7 @@ class TelepassServiceFactory implements FactoryInterface
             $entityManager,
             $customersRepository,
             $partnersRepository,
+            $customersService,
             $fleetService,
             $provincesRepository,
             $userEventsService,

@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Service\Partner;
 
+use SharengoCore\Service\CustomersService;
 use SharengoCore\Service\FleetService;
 use SharengoCore\Service\UserEventsService;
 use SharengoCore\Service\DriversLicenseValidationService;
@@ -45,6 +46,11 @@ class TelepassService
     private $partnersRepository;
 
     /*
+     * @var CustomersService
+     */
+    private $customersService;
+
+    /*
      * @var FleetService
      */
     private $fleetService;
@@ -69,6 +75,7 @@ class TelepassService
         EntityManager $entityManager,
         CustomersRepository $customersRepository,
         PartnersRepository $partnersRepository,
+        CustomersService $customersService,
         FleetService $fleetService,
         ProvincesRepository $provincesRepository,
         UserEventsService $userEventsService,
@@ -77,6 +84,7 @@ class TelepassService
         $this->entityManager = $entityManager;
         $this->customersRepository = $customersRepository;
         $this->partnersRepository = $partnersRepository;
+        $this->customersService = $customersService;
         $this->fleetService = $fleetService;
         $this->provincesRepository = $provincesRepository;
         $this->userEventsService = $userEventsService;
