@@ -24,23 +24,22 @@ class TelepassService
 {
     const PAYMENT_LABEL = 'TPAY';
 
-    /**
-     *
+    /*
      * @var string
      */
     private $partnerName = 'telepass';
 
-    /**
+    /*
      * @var EntityManager
      */
     private $entityManager;
 
-    /**
+    /*
      * @var CustomersRepository
      */
     private $customersRepository;
 
-    /**
+    /*
      * @var CustomersRepository
      */
     private $partnersRepository;
@@ -65,9 +64,8 @@ class TelepassService
      */
     private $userEventsService;
 
-    /**
-     *
-     * @var DriversLicenseValidationService 
+    /*
+     * @var DriversLicenseValidationService
      */
     private $driversLicenseValidationService;
 
@@ -92,7 +90,7 @@ class TelepassService
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function getPartnerName() {
@@ -101,7 +99,7 @@ class TelepassService
 
     /**
      * Signup for customer.
-     * 
+     *
      * @param Partners $partner
      * @param array $contentArray
      * @param array $partnerResponse
@@ -154,7 +152,7 @@ class TelepassService
 
      /**
      * Check the Json data match with the constarints
-     * 
+     *
      * @param array $contentArray
      * @param array $response
      * @return boolean
@@ -365,7 +363,7 @@ class TelepassService
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
                 }
 
-                $key2 = 'city';     //town 
+                $key2 = 'city';     //town
                 $value = $this->getDataFormatedLower($drivingLicense, $key2, FALSE);
                 if (strlen($value) > 0) {
                     $contentArray[$key][$key2] = $value;
@@ -384,7 +382,7 @@ class TelepassService
                 $key2 = 'issueDate';
                 $value = $this->getDataFormatedDateTime($drivingLicense, $key2);
                 if (!is_null($value)) {
-                    
+
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
                 }
@@ -392,7 +390,7 @@ class TelepassService
                 $key2 = 'expirationDate';
                 $value = $this->getDataFormatedDateTime($drivingLicense, $key2);
                 if (!is_null($value)) {
-                    
+
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
                 }
@@ -428,6 +426,17 @@ class TelepassService
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
                 }
+
+                if ($drivingLicense["foreign"]) {
+                    if($drivingLicense["country"]=='IT') {
+                        $strError .= sprintf('Mismatch [%s][%s]. ', 'foreign', 'country');
+                    }
+                } else {
+                    if($drivingLicense["country"]!='IT') {
+                        $strError .= sprintf('Mismatch [%s][%s]. ', 'foreign', 'country');
+                    }
+                }
+
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
             }
@@ -523,7 +532,7 @@ class TelepassService
 
      /**
      * Find a customer tha match email or tax code or driver license
-     * 
+     *
      * @param string $email
      * @param string $taxCode
      * @param string $driverLicense
@@ -551,7 +560,7 @@ class TelepassService
     }
 
     /**
-     * 
+     *
      * @param string $md5
      * @return boolean
      */
@@ -561,7 +570,7 @@ class TelepassService
 
         /**
      * Insert a new customer
-     * 
+     *
      * @param Partners $partner
      * @param type $data
      * @return type
@@ -660,7 +669,7 @@ class TelepassService
 
     /**
      * Create a new Partner-Customer row
-     * 
+     *
      * @param Partners $partner
      * @param Customers $customer
      * @return PartnersCustomers
@@ -679,7 +688,7 @@ class TelepassService
 
      /**
      * Create a new contract
-     * 
+     *
      * @param Partners $partner
      * @param Customers $customer
      * @return Contracts
@@ -698,7 +707,7 @@ class TelepassService
 
     /**
      * Create a new transiction.
-     * 
+     *
      * @param Contracts $contract
      * @param int $amount
      * @param string $currency
@@ -734,7 +743,7 @@ class TelepassService
 
     /**
      * Create a new Driver License Validation
-     * 
+     *
      * @param Customers $customer
      * @param array $drivingLicenseData
      * @return DriversLicenseValidation
@@ -766,7 +775,7 @@ class TelepassService
 
     /**
      * Insert a CustomerDeactivation fake because we consider the driver license from Telepass always valid.
-     * 
+     *
      * @param Customers $customer
      * @param array $drivingLicense
      * @return CustomerDeactivation
