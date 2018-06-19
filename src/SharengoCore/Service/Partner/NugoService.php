@@ -177,6 +177,7 @@ class NugoService
      */
     private function validateAndFormat(&$contentArray, &$response) {
         $strError = "";
+        $errorArray = array();
 
         try {
             $key = 'partnerName';
@@ -185,6 +186,7 @@ class NugoService
                 $contentArray[$key] = $value;
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'gender';
@@ -199,6 +201,7 @@ class NugoService
                 $contentArray[$key] = $value;
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'firstName';  // name
@@ -207,6 +210,7 @@ class NugoService
                 $contentArray[$key] = $value;
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'lastName';   // surname
@@ -215,6 +219,7 @@ class NugoService
                 $contentArray[$key] = $value;
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'birthDate';
@@ -225,9 +230,11 @@ class NugoService
 
                 } else {
                     $strError .= sprintf('Invalid value [%s]. ', $key);
+                    array_push($errorArray, $key);
                 }
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'birthCity'; // birthTown
@@ -236,6 +243,7 @@ class NugoService
                 $contentArray[$key] = strtoupper($value);
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'birthProvince';
@@ -245,6 +253,7 @@ class NugoService
                 $contentArray[$key] = $province->getCode();
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'birthCountry';
@@ -253,6 +262,7 @@ class NugoService
                 $contentArray[$key] = $value;
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'fiscalCode';    //TODO: additional check
@@ -263,6 +273,7 @@ class NugoService
                 $contentArray[$key] = strtoupper($value);
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'vat';
@@ -274,6 +285,7 @@ class NugoService
                     $contentArray[$key] = $value;
                 } else {
                     $strError .= sprintf('Invalid value [%s]. ', $key);
+                    array_push($errorArray, $key);
                 }
             } else {
                 $contentArray[$key] = $value;
@@ -289,6 +301,7 @@ class NugoService
                 $contentArray[$key] = $value;
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'email'; //TODO: additional check
@@ -297,6 +310,7 @@ class NugoService
                 $contentArray[$key] = $value;
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'password';
@@ -305,6 +319,7 @@ class NugoService
                 $contentArray[$key] = $value;
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'pin';
@@ -313,6 +328,7 @@ class NugoService
                 $contentArray[$key] = $value;
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'address';
@@ -324,6 +340,7 @@ class NugoService
                     $contentArray[$key][$key2] = $value;
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
+                    array_push($errorArray, $key.'.'.$key2);
                 }
 
                 $key2 = 'city';     //town
@@ -332,6 +349,7 @@ class NugoService
                     $contentArray['address'][$key2] = $value;
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
+                    array_push($errorArray, $key.'.'.$key2);
                 }
 
                 $key2 = 'zip';
@@ -340,6 +358,7 @@ class NugoService
                     $contentArray['address'][$key2] = $value;
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
+                    array_push($errorArray, $key.'.'.$key2);
                 }
 
                 $key2 = 'province';
@@ -349,6 +368,7 @@ class NugoService
                     $contentArray['address'][$key2] = $province->getCode();
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
+                    array_push($errorArray, $key.'.'.$key2);
                 }
 
                 $key2 = 'country';
@@ -357,9 +377,11 @@ class NugoService
                     $contentArray['address'][$key2] = $value;
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
+                    array_push($errorArray, $key.'.'.$key2);
                 }
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'drivingLicense';
@@ -372,6 +394,7 @@ class NugoService
                     $contentArray[$key][$key2] = strtoupper($value);
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
+                    array_push($errorArray, $key.'.'.$key2);
                 }
 
                 $key2 = 'country';
@@ -380,6 +403,7 @@ class NugoService
                     $contentArray[$key][$key2] = $value;
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
+                    array_push($errorArray, $key.'.'.$key2);
                 }
 
                 $key2 = 'city';     //town
@@ -388,6 +412,7 @@ class NugoService
                     $contentArray[$key][$key2] = $value;
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
+                    array_push($errorArray, $key.'.'.$key2);
                 }
 
                 $key2 = 'issuedBy';
@@ -396,6 +421,7 @@ class NugoService
                     $contentArray[$key][$key2] = strtoupper($value);
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
+                    array_push($errorArray, $key.'.'.$key2);
                 }
 
                 $key2 = 'issueDate';
@@ -404,6 +430,7 @@ class NugoService
 
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
+                    array_push($errorArray, $key.'.'.$key2);
                 }
 
                 $key2 = 'expirationDate';
@@ -412,6 +439,7 @@ class NugoService
 
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
+                    array_push($errorArray, $key.'.'.$key2);
                 }
 
                 $key2 = 'firstName';    // firstname
@@ -420,6 +448,7 @@ class NugoService
                     $contentArray[$key][$key2] = $value;
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
+                    array_push($errorArray, $key.'.'.$key2);
                 }
 
                 $key2 = 'lastName';      // surname
@@ -428,6 +457,7 @@ class NugoService
                     $contentArray[$key][$key2] = $value;
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
+                    array_push($errorArray, $key.'.'.$key2);
                 }
 
                 $key2 = 'category';
@@ -436,6 +466,7 @@ class NugoService
                     $contentArray[$key][$key2] = strtoupper($value);
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
+                    array_push($errorArray, $key.'.'.$key2);
                 }
 
                 $key2 = 'foreign';
@@ -444,20 +475,24 @@ class NugoService
 
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
+                    array_push($errorArray, $key.'.'.$key2);
                 }
 
                 if ($drivingLicense["foreign"]) {
                     if($drivingLicense["country"]=='IT') {
                         $strError .= sprintf('Mismatch [%s][%s]. ', 'foreign', 'country');
+                        array_push($errorArray, $key.'.'.$key2);
                     }
                 } else {
                     if($drivingLicense["country"]!='IT') {
                         $strError .= sprintf('Mismatch [%s][%s]. ', 'foreign', 'country');
+                        array_push($errorArray, $key.'.'.$key2);
                     }
                 }
 
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'generalCondition1';
@@ -466,6 +501,7 @@ class NugoService
 
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'generalCondition2';
@@ -474,6 +510,7 @@ class NugoService
 
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'privacyCondition';
@@ -482,6 +519,7 @@ class NugoService
 
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             $key = 'privacyInformation';
@@ -490,6 +528,7 @@ class NugoService
 
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
+                array_push($errorArray, $key);
             }
 
             if ($strError == '') {
@@ -502,6 +541,7 @@ class NugoService
                     "status" => 401,
                     "statusFromProvider" => false,
                     "message" => $strError,
+                    "error" => json_encode($errorArray)
                 );
             }
         } catch (\Exception $ex) {
