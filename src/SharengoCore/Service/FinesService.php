@@ -147,7 +147,7 @@ class FinesService
         $fine = $fine->setCharged(true);
         
         $this->entityManager->persist($fine);
-        $this->entityManager->flush();
+        //$this->entityManager->flush();
         
         return $extra_payment;
     }
