@@ -16,6 +16,7 @@ class NugoServiceFactory implements FactoryInterface
         $partnersRepository = $entityManager->getRepository('\SharengoCore\Entity\Partners');
         $provincesRepository = $entityManager->getRepository('\SharengoCore\Entity\Provinces');
 
+        $customersService = $serviceLocator->get('SharengoCore\Service\CustomersService');
         $fleetService = $serviceLocator->get('SharengoCore\Service\FleetService');
         $userEventsService = $serviceLocator->get('SharengoCore\Service\UserEventsService');
         $countriesService = $serviceLocator->get('SharengoCore\Service\CountriesService');
@@ -26,6 +27,7 @@ class NugoServiceFactory implements FactoryInterface
             $entityManager,
             $customersRepository,
             $partnersRepository,
+            $customersService,
             $fleetService,
             $provincesRepository,
             $userEventsService,

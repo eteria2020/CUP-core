@@ -3,6 +3,7 @@
 namespace SharengoCore\Service\Partner;
 use Zend\EventManager\EventManager;
 
+use SharengoCore\Service\CustomersService;
 use SharengoCore\Service\FleetService;
 use SharengoCore\Service\UserEventsService;
 use SharengoCore\Service\DriversLicenseValidationService;
@@ -49,6 +50,11 @@ class NugoService
     private $partnersRepository;
 
     /*
+     * @var CustomerService
+     */
+    private $customersService;
+
+    /*
      * @var FleetService
      */
     private $fleetService;
@@ -77,6 +83,7 @@ class NugoService
         EntityManager $entityManager,
         CustomersRepository $customersRepository,
         PartnersRepository $partnersRepository,
+        CustomersService $customersService,
         FleetService $fleetService,
         ProvincesRepository $provincesRepository,
         UserEventsService $userEventsService,
@@ -87,6 +94,7 @@ class NugoService
         $this->entityManager = $entityManager;
         $this->customersRepository = $customersRepository;
         $this->partnersRepository = $partnersRepository;
+        $this->customersService = $customersService;
         $this->fleetService = $fleetService;
         $this->provincesRepository = $provincesRepository;
         $this->userEventsService = $userEventsService;
