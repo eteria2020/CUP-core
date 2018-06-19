@@ -18,17 +18,17 @@ use Doctrine\ORM\EntityManager;
 class PartnerService implements ValidatorServiceInterface
 {
 
-    /**
+    /*
      * @var EntityManager
      */
     private $entityManager;
 
-    /**
+    /*
      * @var CustomersRepository
      */
     private $customersRepository;
 
-    /**
+    /*
      * @var CountriesService 
      */
     private $countriesService;
@@ -38,7 +38,7 @@ class PartnerService implements ValidatorServiceInterface
      */
     private $driversLicenseValidationService;
 
-    /**
+    /*
      * @var CustomersRepository
      */
     private $partnersRepository;

@@ -28,23 +28,22 @@ class NugoService
 
     const PAYMENT_LABEL = 'NUGOPAY';
 
-    /**
-     *
+    /*
      * @var string
      */
     private $partnerName = 'nugo';
 
-    /**
+    /*
      * @var EntityManager
      */
     private $entityManager;
 
-    /**
+    /*
      * @var CustomersRepository
      */
     private $customersRepository;
 
-    /**
+    /*
      * @var CustomersRepository
      */
     private $partnersRepository;
@@ -69,14 +68,19 @@ class NugoService
      */
     private $userEventsService;
 
+    /*
+     * @var CountriesService
+     */
     private $countriesService;
 
-    /**
-     *
-     * @var DriversLicenseValidationService 
+    /*
+     * @var DriversLicenseValidationService
      */
     private $driversLicenseValidationService;
 
+    /*
+     * @var PortaleAutomobilistaValidationService
+     */
     private $portaleAutomobilistaValidationService;
 
     public function __construct(
@@ -104,7 +108,7 @@ class NugoService
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function getPartnerName() {
@@ -113,7 +117,7 @@ class NugoService
 
     /**
      * Signup for customer.
-     * 
+     *
      * @param Partners $partner
      * @param array $contentArray
      * @param array $partnerResponse
@@ -166,7 +170,7 @@ class NugoService
 
      /**
      * Check the Json data match with the constarints
-     * 
+     *
      * @param array $contentArray
      * @param array $response
      * @return boolean
@@ -378,7 +382,7 @@ class NugoService
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
                 }
 
-                $key2 = 'city';     //town 
+                $key2 = 'city';     //town
                 $value = $this->getDataFormatedLower($drivingLicense, $key2, FALSE);
                 if (strlen($value) > 0) {
                     $contentArray[$key][$key2] = $value;
@@ -397,7 +401,7 @@ class NugoService
                 $key2 = 'issueDate';
                 $value = $this->getDataFormatedDateTime($drivingLicense, $key2);
                 if (!is_null($value)) {
-                    
+
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
                 }
@@ -405,7 +409,7 @@ class NugoService
                 $key2 = 'expirationDate';
                 $value = $this->getDataFormatedDateTime($drivingLicense, $key2);
                 if (!is_null($value)) {
-                    
+
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
                 }
@@ -441,6 +445,17 @@ class NugoService
                 } else {
                     $strError .= sprintf('Invalid value [%s][%s]. ', $key, $key2);
                 }
+
+                if ($drivingLicense["foreign"]) {
+                    if($drivingLicense["country"]=='IT') {
+                        $strError .= sprintf('Mismatch [%s][%s]. ', 'foreign', 'country');
+                    }
+                } else {
+                    if($drivingLicense["country"]!='IT') {
+                        $strError .= sprintf('Mismatch [%s][%s]. ', 'foreign', 'country');
+                    }
+                }
+
             } else {
                 $strError .= sprintf('Invalid value [%s]. ', $key);
             }
@@ -536,7 +551,7 @@ class NugoService
 
      /**
      * Find a customer tha match email or tax code or driver license
-     * 
+     *
      * @param string $email
      * @param string $taxCode
      * @param string $driverLicense
@@ -564,7 +579,7 @@ class NugoService
     }
 
     /**
-     * 
+     *
      * @param string $md5
      * @return boolean
      */
@@ -574,7 +589,7 @@ class NugoService
 
         /**
      * Insert a new customer
-     * 
+     *
      * @param Partners $partner
      * @param type $data
      * @return type
@@ -662,7 +677,7 @@ class NugoService
             $this->newTransaction($contract, 0, 'EUR', self::PAYMENT_LABEL, strtoupper($this->partnerName).'+'.self::PAYMENT_LABEL.'+PREPAID+-+-N', true);
             $this->newDriverLicenseDirectValidation($customer, $data['drivingLicense']);
 
-//            
+//
 //            $this->newDriverLicenseValidation($customer, $data['drivingLicense']);
 //            $this->newCustomerDeactivations($customer,  $data['drivingLicense']);
 
@@ -679,7 +694,7 @@ class NugoService
 
     /**
      * Create a new Partner-Customer row
-     * 
+     *
      * @param Partners $partner
      * @param Customers $customer
      * @return PartnersCustomers
@@ -698,7 +713,7 @@ class NugoService
 
      /**
      * Create a new contract
-     * 
+     *
      * @param Partners $partner
      * @param Customers $customer
      * @return Contracts
@@ -717,7 +732,7 @@ class NugoService
 
     /**
      * Create a new transiction.
-     * 
+     *
      * @param Contracts $contract
      * @param int $amount
      * @param string $currency
@@ -753,7 +768,7 @@ class NugoService
 
     /**
      * Create a new Driver License Validation
-     * 
+     *
      * @param Customers $customer
      * @param array $drivingLicenseData
      * @return DriversLicenseValidation
@@ -785,7 +800,7 @@ class NugoService
 
     /**
      * Insert a CustomerDeactivation fake because we consider the driver license from Nugo always valid.
-     * 
+     *
      * @param Customers $customer
      * @param array $drivingLicense
      * @return CustomerDeactivation
@@ -805,7 +820,7 @@ class NugoService
     }
 
     /**
-     * 
+     *
      * @param Customers $customer
      * @param string $drivingLicense
      * @return Response
