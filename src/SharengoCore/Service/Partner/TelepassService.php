@@ -115,6 +115,7 @@ class TelepassService
                 if (!is_null($customerNew)) {
                     $partnerResponse = array(
                         "created" => true,
+                        "enabled" => $customerNew->getEnabled(),
                         "userId" => $customerNew->getId(),
                         "password" => $customerNew->getPassword(),
                         "pin" => $customerNew->getPrimaryPin()
@@ -130,6 +131,7 @@ class TelepassService
             } else { // customer alredy exist
                 $partnerResponse = array(
                     "created" => false,
+                    "enabled" => $customerOld->getEnabled(),
                     "userId" => $customerOld->getId(),
                     "password" => $customerOld->getPassword(),
                     "pin" => $customerOld->getPrimaryPin(),
@@ -629,6 +631,8 @@ class TelepassService
 
             $this->entityManager->persist($customer);
             $this->entityManager->flush();
+
+            $this->customersService->assignCard($customer);
 
             //$result = $this->customersService->getUserFromHash($hash);  //TODO: improve
             $this->newPartnersCustomers($partner, $customer);

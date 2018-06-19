@@ -645,6 +645,8 @@ class NugoService
             $this->entityManager->persist($customer);
             $this->entityManager->flush();
 
+            $this->customersService->assignCard($customer);
+
             //$result = $this->customersService->getUserFromHash($hash);  //TODO: improve
             $this->newPartnersCustomers($partner, $customer);
             $contract = $this->newContract($partner, $customer);
