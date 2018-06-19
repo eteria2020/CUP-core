@@ -127,6 +127,7 @@ class NugoService
                 if (!is_null($customerNew)) {
                     $partnerResponse = array(
                         "created" => true,
+                        "enabled" => $customerNew->getEnabled(),
                         "userId" => $customerNew->getId(),
                         "password" => $customerNew->getPassword(),
                         "pin" => $customerNew->getPrimaryPin()
@@ -142,6 +143,7 @@ class NugoService
             } else { // customer alredy exist
                 $partnerResponse = array(
                     "created" => false,
+                    "enabled" => $customerOld->getEnabled(),
                     "userId" => $customerOld->getId(),
                     "password" => $customerOld->getPassword(),
                     "pin" => $customerOld->getPrimaryPin(),
@@ -243,7 +245,8 @@ class NugoService
 
             $key = 'fiscalCode';    //TODO: additional check
             $value = $this->getDataFormatedLower($contentArray, $key);
-            $validator = new \Application\Form\Validator\TaxCode();
+            //$validator = new \Application\Form\Validator\TaxCode();
+            $validator = new \Application\Form\Validator\TaxCodeSignup();
             if ($validator->isValid($value)) {
                 $contentArray[$key] = strtoupper($value);
             } else {
