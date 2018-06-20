@@ -1013,7 +1013,6 @@ class CustomersService implements ValidatorServiceInterface
         $customer->setTaxCode('XX' . $customer->getTaxCode());
         $customer->setMobile($customer->getMobile() . '12345');
         $customer->setEnabled(false);
-
         $this->entityManager->persist($customer);
         $this->entityManager->flush();
     }
