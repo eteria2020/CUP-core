@@ -9,7 +9,7 @@ use SharengoCore\Entity\Reservations;
 use SharengoCore\Service\TripPaymentTriesService;
 use SharengoCore\Service\CustomerDeactivationService;
 use SharengoCore\Service\FreeFaresService as FreeFares;
-use SharengoCore\Service\TelepassPayService;
+use SharengoCore\Service\Partner\TelepassPayService;
 use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Repository\ReservationsRepository;
 use SharengoCore\Entity\Customers;
