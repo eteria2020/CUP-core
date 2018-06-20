@@ -750,7 +750,7 @@ class NugoService
      * @param boolean $isCustomerNew
      * @return boolean
      */
-    private function saveCustomer(Partners $partner, $data, Customers &$customer,  &$isCustomerNew = false) {
+    private function saveCustomer(Partners $partner, $data, &$customer,  &$isCustomerNew = false) {
         $result = false;
         $isCustomerNew = false;
 
