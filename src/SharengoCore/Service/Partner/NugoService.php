@@ -134,33 +134,54 @@ class NugoService
                 $contentArray['fiscalCode'],
                 $contentArray['drivingLicense']['number']);
 
-            if (is_null($customerOld)) {    //it's a new customer
-                $customerNew = $this->saveNewCustomer($partner, $contentArray);
-                if (!is_null($customerNew)) {
-                    $partnerResponse = array(
-                        "created" => true,
-                        "enabled" => $customerNew->getEnabled(),
-                        "userId" => $customerNew->getId(),
-                        "password" => $customerNew->getPassword(),
-                        "pin" => $customerNew->getPrimaryPin()
-                    );
-                } else {
-                    $partnerResponse = array(
-                        "uri" => "partner/signup",
-                        "status" => 401,
-                        "statusFromProvider" => false,
-                        "message" => "insert fail"
-                    );
-                }
-            } else { // customer alredy exist
+            $customerNew =$this->updateCustomer($partner, $contentArray, $customerOld);
+
+            if (!is_null($customerNew)) {
                 $partnerResponse = array(
-                    "created" => false,
-                    "enabled" => $customerOld->getEnabled(),
-                    "userId" => $customerOld->getId(),
-                    "password" => $customerOld->getPassword(),
-                    "pin" => $customerOld->getPrimaryPin(),
+                    "created" => true,
+                    "enabled" => $customerNew->getEnabled(),
+                    "userId" => $customerNew->getId(),
+                    "password" => $customerNew->getPassword(),
+                    "pin" => $customerNew->getPrimaryPin()
+                );
+            } else {
+                $partnerResponse = array(
+                    "uri" => "partner/signup",
+                    "status" => 401,
+                    "statusFromProvider" => false,
+                    "message" => "insert fail"
                 );
             }
+
+
+
+//            if (is_null($customerOld)) {    //it's a new customer
+//                $customerNew = $this->saveNewCustomer($partner, $contentArray);
+//                if (!is_null($customerNew)) {
+//                    $partnerResponse = array(
+//                        "created" => true,
+//                        "enabled" => $customerNew->getEnabled(),
+//                        "userId" => $customerNew->getId(),
+//                        "password" => $customerNew->getPassword(),
+//                        "pin" => $customerNew->getPrimaryPin()
+//                    );
+//                } else {
+//                    $partnerResponse = array(
+//                        "uri" => "partner/signup",
+//                        "status" => 401,
+//                        "statusFromProvider" => false,
+//                        "message" => "insert fail"
+//                    );
+//                }
+//            } else { // customer alredy exist
+//                $partnerResponse = array(
+//                    "created" => false,
+//                    "enabled" => $customerOld->getEnabled(),
+//                    "userId" => $customerOld->getId(),
+//                    "password" => $customerOld->getPassword(),
+//                    "pin" => $customerOld->getPrimaryPin(),
+//                );
+//            }
         } else {
             $response = 404;
         }
@@ -541,7 +562,7 @@ class NugoService
                     "status" => 401,
                     "statusFromProvider" => false,
                     "message" => $strError,
-                    "error" => str_replace('\"',"",json_encode($errorArray))
+                    "error" => json_encode($errorArray)
                 );
             }
         } catch (\Exception $ex) {
@@ -730,6 +751,98 @@ class NugoService
         }
 
         return $result;
+    }
+
+    private function updateCustomer(Partners $partner, $data, Customers $customer = null) {
+        $result = null;
+        $isCustomerNew = false;
+
+        try {
+            if(is_null($customer)) {
+                $isCustomerNew = true;
+                $customer = new Customers();
+                $customer->setInsertedTs(date_create());
+            }
+
+            $customer->setGender($data['gender']);
+            $customer->setSurname($data['lastName']);
+            $customer->setName($data['firstName']);
+            //$customer->setBirthDate(new \DateTime(sprintf('%s-%s-%s 00:00:00',$data['birthDate'][0], $data['birthDate'][1], $data['birthDate'][2])));
+            $customer->setBirthDate(new \DateTime(sprintf('%s 00:00:00',implode('-', $data['birthDate']))));
+
+            $customer->setBirthTown($data['birthCity']);
+            $customer->setBirthProvince($data['birthProvince']);
+            $customer->setBirthCountry($data['birthCountry']);
+
+            $customer->setTaxCode($data['fiscalCode']);     //NB tax code
+            $customer->setVat($data['vat']);
+            $customer->setPhone($data['phone']);
+            $customer->setMobile($data['mobile']);
+            $customer->setFax('');
+            $customer->setEmail($data['email']);
+            $customer->setPassword($data['password']);
+
+            $pins = ['primary' => $data['pin']];
+            $customer->setPin(json_encode($pins));
+
+            $customer->setAddress($data['address']['street']);
+            $customer->setAddressInfo('');
+            $customer->setTown($data['address']['city']);
+            $customer->setZipCode($data['address']['zip']);
+            $customer->setProvince($data['address']['province']);
+            $customer->setCountry($data['address']['country']);
+
+            $customer->setDriverLicense($data['drivingLicense']['number']);
+            $customer->setDriverLicenseCountry($data['drivingLicense']['country']);
+            $customer->setDriverLicenseAuthority($data['drivingLicense']['issuedBy']);
+            $customer->setDriverLicenseReleaseDate(new \DateTime(sprintf('%s 00:00:00',implode('-', $data['drivingLicense']['issueDate']))));
+            $customer->setDriverLicenseExpire(new \DateTime(sprintf('%s 00:00:00',implode('-', $data['drivingLicense']['expirationDate']))));
+            $customer->setDriverLicenseName($data['drivingLicense']['firstName']);
+            $customer->setDriverLicenseSurname($data['drivingLicense']['lastName']);
+            $customer->setDriverLicenseCategories($data['drivingLicense']['category']);
+            $customer->setDriverLicenseForeign($data['drivingLicense']['foreign']);
+
+            $customer->setGeneralCondition1($data['generalCondition1']);
+            $customer->setGeneralCondition2($data['generalCondition2']);
+            $customer->setPrivacyCondition($data['privacyCondition']);
+            $customer->setPrivacyInformation($data['privacyInformation']);
+
+            // set backend data
+            $hash = hash("MD5", strtoupper($data['email']).strtoupper($data['password']));
+            $customer->setHash($hash);
+
+//            $customer->setEnabled(true);
+            $customer->setFirstPaymentCompleted(true);
+            $customer->setRegistrationCompleted(true);
+            $customer->setDiscountRate(0);
+            $customer->setPaymentAble(true);
+            $customer->setFleet($this->fleetService->getFleetById(1));         // default Milano
+            $customer->setLanguage('it');
+            $customer->setMaintainer(false);
+            $customer->setGoldList(false);
+
+            $this->entityManager->persist($customer);
+            $this->entityManager->flush();
+
+            //$result = $this->customersService->getUserFromHash($hash);  //TODO: improve
+            if($isCustomerNew) {
+                $this->customersService->assignCard($customer);
+                $this->newPartnersCustomers($partner, $customer);
+                $contract = $this->newContract($partner, $customer);
+
+                $this->newTransaction($contract, 0, 'EUR', self::PAYMENT_LABEL, strtoupper($this->partnerName).'+'.self::PAYMENT_LABEL.'+PREPAID+-+-N', true);
+            }
+
+            $this->newDriverLicenseDirectValidation($customer, $data['drivingLicense']);
+
+            $result = $customer;
+
+        } catch (\Exception $e) {
+            $this->entityManager->getConnection()->rollback();
+        }
+
+        return $result;
+
     }
 
     /**
