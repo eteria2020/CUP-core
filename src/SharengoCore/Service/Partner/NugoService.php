@@ -154,35 +154,6 @@ class NugoService
                 );
             }
 
-
-
-//            if (is_null($customerOld)) {    //it's a new customer
-//                $customerNew = $this->saveNewCustomer($partner, $contentArray);
-//                if (!is_null($customerNew)) {
-//                    $partnerResponse = array(
-//                        "created" => true,
-//                        "enabled" => $customerNew->getEnabled(),
-//                        "userId" => $customerNew->getId(),
-//                        "password" => $customerNew->getPassword(),
-//                        "pin" => $customerNew->getPrimaryPin()
-//                    );
-//                } else {
-//                    $partnerResponse = array(
-//                        "uri" => "partner/signup",
-//                        "status" => 401,
-//                        "statusFromProvider" => false,
-//                        "message" => "insert fail"
-//                    );
-//                }
-//            } else { // customer alredy exist
-//                $partnerResponse = array(
-//                    "created" => false,
-//                    "enabled" => $customerOld->getEnabled(),
-//                    "userId" => $customerOld->getId(),
-//                    "password" => $customerOld->getPassword(),
-//                    "pin" => $customerOld->getPrimaryPin(),
-//                );
-//            }
         } else {
             $response = 404;
         }
