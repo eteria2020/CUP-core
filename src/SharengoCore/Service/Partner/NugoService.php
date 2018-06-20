@@ -1020,9 +1020,13 @@ class NugoService
             $this->entityManager->flush();
 
             $customer->setEnabled(true);
-            $this->entityManager->persist($customer);
-            $this->entityManager->flush();
+
+        } else {
+            $customer->setEnabled(false);
         }
+
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
 
         return $response;
     }
