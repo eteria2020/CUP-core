@@ -139,7 +139,7 @@ class NugoService
 
             if (!is_null($customerNew)) {
                 $partnerResponse = array(
-                    "created" => $customerOld,
+                    "created" => $isCustomerNew,
                     "enabled" => $customerOld->getEnabled(),
                     "userId" => $customerOld->getId(),
                     "password" => $customerOld->getPassword(),
