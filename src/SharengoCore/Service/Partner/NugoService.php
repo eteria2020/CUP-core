@@ -610,11 +610,6 @@ class NugoService
     public function findCustomerByMainFields($email, $taxCode, $driverLicense)
     {
 
-        $customers = $this->customersRepository->findByCI("email", $email);
-        if(!empty($customers)){
-            return $customers[0];
-        }
-
         $customers2 = $this->customersRepository->findByCI("taxCode", $taxCode);
         if(!empty($customers2)){
             return $customers2[0];
@@ -623,6 +618,11 @@ class NugoService
         $customers3 = $this->customersRepository->findByCI("driverLicense", $driverLicense);
         if(!empty($customers3)){
             return $customers3[0];
+        }
+
+        $customers = $this->customersRepository->findByCI("email", $email);
+        if(!empty($customers)){
+            return $customers[0];
         }
 
         return null;
