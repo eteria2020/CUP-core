@@ -130,27 +130,27 @@ class NugoService
 
         if ($this->validateAndFormat($contentArray, $partnerResponse)) {
 
-            $customerOld = $this->findCustomerByMainFields(
+            $customer = $this->findCustomerByMainFields(
                 $contentArray['email'],
                 $contentArray['fiscalCode'],
                 $contentArray['drivingLicense']['number']);
 
-            $customerNew =$this->insertOrUpdateCustomer($partner, $contentArray, $customerOld, $isCustomerNew);
+            //$customerNew =$this->insertOrUpdateCustomer($partner, $contentArray, $customerOld, $isCustomerNew);
 
-            if (!is_null($customerNew)) {
+            if ($this->saveCustomer($partner, $contentArray, $customer, $isCustomerNew)) {
                 $partnerResponse = array(
                     "created" => $isCustomerNew,
-                    "enabled" => $customerOld->getEnabled(),
-                    "userId" => $customerOld->getId(),
-                    "password" => $customerOld->getPassword(),
-                    "pin" => $customerOld->getPrimaryPin()
+                    "enabled" => $customer->getEnabled(),
+                    "userId" => $customer->getId(),
+                    "password" => $customer->getPassword(),
+                    "pin" => $customer->getPrimaryPin()
                 );
             } else {
                 $partnerResponse = array(
                     "uri" => "partner/signup",
                     "status" => 401,
                     "statusFromProvider" => false,
-                    "message" => "insert fail"
+                    "message" => "insert/update fail"
                 );
             }
 
@@ -731,10 +731,10 @@ class NugoService
      * @param array $data
      * @param Customers $customer
      * @param boolean $isCustomerNew
-     * @return Customers
+     * @return boolean
      */
-    private function insertOrUpdateCustomer(Partners $partner, $data, Customers &$customer,  &$isCustomerNew = false) {
-        $result = null;
+    private function saveCustomer(Partners $partner, $data, Customers &$customer,  &$isCustomerNew = false) {
+        $result = false;
         $isCustomerNew = false;
 
         try {
@@ -815,7 +815,7 @@ class NugoService
 
             $this->newDriverLicenseDirectValidation($customer, $data['drivingLicense']);
 
-            $result = $customer;
+            $result = true;
 
         } catch (\Exception $e) {
             $this->entityManager->getConnection()->rollback();
