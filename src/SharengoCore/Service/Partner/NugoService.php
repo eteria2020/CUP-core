@@ -136,23 +136,35 @@ class NugoService
                 $contentArray['drivingLicense']['number']);
 
             //$customerNew =$this->insertOrUpdateCustomer($partner, $contentArray, $customerOld, $isCustomerNew);
+            if(!$this->partnersRepository->isBelongCustomerPartner($partner, $customer)) {
 
-            if ($this->saveCustomer($partner, $contentArray, $customer, $isCustomerNew)) {
-                $partnerResponse = array(
-                    "created" => $isCustomerNew,
-                    "enabled" => $customer->getEnabled(),
-                    "userId" => $customer->getId(),
-                    "password" => $customer->getPassword(),
-                    "pin" => $customer->getPrimaryPin()
-                );
+                if ($this->saveCustomer($partner, $contentArray, $customer, $isCustomerNew)) {
+                    $partnerResponse = array(
+                        "created" => $isCustomerNew,
+                        "enabled" => $customer->getEnabled(),
+                        "userId" => $customer->getId(),
+                        "password" => $customer->getPassword(),
+                        "pin" => $customer->getPrimaryPin()
+                    );
+                } else {
+                    $partnerResponse = array(
+                        "uri" => "partner/signup",
+                        "status" => 401,
+                        "statusFromProvider" => false,
+                        "message" => "insert/update fail"
+                    );
+                }
+
             } else {
                 $partnerResponse = array(
                     "uri" => "partner/signup",
                     "status" => 401,
                     "statusFromProvider" => false,
-                    "message" => "insert/update fail"
+                    "message" => "customer not belog to partner"
                 );
             }
+
+
 
         } else {
             $response = 404;
