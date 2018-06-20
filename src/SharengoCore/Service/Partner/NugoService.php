@@ -162,7 +162,7 @@ class NugoService
                     );
                 }
 
-            } else {
+            } else {    // customer alread exist and NOT belong to partner
                 $partnerResponse = array(
                     "uri" => "partner/signup",
                     "status" => 401,
@@ -746,7 +746,7 @@ class NugoService
      * 
      * @param Partners $partner
      * @param array $data
-     * @param Customers $customer
+     * @param type  $customer can be a Customers or null
      * @param boolean $isCustomerNew
      * @return boolean
      */

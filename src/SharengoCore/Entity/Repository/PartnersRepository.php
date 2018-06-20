@@ -8,6 +8,13 @@ use SharengoCore\Entity\Partners;
 
 class PartnersRepository extends EntityRepository
 {
+    /**
+     * Check if customer belog to a specific partner
+     * 
+     * @param Partners $partner
+     * @param Customers $customer
+     * @return boolean
+     */
     public function isBelongCustomerPartner(Partners $partner, Customers $customer)
     {
         $result = false;
