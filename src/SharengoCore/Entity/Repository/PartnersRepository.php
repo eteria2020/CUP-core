@@ -18,7 +18,7 @@ class PartnersRepository extends EntityRepository
         }
 
         $em = $this->getEntityManager();
-        $query = $em->createQuery('SELECT count(*) FROM partners_customers WHERE partner_id='.$partner->getId().' AND customer_id='.$customer->getId.' AND disabled_ts IS NULL ');
+        $query = $em->createQuery('SELECT count(*) FROM partners_customers WHERE partner_id='.$partner->getId().' AND customer_id='.$customer->getId().' AND disabled_ts IS NULL ');
 
         if($query->getSingleScalarResult()>0) {
             $result = true;
