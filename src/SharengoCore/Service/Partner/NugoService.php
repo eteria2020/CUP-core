@@ -125,6 +125,7 @@ class NugoService
      */
     public function signup(Partners $partner, $contentArray, &$partnerResponse) {
         $partnerResponse = null;
+        $isCustomerNew = false;
         $response = 200;
 
         if ($this->validateAndFormat($contentArray, $partnerResponse)) {
@@ -134,11 +135,11 @@ class NugoService
                 $contentArray['fiscalCode'],
                 $contentArray['drivingLicense']['number']);
 
-            $customerNew =$this->updateCustomer($partner, $contentArray, $customerOld);
+            $customerNew =$this->insertOrUpdateCustomer($partner, $contentArray, $customerOld, $isCustomerNew);
 
             if (!is_null($customerNew)) {
                 $partnerResponse = array(
-                    "created" => true,
+                    "created" => $isCustomerNew,
                     "enabled" => $customerNew->getEnabled(),
                     "userId" => $customerNew->getId(),
                     "password" => $customerNew->getPassword(),
@@ -753,7 +754,15 @@ class NugoService
         return $result;
     }
 
-    private function updateCustomer(Partners $partner, $data, Customers $customer = null) {
+    /**
+     * 
+     * @param Partners $partner
+     * @param array $data
+     * @param Customers $customer
+     * @param boolean $isCustomerNew
+     * @return Customers
+     */
+    private function insertOrUpdateCustomer(Partners $partner, $data, Customers &$customer,  &$isCustomerNew = false) {
         $result = null;
         $isCustomerNew = false;
 
