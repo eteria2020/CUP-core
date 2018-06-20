@@ -135,8 +135,7 @@ class NugoService
                 $contentArray['fiscalCode'],
                 $contentArray['drivingLicense']['number']);
 
-            //$customerNew =$this->insertOrUpdateCustomer($partner, $contentArray, $customerOld, $isCustomerNew);
-            if(!$this->partnersRepository->isBelongCustomerPartner($partner, $customer)) {
+            if(is_null($customer) || $this->partnersRepository->isBelongCustomerPartner($partner, $customer)) { // is a new customer or exist and belong to partner
 
                 if ($this->saveCustomer($partner, $contentArray, $customer, $isCustomerNew)) {
                     $partnerResponse = array(
