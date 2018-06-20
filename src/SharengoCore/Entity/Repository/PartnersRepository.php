@@ -6,7 +6,6 @@ use Doctrine\ORM\EntityRepository;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Partners;
 
-
 class PartnersRepository extends EntityRepository
 {
     public function isBelongCustomerPartner(Partners $partner, Customers $customer)
@@ -18,7 +17,10 @@ class PartnersRepository extends EntityRepository
         }
 
         $em = $this->getEntityManager();
-        $query = $em->createQuery('SELECT count(*) FROM partners_customers WHERE partner_id='.$partner->getId().' AND customer_id='.$customer->getId().' AND disabled_ts IS NULL ');
+        $query = $em->createQuery('SELECT count(pc.id) FROM \SharengoCore\Entity\PartnersCustomers pc WHERE pc.partner = :partner AND pc.customer = :customer AND pc.disabledTs IS NULL');
+
+        $query->setParameter('partner', $partner);
+        $query->setParameter('customer', $customer);
 
         if($query->getSingleScalarResult()>0) {
             $result = true;

@@ -164,8 +164,6 @@ class NugoService
                 );
             }
 
-
-
         } else {
             $response = 404;
         }
