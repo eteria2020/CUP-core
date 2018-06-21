@@ -10,6 +10,7 @@ use SharengoCore\Service\TripPaymentTriesService;
 use SharengoCore\Service\CustomerDeactivationService;
 use SharengoCore\Service\FreeFaresService as FreeFares;
 use SharengoCore\Service\Partner\TelepassPayService;
+use SharengoCore\Service\Partner\NugoPayService;
 use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Repository\ReservationsRepository;
 use SharengoCore\Entity\Customers;
@@ -115,6 +116,11 @@ class PaymentsService
      */
     private $telepassPayService;
 
+     /**
+     * @var NugoPayService
+     */
+    private $nugoPayService;
+
     /**
      * @param CartasiCustomerPaymentsInterface $cartasiCustomerPayments
      * @param CartasiContractsService $cartasiContractService
@@ -131,6 +137,7 @@ class PaymentsService
      * @param TripsRepository $tripsRepository
      * @param ReservationsRepository $reservationsRepository
      * @param TelepassPayService $telepassPayService
+     * @param NugoPayService $nugoPayService
      *
      */
     public function __construct(
@@ -148,7 +155,8 @@ class PaymentsService
         FreeFaresRepository $freeFaresRepository,
         TripsRepository $tripsRepository,
         ReservationsRepository $reservationsRepository,
-        TelepassPayService $telepassPayService
+        TelepassPayService $telepassPayService,
+        NugoPayService $nugoPayService
 
     ) {
         $this->cartasiCustomerPayments = $cartasiCustomerPayments;
@@ -166,6 +174,7 @@ class PaymentsService
         $this->tripsRepository = $tripsRepository;
         $this->reservationsRepository = $reservationsRepository;
         $this->telepassPayService = $telepassPayService;
+        $this->nugoPayService = $nugoPayService;
     }
 
     /**
@@ -354,7 +363,13 @@ class PaymentsService
                     $tripPayment->getTotalCost(),
                     $this->avoidCartasi
                 );
-            } 
+            } elseif ($contract->getPartner()->getCode()=='nugo') {
+                $response = $this->nugoPayService->sendPaymentRequest(
+                    $customer,
+                    $tripPayment->getTotalCost(),
+                    $this->avoidCartasi
+                );
+            }
 
             if(is_null($response)) {
                 return $response;

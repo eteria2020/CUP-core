@@ -261,28 +261,38 @@ class NugoPayService {
                 $transaction->setContract($contract);
                 $response = new CartasiResponse(false, 'KO', $transaction);
 
-                if($this->sendPreAthorization(
-                    $customer->getEmail(),
+                if($this->tryCharginAccount(
                     $transaction->getId(),
-                    array(
-                        'reason'=> 'trip payment',
-                        'transaction' => $transaction->getId()),
+                    '',
                     $amount,
                     $this->currency,
                     $responsePayment)) {
 
-                    $transaction->setCodAut($responsePayment['preAuthId']);
-
-                    if($this->tryCharginAccount(
-                        $transaction->getId(),
-                        $responsePayment['preAuthId'],
-                        $amount,
-                        $this->currency,
-                        $responsePayment)) {
-
-                        $transaction->setOutcome('OK');
-                    }
+                    $transaction->setOutcome('OK');
                 }
+
+//                if($this->sendPreAthorization(
+//                    $customer->getEmail(),
+//                    $transaction->getId(),
+//                    array(
+//                        'reason'=> 'trip payment',
+//                        'transaction' => $transaction->getId()),
+//                    $amount,
+//                    $this->currency,
+//                    $responsePayment)) {
+//
+//                    $transaction->setCodAut($responsePayment['preAuthId']);
+//
+//                    if($this->tryCharginAccount(
+//                        $transaction->getId(),
+//                        $responsePayment['preAuthId'],
+//                        $amount,
+//                        $this->currency,
+//                        $responsePayment)) {
+//
+//                        $transaction->setOutcome('OK');
+//                    }
+//                }
             }
 
             if(is_null($responsePayment)) { // if it's happen a system error like remote server down
