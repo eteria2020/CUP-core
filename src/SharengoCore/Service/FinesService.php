@@ -153,7 +153,7 @@ class FinesService
     }
     
     public function clearEntityManager() {
-        $identity = $this->entityManager->getUnitOfWork()->getIdentityMap();
+        //$identity = $this->entityManager->getUnitOfWork()->getIdentityMap();
         $this->entityManager->clear('SharengoCore\Entity\Webuser');
         $this->entityManager->clear('SharengoCore\Entity\Fares');
         $this->entityManager->clear('SharengoCore\Entity\Penalty');
