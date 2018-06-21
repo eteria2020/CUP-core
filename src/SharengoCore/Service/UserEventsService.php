@@ -17,7 +17,7 @@ class UserEventsService {
      */
     public function __construct(
         EntityManager $entityManager
-    ) {
+    ){
         $this->entityManager = $entityManager;
     }
     
