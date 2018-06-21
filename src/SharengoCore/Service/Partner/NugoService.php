@@ -482,7 +482,7 @@ class NugoService
                 $key2 = 'foreign';
                 $value = $this->getDataFormatedLower($drivingLicense, $key2);
                 if (is_bool($value)) {
-
+                     $contentArray[$key][$key2] = $value;
                 } else {
                     $strError .= sprintf('Invalid %s.%s ', $key, $key2);
                     array_push($errorArray, $key.'.'.$key2);
@@ -508,7 +508,11 @@ class NugoService
             $key = 'generalCondition1';
             $value = $this->getDataFormatedLower($contentArray, $key);
             if (is_bool($value)) {
-
+                $contentArray[$key] = $value;
+                if(!$value) {
+                    $strError .= sprintf('No %s ', $key);
+                    array_push($errorArray, $key);
+                }
             } else {
                 $strError .= sprintf('Invalid %s ', $key);
                 array_push($errorArray, $key);
@@ -517,7 +521,11 @@ class NugoService
             $key = 'generalCondition2';
             $value = $this->getDataFormatedLower($contentArray, $key);
             if (is_bool($value)) {
-
+                $contentArray[$key] = $value;
+                if(!$value) {
+                    $strError .= sprintf('No %s ', $key);
+                    array_push($errorArray, $key);
+                }
             } else {
                 $strError .= sprintf('Invalid %s ', $key);
                 array_push($errorArray, $key);
@@ -526,7 +534,11 @@ class NugoService
             $key = 'privacyCondition';
             $value = $this->getDataFormatedLower($contentArray, $key);
             if (is_bool($value)) {
-
+                $contentArray[$key] = $value;
+                if(!$value) {
+                    $strError .= sprintf('No %s ', $key);
+                    array_push($errorArray, $key);
+                }
             } else {
                 $strError .= sprintf('Invalid %s ', $key);
                 array_push($errorArray, $key);
@@ -535,7 +547,7 @@ class NugoService
             $key = 'privacyInformation';
             $value = $this->getDataFormatedLower($contentArray, $key);
             if (is_bool($value)) {
-
+                $contentArray[$key] = $value;
             } else {
                 $strError .= sprintf('Invalid %s ', $key);
                 array_push($errorArray, $key);
