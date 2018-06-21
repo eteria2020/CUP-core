@@ -147,19 +147,19 @@ class FinesService
         $fine = $fine->setCharged(true);
         
         $this->entityManager->persist($fine);
-        //$this->entityManager->flush();
+        $this->entityManager->flush();
         
         return $extra_payment;
     }
     
     public function clearEntityManager() {
-        $identity = $this->entityManager->getUnitOfWork()->getIdentityMap();
+        //$identity = $this->entityManager->getUnitOfWork()->getIdentityMap();
         $this->entityManager->clear('SharengoCore\Entity\Webuser');
         $this->entityManager->clear('SharengoCore\Entity\Fares');
         $this->entityManager->clear('SharengoCore\Entity\Penalty');
         $this->entityManager->clear('SharengoCore\Entity\SafoPenalty');
         $this->entityManager->clear('SharengoCore\Entity\Trips');
-        $this->entityManager->clear('SharengoCore\Entity\Cars');
+        //$this->entityManager->clear('SharengoCore\Entity\Cars');
         $this->entityManager->clear('SharengoCore\Entity\Cards');
         $this->entityManager->clear('SharengoCore\Entity\Fleet');
         $this->entityManager->clear('SharengoCore\Entity\ExtraPayments');
