@@ -156,7 +156,8 @@ class TripPaymentsService
                     'name' => $customer->getName(),
                     'surname' => $customer->getSurname(),
                     'mobile' => $customer->getMobile(),
-                    'email' => $customer->getEmail()
+                    'email' => $customer->getEmail(),
+                    'type' => ($customer->getGoldList() || $customer->getMaintainer()) ? true : false 
                 ],
                 'button' => $payment->getId()
             ];
