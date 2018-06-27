@@ -373,9 +373,16 @@ class TripsService {
 
     /**
      * retrieves all the trips that we need to process to compute the bonuses park islands
+     * 
+     * @param datetime $datestamp
+     * @param string $carplate
+     * @param integer $tripMinutes
+     * @param integer $batteryEnd
+     * @param integer[] $fleets
+     * @return Trips[]
      */
-    public function getTripsForBonusParkComputation($datestamp, $carplate) {
-        return $this->tripRepository->findTripsForBonusParkComputation($datestamp, $carplate);
+    public function getTripsForBonusParkComputation($datestamp, $carplate, $tripMinutes = null, $batteryEnd = null, array $fleets = null) {
+        return $this->tripRepository->findTripsForBonusParkComputation($datestamp, $carplate, $tripMinutes, $batteryEnd, $fleets);
     }
 
     /**
