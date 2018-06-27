@@ -650,7 +650,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getResult();
     }
 
-     public function findTripsOpenByCar(Cars $car){
+    public function findTripsOpenByCar(Cars $car){
         $em = $this->getEntityManager();
 
         $dql= "SELECT t "
@@ -663,5 +663,20 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         $query->setParameter('car', $car);
         return $query->getResult();
      }
+     
+    public function howManyTripsForUserInList($customer_id, $list_trips_id) {
+        $em = $this->getEntityManager();
+
+        $dql= "SELECT t "
+            . "FROM \SharengoCore\Entity\Trips t "
+            . "WHERE t.id IN (:list_trips_id) "
+            . "AND t.customer = :customer_id ";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('list_trips_id', $list_trips_id);
+        $query->setParameter('customer_id', $customer_id);
+        
+        return $query->getResult();
+    }
 
 }

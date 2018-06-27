@@ -14,6 +14,7 @@ use SharengoCore\Entity\Cars;
 use SharengoCore\Service\CommandsService;
 use SharengoCore\Service\CustomersService;
 use SharengoCore\Service\LocationService;
+use SharengoCore\Service\UserEventsService;
 // Externals
 use Zend\Mvc\I18n\Translator;
 use Zend\View\Helper\Url;
@@ -59,6 +60,11 @@ class TripsService {
      * @var LocationService
      */
     private $locationService;
+    
+    /**
+     * @var UserEventsService
+     */
+    private $userEventsService;
 
     /**
      * @param EntityRepository $tripRepository
@@ -69,9 +75,18 @@ class TripsService {
      * @param CommandsService $commandsService
      * @param Translator $translator
      * @param LocationService $locationService
+     * @param UserEventsService $userEventsService
      */
     public function __construct(
-    TripsRepository $tripRepository, DatatableServiceInterface $datatableService, DatatableServiceInterface $datatableServiceNotPayed, Url $urlHelper, CustomersService $customersService, CommandsService $commandsService, Translator $translator, LocationService $locationService
+    TripsRepository $tripRepository,
+            DatatableServiceInterface $datatableService,
+            DatatableServiceInterface $datatableServiceNotPayed,
+            Url $urlHelper,
+            CustomersService $customersService,
+            CommandsService $commandsService,
+            Translator $translator,
+            LocationService $locationService,
+            UserEventsService $userEventsService
     ) {
         $this->tripRepository = $tripRepository;
         $this->datatableService = $datatableService;
@@ -81,6 +96,7 @@ class TripsService {
         $this->commandsService = $commandsService;
         $this->translator = $translator;
         $this->locationService = $locationService;
+        $this->userEventsService = $userEventsService;
     }
 
     /**
@@ -529,6 +545,18 @@ class TripsService {
 
     public function getTripsOpenByCar(Cars $car) {
         return $this->tripRepository->findTripsOpenByCar($car);
+    }
+    
+    public function checkUserModifyTrip($customer_id) {
+        $dateCurrentMonthStart = new \DateTime('first day of this month');
+        $dateCurrentMonthStart = $dateCurrentMonthStart->format("Y-m-d 00:00:00");
+
+        $dateNextMonthStart = new \DateTime('first day of next month');
+        $dateNextMonthStart = $dateNextMonthStart->format("Y-m-d 00:00:00");
+        
+        $list_trips_id = $this->userEventsService->getListTripIdUserEventsBetweenDate($dateCurrentMonthStart, $dateNextMonthStart);
+        
+        return (count($this->tripRepository->howManyTripsForUserInList($customer_id, $list_trips_id)) >= 2 ? false : true);
     }
 
 }
