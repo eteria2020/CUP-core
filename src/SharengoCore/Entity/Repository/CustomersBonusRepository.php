@@ -81,18 +81,26 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
-    public function getBonusPoisAssigned($carplate)
+    /**
+     * 
+     * @param Customers $customer
+     * @param type $date_ts
+     * @return type
+     */
+    public function getBonusPoisAssigned(Customers $customer, $date_ts)
     {
-        $time = date_create(date("Y-m-d H:i:s"));
-        $dql =  "SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb ".
-                "WHERE cb.insertTs >= :time ".
-                "AND SUBSTRING(cb.description, 52 ,7) = :carplate"; //with substring get last 7 char (carplate)
+        $dql =  "SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb " .
+            "WHERE cb.insertTs >= :date_ts_start AND cb.insertTs <= :date_ts_end " .
+            "AND cb.customer = :customer " .
+            "AND cb.type LIKE 'zone-POIS%'";
+
         $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameter('time',  date_sub($time, date_interval_create_from_date_string('24 hours')));
-        $query->setParameter('carplate', $carplate);
+        $query->setParameter('date_ts_start',  $date_ts . ' 00:00:00');
+        $query->setParameter('date_ts_end',  $date_ts . ' 23:59:59');
+        $query->setParameter('customer', $customer);
         return $query->getResult();
     }
-    
+
     public function getWomenBonusPackage($customer) {
         $now = date("Y-m-d");
         $timeStart = date_create($now. "00:00:00");
