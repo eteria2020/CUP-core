@@ -233,7 +233,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
                 "JOIN t.customer c " .
                 "JOIN t.tripPayment tp " .
                 "WHERE t.timestampEnd IS NOT NULL AND t.timestampEnd >= :dateStart AND t.timestampEnd <= :dateEnd " . //date
-                "AND tp.status IN ('payed_correctly', 'invoiced') " .
+                //"AND tp.status IN ('payed_correctly', 'invoiced') " .
                 //"AND t.longitudeEnd > 0 AND t.latitudeEnd > 0 " .
                 " AND c.goldList = false AND c.maintainer = false " .// no gold list and no maintainer
                 $tripMinutesCondition .
