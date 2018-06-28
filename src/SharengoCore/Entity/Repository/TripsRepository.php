@@ -216,7 +216,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         $dateEnd = date_create($datestamp . ' 23:59:59');
 
         if(!is_null($tripMinutes)) {
-            $tripMinutesCondition = " AND tp.tripMinutes < " . $tripMinutes ." ";
+            $tripMinutesCondition = " AND tp.tripMinutes > " . $tripMinutes ." ";
         }
 
         if(!is_null($batteryEnd)) {
