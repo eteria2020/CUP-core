@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\OldCustomerDiscount;
+use SharengoCore\Entity\Repository\OldCustomerDiscountsRepository;
 
 use Doctrine\ORM\EntityManager;
 use Zend\View\Helper\Url;
@@ -35,19 +36,27 @@ class OldCustomerDiscountsService
      * @var string
      */
     private $host;
+    
+    /**
+     * @var OldCustomerDiscountsRepository
+     */
+    private $oldCustomerDiscountsRepository;
+    
 
     public function __construct(
         EntityManager $entityManager,
         EmailService $emailService,
         Url $urlHelper,
         Translator $translator,
-        $host
+        $host,
+        $oldCustomerDiscountsRepository
     ) {
         $this->entityManager = $entityManager;
         $this->emailService = $emailService;
         $this->urlHelper = $urlHelper;
         $this->translator = $translator;
         $this->host = $host;
+        $this->oldCustomerDiscountsRepository = $oldCustomerDiscountsRepository;
     }
 
     /**
@@ -207,5 +216,11 @@ class OldCustomerDiscountsService
             $content,
             $attachments
         );
+    }
+    
+    public function allOldDiscounts(Customers $customer) {
+        return $this->oldCustomerDiscountsRepository->findBy([
+            'customer' => $customer
+        ]);
     }
 }

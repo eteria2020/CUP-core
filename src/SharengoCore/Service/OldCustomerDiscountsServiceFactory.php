@@ -14,13 +14,15 @@ class OldCustomerDiscountsServiceFactory implements FactoryInterface
         $urlHelper = $serviceLocator->get('viewhelpermanager')->get('url');
         $translator = $serviceLocator->get('Translator');
         $host = $serviceLocator->get('config')['website']['uri'];
+        $oldCustomerDiscountsRepository = $entityManager->getRepository('\SharengoCore\Entity\OldCustomerDiscount');
 
         return new OldCustomerDiscountsService(
             $entityManager,
             $emailService,
             $urlHelper,
             $translator,
-            $host
+            $host,
+            $oldCustomerDiscountsRepository
         );
     }
 }
