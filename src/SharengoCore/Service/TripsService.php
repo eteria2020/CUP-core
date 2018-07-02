@@ -557,13 +557,12 @@ class TripsService {
     public function checkUserModifyTrip($customer_id) {
         $dateCurrentMonthStart = new \DateTime('first day of this month');
         $dateCurrentMonthStart = $dateCurrentMonthStart->format("Y-m-d 00:00:00");
-
         $dateNextMonthStart = new \DateTime('first day of next month');
         $dateNextMonthStart = $dateNextMonthStart->format("Y-m-d 00:00:00");
         
         $list_trips_id = $this->userEventsService->getListTripIdUserEventsBetweenDate($dateCurrentMonthStart, $dateNextMonthStart);
         
-        return (count($this->tripRepository->howManyTripsForUserInList($customer_id, $list_trips_id)) >= 6 ? false : true);
+        return (count($this->tripRepository->howManyTripsForUserInList($customer_id, $list_trips_id)) >= 5 ? false : true);
     }
 
 }
