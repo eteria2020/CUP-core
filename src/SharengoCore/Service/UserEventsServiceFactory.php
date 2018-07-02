@@ -11,9 +11,11 @@ class UserEventsServiceFactory implements FactoryInterface
     {
 
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
+        $userEventsRepository = $entityManager->getRepository('\SharengoCore\Entity\UserEvents');
         
         return new UserEventsService(
-            $entityManager
+            $entityManager,
+            $userEventsRepository
         );
         
     }

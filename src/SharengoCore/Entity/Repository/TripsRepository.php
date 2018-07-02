@@ -198,33 +198,59 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
     }
 
     /**
-     * selects the trips that need to be
-     * processed for the bonus computation park
+     * selects the trips that need to be processed for the bonus computation park
      * at a given date
      *
+     * @param datetime $datestamp
+     * @param string $carplate
+     * @param integer $batteryEnd
+     * @param integer[] $fleets
      * @return Trips[]
      */
-    public function findTripsForBonusParkComputation($datestamp, $carplate) {
+    public function findTripsForBonusParkComputation($datestamp, $carplate, $tripMinutes = null, $batteryEnd = null, array $fleets = null) {
+        $tripMinutesCondition = "";
+        $batteryCondition = "";
+        $fleetCondition = "";
+
         $dateStart = date_create($datestamp . ' 00:00:00');
         $dateEnd = date_create($datestamp . ' 23:59:59');
 
-        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t " .
-                "LEFT JOIN \SharengoCore\Entity\TripPayments tp WITH t.id = tp.trip " .
-                "WHERE t.timestampEnd >= :dateStart AND t.timestampEnd <= :dateEnd " . //date
-                "AND t.fleet != 3 "; //only Milan & Florence
-        if (($carplate != 'all')) {
-            $dql .= "AND t.car IN ('DD30908', 'EG35685', 'EG35649') ";
+        if(!is_null($tripMinutes)) {
+            $tripMinutesCondition = " AND tp.tripMinutes > " . $tripMinutes ." ";
         }
-        $dql .= "AND tp.status = :status " .
-                "AND t.timestampEnd IS NOT NULL " . //only trips finished
-                "AND t.batteryEnd IS NOT NULL AND t.batteryEnd < 25 " . //battery level end trip
-                "AND t.longitudeEnd > 0 AND t.latitudeEnd > 0 " .
-                "ORDER BY t.timestampEnd ASC";
+
+        if(!is_null($batteryEnd)) {
+            $batteryCondition = " AND t.batteryEnd IS NOT NULL AND t.batteryEnd < " . $batteryEnd ." ";
+        }
+
+        if(!is_null($fleets)) {
+            if(count($fleets) > 0) {
+                $fleetCondition = " AND t.fleet IN (" . implode(",", $fleets) . ") ";
+            }
+        }
+
+        $dql = "SELECT t FROM \SharengoCore\Entity\Trips t " .
+                "JOIN t.customer c " .
+                "JOIN t.tripPayment tp " .
+                "WHERE t.timestampEnd IS NOT NULL AND t.timestampEnd >= :dateStart AND t.timestampEnd <= :dateEnd " . //date
+                //"AND tp.status IN ('payed_correctly', 'invoiced') " .
+                //"AND t.longitudeEnd > 0 AND t.latitudeEnd > 0 " .
+                " AND c.goldList = false AND c.maintainer = false " .// no gold list and no maintainer
+                $tripMinutesCondition .
+                $batteryCondition . // battery
+                $fleetCondition; //only on specific feelts
+
+        if ($carplate != 'all') {
+            $dql .= " AND t.car IN ('DD30908', 'EG35685', 'EG35649') ";
+        }
+
+        $dql .= " ORDER BY t.timestampEnd ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameter('status', "invoiced");
-        $query->setParameter('dateStart', date_sub($dateStart, date_interval_create_from_date_string('1 days')));
-        $query->setParameter('dateEnd', date_sub($dateEnd, date_interval_create_from_date_string('1 days')));
+
+        $query->setParameter('dateStart', $dateStart);
+        $query->setParameter('dateEnd', $dateEnd);
+
         return $query->getResult();
     }
 
@@ -650,7 +676,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getResult();
     }
 
-     public function findTripsOpenByCar(Cars $car){
+    public function findTripsOpenByCar(Cars $car){
         $em = $this->getEntityManager();
 
         $dql= "SELECT t "
@@ -663,5 +689,20 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
         $query->setParameter('car', $car);
         return $query->getResult();
      }
+     
+    public function howManyTripsForUserInList($customer_id, $list_trips_id) {
+        $em = $this->getEntityManager();
+
+        $dql= "SELECT t "
+            . "FROM \SharengoCore\Entity\Trips t "
+            . "WHERE t.id IN (:list_trips_id) "
+            . "AND t.customer = :customer_id ";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('list_trips_id', $list_trips_id);
+        $query->setParameter('customer_id', $customer_id);
+        
+        return $query->getResult();
+    }
 
 }
