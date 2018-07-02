@@ -563,7 +563,7 @@ class TripsService {
         
         $list_trips_id = $this->userEventsService->getListTripIdUserEventsBetweenDate($dateCurrentMonthStart, $dateNextMonthStart);
         
-        return (count($this->tripRepository->howManyTripsForUserInList($customer_id, $list_trips_id)) >= 6 ? false : true);
+        return (count($this->tripRepository->howManyTripsForUserInList($customer_id, $list_trips_id)) >= 5 ? false : true);
     }
 
 }
