@@ -97,6 +97,9 @@ class FinesService
                     'complete' => $fine->isComplete(),
                     'violationTimestamp' => $fine->getViolationTimestamp()->format('Y/m/d H:i:s'),
                     'insertTs' => $fine->getInsertTs()->format('Y/m/d H:i:s')
+                ],
+                'cu' => [
+                    'type' => ($fine->getCustomer()->getMaintainer() || $fine->getCustomer()->getGoldList()) ? true : false
                 ]
             ];
         }, $fines);
