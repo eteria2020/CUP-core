@@ -120,7 +120,7 @@ class FinesService
         if($fine->getCharged()){
             return 0;
         }else{
-            if(!is_null($fine->getCustomerId()) && !is_null($fine->getTripId()) && !is_null($fine->getCarPlate())&& $fine->isComplete()){
+            if(!is_null($fine->getCustomerId()) && !is_null($fine->getTripId()) && !is_null($fine->getCarPlate())&& $fine->isComplete() && $fine->isPayable()){
                 return 1;
             }else{
                 return 2;
@@ -174,5 +174,11 @@ class FinesService
     private function formatAmount($amount)
     {
         return sprintf('%.2f €', intval($amount) / 100);
+    }
+
+    public function setFineNotPayable($fine){
+        $fine = $fine->setPayable(false);
+        $this->entityManager->persist($fine);
+        $this->entityManager->flush();
     }
 }
