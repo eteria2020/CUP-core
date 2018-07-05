@@ -213,4 +213,30 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    public function getPublicCarsForAddFreeX($fleet_id, $date) {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT c
+        FROM \SharengoCore\Entity\Cars c 
+        WHERE c.status = 'operative' 
+        AND c.active = true 
+        AND c.hidden = false 
+        AND c.fleet = :fleet 
+        AND c.longitude != 0 
+        AND c.latitude != 0 
+        AND c NOT IN (
+            SELECT DISTINCT c1
+            FROM \SharengoCore\Entity\Trips t
+            JOIN t.car c1
+            WHERE t.timestampEnd IS NULL
+            OR t.timestampEnd > :date
+        )
+        ";
+        $query = $em->createQuery($dql);
+        $query->setParameter('fleet', $fleet_id);
+        $query->setParameter('date', $date);
+
+        return $query->getResult();
+    }
+
 }
