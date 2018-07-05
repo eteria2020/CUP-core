@@ -164,7 +164,7 @@ class FinesService
         $this->entityManager->clear('SharengoCore\Entity\Trips');
         //$this->entityManager->clear('SharengoCore\Entity\Cars');
         $this->entityManager->clear('SharengoCore\Entity\Cards');
-        $this->entityManager->clear('SharengoCore\Entity\Fleet');
+        //$this->entityManager->clear('SharengoCore\Entity\Fleet');
         $this->entityManager->clear('SharengoCore\Entity\ExtraPayments');
         $this->entityManager->clear('SharengoCore\Entity\ExtraPaymentTries');
         $this->entityManager->clear('SharengoCore\Entity\CustomerDeactivation');
