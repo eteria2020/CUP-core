@@ -313,6 +313,9 @@ class CartasiCsvAnalyzeService
                 $transaction->getOutcome() == 'OK' ||
                 $transaction->getOutcome() == '0 - autorizzazione concessa';
             if ($transactionOutcome != $csvOutcome) {
+                if ($csvData['descrizione'] == 'Cambio carta di credito'){
+                    return null;
+                }
                 return CartasiCsvAnomaly::OUTCOME_ERROR;
 
             // Check if amounts are different only if outcome is positive
