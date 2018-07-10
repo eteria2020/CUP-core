@@ -409,7 +409,7 @@ class ExtraPaymentsService
         return $extraPaymentTry;
     }
     
-    private function checkIfEnable($extraPayment) {
+    public function checkIfEnable(ExtraPayments $extraPayment) {
         if(count($this->getExtraPaymentsWrongAndPayable($extraPayment->getCustomer())) == 0){
             $this->deactivationService->reactivateCustomerForExtraPayed($extraPayment->getCustomer());
         }
