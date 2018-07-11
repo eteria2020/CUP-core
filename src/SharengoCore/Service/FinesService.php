@@ -79,7 +79,7 @@ class FinesService
         $fines = $this->datatableService->getData('SafoPenalty', $filters, $count);
         if ($count) {
             return $fines;
-        }
+        }        
 
         return array_map(function (SafoPenalty $fine) {
             return [
@@ -99,7 +99,7 @@ class FinesService
                     'insertTs' => $fine->getInsertTs()->format('Y/m/d H:i:s')
                 ],
                 'cu' => [
-                    'type' => ($fine->getCustomer()->getMaintainer() || $fine->getCustomer()->getGoldList()) ? true : false
+                    'type' => (is_null($fine->getCustomer()) ? false : ($fine->getCustomer()->getMaintainer() || $fine->getCustomer()->getGoldList()) ? true : false)
                 ]
             ];
         }, $fines);
