@@ -79,7 +79,7 @@ class FinesService
         $fines = $this->datatableService->getData('SafoPenalty', $filters, $count);
         if ($count) {
             return $fines;
-        }        
+        }
 
         return array_map(function (SafoPenalty $fine) {
             return [
