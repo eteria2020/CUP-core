@@ -65,44 +65,23 @@ class PreauthorizationsService
     }
 
     public function computeTrip(Preauthorizations $preauthorizations, TripPayments &$tripPayment){
-//        if($preauthorizations->getStatus()==Preauthorizations::STATUS_COMPLETED){
-//
-//            if($tripPayment->getTotalCost() == $this->getPayedAmountPreaut($preauthorizations)) {
-//                return;
-//            } elseif ($tripPayment->getTotalCost() > $this->getPayedAmountPreaut($preauthorizations)){
-//                $preauthorizations->setStatus(Preauthorizations::STATUS_TO_BE_PAYED);
-//                $preauthorizations->setStatusFrom(date_create());
-//                $this->savePreauthorizations($preauthorizations);
-//            } elseif ($tripPayment->getTotalCost() < $this->getPayedAmountPreaut($preauthorizations)){
-//                $preauthorizations->setStatus(Preauthorizations::STATUS_REFUND);
-//                $preauthorizations->setStatusFrom(date_create());
-//                $this->savePreauthorizations($preauthorizations);
-//            }
-//
-//        } else {
-
             if ($tripPayment->getTotalCost() == $preauthorizations->getTransaction()->getAmount()) { //$this->preauthorizationsAmount){
 
                 $this->payedSuccessfully($tripPayment);
 
-                $preauthorizations->setStatusFrom(date_create());
                 $this->setPreautDone($preauthorizations);
 
             } else if ($tripPayment->getTotalCost() > $preauthorizations->getTransaction()->getAmount()) {
-                //if the trip has a higher cost than the preauthorized
-                //if ($preauthorizations->getTransaction() instanceof Transactions) {
-                    //$amount = $tripPayment->getTotalCost() - $preauthorizations->getTransaction()->getAmount();
-                    $this->tryCustomerTripPayment($tripPayment, $preauthorizations);
-                //}
+
+                $this->toBePayed($tripPayment, $preauthorizations);
+
             } else if ($tripPayment->getTotalCost() < $preauthorizations->getTransaction()->getAmount()) {
                 //if the trip has a lower cost than the preauthorized
 
-                    $this->toBeRefund($tripPayment);
-                    $preauthorizations->setStatus(Preauthorizations::STATUS_REFUND);
-                    $preauthorizations->setStatusFrom(date_create());
-                    $this->savePreauthorizations($preauthorizations);
+                $this->toBeRefund($tripPayment);
+                $preauthorizations->setStatus(Preauthorizations::STATUS_REFUND);
+                $this->savePreauthorizations($preauthorizations);
             }
-        //}
     }
 
     private function savePreauthorizations(Preauthorizations $preauthorizations)
@@ -111,73 +90,34 @@ class PreauthorizationsService
         $this->entityManager->flush();
     }
 
-    private function tryCustomerTripPayment(
-        //Customers $customer,
+    private function toBePayed(
         TripPayments &$tripPayment,
-        //$amount,
         Preauthorizations $preauthorizations
-        //Webuser $webuser = null
     ) {
-//        $response = $this->cartasiCustomerPayments->sendPaymentRequest(
-//            $customer,
-//            $amount,
-//            false
-//        );
-//
-//        $this->entityManager->beginTransaction();
-//
-//        try {
-//            $tripPaymentTry = $this->generateTripPaymentTry(
-//                $tripPayment,
-//                $response->getOutcome(),
-//                $response->getTransaction(),
-//                $webuser
-//            );
-//            $now = date_create();
-//            if ($response->getCompletedCorrectly()) {
-//                $this->payedSuccessfully($tripPayment);
-//                $preauthorizations->setStatus(Preauthorizations::STATUS_COMPLETED);
-//
-//                $preauthorizations->setStatusFrom($now);
-//                $preauthorizations->setSuccessfullyAt($now);
-//                $this->savePreauthorizations($preauthorizations);
-//            } else {
-//                //unpayableConsequences: disabled the customer?
-                //$this->toBePayedPreaut($tripPayment);
                 $preauthorizations->setStatus(Preauthorizations::STATUS_TO_BE_PAYED);
-                $preauthorizations->setStatusFrom(date_create());
                 $this->savePreauthorizations($preauthorizations);
-//            }
-//
-//            $this->entityManager->persist($tripPaymentTry);
-//            //$this->entityManager->flush();
-//
-//            $this->entityManager->commit();
-//
-//        } catch (\Exception $e) {
-//            $this->entityManager->rollback();
-//            //throw $e;
-//        }
-//
-//        return $response;
     }
 
     private function tryCustomerTripRefund(
         Trips $trip,
         $amount,
         Preauthorizations $preauthorizations,
-        $type
+        $type,
+        $avoidTripPayment = true
     ) {
         $response = $this->cartasiCustomerPayments->sendRefundRequest($preauthorizations->getTransaction()->getId(), $trip->getCustomer(), $amount , $type);
-            $now = date_create();
-            if ($response->getCompletedCorrectly()) {
+            if($response->getCompletedCorrectly()) {
                 $preauthorizations->setStatus(Preauthorizations::STATUS_COMPLETED);
-                $preauthorizations->setStatusFrom($now);
-                $preauthorizations->setSuccessfullyAt($now);
                 $this->savePreauthorizations($preauthorizations);
+                $tripPayment = $trip->getTripPayment();
+                if(!$avoidTripPayment && $tripPayment instanceof TripPayments){
+                    $tripPayment->setPayedCorrectly();
+
+                    $this->entityManager->persist($tripPayment);
+                    $this->entityManager->flush();
+                }
             } else {
                 $preauthorizations->setStatus(Preauthorizations::STATUS_REFUND);
-                $preauthorizations->setStatusFrom(date_create());
                 $this->savePreauthorizations($preauthorizations);
             }
     }
@@ -185,7 +125,7 @@ class PreauthorizationsService
     public function generateTripPaymentTry(TripPayments &$tripPayment, $outcome, Transactions $transaction = null, Webuser $webuser = null)
     {
         $tripPaymentTry = new TripPaymentTries($tripPayment, $outcome, $transaction, $webuser);
-        if (!$tripPayment->isFirstPaymentTryTsSet()) {
+        if(!$tripPayment->isFirstPaymentTryTsSet()) {
             $tripPayment->setFirstPaymentTryTs($tripPaymentTry->getTs());
         }
         return $tripPaymentTry;
@@ -208,7 +148,7 @@ class PreauthorizationsService
         $amount = $tripPayment->getTotalCost();
         $preaut = $tripPayment->getTrip()->getPreauthorization();
         if($preaut instanceof Preauthorizations){
-            if ($preaut->getStatus() == Preauthorizations::STATUS_TO_BE_PAYED){
+            if($preaut->getStatus() == Preauthorizations::STATUS_TO_BE_PAYED){
                 $amount = $tripPayment->getTotalCost() - $preaut->getTransaction()->getAmount();
             }
         }
@@ -217,7 +157,6 @@ class PreauthorizationsService
 
     private function setPreautDone(Preauthorizations $preauthorizations){
         $preauthorizations->setStatus(Preauthorizations::STATUS_COMPLETED);
-        $preauthorizations->setSuccessfullyAt(date_create());
         $this->savePreauthorizations($preauthorizations);
     }
 
@@ -239,7 +178,7 @@ class PreauthorizationsService
         $refundAmount = 0;
         $refund = $this->getRefundsByPreauthorizations($preauthorizations);
 
-        if ($refund instanceof Refunds){
+        if($refund instanceof Refunds){
             $refundAmount = (int)$refund->getAmountOp();
         }
         return $preauthAmount - $refundAmount;
@@ -252,6 +191,20 @@ class PreauthorizationsService
             $trips->getPreauthorization(),
             'R'
             );
+    }
+
+    public function processPreautRefunds($tripPayments, $avoidEmails, $avoidCartasi, $avoidPersistance){
+        foreach($tripPayments as $tripPayment){
+            $preauthorization = $tripPayment->getTrip()->getPreauthorization();
+            if($preauthorization instanceof Preauthorizations){
+                if($preauthorization->getStatus() == Preauthorizations::STATUS_REFUND){
+                    $transaction = $preauthorization->getTransaction();
+                    if($transaction instanceof Transactions){
+                        $this->tryCustomerTripRefund( $tripPayment->getTrip(), $tripPayment->getTotalCost(), $preauthorization, 'P', false);
+                    }
+                }
+            }
+        }
     }
 
 }

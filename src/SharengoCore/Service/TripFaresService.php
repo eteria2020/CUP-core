@@ -11,21 +11,22 @@ class TripFaresService
      *
      * @param Fares $fare
      * @param int $minutes
+     * @param int $discountPercentage
      * @return int cost of the trip in euros
      */
-    private function minutesToEuros(Fares $fare, $minutes)
+    private function minutesToEuros(Fares $fare, $minutes, $discountPercentage = 0)
     {
         $previousStep = INF;
 
         foreach ($fare->getCostSteps() as $step => $stepCost) {
             if ($minutes > $step) {
-                return min($previousStep, $stepCost + $this->minutesToEuros($fare, $minutes - $step));
+                return min($previousStep, $stepCost + $this->minutesToEuros($fare, $minutes - $step, $discountPercentage));
             }
 
             $previousStep = $stepCost;
         }
 
-        return min($previousStep, $fare->getMotionCostPerMinute() * $minutes);
+        return min($previousStep, round($fare->getMotionCostPerMinute() * $minutes * (100 - $discountPercentage) / 100));
     }
 
     /**
@@ -52,12 +53,14 @@ class TripFaresService
      * @param Fares $fare
      * @param int $tripMinutes includes the parking minutes
      * @param int $parkMinutes
+     * @parma int $discountPercentage
+     * @return int
      */
-    private function tripCost(Fares $fare, $tripMinutes, $parkMinutes)
+    private function tripCost(Fares $fare, $tripMinutes, $parkMinutes, $discountPercentage = 0)
     {
         return min(
-            $this->minutesToEuros($fare, $tripMinutes),
-            $this->minutesToEuros($fare, $tripMinutes - $parkMinutes) + $parkMinutes * $fare->getParkCostPerMinute()
+            $this->minutesToEuros($fare, $tripMinutes, $discountPercentage),
+            $this->minutesToEuros($fare, $tripMinutes - $parkMinutes, $discountPercentage) + $parkMinutes * $fare->getParkCostPerMinute()
         );
     }
     
@@ -72,7 +75,6 @@ class TripFaresService
      */
     public function userTripCost(Fares $fare, $tripMinutes, $parkMinutes, $discountPercentage)
     {
-        //return round($this->tripCostNoParkingDiscount($fare, $tripMinutes, $parkMinutes, $discountPercentage));
-        return round($this->tripCost($fare, $tripMinutes, $parkMinutes) * (100 - $discountPercentage) / 100);
+        return $this->tripCost($fare, $tripMinutes, $parkMinutes, $discountPercentage);
     }
 }

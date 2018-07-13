@@ -102,6 +102,41 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    public function findTripPaymentsForRefund(Customers $customer = null, $timestampEndParam = null)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT tp FROM SharengoCore\Entity\TripPayments tp '.
+            'JOIN tp.trip t '.
+            'JOIN t.customer c '.
+            'WHERE tp.status = :status '.
+            'AND t.timestampEnd < :midnight ';
+
+        if ($customer instanceof Customers) {
+            $dql .= 'AND c = :customer ';
+        }
+        if ($timestampEndParam !== null){
+            $dql .= 'AND t.timestampEnd >= :timestampEndParam ';
+        }
+
+        $dql .= ' ORDER BY tp.id ASC';
+
+        $query = $em->createQuery($dql);
+
+        $query->setParameter('status', TripPayments::STATUS_TO_BE_REFUND);
+        $query->setParameter('midnight', date_create('midnight'));
+
+        if ($customer instanceof Customers) {
+            $query->setParameter('customer', $customer);
+        }
+
+        if ($timestampEndParam !== null){
+            $query->setParameter('timestampEndParam', date_create($timestampEndParam)->setTime(00,00,00));
+        }
+
+        return $query->getResult();
+    }
+
     public function findWrongTripPaymentsTime(Customers $customer = null, $start, $end, $idCondition = null, $limit = null)
     {
         $em = $this->getEntityManager();

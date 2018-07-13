@@ -128,14 +128,15 @@ class BonusService
     {
         return $this->bonusRepository->findOneById($id);
     }
-    
+
     /** 
-     *  @param string $carplate
-     *  @return Bonus
+     * @param Customers $customer
+     * @param string $date_ts
+     * @return Bonus
      */
-    public function verifyBonusPoisAssigned($carplate)
+    public function verifyBonusPoisAssigned(Customers $customer, $date_ts)
     {
-        return $this->bonusRepository->getBonusPoisAssigned($carplate);
+        return $this->bonusRepository->getBonusPoisAssigned($customer, $date_ts);
     }
     
     /** 

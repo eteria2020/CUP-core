@@ -156,7 +156,8 @@ class TripPaymentsService
                     'name' => $customer->getName(),
                     'surname' => $customer->getSurname(),
                     'mobile' => $customer->getMobile(),
-                    'email' => $customer->getEmail()
+                    'email' => $customer->getEmail(),
+                    'type' => ($customer->getGoldList() || $customer->getMaintainer()) ? true : false 
                 ],
                 'button' => $payment->getId()
             ];
@@ -176,6 +177,11 @@ class TripPaymentsService
     public function getTripPaymentsForPayment(Customers $customer = null, $timestampEndParam = null, $condition = null, $limit = null)
     {
         return $this->tripPaymentsRepository->findTripPaymentsForPayment($customer, $timestampEndParam, $condition, $limit);
+    }
+
+    public function getTripPaymentsForRefund(Customers $customer = null, $timestampEndParam = null)
+    {
+        return $this->tripPaymentsRepository->findTripPaymentsForRefund($customer, $timestampEndParam);
     }
 
     public function getTripPaymentsWrongTime(Customers $customer = null, $start, $end, $condition = null, $limit = null)

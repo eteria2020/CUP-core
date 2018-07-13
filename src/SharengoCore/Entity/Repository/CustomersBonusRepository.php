@@ -81,18 +81,26 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
-    public function getBonusPoisAssigned($carplate)
+    /**
+     * 
+     * @param Customers $customer
+     * @param type $date_ts
+     * @return type
+     */
+    public function getBonusPoisAssigned(Customers $customer, $date_ts)
     {
-        $time = date_create(date("Y-m-d H:i:s"));
-        $dql =  "SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb ".
-                "WHERE cb.insertTs >= :time ".
-                "AND SUBSTRING(cb.description, 52 ,7) = :carplate"; //with substring get last 7 char (carplate)
+        $dql =  "SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb " .
+            "WHERE cb.insertTs >= :date_ts_start AND cb.insertTs <= :date_ts_end " .
+            "AND cb.customer = :customer " .
+            "AND cb.type LIKE 'zone-POIS%'";
+
         $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameter('time',  date_sub($time, date_interval_create_from_date_string('24 hours')));
-        $query->setParameter('carplate', $carplate);
+        $query->setParameter('date_ts_start',  $date_ts . ' 00:00:00');
+        $query->setParameter('date_ts_end',  $date_ts . ' 23:59:59');
+        $query->setParameter('customer', $customer);
         return $query->getResult();
     }
-    
+
     public function getWomenBonusPackage($customer) {
         $now = date("Y-m-d");
         $timeStart = date_create($now. "00:00:00");
@@ -147,6 +155,56 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('end', '2018-05-01 00:00:00');
         $query->setParameter('fleet', 1);
         $query->setParameter('description', $descriptionBonusNivea);
+        
+        return $query->getResult();
+    }
+    
+    public function getCustomerBonusAlgebris($descriptionBonusNivea, $startMonth, $endMonth) {
+        $em = $this->getEntityManager();
+        $dql = "SELECT c " .
+                "FROM \SharengoCore\Entity\Customers c  " .
+                "WHERE 1=1  " .
+                "AND c.fleet = :fleet " .
+                "AND c.id NOT IN (  " .
+                                "SELECT cus.id  " .
+                                "FROM \SharengoCore\Entity\CustomersBonus cb  " .
+                                "JOIN \SharengoCore\Entity\Customers cus WITH cb.customer = cus.id  " .
+                                "WHERE cb.description = :description  " .
+                                ") " .
+                "AND c.id  IN (  " .
+                                "SELECT cust.id " .
+                                "FROM \SharengoCore\Entity\Trips ti " .
+                                "JOIN \SharengoCore\Entity\Customers cust WITH ti.customer = cust.id " .
+                                "WHERE ti.timestampBeginning >= :startMonth " .
+                                "AND ti.timestampBeginning < :endMonth " .
+                                "AND ti.fleet = :fleet " .
+                                "AND ti.payable = :payable " .
+                                "GROUP BY cust.id " .
+                                "HAVING count(cust)>=3 " .
+                                ") ";
+        
+        $query = $em->createQuery($dql);
+        
+        $query->setParameter('fleet', 1);
+        $query->setParameter('payable', "TRUE");
+        $query->setParameter('startMonth', $startMonth);
+        $query->setParameter('endMonth', $endMonth);
+        $query->setParameter('description', $descriptionBonusNivea);
+        
+        return $query->getResult();
+    }
+    
+    public function checkIfCustomerRunBeforeDate(Customers $customer, $date_zero) {
+        $em = $this->getEntityManager();
+        $dql = "SELECT COUNT(t.id)  " .
+                "FROM \SharengoCore\Entity\Trips t  " .
+                "WHERE t.timestampBeginning < :dateZero " .
+                "AND t.customer = :customer " ;
+        
+        $query = $em->createQuery($dql);
+        
+        $query->setParameter('dateZero', $date_zero); 
+        $query->setParameter('customer', $customer); 
         
         return $query->getResult();
     }

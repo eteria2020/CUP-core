@@ -39,6 +39,12 @@ final class PaymentEmailListener implements SharedListenerAggregateInterface
             'wrongTripPayment',
             [$this, 'registerWrongTripPaymentForCustomer']
         );
+        
+        $this->listeners[] = $events->attach(
+            'PaymentsService',
+            'wrongExtraPayment',
+            [$this, 'registerWrongExtraPaymentForCustomer']
+        );
 
         $this->listeners[] = $events->attach(
             'ProcessPaymentsService',
@@ -72,6 +78,22 @@ final class PaymentEmailListener implements SharedListenerAggregateInterface
         $tripPaymentsByCustomer[$customer->getId()]['tripPayments'][] = $tripPayment;
     }
 
+    public function registerWrongExtraPaymentForCustomer(EventInterface $e)
+    {
+        $params = $e->getParams();
+        $customer = $params['customer'];
+        $extraPayment = $params['extraPayment'];
+
+        if (!isset($this->tripPaymentsByCustomer[$customer->getId()])) {
+            $this->tripPaymentsByCustomer[$customer->getId()] = [
+                'customer' => $customer,
+                'extraPayments' => []
+            ];
+        }
+
+        $extraPaymentsByCustomer[$customer->getId()]['extraPayments'][] = $extraPayment;
+    }
+    
     public function sendEmailToCustomers(EventInterface $e)
     {
         $avoidEmails = $e->getParams()['avoidEmails'];

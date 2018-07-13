@@ -23,13 +23,6 @@ class SafoPenalty
     private $id;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="penalty_id", type="integer", nullable=true)
-     */
-    private $penaltyId;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(name="insert_ts", type="datetimetz", nullable=false)
@@ -51,18 +44,24 @@ class SafoPenalty
     private $consumedTs;
 
     /**
-     * @var integer
+     * @var Customers
      *
-     * @ORM\Column(name="customer_id", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Customers")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="customer_id", referencedColumnName="id", nullable=true)
+     * })
      */
-    private $customerId;
+    private $customer;
 
     /**
-     * @var integer
+     * @var Fleet
      *
-     * @ORM\Column(name="vehicle_fleet_id", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Fleet")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="vehicle_fleet_id", referencedColumnName="id", nullable=true)
+     * })
      */
-    private $vehicleFleetId;
+    private $fleet;
 
     /**
      * @var integer
@@ -72,18 +71,24 @@ class SafoPenalty
     private $violationCategory;
 
     /**
-     * @var integer
+     * @var Trips
      *
-     * @ORM\Column(name="trip_id", type="integer", nullable=false)
+     * @ORM\OneToOne(targetEntity="Trips", inversedBy="tripPayment")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="trip_id", referencedColumnName="id", nullable=false)
+     * })
      */
-    private $tripId;
+    private $trip;
 
     /**
-     * @var string
+     * @var \Cars
      *
-     * @ORM\Column(name="car_plate", type="text", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Cars", inversedBy="trips")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="car_plate", referencedColumnName="plate")
+     * })
      */
-    private $carPlate;
+    private $car;
 
     /**
      * @var \DateTime
@@ -168,6 +173,23 @@ class SafoPenalty
      * @ORM\Column(name="complete", type="boolean", nullable=false)
      */
     private $complete = false;
+    
+    /**
+     * @var ExtraPayments
+     *
+     * @ORM\OneToOne(targetEntity="ExtraPayments")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="extra_payment_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $extrapayment;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="payable", type="boolean", nullable=false)
+     */
+    private $payable = true;
 
     /**
      * @return int
@@ -175,14 +197,6 @@ class SafoPenalty
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPenaltyId()
-    {
-        return $this->penaltyId;
     }
 
     /**
@@ -214,15 +228,23 @@ class SafoPenalty
      */
     public function getCustomerId()
     {
-        return $this->customerId;
+        return is_null($this->customer) ? null : $this->customer->getId();
     }
-
+    
     /**
-     * @return int
+     * @return Fleet
      */
-    public function getVehicleFleetId()
+    public function getFleet()
     {
-        return $this->vehicleFleetId;
+        return $this->fleet;
+    }
+    
+    /**
+     * @return Fleet
+     */
+    public function getFleetCode()
+    {
+        return is_null($this->fleet) ? null : $this->fleet->getCode();
     }
 
     /**
@@ -238,7 +260,7 @@ class SafoPenalty
      */
     public function getTripId()
     {
-        return $this->tripId;
+        return is_null($this->trip) ? null : $this->trip->getId();
     }
 
     /**
@@ -246,7 +268,7 @@ class SafoPenalty
      */
     public function getCarPlate()
     {
-        return $this->carPlate;
+        return is_null($this->car) ? null : $this->car->getPlate();
     }
 
     /**
@@ -345,6 +367,78 @@ class SafoPenalty
         return $this->complete;
     }
 
+    /**
+     * @return bool
+     */
+    public function isPayable()
+    {
+        return $this->payable;
+    }
+    
+    /**
+     * @return bool
+     */
+    public function getCharged()
+    {
+        return $this->charged;
+    }
+    
+    /**
+     * @return Customers
+     * 
+     * @return \SharengoCore\Entity\Customers
+     */
+    public function getCustomer()
+    {
+        return $this->customer;
+    }
+
+    /**
+     * @return Trips
+     */
+    public function getTrip()
+    {
+        return $this->trip;
+    }
+    
+    /**
+     * Get getCar
+     *
+     * @return \SharengoCore\Entity\Cars
+     */
+    public function getCar() {
+        return $this->car;
+    }
+    
+    /**
+     * Get getExtraPayment
+     *
+     * @return \SharengoCore\Entity\ExtraPayments
+     */
+    public function getExtraPayment() {
+        return $this->extrapayment;
+    }
+    
+    public function setExtraPayment(ExtraPayments $extraPayments) {
+        $this->extrapayment = $extraPayments;
+        return $this;
+    }
+    
+    public function setCharged($param){
+        $this->charged = $param;
+        return $this;
+    }
+
+    /**
+     * @param boolean $param
+     * @return $this
+     */
+
+    public function setPayable($param){
+        $this->payable = $param;
+        return $this;
+    }
+    
 
 }
 

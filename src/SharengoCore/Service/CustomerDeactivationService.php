@@ -95,6 +95,21 @@ class CustomerDeactivationService
     }
 
     /**
+     * Create CustomerDeactivation for when Customer hasn't yet finished the
+     * registration
+     *
+     * @param Customers $customer
+     */
+    public function deactivateRegistrationNotCompleted(Customers $customer)
+    {
+        $this->deactivate(
+            $customer,
+            CustomerDeactivation::REGISTRATION_NOT_COMPLETED,
+            []
+        );
+    }
+
+    /**
      * Deactivate Customer that failed to pay a TripPayment
      *
      * @param Customers $customer
@@ -111,6 +126,28 @@ class CustomerDeactivationService
         $this->deactivate(
             $customer,
             CustomerDeactivation::FAILED_PAYMENT,
+            $details,
+            $startTs
+        );
+    }
+    
+    /**
+     * Deactivate Customer that failed to pay a ExtraPayment
+     *
+     * @param Customers $customer
+     * @param ExtraPaymentTries $extraPaymentTry
+     * @param \DateTime|null $startTs
+     */
+    public function deactivateForExtraPaymentTry(
+        Customers $customer,
+        $extraPaymentTry,
+        \DateTime $startTs = null
+    ) {
+        $details = ['extra_payment_try_id' => $extraPaymentTry->getId()];
+
+        $this->deactivate(
+            $customer,
+            CustomerDeactivation::FAILED_EXTRA_PAYMENT,
             $details,
             $startTs
         );
@@ -254,6 +291,22 @@ class CustomerDeactivationService
         $details = [
             'subscription_payment_id' => $subscriptionPayment->getId()
         ];
+
+        $this->reactivate($customerDeactivation, $details, $endTs);
+    }
+
+    /**
+     * Close the CustomerDeactivation when the Customer finishes the subscription
+     *
+     * @param CustomerDeactivation $customerDeactivation
+     * @param SubscriptionPayment $subscriptionPayment
+     * @param \DateTime|null $endTs
+     */
+    public function reactivateForRegistrationCompleted(
+        CustomerDeactivation $customerDeactivation,
+        \DateTime $endTs = null
+    ) {
+        $details = [];
 
         $this->reactivate($customerDeactivation, $details, $endTs);
     }
@@ -438,6 +491,20 @@ class CustomerDeactivationService
             }
         }
     }
+    
+    /**
+     * Reactivates Customer with only FAILED_EXTRA_PAYMENT from admin after passed payed extra
+     *
+     * @param Customers $customer
+     */
+    public function reactivateCustomerForExtraPayed(Customers $customer) {
+        $c_d = $this->getAllActive($customer);
+        foreach ($c_d as $cd) {
+            if ($cd->getReason() == CustomerDeactivation::FAILED_EXTRA_PAYMENT) {
+                $this->reactivate($cd, [], new \Datetime());
+            }
+        }
+    }
 
     /**
      * Close the CustomerDeactivation when the Webuser removes it
@@ -540,8 +607,8 @@ class CustomerDeactivationService
             'driver_license_categories' => $customer->getDriverLicenseCategories(),
             'driver_license_authority' => $customer->getDriverLicenseAuthority(),
             'driver_license_country' => $customer->getDriverLicenseCountry(),
-            'driver_license_release_date' => $customer->getDriverLicenseReleaseDate()->format('Y-m-d H:i:s'),
-            'driver_license_expire' => $customer->getDriverLicenseExpire()->format('Y-m-d H:i:s'),
+            'driver_license_release_date' => (is_null($customer->getDriverLicenseReleaseDate())) ? null : $customer->getDriverLicenseReleaseDate()->format('Y-m-d H:i:s'),
+            'driver_license_expire' => (is_null($customer->getDriverLicenseExpire())) ? null : $customer->getDriverLicenseExpire()->format('Y-m-d H:i:s'),
             'driver_license_name' => $customer->getDriverLicenseName(),
             'driver_license_surname' => $customer->getDriverLicenseSurname()
         ];

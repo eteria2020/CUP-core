@@ -193,6 +193,10 @@ class CustomersService implements ValidatorServiceInterface
         ]);
     }
 
+    public function findByPromocodeMemberGetMember($promocode) {
+        return $this->customersRepository->findByPromocodeMemberGetMember($promocode);
+    }
+
     public function findByTaxCode($taxCode)
     {
         return $this->customersRepository->findByCI('taxCode', $taxCode);
@@ -399,14 +403,14 @@ class CustomersService implements ValidatorServiceInterface
 
         $this->entityManager->persist($point);
         $this->entityManager->flush();
-        
+
         return $point;
     }
-    
+
     public function clearEntityManager(){
-        
+
         //$identity = $this->entityManager->getUnitOfWork()->getIdentityMap();
-        
+
         $this->entityManager->clear('SharengoCore\Entity\Trips');
         $this->entityManager->clear('SharengoCore\Entity\Cars');
         $this->entityManager->clear('SharengoCore\Entity\Customers');
@@ -422,7 +426,7 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->clear('SharengoCore\Entity\CustomersBonus');
 
     }
-    
+
     public function clearEntityManagerBonus(){
         //$identity = $this->entityManager->getUnitOfWork()->getIdentityMap();
         $this->entityManager->clear('SharengoCore\Entity\Cards');
@@ -453,11 +457,11 @@ class CustomersService implements ValidatorServiceInterface
     public function getCustomerPointsByCustomer($customerId){
         return $this->customersPointsRepository->findCustomerPointsByCustomer($customerId);
     }
-    
+
     public function  getTripsByCustomerForAddPointClusterLastMonth($customerId, $dateTodayStart, $dateStartCurrentMonth){
         return $this->customersPointsRepository->getTripsByCustomerForAddPointClusterLastMonth($customerId, $dateTodayStart, $dateStartCurrentMonth);
     }
-    
+
     public function  getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartCurrentMonth){
         return $this->customersPointsRepository->getTripsByCustomerForAddPointClusterTwotMonthAgo($customerId, $dateStartLastMonth, $dateStartCurrentMonth);
     }
@@ -465,7 +469,7 @@ class CustomersService implements ValidatorServiceInterface
     public function checkCustomerIfAlreadyAddPointsThisMonth($customerId, $dateCurrentMonthStart, $dateNextMonthStart){
         return $this->customersPointsRepository->checkCustomerIfAlreadyAddPointsThisMonth($customerId, $dateCurrentMonthStart, $dateNextMonthStart);
     }
-    
+
     public function getAllCustomerInCustomersPoints($dateStart, $dateEnd){
         return $this->customersPointsRepository->getAllCustomerInCustomersPoints($dateStart, $dateEnd);
     }
@@ -791,6 +795,26 @@ class CustomersService implements ValidatorServiceInterface
         return $result;
     }
 
+/**
+     * Rerurn the Member Get Member promocode of customer.
+     * In the hash code, it's upper case of charactes in the position 0,2,4,6,8,10,12,14,16,18
+     *
+     * @param Customers $customer
+     * @return string
+     */
+    public function getPromocodeMemberGetMember(Customers $customer){
+        $result = null;
+
+        if(!is_null($customer)){
+            $hash = $customer->getHash();
+            $result = strtoupper(substr($hash, 0,1) . substr($hash, 2,1) . substr($hash, 4,1) . substr($hash, 6,1) . substr($hash, 8,1) . '-' .
+                    substr($hash, 10,1) . substr($hash, 12,1) . substr($hash, 14,1) . substr($hash, 16,1) . substr($hash, 18,1)
+            );
+        }
+
+        return $result;
+    }
+
     /**
      * @param Customers $customer
      * @return string
@@ -948,24 +972,48 @@ class CustomersService implements ValidatorServiceInterface
     public function getCustomersRunThisMonth($dateTodayStart, $dateStartCurrentMonth){
         return $this->customersPointsRepository->getCustomersRunThisMonth($dateTodayStart, $dateStartCurrentMonth);
     }
-    
+
     public function disableCustomer(Customers $customer){
         //disable customersPaymentAble
         $customer->setPaymentAble(false);
         //disable user
         $customer->disable();
-        
+
         $this->entityManager->persist($customer);
         $this->entityManager->flush();
-        
+
     }
-    
+
     public function clearAllEntityManager(){
-        $identity = $this->entityManager->getUnitOfWork()->getIdentityMap(); 
+        $identity = $this->entityManager->getUnitOfWork()->getIdentityMap();
         $this->entityManager->clear();
     }
-    
+
     public function getCustomerBonusNivea($descriptionBonusNivea) {
         return $this->customersBonusRepository->getCustomerBonusNivea($descriptionBonusNivea);
+    }
+
+    public function getCustomersValidLicenseOldCheck($lastCheckDate = null, $maxCustomers = null) {
+        return $this->customersRepository->findCustomersValidLicenseOldCheck($lastCheckDate, $maxCustomers);
+    }
+
+    public function getCustomerBonusAlgebris($descriptionBonusAlgebris, $startMonth, $endMonth) {
+        return $this->customersBonusRepository->getCustomerBonusAlgebris($descriptionBonusAlgebris, $startMonth, $endMonth);
+    }
+
+    public function checkIfCustomerRunBeforeDate(Customers $customer, $date_zero) {
+        return $this->customersBonusRepository->checkIfCustomerRunBeforeDate($customer, $date_zero);
+    }
+    
+    public function recessCustomer(Customers $customer) {
+        $email_deactivated = explode("@", $customer->getEmail());
+        $email_deactivated = $email_deactivated[0] . '_deactivated@' . $email_deactivated[1];
+        $customer->setEmail($email_deactivated);
+        $customer->setDriverLicense($customer->getDriverLicense() . '_deactivated');
+        $customer->setTaxCode('XX' . $customer->getTaxCode());
+        $customer->setMobile($customer->getMobile() . '12345');
+        $customer->setEnabled(false);
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
     }
 }
