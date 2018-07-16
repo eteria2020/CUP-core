@@ -1016,4 +1016,20 @@ class CustomersService implements ValidatorServiceInterface
         $this->entityManager->persist($customer);
         $this->entityManager->flush();
     }
+    
+    public function clearEntityManagerBonusCarFreeX($param){
+        $identity = $this->entityManager->getUnitOfWork()->getIdentityMap();
+        //$this->entityManager->clear();
+        $a = '';
+        if($param){
+            $this->entityManager->clear('SharengoCore\Entity\Customers');
+            $this->entityManager->clear('SharengoCore\Entity\Cards');
+            $this->entityManager->clear('SharengoCore\Entity\AddBonus');
+            $this->entityManager->clear('SharengoCore\Entity\CarsBonusHistory');
+        }else{
+            $this->entityManager->clear('SharengoCore\Entity\Cars');
+            $this->entityManager->clear('SharengoCore\Entity\CarsInfo');
+            $this->entityManager->clear('SharengoCore\Entity\CarsBonus');
+        }
+    }
 }

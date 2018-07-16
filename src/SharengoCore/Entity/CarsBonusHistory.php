@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * CarsBonusHistory
  *
  * @ORM\Table(name="cars_bonus_history", indexes={@ORM\Index(name="IDX_7938C137719ED75B", columns={"plate"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CarsBonusHistoryRepository")
  */
 class CarsBonusHistory
 {
@@ -53,12 +53,12 @@ class CarsBonusHistory
      */
     private $plate;
     
-    public function __construct($freeX, $permanance, $plate)
+    public function __construct($freeX, $permanance, $car)
     {
         $this->insertedTs = new \DateTime();
         $this->freeX = $freeX;
         $this->permanance = $permanance;
-        $this->plate = $plate;
+        $this->plate = $car;
     }
 
 

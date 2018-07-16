@@ -34,7 +34,7 @@ class CarsBonusService
 
     public function findOneByPLate($plate)
     {
-        return $this->carsBonusRepository->findOneByEmail($plate);
+        return $this->carsBonusRepository->findByPLate($plate);
     }
     
     public function addFreeBonus(CarsBonus $car_bonus, $val)
@@ -42,6 +42,7 @@ class CarsBonusService
         $car_bonus->setFreeX($val);
         $this->entityManager->persist($car_bonus);
         $this->entityManager->flush($car_bonus);
+        return $car_bonus;
     }
 
 }

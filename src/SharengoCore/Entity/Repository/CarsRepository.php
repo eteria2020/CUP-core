@@ -232,6 +232,19 @@ class CarsRepository extends \Doctrine\ORM\EntityRepository
             OR t.timestampEnd > :date
         )
         ";
+        
+        /*
+         * AND c NOT IN (
+            SELECT DISTINCT c1
+            FROM \SharengoCore\Entity\CarsBonus cb
+            JOIN cb.plate c1
+            WHERE cb.nouse IS NULL
+            OR cb.nouse > :date
+        )
+         */
+        /*
+         
+        */
         $query = $em->createQuery($dql);
         $query->setParameter('fleet', $fleet_id);
         $query->setParameter('date', $date);

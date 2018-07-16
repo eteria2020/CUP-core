@@ -2,7 +2,6 @@
 
 namespace SharengoCore\Service;
 
-// Externals
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -12,11 +11,11 @@ class CarsBonusHistoryServiceFactory implements FactoryInterface
     {
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
-        $carsBonusHistyìoryRepository = $entityManager->getRepository('\SharengoCore\Entity\CarsBonusHistory');
+        $carsBonusHistyoryRepository = $entityManager->getRepository('\SharengoCore\Entity\CarsBonusHistory');
 
-        return new CarsBonusService(
+        return new CarsBonusHistoryService(
             $entityManager,
-            $carsBonusHistyìoryRepository
+            $carsBonusHistyoryRepository
         );
     }
 }

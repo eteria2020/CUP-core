@@ -17,24 +17,24 @@ class CarsBonusHistoryService
     /**
      * @var CarsBonusHistoryRepository
      */
-    private $carsBonusHistyìoryRepository;
+    private $carsBonusHistoryRepository;
 
 
     /**
      * @param EntityManager $entityManager
-     * @param CarsBonusRepository $carsBonusRepository
+     * @param CarsBonusHistoryRepository $carsBonusHistoryRepository
      */
     public function __construct(
         EntityManager $entityManager,
-        CarsBonusHistoryRepository $carsBonusHistyìoryRepository
+        CarsBonusHistoryRepository $carsBonusHistoryRepository
     ) {
         $this->entityManager = $entityManager;
-        $this->$carsBonusHistyìoryRepository = $carsBonusHistyìoryRepository;
+        $this->carsBonusHistoryRepository = $carsBonusHistoryRepository;
     }
     
-    public function createRecord($freeX, $permanance, $plate)
+    public function createRecord($freeX, $permanance, $car)
     {
-        $cars_bonus_history = new CarsBonusHistory($freeX, $permanance, $plate);
+        $cars_bonus_history = new CarsBonusHistory($freeX, $permanance, $car);
         $this->entityManager->persist($cars_bonus_history);
         $this->entityManager->flush($cars_bonus_history);
     }
