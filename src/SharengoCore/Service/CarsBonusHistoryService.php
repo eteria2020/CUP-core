@@ -39,4 +39,9 @@ class CarsBonusHistoryService
         $this->entityManager->flush($cars_bonus_history);
     }
     
+    public function deleteOldRecord()
+    {
+        $date = new \DateTime("-3 months");
+        return $this->carsBonusHistoryRepository->deleteOldRecord($date);
+    }
 }

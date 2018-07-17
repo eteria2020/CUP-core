@@ -12,5 +12,16 @@ use Doctrine\ORM\EntityRepository;
  */
 class CarsBonusHistoryRepository extends EntityRepository
 {
-    
+    public function deleteOldRecord($date){
+        $em = $this->getEntityManager();
+
+        $dql = "DELETE  
+        FROM \SharengoCore\Entity\CarsBonusHistory cbh 
+        WHERE cbh.insertedTs < :date ";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('date', $date);
+
+        return $query->getResult();
+    }
 }
