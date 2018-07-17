@@ -27,7 +27,7 @@ class CarsBonusHistoryService
     public function __construct(
         EntityManager $entityManager,
         CarsBonusHistoryRepository $carsBonusHistoryRepository
-    ) {
+    ){
         $this->entityManager = $entityManager;
         $this->carsBonusHistoryRepository = $carsBonusHistoryRepository;
     }
