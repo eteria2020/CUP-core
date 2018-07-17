@@ -15,8 +15,8 @@ class CarsBonusRepository extends EntityRepository
     public function findByPLate($plate){
         $em = $this->getEntityManager();
 
-        $dql = "SELECT c
-        FROM \SharengoCore\Entity\CarsBonus c
+        $dql = "SELECT c 
+        FROM \SharengoCore\Entity\CarsBonus c 
         WHERE c.plate = :plate ";
 
         $query = $em->createQuery($dql);
