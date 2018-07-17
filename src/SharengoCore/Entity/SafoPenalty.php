@@ -185,6 +185,13 @@ class SafoPenalty
     private $extrapayment;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="payable", type="boolean", nullable=false)
+     */
+    private $payable = true;
+
+    /**
      * @return int
      */
     public function getId()
@@ -359,6 +366,14 @@ class SafoPenalty
     {
         return $this->complete;
     }
+
+    /**
+     * @return bool
+     */
+    public function isPayable()
+    {
+        return $this->payable;
+    }
     
     /**
      * @return bool
@@ -411,6 +426,16 @@ class SafoPenalty
     
     public function setCharged($param){
         $this->charged = $param;
+        return $this;
+    }
+
+    /**
+     * @param boolean $param
+     * @return $this
+     */
+
+    public function setPayable($param){
+        $this->payable = $param;
         return $this;
     }
     

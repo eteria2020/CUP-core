@@ -97,6 +97,9 @@ class FinesService
                     'complete' => $fine->isComplete(),
                     'violationTimestamp' => $fine->getViolationTimestamp()->format('Y/m/d H:i:s'),
                     'insertTs' => $fine->getInsertTs()->format('Y/m/d H:i:s')
+                ],
+                'cu' => [
+                    'type' => (is_null($fine->getCustomer()) ? false : ($fine->getCustomer()->getMaintainer() || $fine->getCustomer()->getGoldList()) ? true : false)
                 ]
             ];
         }, $fines);
@@ -120,7 +123,7 @@ class FinesService
         if($fine->getCharged()){
             return 0;
         }else{
-            if(!is_null($fine->getCustomerId()) && !is_null($fine->getTripId()) && !is_null($fine->getCarPlate())&& $fine->isComplete()){
+            if(!is_null($fine->getCustomerId()) && !is_null($fine->getTripId()) && !is_null($fine->getCarPlate())&& $fine->isComplete() && $fine->isPayable()){
                 return 1;
             }else{
                 return 2;
@@ -161,7 +164,7 @@ class FinesService
         $this->entityManager->clear('SharengoCore\Entity\Trips');
         //$this->entityManager->clear('SharengoCore\Entity\Cars');
         $this->entityManager->clear('SharengoCore\Entity\Cards');
-        $this->entityManager->clear('SharengoCore\Entity\Fleet');
+        //$this->entityManager->clear('SharengoCore\Entity\Fleet');
         $this->entityManager->clear('SharengoCore\Entity\ExtraPayments');
         $this->entityManager->clear('SharengoCore\Entity\ExtraPaymentTries');
         $this->entityManager->clear('SharengoCore\Entity\CustomerDeactivation');
@@ -174,5 +177,11 @@ class FinesService
     private function formatAmount($amount)
     {
         return sprintf('%.2f €', intval($amount) / 100);
+    }
+
+    public function setFineNotPayable($fine){
+        $fine = $fine->setPayable(false);
+        $this->entityManager->persist($fine);
+        $this->entityManager->flush();
     }
 }
