@@ -435,5 +435,14 @@ class CarsService
     {
         return $this->carsRepository->findOutOfBoundsPlates()[0]['value'];
     }
+    
+    /**
+     * @return Cars[]
+     */
+    public function getPublicCarsForAddFreeX($fleet_id)
+    {
+        $date = new \DateTime("-1 hours");
+        return $this->carsRepository->getPublicCarsForAddFreeX($fleet_id, $date);
+    }
 
 }

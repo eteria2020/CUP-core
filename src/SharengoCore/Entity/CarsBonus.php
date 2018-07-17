@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * CarsBonus
  *
  * @ORM\Table(name="cars_bonus")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\CarsBonusRepository")
  */
 class CarsBonus
 {
@@ -35,6 +35,13 @@ class CarsBonus
      * @ORM\Column(name="unplug_enable", type="boolean", nullable=false)
      */
     private $unplugEnable = false;
+    
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="free_x", type="integer", nullable=true)
+     */
+    private $freeX;
 
     /**
      * 
@@ -52,5 +59,26 @@ class CarsBonus
         return $this->unplugEnable;
     }
 
+    /**
+     * Get freeX
+     *
+     * @return integer
+     */
+    public function getFreeX() {
+        return $this->freeX;
+    }
+    
+    /**
+     * Set freeX
+     *
+     * @param integer $name
+     *
+     * @return CarsBonus
+     */
+    public function setFreeX($val)
+    {
+        $this->freeX = $val;
+        return $this;
+    }
 }
 

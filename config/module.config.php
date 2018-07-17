@@ -262,6 +262,8 @@ return [
             'SharengoCore\Service\ExtraScriptRunsService' => 'SharengoCore\Service\ExtraScriptRunsServiceFactory',
             'SharengoCore\Service\ProcessExtraService' => 'SharengoCore\Service\ProcessExtraServiceFactory',
             'SharengoCore\Service\UserEventsService' => 'SharengoCore\Service\UserEventsServiceFactory',
+            'SharengoCore\Service\CarsBonusService' => 'SharengoCore\Service\CarsBonusServiceFactory',
+            'SharengoCore\Service\CarsBonusHistoryService' => 'SharengoCore\Service\CarsBonusHistoryServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
             'SharengoCore\Listener\DisableContractListener' => 'SharengoCore\Listener\DisableContractListenerFactory',
