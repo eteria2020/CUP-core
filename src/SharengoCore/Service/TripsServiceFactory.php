@@ -19,6 +19,7 @@ class TripsServiceFactory implements FactoryInterface
         $datatableServiceNotPayed = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
         $customerService = $serviceLocator->get('SharengoCore\Service\CustomersService');
         $urlHelper = $serviceLocator->get('viewhelpermanager')->get('url');
+        $userEventsService = $serviceLocator->get('SharengoCore\Service\UserEventsService');
 
         // decorate the query builder with the needed decorators
         $datatableService->setQueryBuilder(
@@ -68,7 +69,8 @@ class TripsServiceFactory implements FactoryInterface
             $customerService,
             $commandsService,
             $translator,
-            $locationService
+            $locationService,
+            $userEventsService
         );
     }
 }

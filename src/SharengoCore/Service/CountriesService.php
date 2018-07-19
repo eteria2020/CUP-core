@@ -43,6 +43,9 @@ class CountriesService
     public function getCountryByCadastralCode($code)
     {
         $country = $this->repository->findOneByCadastralCode($code);
+        if(is_null($country)){
+            return 'it'; //default value in case some cadastral codes are missing in the countries table
+        }
         return $country->getCode();
     }
 }

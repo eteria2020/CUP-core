@@ -55,4 +55,18 @@ class OldCustomerDiscount
         $this->discount = $discount;
         $this->obsoleteFrom = $obsoleteFrom;
     }
+    
+    
+    public function getId(){
+        return $this->id;
+    }
+    
+    public function getDiscount(){
+        return $this->discount;
+    }
+    
+    public function getObsoleteFrom(){
+        return $this->obsoleteFrom;
+    }
+    
 }

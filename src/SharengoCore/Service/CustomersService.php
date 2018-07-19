@@ -1004,4 +1004,32 @@ class CustomersService implements ValidatorServiceInterface
     public function checkIfCustomerRunBeforeDate(Customers $customer, $date_zero) {
         return $this->customersBonusRepository->checkIfCustomerRunBeforeDate($customer, $date_zero);
     }
+    
+    public function recessCustomer(Customers $customer) {
+        $email_deactivated = explode("@", $customer->getEmail());
+        $email_deactivated = $email_deactivated[0] . '_deactivated@' . $email_deactivated[1];
+        $customer->setEmail($email_deactivated);
+        $customer->setDriverLicense($customer->getDriverLicense() . '_deactivated');
+        $customer->setTaxCode('XX' . $customer->getTaxCode());
+        $customer->setMobile($customer->getMobile() . '12345');
+        $customer->setEnabled(false);
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
+    }
+    
+    public function clearEntityManagerBonusCarFreeX($param){
+        $identity = $this->entityManager->getUnitOfWork()->getIdentityMap();
+        //$this->entityManager->clear();
+        $a = '';
+        if($param){
+            $this->entityManager->clear('SharengoCore\Entity\Customers');
+            $this->entityManager->clear('SharengoCore\Entity\Cards');
+            $this->entityManager->clear('SharengoCore\Entity\AddBonus');
+            $this->entityManager->clear('SharengoCore\Entity\CarsBonusHistory');
+        }else{
+            $this->entityManager->clear('SharengoCore\Entity\Cars');
+            $this->entityManager->clear('SharengoCore\Entity\CarsInfo');
+            $this->entityManager->clear('SharengoCore\Entity\CarsBonus');
+        }
+    }
 }

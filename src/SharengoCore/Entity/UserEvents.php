@@ -3,23 +3,22 @@
 namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use SharengoCore\Entity\Webuser;
 
 /**
  * UserEvents
  *
- * @ORM\Table(name="user_events", indexes={@ORM\Index(name="idx_d96cf1ff49279951", columns={"webuser_id"})})
+ * @ORM\Table(name="user_events")
  * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\UserEventsRepository")
  */
-class UserEvents {
-
+class UserEvents
+{
     /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="SEQUENCE")
-     * @ORM\SequenceGenerator(sequenceName="user_events_id_seq", allocationSize=1, initialValue=1)
+     * @ORM\SequenceGenerator(sequenceName="userevents_id_seq", allocationSize=1, initialValue=1)
      */
     private $id;
 
@@ -45,7 +44,7 @@ class UserEvents {
     private $details;
 
     /**
-     * @var \Webuser
+     * @var Webuser
      *
      * @ORM\ManyToOne(targetEntity="Webuser")
      * @ORM\JoinColumns({
@@ -54,17 +53,22 @@ class UserEvents {
      */
     private $webuser;
 
+    
     /**
-     * 
-     * @param Webuser $webUser
-     * @param type $topic
-     * @param array $detail
+     * @param Webuser $webuser
+     * @param String $topic
+     * @param json $details
      */
-    public function __construct(Webuser $webUser, $topic, array $detail) {
-        $this->insertTs = date_create();
-        $this->webuser = $webUser;
+    public function __construct(
+        Webuser $webuser,
+        $topic,
+        $details
+    ) {
+        $this->webuser = $webuser;
+        $this->insertTs = new \DateTime();
         $this->topic = $topic;
-        $this->details = json_encode($detail);
+        $this->details = $details;
     }
 
 }
+

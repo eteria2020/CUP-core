@@ -92,7 +92,6 @@ class PromoCodesMemberGetMemberService
         }
 
         $customer = $this->customersService->findByPromocodeMemberGetMember($promoCode);
-        $test = $this->customersService->getPromocodeMemberGetMember($customer);
 
         if (is_null($customer)) {   // custumer id dosn't exist
             return false;
