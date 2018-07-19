@@ -444,5 +444,9 @@ class CarsService
         $date = new \DateTime("-1 hours");
         return $this->carsRepository->getPublicCarsForAddFreeX($fleet_id, $date);
     }
+    
+    public function getLastMaintenanceCar($plate){
+        return $this->carsMaintenanceRepository->findLastCarsMaintenance($plate);
+    }
 
 }
