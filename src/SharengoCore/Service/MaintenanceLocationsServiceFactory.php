@@ -10,8 +10,8 @@ class MaintenanceLocationsServiceFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
-        $maintenanceMotivationsRepository = $entityManager->getRepository('\SharengoCore\Entity\MaintenanceMotivations');
+        $maintenanceLocationsRepository = $entityManager->getRepository('\SharengoCore\Entity\MaintenanceLocations');
 
-        return new MaintenanceMotivationsService($entityManager, $maintenanceMotivationsRepository);
+        return new MaintenanceLocationsService($entityManager, $maintenanceLocationsRepository);
     }
 }

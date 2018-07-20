@@ -93,6 +93,16 @@ class CarsMaintenance
      * })
      */
      private $motivation;
+     
+     /**
+     * @var \MaintenanceMotivations
+     *
+     * @ORM\ManyToOne(targetEntity="MaintenanceLocations")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="location_id", referencedColumnName="id")
+     * })
+     */
+     private $locationId;
 
     /**
      * Get id
@@ -284,5 +294,21 @@ class CarsMaintenance
         $this->motivation = $maintenanceMotivations;
 
     }
+    
+    /**
+     * @return MaintenanceLocations
+     */
+    public function getLocationId()
+    {
+        return $this->locationId;
+    }
+    
+    public function setLocationId(MaintenanceLocations $maintenanceLocations){
+
+        $this->locationId = $maintenanceLocations;
+
+    }
+    
+
 
 }

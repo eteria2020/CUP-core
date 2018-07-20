@@ -1,14 +1,14 @@
 <?php
 
-
+namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * MaintenanceLocations
  *
- * @ORM\Table(name="maintenance_locations", indexes={@ORM\Index(name="IDX_52276ECB4B061DF9", columns={"fleet_id"})})
- * @ORM\Entity
+ * @ORM\Table(name="maintenance_locations")
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\MaintenanceLocationsRepository")
  */
 class MaintenanceLocations
 {
@@ -37,15 +37,47 @@ class MaintenanceLocations
     private $enabled;
 
     /**
-     * @var \Fleets
+     * @var Fleets
      *
-     * @ORM\ManyToOne(targetEntity="Fleets")
+     * @ORM\ManyToOne(targetEntity="Fleet")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="fleet_id", referencedColumnName="id")
      * })
      */
     private $fleet;
+ 
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
+    /**
+     * @return string
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
+    
+    /**
+     * Get fleet
+     *
+     * @return Fleet
+     */
+    public function getFleet() {
+        return $this->fleet;
+    }
 
 }
 

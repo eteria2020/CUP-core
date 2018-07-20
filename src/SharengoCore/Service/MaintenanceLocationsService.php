@@ -2,7 +2,7 @@
 
 namespace SharengoCore\Service;
 
-use SharengoCore\Entity\Repository\MaintenanceMotivationsRepository;
+use SharengoCore\Entity\Repository\MaintenanceLocationsRepository;
 
 use Doctrine\ORM\EntityManager;
 
@@ -13,36 +13,38 @@ class MaintenanceLocationsService
      */
     private $entityManager;
 
-    private $maintenanceMotivationsRepository;
+    private $maintenanceLocationsRepository;
 
     /**
      * @param EntityManager $entityManager
      */
     public function __construct(
         EntityManager $entityManager,
-        MaintenanceMotivationsRepository $maintenanceMotivationsRepository
+        MaintenanceLocationsRepository $maintenanceLocationsRepository
     ) {
         $this->entityManager = $entityManager;
-        $this->maintenanceMotivationsRepository = $maintenanceMotivationsRepository;
+        $this->maintenanceLocationsRepository = $maintenanceLocationsRepository;
     }
 
     /**
      * @return Array[]
      */
-    public function getAllMaintenanceMotivations()
+    public function getAllMaintenanceLocations($param)
     {
-        $maintenanceMotivations = $this->maintenanceMotivationsRepository->findAllActive();
-        
-        foreach ($maintenanceMotivations as $maintenanceMotivation){
-            $ret[$maintenanceMotivation->getId()] = $maintenanceMotivation->getDescription();
-
+        $maintenanceLocations = $this->maintenanceLocationsRepository->findAllActive();
+        if($param){
+            return $maintenanceLocations;
+        } else {
+            foreach ($maintenanceLocations as $maintenanceLocation){
+                $ret[$maintenanceLocation->getId()] = $maintenanceLocation->getLocation();
+            }
+            return $ret;
         }
-        return $ret;
     }
 
 
     public function getById($id)
     {
-        return $this->maintenanceMotivationsRepository->findById($id);
+        return $this->maintenanceLocationsRepository->findById($id);
     }
 }
