@@ -364,9 +364,8 @@ class PaymentsService
                     $this->avoidCartasi
                 );
             } elseif ($contract->getPartner()->getCode()=='nugo') {
-                $response = $this->nugoPayService->sendPaymentRequest(
-                    $customer,
-                    $tripPayment->getTotalCost(),
+                $response = $this->nugoPayService->sendTripPaymentRequest(
+                    $tripPayment,
                     $this->avoidCartasi
                 );
             }

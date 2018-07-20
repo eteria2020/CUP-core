@@ -24,6 +24,9 @@ use Cartasi\Entity\Transactions;
 
 use Doctrine\ORM\EntityManager;
 
+use Zend\Http\Request;
+use Zend\Http\Client;
+
 class NugoService
 {
 
@@ -89,6 +92,12 @@ class NugoService
      */
     private $portaleAutomobilistaValidationService;
 
+    /**
+     *
+     * @var HttpClient httpClient
+     */
+    private $httpClient;
+
     public function __construct(
         EntityManager $entityManager,
         CustomersRepository $customersRepository,
@@ -113,6 +122,13 @@ class NugoService
         $this->countriesService = $countriesService;
         $this->driversLicenseValidationService = $driversLicenseValidationService;
         $this->portaleAutomobilistaValidationService = $portaleAutomobilistaValidationService;
+
+        $this->httpClient = new Client();
+        $this->httpClient->setMethod(Request::METHOD_PUT);
+        $this->httpClient->setOptions([
+            'maxredirects' => 0,
+            'timeout' => 90
+        ]);
     }
 
     /**
@@ -150,6 +166,7 @@ class NugoService
                         "created" => $isCustomerNew,
                         "enabled" => $customer->getEnabled(),
                         "userId" => $customer->getId(),
+                        "email" => $customer->getEmail(),
                         "password" => $customer->getPassword(),
                         "pin" => $customer->getPrimaryPin()
                     );
@@ -175,6 +192,52 @@ class NugoService
             $response = 404;
         }
 
+        return $response;
+    }
+
+    /**
+     * Send a curl request to notity the new status.
+     * 
+     * @param Customers $customer
+     * @return response
+     */
+
+    public function notifyCustomerStatus(Customers $customer) {
+        $notifyCustomerStatus = "/nugo/api/external/sharengo/customer-status";
+        $response = null;
+
+        try {
+            if($customer->enable()) {
+                $status = "CONFIRMED";
+            } else {
+                $status = "DISABLED";
+            }
+
+            $json = json_encode(
+                array(
+                    'email' => $customer->getEmail(),
+                    'status' => $status
+                )
+            );
+
+            $request = new Request();
+            $request->setUri($this->parms['notifyCustomerStatus']['uri'] . $notifyCustomerStatus);
+
+            $this->httpClient->setUri($this->parms['notifyCustomerStatus']['uri'] . $notifyCustomerStatus);
+            $this->httpClient->setRawBody($json);
+            $this->httpClient->setHeaders(
+                array(
+                    'Content-type' => 'application/json',
+                    'charset' => 'UTF-8'
+                )
+            );
+
+            $httpResponse = $this->httpClient->send();
+            $response = $httpResponse->getBody();
+
+        } catch (Exception $ex) {
+            $response= null;
+        }
         return $response;
     }
 
@@ -208,6 +271,16 @@ class NugoService
                 $value = 'female';
             }
             if ($value == 'male' || $value == 'female') {
+                $contentArray[$key] = $value;
+            } else {
+                $strError .= sprintf('Invalid %s ', $key);
+                array_push($errorArray, $key);
+            }
+
+            
+            $key = 'fleetId';  // fleetId
+            $value = intval($this->getDataFormatedLower($contentArray, $key, FALSE));
+            if($value>=1 && $value<=4) {
                 $contentArray[$key] = $value;
             } else {
                 $strError .= sprintf('Invalid %s ', $key);
@@ -774,6 +847,8 @@ class NugoService
             }
 
             $customer->setGender($data['gender']);
+            $customer->setFleet($this->fleetService->getFleetById($data['fleetId']));
+
             $customer->setSurname($data['lastName']);
             $customer->setName($data['firstName']);
             //$customer->setBirthDate(new \DateTime(sprintf('%s-%s-%s 00:00:00',$data['birthDate'][0], $data['birthDate'][1], $data['birthDate'][2])));
@@ -825,7 +900,7 @@ class NugoService
             $customer->setRegistrationCompleted(true);
             $customer->setDiscountRate(0);
             $customer->setPaymentAble(true);
-            $customer->setFleet($this->fleetService->getFleetById(1));         // default Milano
+
             $customer->setLanguage('it');
             $customer->setMaintainer(false);
             $customer->setGoldList(false);

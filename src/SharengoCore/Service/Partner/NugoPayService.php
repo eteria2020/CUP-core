@@ -8,6 +8,7 @@ use SharengoCore\Service\ExtraPaymentsService;
 
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Repository\PartnersRepository;
+use SharengoCore\Entity\TripPayments;
 
 use Cartasi\Entity\CartasiResponse;
 use Cartasi\Entity\Transactions;
@@ -79,7 +80,7 @@ class NugoPayService {
         ExtraPaymentsService $extraPaymentsService,
         CartasiContractsService $cartasiContractsService,
         PartnersRepository $partnersRepository
-    ) {;
+    ) {
         $this->entityManager = $entityManager;
         $this->tripsService = $tripsService;
         $this->extraPaymentsService = $extraPaymentsService;
@@ -185,7 +186,10 @@ class NugoPayService {
      * After a ride is complete, its cost can be charged to the associated user’s account by calling the charge endpoint.
      *
      * @param string $referenceId The unique reference ID on partners' side (for Share’ngo, this should be the ID of the reservation for which a vehicle is about to be unlocked)
+     * @param integer $transactionId Id of transaction
      * @param string  $preAuthId The unique ID associated with the preauthorization, obtained via a /pay/preauth request
+     * @param string $email 
+     * @param string $type Type of payment object (trip, subscription, package, extra)
      * @param int  $amount The amount of money (in Euro cents) to be charged on the payment gateway
      * @param string $currency The currency of the pre-authorization (ISO 4217 Currency Codes)
      * @param array $response Response of server
@@ -193,12 +197,15 @@ class NugoPayService {
      */
     private function tryCharginAccount(
         $referenceId,
+        $transactionId,
         $preAuthId,
+        $email,
+        $type,
         $amount,
         $currency,
         &$response) {
 
-        $uriCharge = '/pay/charge';
+        $uriCharge = '/nugo/api/external/sharengo/charge-account';
         $result = false;
         $response = null;
 
@@ -207,7 +214,10 @@ class NugoPayService {
             $json = json_encode(
                 array(
                     'referenceId' => $referenceId,
+                    'transactionId' => $transactionId,
                     'preAuthId' => $preAuthId,
+                    'email' => $email,
+                    'type' => $type,
                     'amount' => $amount,
                     'currency' => $currency
                 )
@@ -242,17 +252,18 @@ class NugoPayService {
      * @param boolean $avoidHittingPay
      * @return CartasiResponse
      */
-    public function sendPaymentRequest(
-        Customers $customer,
-        $amount,
+    public function sendTripPaymentRequest(
+        TripPayments $tripPayment,
         $avoidHittingPay = false
     ) {
+        $customer = $tripPayment->getCustomer();
         $response = null;
 
         if(!$avoidHittingPay) {
             $response = new CartasiResponse(false, 'KO', null);
 
             $responsePayment = null;
+            $amount = $tripPayment->getTotalCost();
             $transaction = $this->newTransactionCustomer($customer, $amount);
 
             if($this->cartasiContractsService->hasCartasiContract($customer)) {
@@ -262,8 +273,11 @@ class NugoPayService {
                 $response = new CartasiResponse(false, 'KO', $transaction);
 
                 if($this->tryCharginAccount(
+                    $tripPayment->getTripId(),
                     $transaction->getId(),
                     '',
+                    $customer->getEmail(),
+                    'trip',
                     $amount,
                     $this->currency,
                     $responsePayment)) {

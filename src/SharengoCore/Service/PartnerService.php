@@ -113,7 +113,6 @@ class PartnerService implements ValidatorServiceInterface
     return $result;
     }
 
-
     /**
      * 
      * @param Partners $partner
@@ -134,4 +133,24 @@ class PartnerService implements ValidatorServiceInterface
         return $result;
     }
 
+    /**
+     * Send a message that notify the customer status are changed.
+     * 
+     * Only for customers belogn to Nugo partner
+     * 
+     * @param Customers $customer
+     * @return type
+     */
+    public function notifyCustomerStatus(Customers $customer){
+        $response = null;
+        $partner = $this->findEnabledBycode('nugo');
+
+        if(!is_null($customer) && !is_null($partner)) {
+            if($this->partnersRepository->isBelongCustomerPartner($partner, $customer)) {
+                $response = $this->nugoService->notifyCustomerStatus($customer);
+            }
+        }
+
+        return $response;
+    }
 }
