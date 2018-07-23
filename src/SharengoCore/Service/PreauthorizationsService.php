@@ -163,7 +163,7 @@ class PreauthorizationsService
     public function markPreautAsDone(TripPayments $tripPayments){
         $preauthorizations = $tripPayments->getTrip()->getPreauthorization();
         if($preauthorizations instanceof Preauthorizations){
-            if($preauthorizations == Preauthorizations::STATUS_TO_BE_PAYED){
+            if($preauthorizations->getStatus() == Preauthorizations::STATUS_TO_BE_PAYED){
                 $this->setPreautDone($preauthorizations);
             }
         }

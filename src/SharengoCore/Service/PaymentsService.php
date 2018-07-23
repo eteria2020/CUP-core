@@ -641,7 +641,7 @@ class PaymentsService
         }
 
         $pin = json_decode($customer->getPin(), true);
-        if (!is_null($pin["company"]) && isset($pin["companyPinDisabled"]) && $pin["companyPinDisabled"] == false) {
+        if (isset($pin["company"]) && !is_null($pin["company"]) && isset($pin["companyPinDisabled"]) && $pin["companyPinDisabled"] == false) {
             return $message = 25; //maybe business user
         }
 
