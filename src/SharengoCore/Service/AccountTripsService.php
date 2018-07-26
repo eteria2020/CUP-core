@@ -113,12 +113,22 @@ class AccountTripsService
         $trips = $this->applyFreeFares($trip);
 
         // then see if we can use some bonuses
+
         $bonuses = $this->bonusRepository->getBonusesForTrip($trip);
+
+        //check if the customer has WomenVoucher to apply
+        $womenBonuses = $this->bonusRepository->getWomenBonusesForTrip($trip);
+
+        if(count($womenBonuses) > 0){
+            $bonuses = array_merge($womenBonuses, $bonuses);
+        }
+
         $trips = $this->applyBonuses($trips, $bonuses);
 
         // eventually consider billable part
         return $this->billTrips($trips);
     }
+
 
     /**
      * Removes from a trip the free fares periods and saves them in persistance layer
@@ -198,6 +208,7 @@ class AccountTripsService
         $newTrips = $trips;
 
         foreach ($bonuses as $bonus) {
+            $this->womenVoucherBonus($bonus);
             $newTrips = $this->applyBonus($newTrips, $bonus);
         }
 
@@ -218,6 +229,7 @@ class AccountTripsService
         $newTrips = [];
 
         foreach ($trips as $trip) {
+
             list($bonus, $tripTrips) = $this->applyBonusToTrip($trip, $bonus);
             $newTrips = array_merge($newTrips, $tripTrips);
         }
@@ -390,5 +402,12 @@ class AccountTripsService
         $this->entityManager->flush();
 
         return $billTrip;
+    }
+
+    private function womenVoucherBonus(Bonus $bonus){
+        if($bonus->getDescription() == Bonus::WOMEN_VOUCHER_DESCRIPTION ){
+            $bonus->setValidFrom(date_create( date('Y-m-d').' 01:00:00'));
+            $bonus->setValidTo(date_create( date('Y-m-d').' 06:00:00'));
+        }
     }
 }
