@@ -6,6 +6,7 @@ use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\PromoCodes;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Service\PromoCodesService;
+use SharengoCore\Entity\CustomersBonus;
 
 /**
  * Class CustomersBonusRepository
@@ -22,8 +23,10 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
     public function getBonusesForTrip(Trips $trip)
     {
         $em = $this->getEntityManager();
-        $dql = 'SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb '.
+        $dql = 'SELECT cb '.
+            'FROM \SharengoCore\Entity\CustomersBonus cb '.
             'WHERE cb.active = true '.
+            'AND cb.description != :womenDescription '.
             'AND cb.validFrom <= :tripEnd '.
             'AND cb.validTo >= :tripBeginning '.
             'AND cb.residual > 0 '.
@@ -34,6 +37,35 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('customer', $trip->getCustomer());
         $query->setParameter('tripBeginning', $trip->getTimestampBeginning());
         $query->setParameter('tripEnd', $trip->getTimestampEnd());
+        $query->setParameter('womenDescription', CustomersBonus::WOMEN_VOUCHER_DESCRIPTION);
+
+        return $query->getResult();
+    }
+
+    /**
+     * returns the bonuses appliable to a given trip
+     *
+     * @var Trips $trip
+     * @return CustomersBonus[]
+     */
+    public function getWomenBonusesForTrip(Trips $trip)
+    {
+        $em = $this->getEntityManager();
+        $dql = 'SELECT cb '.
+            'FROM \SharengoCore\Entity\CustomersBonus cb '.
+            'WHERE cb.active = true '.
+            'AND cb.description = :womenDescription '.
+            'AND cb.validFrom <= :tripEnd '.
+            'AND cb.validTo >= :tripBeginning '.
+            'AND cb.residual > 0 '.
+            'AND cb.customer = :customer '.
+            'ORDER BY cb.validTo ASC';
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('customer', $trip->getCustomer());
+        $query->setParameter('tripBeginning', $trip->getTimestampBeginning());
+        $query->setParameter('tripEnd', $trip->getTimestampEnd());
+        $query->setParameter('womenDescription', CustomersBonus::WOMEN_VOUCHER_DESCRIPTION);
 
         return $query->getResult();
     }
@@ -109,11 +141,12 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         $em = $this->getEntityManager();
         $dql = "SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb ".
                 "WHERE cb.insertTs >= :timeStart AND cb.insertTs <= :timeEnd ".
-                "AND cb.customer = :customer AND cb.description = 'Night Voucher da 30 minuti' ";
+                "AND cb.customer = :customer AND cb.description = :womenDescription ";
         $query = $em->createQuery($dql);
         $query->setParameter('timeStart', $timeStart);
         $query->setParameter('timeEnd', $timeEnd);
         $query->setParameter('customer', $customer);
+        $query->setParameter('womenDescription', CustomersBonus::WOMEN_VOUCHER_DESCRIPTION);
         
         return $query->getResult();
     }
