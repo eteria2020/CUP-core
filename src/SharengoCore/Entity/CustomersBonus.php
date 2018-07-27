@@ -14,6 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class CustomersBonus
 {
+    const WOMEN_VOUCHER_DESCRIPTION = "Night Voucher da 30 minuti";
+
     /**
      * @var int
      *
@@ -225,6 +227,7 @@ class CustomersBonus
         $now = date("Y-m-d");
         $validFrom = date_create($now.' 01:00:00');
         $validTo = date_create($now.' 06:00:00');
+        $validTo = date_add($validTo, date_interval_create_from_date_string('30 days'));
         
         $hour = date("G");
         

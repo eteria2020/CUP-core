@@ -68,8 +68,16 @@ class BonusService
      */
     public function usedInterval(Trips $trip, Bonus $bonus)
     {
-        $start = max($trip->getTimestampBeginning(), $bonus->getValidFrom());
-        $end = min($trip->getTimestampEnd(), $bonus->getValidTo());
+        $validFrom = $bonus->getValidFrom();
+        $validTo = $bonus->getValidTo();
+
+        if($bonus->getDescription() == Bonus::WOMEN_VOUCHER_DESCRIPTION ){
+            $validFrom = date_create( date('Y-m-d').' 01:00:00');
+            $validTo = date_create( date('Y-m-d').' 06:00:00');
+        }
+
+        $start = max($trip->getTimestampBeginning(), $validFrom);
+        $end = min($trip->getTimestampEnd(), $validTo);
 
         if ($start > $end) {
             return null;

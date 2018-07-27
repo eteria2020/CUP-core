@@ -114,6 +114,14 @@ class AccountTripsService
 
         // then see if we can use some bonuses
         $bonuses = $this->bonusRepository->getBonusesForTrip($trip);
+
+        //check if the customer has WomenVoucher to apply
+        $womenBonuses = $this->bonusRepository->getWomenBonusesForTrip($trip);
+
+        if(count($womenBonuses) > 0){
+            $bonuses = array_merge($womenBonuses, $bonuses);
+        }
+
         $trips = $this->applyBonuses($trips, $bonuses);
 
         // eventually consider billable part
@@ -218,6 +226,7 @@ class AccountTripsService
         $newTrips = [];
 
         foreach ($trips as $trip) {
+
             list($bonus, $tripTrips) = $this->applyBonusToTrip($trip, $bonus);
             $newTrips = array_merge($newTrips, $tripTrips);
         }
