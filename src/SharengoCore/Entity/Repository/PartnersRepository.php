@@ -20,9 +20,9 @@ class PartnersRepository extends EntityRepository
         $result = false;
 
         $em = $this->getEntityManager();
-        $query = $em->createQuery('SELECT count(pc.id) ".
+        $query = $em->createQuery("SELECT COUNT(pc.id) ".
             "FROM \SharengoCore\Entity\PartnersCustomers pc ".
-            "WHERE pc.partner = :partner AND pc.customer = :customer AND pc.disabledTs IS NULL');
+            "WHERE pc.partner = :partner AND pc.customer = :customer AND pc.disabledTs IS NULL");
 
         $query->setParameter('partner', $partner);
         $query->setParameter('customer', $customer);
@@ -30,6 +30,7 @@ class PartnersRepository extends EntityRepository
         if($query->getSingleScalarResult()>0) {
             $result = true;
         }
+
         return $result;
     }
 
