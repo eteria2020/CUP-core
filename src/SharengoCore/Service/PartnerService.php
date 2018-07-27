@@ -153,4 +153,47 @@ class PartnerService implements ValidatorServiceInterface
 
         return $response;
     }
+
+    public function notifyCustomerStatusTest(){
+        $this->nugoService->notifyCustomerStatusTest();
+    }
+
+    public function tryChargeAccountTest(){
+        $this->nugoService->tryChargeAccountTest();
+    }
+
+    
+    /**
+     * Import invoices from partner end point.
+     * 
+     * Only for Nugo
+     * 
+     * @param boolean $dryRun Flag for debug
+     * @param Partners $partner PArmten object
+     * @param Date $date Date of istance
+     * @param int $fleetId Fleet id
+     * @return type
+     */
+    
+    public function importInvoice($dryRun, Partners $partner, $date, $fleetId) {
+        $result = null;
+
+        if($partner->getCode() == $this->nugoService->getPartnerName()) {
+            $this->nugoService->importInvoice($dryRun, $date, $fleetId);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Deactivate link between partner and customer, and disable the contract width partner
+     * 
+     * @param Partners $partner
+     * @param Customers $customer
+     */
+    public function deactivatePartnerCustomer(Partners $partner, Customers $customer) {
+        if($this->partnersRepository->isBelongCustomerPartner($partner, $customer)) {
+            $this->partnersRepository->deactivatePartnerCustomer($partner, $customer);
+        }
+    }
 }

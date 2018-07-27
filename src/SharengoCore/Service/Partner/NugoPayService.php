@@ -35,7 +35,7 @@ class NugoPayService {
      *
      * @var array params
      */
-    private $parms;
+    private $params;
 
 
     /**
@@ -95,13 +95,13 @@ class NugoPayService {
         ]);
 
         $this->partner = $this->partnersRepository->findOneBy(array('code' => $this->code, 'enabled' => true));
-        $this->parms = $this->partner->getParamsDecode();
+        $this->params = $this->partner->getParamsDecode();
 
         $this->httpClient->setHeaders(
             array(
                 'Content-type' => 'application/json',
                 'charset' => 'UTF-8',
-                'Authorization' => $this->parms['payments']['authorization']
+                'Authorization' => $this->params['payments']['authorization']
             )
         );
 
@@ -143,15 +143,16 @@ class NugoPayService {
             );
 
             $request = new Request();
-            $request->setUri($this->parms['payments']['uri'] . $uriPreAuth);
+            $request->setUri($this->params['payments']['uri'] . $uriPreAuth);
 
-            $this->httpClient->setUri($this->parms['payments']['uri'] . $uriPreAuth);
+            $this->httpClient->setUri($this->params['payments']['uri'] . $uriPreAuth);
+            $this->httpClient->setMethod(Request::METHOD_POST);
             $this->httpClient->setRawBody($json);
             $this->httpClient->setHeaders(
                 array(
                     'Content-type' => 'application/json',
                     'charset' => 'UTF-8',
-                    'Authorization' => $this->parms['payments']['authorization']
+                    'Authorization' => $this->params['payments']['authorization']
                 )
             );
 
@@ -186,10 +187,9 @@ class NugoPayService {
      * After a ride is complete, its cost can be charged to the associated user’s account by calling the charge endpoint.
      *
      * @param string $referenceId The unique reference ID on partners' side (for Share’ngo, this should be the ID of the reservation for which a vehicle is about to be unlocked)
-     * @param integer $transactionId Id of transaction
-     * @param string  $preAuthId The unique ID associated with the preauthorization, obtained via a /pay/preauth request
      * @param string $email 
      * @param string $type Type of payment object (trip, subscription, package, extra)
+     * @param int $fleetId Fleet index
      * @param int  $amount The amount of money (in Euro cents) to be charged on the payment gateway
      * @param string $currency The currency of the pre-authorization (ISO 4217 Currency Codes)
      * @param array $response Response of server
@@ -197,15 +197,13 @@ class NugoPayService {
      */
     private function tryCharginAccount(
         $referenceId,
-        $transactionId,
-        $preAuthId,
         $email,
         $type,
+        $fleetId,
         $amount,
         $currency,
         &$response) {
 
-        $uriCharge = '/nugo/api/external/sharengo/charge-account';
         $result = false;
         $response = null;
 
@@ -214,19 +212,16 @@ class NugoPayService {
             $json = json_encode(
                 array(
                     'referenceId' => $referenceId,
-                    'transactionId' => $transactionId,
-                    'preAuthId' => $preAuthId,
                     'email' => $email,
-                    'type' => $type,
+                    'type' => strtoupper($type),
+                    'fleetId' => $fleetId,
                     'amount' => $amount,
                     'currency' => $currency
                 )
             );
 
-            $request = new Request();
-            $request->setUri($this->parms['payments']['uri'] . $uriCharge);
-
-            $this->httpClient->setUri($this->parms['payments']['uri'] . $uriCharge);
+            $this->httpClient->setUri($this->params['payments']['uri']);
+            $this->httpClient->setMethod(Request::METHOD_POST);
             $this->httpClient->setRawBody($json);
 
             $httpResponse = $this->httpClient->send();
@@ -274,39 +269,15 @@ class NugoPayService {
 
                 if($this->tryCharginAccount(
                     $tripPayment->getTripId(),
-                    $transaction->getId(),
-                    '',
                     $customer->getEmail(),
-                    'trip',
+                    'TRIP',
+                    $tripPayment->getTrip()->getFleet()->getId(),
                     $amount,
                     $this->currency,
                     $responsePayment)) {
 
                     $transaction->setOutcome('OK');
                 }
-
-//                if($this->sendPreAthorization(
-//                    $customer->getEmail(),
-//                    $transaction->getId(),
-//                    array(
-//                        'reason'=> 'trip payment',
-//                        'transaction' => $transaction->getId()),
-//                    $amount,
-//                    $this->currency,
-//                    $responsePayment)) {
-//
-//                    $transaction->setCodAut($responsePayment['preAuthId']);
-//
-//                    if($this->tryCharginAccount(
-//                        $transaction->getId(),
-//                        $responsePayment['preAuthId'],
-//                        $amount,
-//                        $this->currency,
-//                        $responsePayment)) {
-//
-//                        $transaction->setOutcome('OK');
-//                    }
-//                }
             }
 
             if(is_null($responsePayment)) { // if it's happen a system error like remote server down
@@ -328,7 +299,7 @@ class NugoPayService {
     }
 
     /**
-     * Create a new Tpay transaction from customers and amount
+     * Create a new Nugo payment transaction from customers and amount
      * 
      * @param Customers $customer
      * @param integer $amount
@@ -345,7 +316,7 @@ class NugoPayService {
         $transaction->setCurrency($this->currency);
         $transaction->setOutcome('KO');
 
-        $transaction->setBrand('TPAY');
+        $transaction->setBrand(self::PAYMENT_LABEL);
         $transaction->setRegion('EUROPE');
         $transaction->setCountry('ITA');
         $transaction->setMessage('KO - init fail');

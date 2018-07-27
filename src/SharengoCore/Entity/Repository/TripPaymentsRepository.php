@@ -17,7 +17,7 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         $dql = 'SELECT tp
             FROM SharengoCore\Entity\TripPayments tp
             JOIN tp.trip t
-            WHERE tp.status = :status ';
+            WHERE tp.status = :status AND tp.partner IS NULL ';
 
         if ($firstDay instanceof \DateTime &&  $lastDay instanceof \DateTime) {
             $dql .= ' AND tp.payedSuccessfullyAt  >= :firstDay

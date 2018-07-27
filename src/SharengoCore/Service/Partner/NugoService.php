@@ -94,6 +94,17 @@ class NugoService
 
     /**
      *
+     * @var Partner $partner
+     */
+    private $partner;
+
+    /*
+     * @var array
+     */
+    private $params;
+
+    /**
+     *
      * @var HttpClient httpClient
      */
     private $httpClient;
@@ -123,8 +134,11 @@ class NugoService
         $this->driversLicenseValidationService = $driversLicenseValidationService;
         $this->portaleAutomobilistaValidationService = $portaleAutomobilistaValidationService;
 
+        $this->partner = $this->partnersRepository->findOneBy(array('code' => $this->partnerName, 'enabled' => true));
+        $this->params = $this->partner->getParamsDecode();
+
         $this->httpClient = new Client();
-        $this->httpClient->setMethod(Request::METHOD_PUT);
+        $this->httpClient->setMethod(Request::METHOD_GET);
         $this->httpClient->setOptions([
             'maxredirects' => 0,
             'timeout' => 90
@@ -203,7 +217,6 @@ class NugoService
      */
 
     public function notifyCustomerStatus(Customers $customer) {
-        $notifyCustomerStatus = "/nugo/api/external/sharengo/customer-status";
         $response = null;
 
         try {
@@ -220,10 +233,8 @@ class NugoService
                 )
             );
 
-            $request = new Request();
-            $request->setUri($this->parms['notifyCustomerStatus']['uri'] . $notifyCustomerStatus);
-
-            $this->httpClient->setUri($this->parms['notifyCustomerStatus']['uri'] . $notifyCustomerStatus);
+            $this->httpClient->setUri($this->params['notifyCustomerStatus']['uri']);
+            $this->httpClient->setMethod(Request::METHOD_PUT);
             $this->httpClient->setRawBody($json);
             $this->httpClient->setHeaders(
                 array(
@@ -234,8 +245,41 @@ class NugoService
 
             $httpResponse = $this->httpClient->send();
             $response = $httpResponse->getBody();
+            var_dump($response);
 
         } catch (Exception $ex) {
+            $response= null;
+        }
+        return $response;
+    }
+
+        public function notifyCustomerStatusTest() {
+        $response = null;
+
+        try {
+            $json = json_encode(
+                array(
+                    'email' => "user@mail.com",
+                    'status' => "CONFIRMED"
+                )
+            );
+
+            $this->httpClient->setUri($this->params['notifyCustomerStatus']['uri']);
+            $this->httpClient->setMethod(Request::METHOD_PUT);
+            $this->httpClient->setRawBody($json);
+            $this->httpClient->setHeaders(
+                array(
+                    'Content-type' => 'application/json',
+                    'charset' => 'UTF-8'
+                )
+            );
+
+            $httpResponse = $this->httpClient->send();
+            $response = $httpResponse->getBody();
+            var_dump($httpResponse);
+
+        } catch (Exception $ex) {
+             var_dump($ex);
             $response= null;
         }
         return $response;
@@ -1059,5 +1103,70 @@ class NugoService
 
         return $response;
     }
-}
 
+    public function importInvoice($dryRun, $date, $fleetId) {
+        $response = null;
+
+        try {
+            if(is_null($date)) {
+                $date = date_create('yesterday');
+            }
+
+            $this->httpClient->setUri($this->params['importInvoice']['uri']);
+            $this->httpClient->setMethod(Request::METHOD_GET);
+            $this->httpClient->setParameterGet(array('date' => $date->format('Y-m-d')));
+
+            $httpResponse = $this->httpClient->send();
+            $response = json_decode($httpResponse->getBody(), true);
+
+            if($dryRun) {
+                
+            }
+
+            var_dump($response);
+
+        } catch (Exception $ex) {
+            //var_dump($ex);
+            $response= null;
+        }
+        return $response;
+    }
+
+    public function tryChargeAccountTest() {
+               $result = false;
+        $response = null;
+
+        try {
+
+            $json = json_encode(
+                array(
+                    'referenceId' => 321321,
+                    'email' => 'user@mail.com',
+                    'type' => 'TRIP',
+                    'fleetId' => 1,
+                    'amount' => 1232,
+                    'currency' => 'EUR'
+                )
+            );
+
+            $this->httpClient->setUri($this->params['payments']['uri']);
+            $this->httpClient->setMethod(Request::METHOD_POST);
+            $this->httpClient->setRawBody($json);
+
+            $httpResponse = $this->httpClient->send();
+            var_dump($httpResponse->getBody());
+
+            //$response = json_decode($httpResponse->getBody(), true);
+
+//            if ($response['chargeSuccessful']==true) {
+//                $result = true;
+//            }
+
+        } catch (\Exception $ex) {
+            $response = null;
+        }
+
+        return $result;
+    }
+
+}
