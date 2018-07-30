@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Preauthorizations
 {
-    const STATUS_TO_BE_PAYED_CHANGE = 'to_be_payed';
+    const STATUS_TO_BE_PAYED = 'to_be_payed';
     const STATUS_REFUND = 'to_be_refund';
     const STATUS_WRONG = 'wrong';
     const STATUS_COMPLETED = 'done';
@@ -157,7 +157,13 @@ class Preauthorizations
      */
     public function setStatus($status)
     {
-        $this->status = $status;
+        if ($status != $this->getStatus()){
+            $this->status = $status;
+            $this->setStatusFrom(date_create());
+            if ($status == self::STATUS_COMPLETED){
+                $this->setSuccessfullyAt(date_create());
+            }
+        }
         return $this;
     }
 
@@ -172,7 +178,7 @@ class Preauthorizations
     /**
      * @param \DateTime $statusFrom
      */
-    public function setStatusFrom($statusFrom)
+    private function setStatusFrom($statusFrom)
     {
         $this->statusFrom = $statusFrom;
         return $this;
@@ -189,7 +195,7 @@ class Preauthorizations
     /**
      * @param \DateTime $successfullyAt
      */
-    public function setSuccessfullyAt($successfullyAt)
+    private function setSuccessfullyAt($successfullyAt)
     {
         $this->successfullyAt = $successfullyAt;
         return $this;

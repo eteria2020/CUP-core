@@ -15,6 +15,7 @@ use SharengoCore\Exception\AlreadySetFirstPaymentTryTsException;
 class TripPayments
 {
     const STATUS_TO_BE_PAYED = 'to_be_payed';
+    const STATUS_TO_BE_REFUND = 'to_be_refund';
     const STATUS_PAYED_CORRECTLY = 'payed_correctly';
     const STATUS_WRONG_PAYMENT = 'wrong_payment';
     const STATUS_INVOICED = 'invoiced';
