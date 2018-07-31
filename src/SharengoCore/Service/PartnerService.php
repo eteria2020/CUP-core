@@ -121,7 +121,7 @@ class PartnerService implements ValidatorServiceInterface
      * @return array
      */
     public function signup(Partners $partner, $contentArray, &$partnerResponse){
-        $result = 404;  // 404 Not Found
+        $result = 403;  // 403 Forbidden
         $partnerResponse ="";
 
         if($partner->getCode() == $this->telepassService->getPartnerName()) {

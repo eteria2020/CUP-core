@@ -165,13 +165,15 @@ class NugoService
         $partnerResponse = null;
         $isCustomerNew = false;
         $response = 200;
+        $uri = "partner/signup";
+        $statusFromProvider = false;
 
         if(!$this->isRemoteAddressValid()) {
             $response = 403;
             $partnerResponse = array(
-                "uri" => "partner/signup",
+                "uri" => $uri,
                 "status" => $response,
-                "statusFromProvider" => false,
+                "statusFromProvider" => $statusFromProvider,
                 "message" => "forbidden"
             );
             return $response;
@@ -198,9 +200,9 @@ class NugoService
                 } else {
                     $response = 400;
                     $partnerResponse = array(
-                        "uri" => "partner/signup",
+                        "uri" => $uri,
                         "status" => $response,
-                        "statusFromProvider" => false,
+                        "statusFromProvider" => $statusFromProvider,
                         "message" => "insert/update fail"
                     );
                 }
@@ -208,15 +210,15 @@ class NugoService
             } else {    // customer alread exist and NOT belong to partner
                 $response = 403;
                 $partnerResponse = array(
-                    "uri" => "partner/signup",
+                    "uri" => $uri,
                     "status" => $response,
-                    "statusFromProvider" => false,
+                    "statusFromProvider" => $statusFromProvider,
                     "message" => "customer not belong to partner"
                 );
             }
 
         } else {
-            $response = 403;    // 403 Forbidden
+            $response = 400;    // 400 Bad Request
         }
 
         return $response;
