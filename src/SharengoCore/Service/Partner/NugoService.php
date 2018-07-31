@@ -170,7 +170,7 @@ class NugoService
             $response = 403;
             $partnerResponse = array(
                 "uri" => "partner/signup",
-                "status" => 403,
+                "status" => $response,
                 "statusFromProvider" => false,
                 "message" => "forbidden"
             );
@@ -196,25 +196,27 @@ class NugoService
                         "pin" => $customer->getPrimaryPin()
                     );
                 } else {
+                    $response = 400;
                     $partnerResponse = array(
                         "uri" => "partner/signup",
-                        "status" => 401,
+                        "status" => $response,
                         "statusFromProvider" => false,
                         "message" => "insert/update fail"
                     );
                 }
 
             } else {    // customer alread exist and NOT belong to partner
+                $response = 403;
                 $partnerResponse = array(
                     "uri" => "partner/signup",
-                    "status" => 401,
+                    "status" => $response,
                     "statusFromProvider" => false,
-                    "message" => "customer not belog to partner"
+                    "message" => "customer not belong to partner"
                 );
             }
 
         } else {
-            $response = 404;
+            $response = 403;    // 403 Forbidden
         }
 
         return $response;
@@ -732,7 +734,7 @@ class NugoService
                 $result = false;
                 $response = array(
                     "uri" => "partner/signup",
-                    "status" => 401,
+                    "status" => 403,
                     "statusFromProvider" => false,
                     "message" => $strError,
                     "error" => json_encode($errorArray)
@@ -742,7 +744,7 @@ class NugoService
             $result = false;
             $response = array(
                 "uri" => "partner/signup",
-                "status" => 401,
+                "status" => 403,
                 "statusFromProvider" => false,
                 "message" => $ex->getMessage(),
             );
