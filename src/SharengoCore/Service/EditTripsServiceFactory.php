@@ -19,6 +19,7 @@ class EditTripsServiceFactory implements FactoryInterface
         $tripPaymentTriesService = $serviceLocator->get('SharengoCore\Service\TripPaymentTriesService');
         $customersService = $serviceLocator->get('SharengoCore\Service\CustomersService');
         $paymentScriptRunsService = $serviceLocator->get('SharengoCore\Service\PaymentScriptRunsService');
+        $preauthorizationsService = $serviceLocator->get('SharengoCore\Service\PreauthorizationsService');
 
         return new EditTripsService(
             $entityManager,
@@ -30,7 +31,8 @@ class EditTripsServiceFactory implements FactoryInterface
             $tripPaymentsService,
             $tripPaymentTriesService,
             $customersService,
-            $paymentScriptRunsService
+            $paymentScriptRunsService,
+            $preauthorizationsService
         );
     }
 }

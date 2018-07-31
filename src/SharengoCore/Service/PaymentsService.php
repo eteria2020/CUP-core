@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use Cartasi\Service\CartasiCustomerPaymentsInterface;
 use Cartasi\Service\CartasiContractsService;
+use SharengoCore\Entity\Preauthorizations;
 use SharengoCore\Entity\Repository\FreeFaresRepository;
 use SharengoCore\Entity\Reservations;
 use SharengoCore\Service\TripPaymentTriesService;
@@ -353,6 +354,7 @@ class PaymentsService
         Webuser $webuser = null,
         $avoidDisableUser = false
     ) {
+
         $contract = $this->cartasiContractService->getCartasiContract($customer);
 
         if(!is_null($contract->getPartner())) { // contract width partner
@@ -376,7 +378,7 @@ class PaymentsService
         } else {
             $response = $this->cartasiCustomerPayments->sendPaymentRequest(
                 $customer,
-                $tripPayment->getTotalCost(),
+                $this->preauthorizationsService->calculateAmount($tripPayment),
                 $this->avoidCartasi
             );
         }
@@ -393,6 +395,8 @@ class PaymentsService
 
             if ($response->getCompletedCorrectly()) {
                 $this->markTripAsPayed($tripPayment);
+                //if we have done a preauthorization and its status is 'to be payed'
+                $this->preauthorizationsService->markPreautAsDone($tripPayment);
             } else {
                 $this->unpayablePaymentConsequences(
                     $customer,
@@ -417,7 +421,7 @@ class PaymentsService
 
         return $response;
     }
-    
+
     /**
      * tries to pay the extra amount
      * writes in database a record in the extra_payment_tries table
@@ -498,7 +502,7 @@ class PaymentsService
         $totalCost = 0;
 
         foreach ($trips as $trip) {
-             $totalCost += $trip->getTripPayment()->getTotalCost();
+             $totalCost += $this->preauthorizationsService->calculateAmount($trip->getTripPayment());//$trip->getTripPayment()->getTotalCost();
         }
 
         if (!$this->cartasiContractService->hasCartasiContract($customer)) {
@@ -526,6 +530,7 @@ class PaymentsService
 
                 if ($response->getCompletedCorrectly()) {
                     $this->markTripAsPayed($tripPayment);
+                    $this->preauthorizationsService->markPreautAsDone($tripPayment);
                 } else {
 //                    $this->unpayableConsequences(
 //                        $customer,
@@ -545,6 +550,7 @@ class PaymentsService
                     null,
                     new \DateTime(),
                     true);
+                // set preauthorizations as done
             }
 
             if (!$this->avoidPersistance) {
@@ -676,7 +682,7 @@ class PaymentsService
         }
 
         $pin = json_decode($customer->getPin(), true);
-        if (!is_null($pin["company"]) && isset($pin["companyPinDisabled"]) && $pin["companyPinDisabled"] == false) {
+        if (isset($pin["company"]) && !is_null($pin["company"]) && isset($pin["companyPinDisabled"]) && $pin["companyPinDisabled"] == false) {
             return $message = 25; //maybe business user
         }
 
