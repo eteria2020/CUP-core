@@ -166,6 +166,17 @@ class NugoService
         $isCustomerNew = false;
         $response = 200;
 
+        if(!$this->isRemoteAddressValid()) {
+            $response = 403;
+            $partnerResponse = array(
+                "uri" => "partner/signup",
+                "status" => 403,
+                "statusFromProvider" => false,
+                "message" => "forbidden"
+            );
+            return $response;
+        }
+
         if ($this->validateAndFormat($contentArray, $partnerResponse)) {
 
             $customer = $this->findCustomerByMainFields(
@@ -207,6 +218,50 @@ class NugoService
         }
 
         return $response;
+    }
+
+    /**
+     * Check if remote address is a valid ip.
+     * 
+     * @return boolean Return true if ip is valid
+     */
+    private function isRemoteAddressValid() {
+        $result = true;
+
+        try {
+            $remoteAddress = $this->getRemoteAddress();
+            if(isset($this->params['signup']['validIp'])){
+                $listOfValidIp = trim($this->params['signup']['validIp']);
+                if($listOfValidIp !== '') {
+                    if(strpos($listOfValidIp, $remoteAddress) !== false){
+                        $result = true;
+                    } else {
+                        $result = false;
+                    }
+                }
+            }
+        } catch (Exception $ex) {
+        }
+        return $result;
+    }
+
+    /**
+     * Return the id from remote address of request or an empty string.
+     * 
+     * @return string
+     */
+    private function getRemoteAddress() {
+        $ip = '';
+
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+
+        return $ip;
     }
 
     /**
