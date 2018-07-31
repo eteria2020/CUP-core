@@ -228,15 +228,7 @@ class CustomersBonus
         $validFrom = date_create($now.' 01:00:00');
         $validTo = date_create($now.' 06:00:00');
         $validTo = date_add($validTo, date_interval_create_from_date_string('30 days'));
-        
-        $hour = date("G");
-        
-        if ( intval($hour) >= 5 ) {
-            //add 1 day to now in case of purchase after the 5am
-            $validFrom = date_add($validFrom, date_interval_create_from_date_string('1 days'));
-            $validTo = date_add($validTo, date_interval_create_from_date_string('1 days'));
-        }
-        
+
         $bonus = new CustomersBonus();
         $bonus->setCustomer($customer)
             ->setInsertTs(date_create())
