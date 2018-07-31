@@ -280,12 +280,12 @@ class NugoPayService {
                 }
             }
 
-            if(is_null($responsePayment)) { // if it's happen a system error like remote server down
-                return null;
+            if(is_null($responsePayment)) {
+                $transaction->setMessage('KO - empty response');
+            } else {
+                $transaction->setMessage(substr(json_encode($responsePayment), 0, 255));
             }
 
-            $transaction->setMessage(substr(json_encode($responsePayment), 0, 255));
-            $transaction->setDatetime(date_create());
             $this->entityManager->merge($transaction);
             $this->entityManager->flush();
 
