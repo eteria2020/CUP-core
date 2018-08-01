@@ -3,6 +3,8 @@
 namespace SharengoCore\Service\Partner;
 
 use Doctrine\ORM\EntityManager;
+use Zend\EventManager\EventManager;
+
 use SharengoCore\Service\TripsService;
 use SharengoCore\Service\ExtraPaymentsService;
 
@@ -13,7 +15,6 @@ use SharengoCore\Entity\TripPayments;
 use Cartasi\Entity\CartasiResponse;
 use Cartasi\Entity\Transactions;
 use Cartasi\Service\CartasiContractsService;
-
 
 use Zend\Http\Request;
 use Zend\Http\Client;
@@ -43,6 +44,12 @@ class NugoPayService {
      * @var EntityManager entityManager
      */
     private $entityManager;
+
+    /**
+     *
+     * @var EventManager eventManager 
+     */
+    private $eventManager;
 
     /**
      *
@@ -76,12 +83,14 @@ class NugoPayService {
 
     public function __construct(
         EntityManager $entityManager,
+        EventManager $eventManager,
         TripsService $tripsService,
         ExtraPaymentsService $extraPaymentsService,
         CartasiContractsService $cartasiContractsService,
         PartnersRepository $partnersRepository
     ) {
         $this->entityManager = $entityManager;
+        $this->eventManager = $eventManager;
         $this->tripsService = $tripsService;
         $this->extraPaymentsService = $extraPaymentsService;
         $this->cartasiContractsService = $cartasiContractsService;
@@ -278,6 +287,10 @@ class NugoPayService {
 
                     $transaction->setOutcome('OK');
                 }
+
+                $this->eventManager->trigger('notifyPartnerCustomerStatus', $this, [
+                    'customer' => $customer
+                ]);
             }
 
             if(is_null($responsePayment)) {

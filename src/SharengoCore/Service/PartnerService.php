@@ -94,7 +94,7 @@ class PartnerService implements ValidatorServiceInterface
         return $this->customersRepository->findByCI('email', $email);
     }
 
-    public function findEnabledBycode($code)
+    public function findEnabledByCode($code)
     {
         return $this->partnersRepository->findOneBy(array('code' => $code, 'enabled' => true));
     }
@@ -141,13 +141,15 @@ class PartnerService implements ValidatorServiceInterface
      * @param Customers $customer
      * @return type
      */
-    public function notifyCustomerStatus(Customers $customer){
+    public function notifyCustomerStatus(Customers $customer = null){
         $response = null;
-        $partner = $this->findEnabledBycode('nugo');
 
-        if(!is_null($customer) && !is_null($partner)) {
-            if($this->partnersRepository->isBelongCustomerPartner($partner, $customer)) {
-                $response = $this->nugoService->notifyCustomerStatus($customer);
+        if(!is_null($customer)) {
+            $partner = $this->findEnabledByCode('nugo');
+            if( !is_null($partner)) {
+                if($this->partnersRepository->isBelongCustomerPartner($partner, $customer)) {
+                    $response = $this->nugoService->notifyCustomerStatus($customer);
+                }
             }
         }
 
@@ -162,7 +164,6 @@ class PartnerService implements ValidatorServiceInterface
         $this->nugoService->tryChargeAccountTest();
     }
 
-    
     /**
      * Import invoices from partner end point.
      * 
@@ -174,7 +175,6 @@ class PartnerService implements ValidatorServiceInterface
      * @param int $fleetId Fleet id
      * @return type
      */
-    
     public function importInvoice($dryRun, Partners $partner, $date, $fleetId) {
         $result = null;
 
