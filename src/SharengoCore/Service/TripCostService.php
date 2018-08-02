@@ -7,7 +7,6 @@ use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripPayments;
 //use SharengoCore\Entity\TripPaymentTries;
 //use SharengoCore\Entity\Customers;
-use Cartasi\Service\CartasiContractsService;
 
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\EntityManager;
@@ -39,23 +38,16 @@ class TripCostService
      */
     private $avoidPersistance = true;
 
-    /**
-     * @var CartasiContractService
-     */
-    private $cartasiContractService;
-
     public function __construct(
         FaresService $faresService,
         TripFaresService $tripFaresService,
         EntityManager $entityManager,
-        PreauthorizationsService $preauthorizationsService,
-        CartasiContractsService $cartasiContractsService
+        PreauthorizationsService $preauthorizationsService
     ) {
         $this->faresService = $faresService;
         $this->tripFaresService = $tripFaresService;
         $this->entityManager = $entityManager;
         $this->preauthorizationsService = $preauthorizationsService;
-        $this->cartasiContractService = $cartasiContractsService;
     }
 
     /**
@@ -118,8 +110,6 @@ class TripCostService
         $cost = $this->tripFaresService->userTripCost($fare, $tripMinutes, $parkMinutes, $discountPercentage);
 
         $tripPayment = new TripPayments($trip, $fare, $tripMinutes, $parkMinutes, $discountPercentage, $cost);
-
-        //$tripPayment->setPartner($this->cartasiContractService->getPartnerValidContractByCustomer($trip->getCustomer()));
 
         return $tripPayment;
     }

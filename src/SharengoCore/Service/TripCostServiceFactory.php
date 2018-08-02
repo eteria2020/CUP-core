@@ -13,14 +13,12 @@ class TripCostServiceFactory implements FactoryInterface
         $tripFaresService = $serviceLocator->get('SharengoCore\Service\TripFaresService');
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $preauthorizationsService = $serviceLocator->get('SharengoCore\Service\PreauthorizationsService');
-        $cartasiContractService = $serviceLocator->get('Cartasi\Service\CartasiContractsService');
-        
+
         return new TripCostService(
             $faresService,
             $tripFaresService,
             $entityManager,
-            $preauthorizationsService,
-            $cartasiContractService
+            $preauthorizationsService
         );
     }
 }
