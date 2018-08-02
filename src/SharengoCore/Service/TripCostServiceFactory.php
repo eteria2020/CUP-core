@@ -14,6 +14,11 @@ class TripCostServiceFactory implements FactoryInterface
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $preauthorizationsService = $serviceLocator->get('SharengoCore\Service\PreauthorizationsService');
 
+        /* 
+         * Be carefull: 
+         * if you change the signature of TripCostService(),
+         * remember to update TripCostComputerServiceFactory(), row 34
+         */
         return new TripCostService(
             $faresService,
             $tripFaresService,
