@@ -119,7 +119,7 @@ class TripCostService
 
         $tripPayment = new TripPayments($trip, $fare, $tripMinutes, $parkMinutes, $discountPercentage, $cost);
 
-        $tripPayment->setPartner($this->cartasiContractService->getPartnerValidContractByCustomer($trip->getCustomer()));
+        //$tripPayment->setPartner($this->cartasiContractService->getPartnerValidContractByCustomer($trip->getCustomer()));
 
         return $tripPayment;
     }

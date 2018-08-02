@@ -198,6 +198,7 @@ class PaymentsService
         $customer = $trip->getCustomer();
 
         if ($this->cartasiContractService->hasCartasiContract($customer)) {
+
             $this->tryCustomerTripPayment(
                 $customer,
                 $tripPayment
@@ -394,7 +395,9 @@ class PaymentsService
             );
 
             if ($response->getCompletedCorrectly()) {
+                $this->updateTripPaymentPartner($contract, $tripPayment);
                 $this->markTripAsPayed($tripPayment);
+
                 //if we have done a preauthorization and its status is 'to be payed'
                 $this->preauthorizationsService->markPreautAsDone($tripPayment);
             } else {
@@ -785,5 +788,21 @@ class PaymentsService
 //        }
 
         return $result;
+    }
+
+    /**
+     * Update the tripPaiments with partner
+     * 
+     * @param Customers $customer
+     * @param TripPayments $tripPayment
+     * @param type $avoidPersistance
+     */
+    private function updateTripPaymentPartner(Contract $contract, TripPayments $tripPayment) {
+
+        if(!$this->avoidPersistance) {
+            if(!is_null($contract->getPartner())) {
+                $tripPayment->setPartner($contract->getPartner());
+            }
+        }
     }
 }
