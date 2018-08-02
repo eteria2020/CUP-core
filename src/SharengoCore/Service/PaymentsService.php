@@ -791,18 +791,15 @@ class PaymentsService
     }
 
     /**
-     * Update the tripPaiments with partner
+     * Update the tripPayments with partner
      * 
-     * @param Customers $customer
+     * @param \Cartasi\Entity\Contracts $contract
      * @param TripPayments $tripPayment
      * @param type $avoidPersistance
      */
-    private function updateTripPaymentPartner(Contract $contract, TripPayments $tripPayment) {
-
-        if(!$this->avoidPersistance) {
-            if(!is_null($contract->getPartner())) {
-                $tripPayment->setPartner($contract->getPartner());
-            }
+    private function updateTripPaymentPartner(\Cartasi\Entity\Contracts $contract, TripPayments $tripPayment) {
+        if(!is_null($contract->getPartner())) {
+            $tripPayment->setPartner($contract->getPartner());
         }
     }
 }
