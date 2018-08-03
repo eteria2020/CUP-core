@@ -164,6 +164,8 @@ class TripCostComputerService
 
         $this->bonusRepository->shouldReceive('getBonusesForTrip')->andReturn([$bonus]);
 
+        $this->bonusRepository->shouldReceive('getWomenBonusesForTrip')->andReturn([$bonus]);
+
         return $this->accountTripsService->accountTrip($trip);
     }
 
