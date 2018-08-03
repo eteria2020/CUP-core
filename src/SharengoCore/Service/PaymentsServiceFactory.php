@@ -25,7 +25,8 @@ class PaymentsServiceFactory implements FactoryInterface
         $freeFaresRepository = $entityManager->getRepository('\SharengoCore\Entity\FreeFares');
         $tripsRepository = $entityManager->getRepository('\SharengoCore\Entity\Trips');
         $reservationsRepository = $entityManager->getRepository('\SharengoCore\Entity\Reservations');
-
+        $telepassPayService = $serviceLocator->get('SharengoCore\Service\Partner\TelepassPayService');
+        $nugoPayService = $serviceLocator->get('SharengoCore\Service\Partner\NugoPayService');
 
         return new PaymentsService(
             $cartasiCustomerPayments,
@@ -41,7 +42,9 @@ class PaymentsServiceFactory implements FactoryInterface
             $preauthorizationsAmount,
             $freeFaresRepository,
             $tripsRepository,
-            $reservationsRepository
+            $reservationsRepository,
+            $telepassPayService,
+            $nugoPayService
         );
     }
 }

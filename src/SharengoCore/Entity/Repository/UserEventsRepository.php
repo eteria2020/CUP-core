@@ -2,8 +2,7 @@
 
 namespace SharengoCore\Entity\Repository;
 
-
-use Doctrine\ORM\Query\ResultSetMapping;
+//use Doctrine\ORM\Query\ResultSetMapping;
 
 class UserEventsRepository extends \Doctrine\ORM\EntityRepository
 {
@@ -24,3 +23,4 @@ class UserEventsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 }
+

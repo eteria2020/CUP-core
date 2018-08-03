@@ -5,8 +5,8 @@ namespace SharengoCore\Service;
 use SharengoCore\Entity\Preauthorizations;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripPayments;
-use SharengoCore\Entity\TripPaymentTries;
-use SharengoCore\Entity\Customers;
+//use SharengoCore\Entity\TripPaymentTries;
+//use SharengoCore\Entity\Customers;
 
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\EntityManager;
@@ -69,7 +69,7 @@ class TripCostService
 
             $this->tripCostComputed($trip);
 
-            if($trip->getPreauthorization() instanceof Preauthorizations){
+            if($trip->getPreauthorization() instanceof Preauthorizations && is_null($tripPayment->getPartner())){   //TODO: check if partner is set what's happen
                $this->preauthorizationsService->computeTrip($trip->getPreauthorization(),$tripPayment );
             }
 
@@ -109,7 +109,9 @@ class TripCostService
         // compute the trip cost
         $cost = $this->tripFaresService->userTripCost($fare, $tripMinutes, $parkMinutes, $discountPercentage);
 
-        return new TripPayments($trip, $fare, $tripMinutes, $parkMinutes, $discountPercentage, $cost);
+        $tripPayment = new TripPayments($trip, $fare, $tripMinutes, $parkMinutes, $discountPercentage, $cost);
+
+        return $tripPayment;
     }
 
     /**
@@ -134,7 +136,7 @@ class TripCostService
      * computes the minutes of parking of a trip
      *
      * @param Trips $trip
-     * @param int $tripMintues
+     * @param int $tripMinutes
      * @return int
      */
     private function computeParkMinutes(Trips $trip, $tripMinutes)
