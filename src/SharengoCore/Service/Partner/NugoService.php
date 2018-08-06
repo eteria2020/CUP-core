@@ -276,21 +276,37 @@ class NugoService
      */
 
     public function notifyCustomerStatus(Customers $customer) {
-        $response = null;
+        $result = false;
+
+        if($customer->enable()) {
+            $result1 = $this->notifyCustomerStatusRequest($customer, "DELETED");
+            $result2 = $this->notifyCustomerStatusRequest($customer, "CREATED");
+            $result3 = $this->notifyCustomerStatusRequest($customer, "CONFIRMED");
+            $result = $result1 && $result2 && $result3;
+        } else {
+            $result = $this->notifyCustomerStatusRequest($customer, "DELETED");
+        }
+
+        return $result;
+    }
+
+    /**
+     * 
+     * @param Customers $customer
+     * @param type $status
+     * @return boolean
+     */
+    private function notifyCustomerStatusRequest(Customers $customer, $status) {
+        $result = false;
 
         try {
-            if($customer->enable()) {
-                $status = "CONFIRMED";
-            } else {
-                $status = "DISABLED";
-            }
-
             $json = json_encode(
                 array(
                     'email' => $customer->getEmail(),
                     'status' => $status
                 )
             );
+            //var_dump($json);
 
             $this->httpClient->setUri($this->params['notifyCustomerStatus']['uri']);
             $this->httpClient->setMethod(Request::METHOD_PUT);
@@ -303,47 +319,21 @@ class NugoService
             );
 
             $httpResponse = $this->httpClient->send();
-            $response = $httpResponse->getBody();
-            var_dump($response);
+            //$response = $httpResponse->getBody();
+            //var_dump($httpResponse->getStatusCode());
+            if($httpResponse->getStatusCode() == 204) {
+                $result = true;
+            }
 
         } catch (Exception $ex) {
-            $response= null;
+            var_dump($ex);
         }
-        return $response;
+        return $result;
+
     }
 
-        public function notifyCustomerStatusTest() {
-        $response = null;
 
-        try {
-            $json = json_encode(
-                array(
-                    'email' => "user@mail.com",
-                    'status' => "CONFIRMED"
-                )
-            );
-
-            $this->httpClient->setUri($this->params['notifyCustomerStatus']['uri']);
-            $this->httpClient->setMethod(Request::METHOD_PUT);
-            $this->httpClient->setRawBody($json);
-            $this->httpClient->setHeaders(
-                array(
-                    'Content-type' => 'application/json',
-                    'charset' => 'UTF-8'
-                )
-            );
-
-            $httpResponse = $this->httpClient->send();
-            $response = $httpResponse->getBody();
-            var_dump($httpResponse);
-
-        } catch (Exception $ex) {
-             var_dump($ex);
-            $response= null;
-        }
-        return $response;
-    }
-
+    
      /**
      * Check the Json data match with the constarints
      *

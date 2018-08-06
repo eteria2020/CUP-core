@@ -35,6 +35,25 @@ class PartnersRepository extends EntityRepository
     }
 
     /**
+     * Retrive all Customers that belong (disabled date is null) to a Partner
+     * @param Partners $partner
+     * @return array(Customers)
+     */
+    public function findCustomersBelongPartner(Partners $partner) {
+        $result = null;
+
+        $em = $this->getEntityManager();
+        $query = $em->createQuery("SELECT c ".
+            "FROM \SharengoCore\Entity\Customers c ".
+            "INNER JOIN \SharengoCore\Entity\PartnersCustomers pc WITH pc.customer = c ".
+            "WHERE pc.partner = :partner AND pc.disabledTs IS NULL");
+
+        $query->setParameter('partner', $partner);
+
+        return $query->getResult();
+    }
+
+    /**
      * Deactivate link between partner and customer, and disable the contract width partner
      * 
      * @param Partners $partner
