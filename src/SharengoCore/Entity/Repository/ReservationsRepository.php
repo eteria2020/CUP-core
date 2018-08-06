@@ -71,10 +71,11 @@ class ReservationsRepository extends \Doctrine\ORM\EntityRepository
     public function findReservationByTrip(Trips $trip)
     {
         $em = $this->getEntityManager();
-        $query = $em->createQuery("SELECT t FROM \SharengoCore\Entity\ReservationsArchive t WHERE t.customer = :customer AND t.car = :car AND DATE_ADD(t.consumedTs, 60, 'SECOND') >= :time AND t.consumedTs <= :time AND t.reason = 'USED'");
+        $query = $em->createQuery("SELECT t FROM \SharengoCore\Entity\ReservationsArchive t WHERE t.customer = :customer AND t.car = :car AND DATE_ADD(t.consumedTs, 60, 'SECOND') >= :time AND t.consumedTs <= :timeAdd AND t.reason = 'USED'");
         $query->setParameter('customer', $trip->getCustomer());
         $query->setParameter('car', $trip->getCar());
         $query->setParameter('time', $trip->getTimestampBeginning());
+        $query->setParameter('timeAdd', date_add($trip->getTimestampBeginning(), date_interval_create_from_date_string('2 minutes')));
         $query->setMaxResults(1);
         return $query->getOneOrNullResult();
     }
