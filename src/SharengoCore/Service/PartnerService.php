@@ -163,10 +163,6 @@ class PartnerService implements ValidatorServiceInterface
         return $result;
     }
 
-    public function notifyCustomerStatusTest(){
-        $this->nugoService->notifyCustomerStatusTest();
-    }
-
     public function tryChargeAccountTest(){
         $this->nugoService->tryChargeAccountTest();
     }
