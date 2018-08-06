@@ -134,26 +134,33 @@ class PartnerService implements ValidatorServiceInterface
     }
 
     /**
-     * Send a message that notify the customer status are changed.
+     * Send a notify message to Partner the customer status. 
+     * If $customer is null, loop over all customers belog to $partner
      * 
      * Only for customers belogn to Nugo partner
      * 
      * @param Customers $customer
-     * @return type
+     * @return boolean
      */
-    public function notifyCustomerStatus(Customers $customer = null){
-        $response = null;
+    public function notifyCustomerStatus(Partners $partner, Customers $customer = null){
+        $result = false;
+        $customers = array();
 
-        if(!is_null($customer)) {
-            $partner = $this->findEnabledByCode('nugo');
-            if( !is_null($partner)) {
-                if($this->partnersRepository->isBelongCustomerPartner($partner, $customer)) {
-                    $response = $this->nugoService->notifyCustomerStatus($customer);
-                }
+         if(is_null($customer)) { 
+             $customers = $this->partnersRepository->findCustomersBelongPartner($partner);
+         }
+         else {
+            if($this->partnersRepository->isBelongCustomerPartner($partner, $customer)) {
+                array_push($customers, $customer);
+            }
+         }
+
+        if($partner->getCode()== $this->nugoService->getPartnerName()) {    // only for Nugo
+            foreach($customers as $customer) {
+                $result = $this->nugoService->notifyCustomerStatus($customer);
             }
         }
-
-        return $response;
+        return $result;
     }
 
     public function notifyCustomerStatusTest(){
