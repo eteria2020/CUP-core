@@ -75,7 +75,8 @@ class ReservationsRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('customer', $trip->getCustomer());
         $query->setParameter('car', $trip->getCar());
         $query->setParameter('time', $trip->getTimestampBeginning());
-        $query->setParameter('timeAdd', date_add($trip->getTimestampBeginning(), date_interval_create_from_date_string('2 minutes')));
+        $timeAdd = clone $trip->getTimestampBeginning();
+        $query->setParameter('timeAdd', date_add($timeAdd, date_interval_create_from_date_string('2 minutes')));
         $query->setMaxResults(1);
         return $query->getOneOrNullResult();
     }
