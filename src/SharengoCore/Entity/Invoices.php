@@ -118,6 +118,16 @@ class Invoices
     private $fleet;
 
     /**
+     * @var \Partners
+     *
+     * @ORM\ManyToOne(targetEntity="Partners")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="partner_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $partner;
+
+    /**
      * @param Customers $customer
      * @param integer $version
      * @param string $type
@@ -697,5 +707,21 @@ class Invoices
         } else {
             return new Interval($this->getDateTimeDate(), $this->getDateTimeDate());
         }
+    }
+
+    /**
+     * @return Partner
+     */
+    public function getPartner()
+    {
+        return $this->partner;
+    }
+
+    /**
+     * 
+     * @param \SharengoCore\Entity\Partners $partner
+     */
+    public function setPartner(Partners $partner = null) {
+        $this->partner = $partner;
     }
 }

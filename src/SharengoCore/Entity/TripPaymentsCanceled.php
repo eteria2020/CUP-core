@@ -136,6 +136,16 @@ class TripPaymentsCanceled
     private $tripPaymentTriesCanceled;
 
     /**
+     * @var \Partners
+     *
+     * @ORM\ManyToOne(targetEntity="Partners")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="partner_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $partner;
+
+    /**
      * @param TripPayments $tripPayment
      * @param Webuser $webuser
      * @return TripPaymentsCanceled
@@ -154,5 +164,21 @@ class TripPaymentsCanceled
         $this->createdAt = $tripPayment->getCreatedAt();
         $this->toBePayedFrom = $tripPayment->getToBePayedFrom();
         $this->firstPaymentTryTs = $tripPayment->getFirstPaymentTryTs();
+    }
+
+        /**
+     * @return Partner
+     */
+    public function getPartner()
+    {
+        return $this->partner;
+    }
+
+    /**
+     * 
+     * @param \SharengoCore\Entity\Partners $partner
+     */
+    public function setPartner(Partners $partner = null) {
+        $this->partner = $partner;
     }
 }

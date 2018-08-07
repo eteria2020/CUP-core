@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Service;
 
+use SharengoCore\Entity\Preauthorizations;
 use SharengoCore\Entity\Repository\TripBillsRepository;
 use SharengoCore\Entity\Repository\TripFreeFaresRepository;
 use SharengoCore\Entity\Repository\TripPaymentsRepository;
@@ -68,6 +69,11 @@ class EditTripsService
     private $paymentScriptRunsService;
 
     /**
+     * @var PreauthorizationsService
+     */
+    private $preauthorizationsService;
+
+    /**
      * @param EntityManager $entityManager
      * @param TripBillsRepository $tripBillsRepository
      * @param TripFreeFaresRepository $tripFreeFaresRepository
@@ -77,6 +83,7 @@ class EditTripsService
      * @param TripPaymentsService $tripPaymentsService
      * @param TripPaymentTriesService $tripPaymentTriesService
      * @param CustomersService $customersService
+     * @param PreauthorizationsService $preauthorizationsService
      */
     public function __construct(
         EntityManager $entityManager,
@@ -88,7 +95,8 @@ class EditTripsService
         TripPaymentsService $tripPaymentsService,
         TripPaymentTriesService $tripPaymentTriesService,
         CustomersService $customersService,
-        PaymentScriptRunsService $paymentScriptRunsService
+        PaymentScriptRunsService $paymentScriptRunsService,
+        PreauthorizationsService $preauthorizationsService
     ) {
         $this->entityManager = $entityManager;
         $this->tripBillsRepository = $tripBillsRepository;
@@ -100,6 +108,7 @@ class EditTripsService
         $this->tripPaymentTriesService = $tripPaymentTriesService;
         $this->customersService = $customersService;
         $this->paymentScriptRunsService = $paymentScriptRunsService;
+        $this->preauthorizationsService = $preauthorizationsService;
     }
 
     /**
@@ -220,6 +229,9 @@ class EditTripsService
     {
         if ($notPayable) {
             $trip->setPayable(false);
+            if($trip->getPreauthorization() instanceof Preauthorizations){
+                $this->preauthorizationsService->refundNotPayableTrip($trip);
+            }
         }
 
         if ($endDate instanceof \DateTime) {

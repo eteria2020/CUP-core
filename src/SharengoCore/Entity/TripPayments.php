@@ -15,6 +15,7 @@ use SharengoCore\Exception\AlreadySetFirstPaymentTryTsException;
 class TripPayments
 {
     const STATUS_TO_BE_PAYED = 'to_be_payed';
+    const STATUS_TO_BE_REFUND = 'to_be_refund';
     const STATUS_PAYED_CORRECTLY = 'payed_correctly';
     const STATUS_WRONG_PAYMENT = 'wrong_payment';
     const STATUS_INVOICED = 'invoiced';
@@ -149,6 +150,16 @@ class TripPayments
      * @ORM\OrderBy({"ts" = "ASC"})
      */
     private $tripPaymentTries;
+
+    /**
+     * @var \Partners
+     *
+     * @ORM\ManyToOne(targetEntity="Partners")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="partner_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $partner;
 
     /**
      * @param Trips $trip
@@ -523,5 +534,22 @@ class TripPayments
     public function isFirstPaymentTryTsSet()
     {
         return $this->firstPaymentTryTs !== null;
+    }
+    
+
+    /**
+     * @return Partner
+     */
+    public function getPartner()
+    {
+        return $this->partner;
+    }
+
+    /**
+     * 
+     * @param \SharengoCore\Entity\Partners $partner
+     */
+    public function setPartner(Partners $partner = null) {
+        $this->partner = $partner;
     }
 }

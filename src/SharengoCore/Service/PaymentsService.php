@@ -4,11 +4,14 @@ namespace SharengoCore\Service;
 
 use Cartasi\Service\CartasiCustomerPaymentsInterface;
 use Cartasi\Service\CartasiContractsService;
+use SharengoCore\Entity\Preauthorizations;
 use SharengoCore\Entity\Repository\FreeFaresRepository;
 use SharengoCore\Entity\Reservations;
 use SharengoCore\Service\TripPaymentTriesService;
 use SharengoCore\Service\CustomerDeactivationService;
 use SharengoCore\Service\FreeFaresService as FreeFares;
+use SharengoCore\Service\Partner\TelepassPayService;
+use SharengoCore\Service\Partner\NugoPayService;
 use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Repository\ReservationsRepository;
 use SharengoCore\Entity\Customers;
@@ -109,6 +112,16 @@ class PaymentsService
      */
     private $reservationsRepository;
 
+     /**
+     * @var TelepassPayService
+     */
+    private $telepassPayService;
+
+     /**
+     * @var NugoPayService
+     */
+    private $nugoPayService;
+
     /**
      * @param CartasiCustomerPaymentsInterface $cartasiCustomerPayments
      * @param CartasiContractsService $cartasiContractService
@@ -124,6 +137,8 @@ class PaymentsService
      * @param FreeFaresRepository $freeFaresRepository
      * @param TripsRepository $tripsRepository
      * @param ReservationsRepository $reservationsRepository
+     * @param TelepassPayService $telepassPayService
+     * @param NugoPayService $nugoPayService
      *
      */
     public function __construct(
@@ -140,7 +155,9 @@ class PaymentsService
         $preauthorizationsAmount,
         FreeFaresRepository $freeFaresRepository,
         TripsRepository $tripsRepository,
-        ReservationsRepository $reservationsRepository
+        ReservationsRepository $reservationsRepository,
+        TelepassPayService $telepassPayService,
+        NugoPayService $nugoPayService
 
     ) {
         $this->cartasiCustomerPayments = $cartasiCustomerPayments;
@@ -157,6 +174,8 @@ class PaymentsService
         $this->freeFaresRepository = $freeFaresRepository;
         $this->tripsRepository = $tripsRepository;
         $this->reservationsRepository = $reservationsRepository;
+        $this->telepassPayService = $telepassPayService;
+        $this->nugoPayService = $nugoPayService;
     }
 
     /**
@@ -179,6 +198,7 @@ class PaymentsService
         $customer = $trip->getCustomer();
 
         if ($this->cartasiContractService->hasCartasiContract($customer)) {
+
             $this->tryCustomerTripPayment(
                 $customer,
                 $tripPayment
@@ -335,11 +355,34 @@ class PaymentsService
         Webuser $webuser = null,
         $avoidDisableUser = false
     ) {
-        $response = $this->cartasiCustomerPayments->sendPaymentRequest(
-            $customer,
-            $tripPayment->getTotalCost(),
-            $this->avoidCartasi
-        );
+
+        $contract = $this->cartasiContractService->getCartasiContract($customer);
+
+        if(!is_null($contract->getPartner())) { // contract width partner
+            $response = null;
+            if($contract->getPartner()->getCode()=='telepass') {
+                $response = $this->telepassPayService->sendPaymentRequest(
+                    $customer,
+                    $tripPayment->getTotalCost(),
+                    $this->avoidCartasi
+                );
+            } elseif ($contract->getPartner()->getCode()=='nugo') {
+                $response = $this->nugoPayService->sendTripPaymentRequest(
+                    $tripPayment,
+                    $this->avoidCartasi
+                );
+            }
+
+            if(is_null($response)) {
+                return $response;
+            }
+        } else {
+            $response = $this->cartasiCustomerPayments->sendPaymentRequest(
+                $customer,
+                $this->preauthorizationsService->calculateAmount($tripPayment),
+                $this->avoidCartasi
+            );
+        }
 
         $this->entityManager->beginTransaction();
 
@@ -352,7 +395,11 @@ class PaymentsService
             );
 
             if ($response->getCompletedCorrectly()) {
+                $this->updateTripPaymentPartner($contract, $tripPayment);
                 $this->markTripAsPayed($tripPayment);
+
+                //if we have done a preauthorization and its status is 'to be payed'
+                $this->preauthorizationsService->markPreautAsDone($tripPayment);
             } else {
                 $this->unpayablePaymentConsequences(
                     $customer,
@@ -377,7 +424,7 @@ class PaymentsService
 
         return $response;
     }
-    
+
     /**
      * tries to pay the extra amount
      * writes in database a record in the extra_payment_tries table
@@ -458,7 +505,7 @@ class PaymentsService
         $totalCost = 0;
 
         foreach ($trips as $trip) {
-             $totalCost += $trip->getTripPayment()->getTotalCost();
+             $totalCost += $this->preauthorizationsService->calculateAmount($trip->getTripPayment());//$trip->getTripPayment()->getTotalCost();
         }
 
         if (!$this->cartasiContractService->hasCartasiContract($customer)) {
@@ -486,6 +533,7 @@ class PaymentsService
 
                 if ($response->getCompletedCorrectly()) {
                     $this->markTripAsPayed($tripPayment);
+                    $this->preauthorizationsService->markPreautAsDone($tripPayment);
                 } else {
 //                    $this->unpayableConsequences(
 //                        $customer,
@@ -505,6 +553,7 @@ class PaymentsService
                     null,
                     new \DateTime(),
                     true);
+                // set preauthorizations as done
             }
 
             if (!$this->avoidPersistance) {
@@ -636,7 +685,7 @@ class PaymentsService
         }
 
         $pin = json_decode($customer->getPin(), true);
-        if (!is_null($pin["company"]) && isset($pin["companyPinDisabled"]) && $pin["companyPinDisabled"] == false) {
+        if (isset($pin["company"]) && !is_null($pin["company"]) && isset($pin["companyPinDisabled"]) && $pin["companyPinDisabled"] == false) {
             return $message = 25; //maybe business user
         }
 
@@ -739,5 +788,18 @@ class PaymentsService
 //        }
 
         return $result;
+    }
+
+    /**
+     * Update the tripPayments with partner
+     * 
+     * @param \Cartasi\Entity\Contracts $contract
+     * @param TripPayments $tripPayment
+     * @param type $avoidPersistance
+     */
+    private function updateTripPaymentPartner(\Cartasi\Entity\Contracts $contract, TripPayments $tripPayment) {
+        if(!is_null($contract->getPartner())) {
+            $tripPayment->setPartner($contract->getPartner());
+        }
     }
 }
