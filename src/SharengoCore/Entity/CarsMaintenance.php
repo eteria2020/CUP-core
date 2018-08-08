@@ -304,9 +304,7 @@ class CarsMaintenance
     }
     
     public function setLocationId(MaintenanceLocations $maintenanceLocations){
-
         $this->locationId = $maintenanceLocations;
-
     }
     
 

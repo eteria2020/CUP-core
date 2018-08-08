@@ -465,11 +465,11 @@ class CarsService
         return $this->carsMaintenanceRepository->findLastCarsMaintenance($plate);
     }
     
-    public function updateMaintenance(CarsMaintenance $car_maintenance, $param) {
+    public function updateMaintenance(CarsMaintenance $car_maintenance, $params) {
         $car_maintenance->setNotes($params['note']);
-        $motivation = $this->maintenanceMotivationsService->getById($postData["motivation"])[0];
+        $motivation = $this->maintenanceMotivationsService->getById($params["motivation"])[0];
         $car_maintenance->setMotivation($motivation);
-        $location = $this->maintenanceLocationsService->getById($postData["location"])[0];
+        $location = $this->maintenanceLocationsService->getById($params["location"])[0];
         $car_maintenance->setLocation($location->getlocation());
         $car_maintenance->setLocationId($location);
         $this->entityManager->persist($car_maintenance);
