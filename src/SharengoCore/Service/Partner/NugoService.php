@@ -174,7 +174,7 @@ class NugoService
                 "uri" => $uri,
                 "status" => $response,
                 "statusFromProvider" => $statusFromProvider,
-                "message" => "forbidden"
+                "message" => "forbidden for " . $this->getRemoteAddress()
             );
             return $response;
         }
