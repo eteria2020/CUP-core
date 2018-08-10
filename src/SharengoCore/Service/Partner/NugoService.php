@@ -647,13 +647,13 @@ class NugoService
                     array_push($errorArray, $key.'.'.$key2);
                 }
 
-                if ($drivingLicense["foreign"]) {
-                    if($drivingLicense["country"]=='IT') {
+                if ($contentArray["drivingLicense"]["foreign"]) {
+                    if($contentArray["drivingLicense"]["country"]=='IT') {
                         $strError .= sprintf('Mismatch %s.%s ', 'foreign', 'country');
                         array_push($errorArray, $key.'.'.$key2);
                     }
                 } else {
-                    if($drivingLicense["country"]!='IT') {
+                    if($contentArray["drivingLicense"]["country"]!='IT') {
                         $strError .= sprintf('Mismatch %s.%s ', 'foreign', 'country');
                         array_push($errorArray, $key.'.'.$key2);
                     }
