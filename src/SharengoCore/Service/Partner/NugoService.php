@@ -174,7 +174,7 @@ class NugoService
                 "uri" => $uri,
                 "status" => $response,
                 "statusFromProvider" => $statusFromProvider,
-                "message" => "forbidden for " . $this->getRemoteAddress()
+                "message" => "forbidden for " . \SharengoCore\Service\PartnerService::getRemoteAddress()
             );
             return $response;
         }
@@ -226,7 +226,8 @@ class NugoService
         $result = true;
 
         try {
-            $remoteAddress = $this->getRemoteAddress();
+            $remoteAddress = \SharengoCore\Service\PartnerService::getRemoteAddress();
+
             if(isset($this->params['signup']['validIp'])){
                 $listOfValidIp = trim($this->params['signup']['validIp']);
                 if($listOfValidIp !== '') {
@@ -240,25 +241,6 @@ class NugoService
         } catch (Exception $ex) {
         }
         return $result;
-    }
-
-    /**
-     * Return the id from remote address of request or an empty string.
-     * 
-     * @return string
-     */
-    private function getRemoteAddress() {
-        $ip = '';
-
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } else {
-            $ip = $_SERVER['REMOTE_ADDR'];
-        }
-
-        return trim($ip);
     }
 
     /**
