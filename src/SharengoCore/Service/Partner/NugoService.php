@@ -569,7 +569,7 @@ class NugoService
                 $key2 = 'country';
                 $value = $this->getDataFormatedLower($drivingLicense, $key2);
                 if (strlen($value) == 2) {
-                    $contentArray[$key][$key2] = $value;
+                    $contentArray[$key][$key2] = strtoupper($value);
                 } else {
                     $strError .= sprintf('Invalid %s.%s ', $key, $key2);
                     array_push($errorArray, $key.'.'.$key2);
