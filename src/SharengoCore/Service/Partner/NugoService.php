@@ -569,7 +569,7 @@ class NugoService
                 $key2 = 'country';
                 $value = $this->getDataFormatedLower($drivingLicense, $key2);
                 if (strlen($value) == 2) {
-                    $contentArray[$key][$key2] = strtoupper($value);
+                    $contentArray[$key][$key2] = $value;
                 } else {
                     $strError .= sprintf('Invalid %s.%s ', $key, $key2);
                     array_push($errorArray, $key.'.'.$key2);
@@ -648,12 +648,12 @@ class NugoService
                 }
 
                 if ($contentArray["drivingLicense"]["foreign"]) {
-                    if($contentArray["drivingLicense"]["country"]=='IT') {
+                    if($contentArray["drivingLicense"]["country"]=='it') {
                         $strError .= sprintf('Mismatch %s.%s ', 'foreign', 'country');
                         array_push($errorArray, $key.'.'.$key2);
                     }
                 } else {
-                    if($contentArray["drivingLicense"]["country"]!='IT') {
+                    if($contentArray["drivingLicense"]["country"]!='it') {
                         $strError .= sprintf('Mismatch %s.%s ', 'foreign', 'country');
                         array_push($errorArray, $key.'.'.$key2);
                     }
