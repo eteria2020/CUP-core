@@ -174,7 +174,7 @@ class NugoService
                 "uri" => $uri,
                 "status" => $response,
                 "statusFromProvider" => $statusFromProvider,
-                "message" => "forbidden"
+                "message" => "forbidden for " . $this->getRemoteAddress()
             );
             return $response;
         }
@@ -188,15 +188,8 @@ class NugoService
 
             if(is_null($customer) || $this->partnersRepository->isBelongCustomerPartner($partner, $customer)) { // is a new customer or exist and belong to partner
 
-                if ($this->saveCustomer($partner, $contentArray, $customer, $isCustomerNew)) {
-                    $partnerResponse = array(
-                        "created" => $isCustomerNew,
-                        "enabled" => $customer->getEnabled(),
-                        "userId" => $customer->getId(),
-                        "email" => $customer->getEmail(),
-                        "password" => $customer->getPassword(),
-                        "pin" => $customer->getPrimaryPin()
-                    );
+                if ($this->saveCustomer($partner, $contentArray, $customer, $partnerResponse)) {
+                    $response = 200;
                 } else {
                     $response = 400;
                     $partnerResponse = array(
@@ -490,7 +483,7 @@ class NugoService
             }
 
             $key = 'password';
-            $value = $this->getDataFormatedLower($contentArray, $key, false);
+            $value = $this->getDataFormatedLower($contentArray, $key, true);
             if ($this->isValidMd5($value)) {
                 $contentArray[$key] = $value;
             } else {
@@ -654,13 +647,13 @@ class NugoService
                     array_push($errorArray, $key.'.'.$key2);
                 }
 
-                if ($drivingLicense["foreign"]) {
-                    if($drivingLicense["country"]=='IT') {
+                if ($contentArray["drivingLicense"]["foreign"]) {
+                    if($contentArray["drivingLicense"]["country"]=='it') {
                         $strError .= sprintf('Mismatch %s.%s ', 'foreign', 'country');
                         array_push($errorArray, $key.'.'.$key2);
                     }
                 } else {
-                    if($drivingLicense["country"]!='IT') {
+                    if($contentArray["drivingLicense"]["country"]!='it') {
                         $strError .= sprintf('Mismatch %s.%s ', 'foreign', 'country');
                         array_push($errorArray, $key.'.'.$key2);
                     }
@@ -729,7 +722,7 @@ class NugoService
                     "status" => 403,
                     "statusFromProvider" => false,
                     "message" => $strError,
-                    "error" => json_encode($errorArray)
+                    "error" => $errorArray
                 );
             }
         } catch (\Exception $ex) {
@@ -924,12 +917,13 @@ class NugoService
      * 
      * @param Partners $partner
      * @param array $data
-     * @param type  $customer can be a Customers or null
-     * @param boolean $isCustomerNew
+     * @param Customers $customer
+     * @param array $partnerResponse
      * @return boolean
      */
-    private function saveCustomer(Partners $partner, $data, &$customer,  &$isCustomerNew = false) {
+    private function saveCustomer(Partners $partner, $data, Customers $customer = null, &$partnerResponse) {
         $result = false;
+        $disableReason = '';
         $isCustomerNew = false;
 
         try {
@@ -1010,7 +1004,24 @@ class NugoService
                 $this->newTransaction($contract, 0, 'EUR', self::PAYMENT_LABEL, strtoupper($this->partnerName).'+'.self::PAYMENT_LABEL.'+PREPAID+-+-N', true);
             }
 
-            $this->newDriverLicenseDirectValidation($customer, $data['drivingLicense']);
+            $driverLicenseResponse = $this->newDriverLicenseDirectValidation($customer, $data['drivingLicense']);
+
+            if(is_null($driverLicenseResponse)) {
+                $driverLicenseMessage = "no service";
+            } else {
+                $driverLicenseMessage = $driverLicenseResponse->message();
+            }
+
+            $partnerResponse = array(
+                "created" => $isCustomerNew,
+                "enabled" => $customer->getEnabled(),
+                "userId" => $customer->getId(),
+                "email" => $customer->getEmail(),
+                "password" => $customer->getPassword(),
+                "pin" => $customer->getPrimaryPin(),
+                "deactivationReasons" => $this->getCustomerDeactivationReason($customer),
+                "driverLicenseResponse" => $driverLicenseMessage
+            );
 
             $result = true;
 
@@ -1104,52 +1115,48 @@ class NugoService
      * @return Response
      */
     private function newDriverLicenseDirectValidation(Customers $customer, $drivingLicense) {
-
         $response = null;
 
-        if(!$this->deactivationService->hasActiveDeactivations($customer, CustomerDeactivation::INVALID_DRIVERS_LICENSE)) {
-            $this->deactivationService->deactivateForDriversLicense($customer);
+        try {
+            if(!$this->deactivationService->hasActiveDeactivations($customer, CustomerDeactivation::INVALID_DRIVERS_LICENSE)) {
+                $this->deactivationService->deactivateForDriversLicense($customer);
+            }
+
+    //        $details = array('deactivation' => $drivingLicense);
+    //        $customerDeactivations = new CustomerDeactivation($customer, CustomerDeactivation::INVALID_DRIVERS_LICENSE, $details);
+    //        $this->entityManager->persist($customerDeactivations);
+    //        $this->entityManager->flush();
+
+            $data = [
+                'email' => $customer->getEmail(),
+                'driverLicense' => $customer->getDriverLicense(),
+                'taxCode' => $customer->getTaxCode(),
+                'driverLicenseName' => $customer->getDriverLicenseName(),
+                'driverLicenseSurname' => $customer->getDriverLicenseSurname(),
+                'birthDate' => ['date' => $customer->getBirthDate()->format('Y-m-d')],
+                'birthCountry' => $customer->getBirthCountry(),
+                'birthProvince' => $customer->getBirthProvince(),
+                'birthTown' => $customer->getBirthTown()
+            ];
+
+            $data['birthCountryMCTC'] = $this->countriesService->getMctcCode($data['birthCountry']);
+            $data['birthProvince'] = $this->driversLicenseValidationService->changeProvinceForValidationDriverLicense($data);
+
+            $response = $this->portaleAutomobilistaValidationService->validateDriversLicense($data);
+
+            $this->driversLicenseValidationService->addFromResponse($customer, $response, $data);
+            if ($response->valid()) {
+                $this->deactivationService->reactivateCustomerForDriversLicense($customer);
+                $customer->setEnabled(true);
+            } else {
+                $customer->setEnabled(false);
+            }
+
+            $this->entityManager->persist($customer);
+            $this->entityManager->flush();
+        } catch (Exception $ex) {
+
         }
-        
-//        $details = array('deactivation' => $drivingLicense);
-//        $customerDeactivations = new CustomerDeactivation($customer, CustomerDeactivation::INVALID_DRIVERS_LICENSE, $details);
-//        $this->entityManager->persist($customerDeactivations);
-//        $this->entityManager->flush();
-
-        $data = [
-            'email' => $customer->getEmail(),
-            'driverLicense' => $customer->getDriverLicense(),
-            'taxCode' => $customer->getTaxCode(),
-            'driverLicenseName' => $customer->getDriverLicenseName(),
-            'driverLicenseSurname' => $customer->getDriverLicenseSurname(),
-            'birthDate' => ['date' => $customer->getBirthDate()->format('Y-m-d')],
-            'birthCountry' => $customer->getBirthCountry(),
-            'birthProvince' => $customer->getBirthProvince(),
-            'birthTown' => $customer->getBirthTown()
-        ];
-
-        $data['birthCountryMCTC'] = $this->countriesService->getMctcCode($data['birthCountry']);
-        $data['birthProvince'] = $this->driversLicenseValidationService->changeProvinceForValidationDriverLicense($data);
-
-        $response = $this->portaleAutomobilistaValidationService->validateDriversLicense($data);
-        $this->driversLicenseValidationService->addFromResponse($customer, $response, $data);
-        if ($response->valid()) {
-            $this->deactivationService->reactivateCustomerForDriversLicense($customer);
-
-//            $details = array('reactivation' => $drivingLicense,);
-//            $customerDeactivations->reactivate($details, date_create(), null);
-//            $this->entityManager->persist($customerDeactivations);
-//            $this->entityManager->flush();
-
-            $customer->setEnabled(true);
-
-        } else {
-            $customer->setEnabled(false);
-        }
-
-        $this->entityManager->persist($customer);
-        $this->entityManager->flush();
-
         return $response;
     }
 
@@ -1218,4 +1225,20 @@ class NugoService
         return $result;
     }
 
+    /**
+     * Return a string that is a concatenation of all deactivation reason active for a customer
+     * 
+     * @param Customers $customer
+     * @return string
+     */
+    private function getCustomerDeactivationReason(Customers $customer) {
+        $result = array();
+
+        $deactivationReasonsAll = $this->deactivationService->getAllActive($customer);
+        foreach($deactivationReasonsAll as $reason) {
+             array_push($result, $reason->getReason());
+        }
+
+        return $result;
+    }
 }
