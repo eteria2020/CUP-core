@@ -292,8 +292,8 @@ class Invoices
         );
 
         $invoice->setContentBody([
-            'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento per l\'iscrizione al servizio<br>' .
-                'L\'importo totale della fattura è di EUR ' .
+            'greeting_message' => '<p>Nella pagina successiva è disponibile la fattura relativa all\'acquisto del tuo Pacchetto Benvenuto, ' .
+                'il cui importo è di EUR ' .
                 $amounts['sum']['grand_total'] .
                 '</p>',
             'contents' => [
@@ -303,7 +303,7 @@ class Invoices
                 ],
                 'body' => [
                     [
-                        ['Pagamento iscrizione al servizio'],
+                        ['acquisto Pacchetto Benvenuto'],
                         [$amounts['sum']['total'] . ' €']
                     ]
                 ],
