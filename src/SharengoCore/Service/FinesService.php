@@ -99,7 +99,7 @@ class FinesService
                     'insertTs' => $fine->getInsertTs()->format('Y/m/d H:i:s')
                 ],
                 'cu' => [
-                    'type' => (is_null($fine->getCustomer()) ? false : ($fine->getCustomer()->getMaintainer() || $fine->getCustomer()->getGoldList()) ? true : false)
+                    'type' => (is_null($fine->getCustomer()) ? 0 : ($fine->getCustomer()->getMaintainer() ? 1 : ($fine->getCustomer()->getGoldList() ? 2 : 0)))
                 ]
             ];
         }, $fines);
