@@ -25,7 +25,7 @@ class FinesService
     private $entityManager;
 
      /**
-     * @var FaresService
+     * @var FleetService
      */
     private $fleetService;
     
@@ -141,8 +141,11 @@ class FinesService
             $reasonsAmounts,
             [[$penalty->getReason() . " (" .$this->formatAmount($penalty->getAmount()). ")"], [$penalty->getReason()], [$this->formatAmount($penalty->getAmount())]]
         );
+        
+        $fleet_modena = $this->fleetService->getFleetById(4);
+        
         $extra_payment = new ExtraPayments(
-                $fine->getCustomer(), is_null($fine->getFleet()) ? $fine->getCar()->getFleet() : $fine->getFleet(), $transaction, $penalty->getAmount(), $penalty->getType() == 'penalties' ? "penalty" : "extra", $reasonsAmounts
+                $fine->getCustomer(), $fleet_modena, $transaction, $penalty->getAmount(), $penalty->getType() == 'penalties' ? "penalty" : "extra", $reasonsAmounts
         );
         $this->entityManager->persist($extra_payment);
         
