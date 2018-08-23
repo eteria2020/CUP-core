@@ -6,6 +6,7 @@ use Cartasi\Entity\Contracts;
 use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomerDeactivation;
+use SharengoCore\Entity\ExtraPaymentTries;
 use SharengoCore\Entity\Queries\FindCustomerDeactivationById;
 use SharengoCore\Entity\Queries\FindActiveCustomerDeactivations;
 use SharengoCore\Entity\Queries\FindCustomerDeactivationsToUpdate;
@@ -327,6 +328,29 @@ class CustomerDeactivationService
         Webuser $webuser = null
     ) {
         $details = ['trip_payment_try_id' => $tripPaymentTry->getId()];
+        if ($webuser instanceof Webuser) {
+            $details['note'] = 'Reactivated manually';
+        }
+
+        $this->reactivate($customerDeactivation, $details, $endTs, $webuser);
+    }
+
+    /**
+     * Close the CustomerDeactivation when a ExtraPayment is successfully
+     * completed
+     *
+     * @param CustomerDeactivation $customerDeactivation
+     * @param ExtraPaymentTries $extraPaymentTry
+     * @param \DateTime|null $endTs
+     * @param Webuser|null $webuser
+     */
+    public function reactivateForExtraPaymentTry(
+        CustomerDeactivation $customerDeactivation,
+        ExtraPaymentTries $extraPaymentTry,
+        \DateTime $endTs = null,
+        Webuser $webuser = null
+    ) {
+        $details = ['extra_payment_try_id' => $extraPaymentTry->getId()];
         if ($webuser instanceof Webuser) {
             $details['note'] = 'Reactivated manually';
         }
