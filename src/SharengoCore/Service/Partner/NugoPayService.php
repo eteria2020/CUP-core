@@ -224,7 +224,7 @@ class NugoPayService {
                     'email' => $email,
                     'type' => strtoupper($type),
                     'fleetId' => $fleetId,
-                    'amount' => $amount,
+                    'amount' => number_format($amount/100, 2),
                     'currency' => $currency
                 )
             );
