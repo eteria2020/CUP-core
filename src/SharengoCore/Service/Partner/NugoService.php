@@ -985,7 +985,7 @@ class NugoService
 
             $customer->setLanguage('it');
             $customer->setMaintainer(false);
-            $customer->setGoldList(true);
+            $customer->setGoldList(false);
 
             $this->entityManager->persist($customer);
             $this->entityManager->flush();
