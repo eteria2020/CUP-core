@@ -1208,10 +1208,18 @@ class NugoService
             $response = json_decode($httpResponse->getBody(), true);
 
             if($dryRun) {
-                
+
             }
 
-            var_dump($response);
+            if(is_array($response)) {
+                foreach($response as $nugoInvoice) {
+                    $nugoReferenceId = $nugoInvoice["referenceId"];
+                    $nugoInvoiceNumber = $nugoInvoice["documentNumber"];
+                    $nugoInvoiceDate = $nugoInvoice["invoiceDate"];
+
+                    var_dump($nugoReferenceId." ".$nugoInvoiceNumber." ".$nugoInvoiceDate);
+                }
+            }
 
         } catch (Exception $ex) {
             //var_dump($ex);
