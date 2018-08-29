@@ -465,7 +465,7 @@ class CarsService
         return $this->carsMaintenanceRepository->findLastCarsMaintenance($plate);
     }
     
-    public function updateMaintenance(CarsMaintenance $car_maintenance, $params) {
+    public function updateMaintenance(CarsMaintenance $car_maintenance, $params){
         $car_maintenance->setNotes($params['note']);
         $motivation = $this->maintenanceMotivationsService->getById($params["motivation"])[0];
         $car_maintenance->setMotivation($motivation);
