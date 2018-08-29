@@ -220,7 +220,7 @@ class NugoPayService {
 
             $json = json_encode(
                 array(
-                    'referenceId' => $referenceId,
+                    'referenceId' => strval($referenceId),
                     'email' => $email,
                     'type' => strtoupper($type),
                     'fleetId' => $fleetId,

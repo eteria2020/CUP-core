@@ -569,6 +569,70 @@ class PaymentsService
         return $response;
     }
 
+    public function tryCustomerExtraPaymentMulti(
+        Customers $customer,
+        array $extraPayments,
+        Webuser $webuser = null,
+        $avoidDisableUser = false
+    ) {
+
+        $response = null;
+        $totalCost = 0;
+
+        foreach ($extraPayments as $extraPayment) {
+            $totalCost += $extraPayment->getAmount();
+        }
+
+        if (!$this->cartasiContractService->hasCartasiContract($customer)) {
+            return $response;
+        }
+
+        $response = $this->cartasiCustomerPayments->sendPaymentRequest(
+            $customer,
+            $totalCost,
+            false
+        );
+
+        $this->entityManager->beginTransaction();
+
+        try {
+            foreach ($extraPayments as $extraPayment) {
+                $extraPaymentTry = $this->extraPaymentTriesService->generateExtraPaymentTry(
+                    $extraPayment,
+                    $response->getOutcome(),
+                    $response->getTransaction(),
+                    $webuser
+                );
+
+                if ($response->getCompletedCorrectly()) {
+                    $this->markExtraAsPayed($extraPayment);
+                } else {
+                    $this->unpayableExtraConsequences(
+                        $customer,
+                        $extraPayment,
+                        $extraPaymentTry,
+                        $avoidDisableUser
+                    );
+                }
+
+                $this->entityManager->persist($extraPaymentTry);
+                $this->entityManager->flush();
+            }
+
+            if ($response->getCompletedCorrectly()) {
+                $this->deactivationService->reactivateCustomerForExtraPayed($customer);
+            }
+
+            $this->entityManager->commit();
+
+        } catch (\Exception $e) {
+            $this->entityManager->rollback();
+            throw $e;
+        }
+
+        return $response;
+    }
+
     /**
      * @param TripsPayments $tripPayment
      */
