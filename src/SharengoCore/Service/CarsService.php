@@ -13,6 +13,8 @@ use SharengoCore\Entity\Webuser;
 use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\ReservationsService;
 use SharengoCore\Utility\CarStatus;
+use SharengoCore\Service\MaintenanceLocationsService;
+use SharengoCore\Service\MaintenanceMotivationsService;
 
 use Doctrine\ORM\EntityManager;
 use Zend\Mvc\I18n\Translator;
@@ -54,7 +56,17 @@ class CarsService
      */
     private $translator;
 
+    /**
+     * @var MaintenanceMotivationsService
+     */
+
     private $maintenanceMotivationsService;
+    
+    /**
+     * @var MaintenanceLocationsService
+     */
+    private $maintenanceLocationsService;
+
 
     /**
      * @param EntityManager $entityManager
@@ -63,6 +75,8 @@ class CarsService
      * @param FleetsRepository $fleetsRepository
      * @param DatatableServiceInterface $datatableService
      * @param Translator $translator
+     * @param MaintenanceMotivationsService $maintenanceMotivationsService
+     * @param MaintenanceLocationsService $maintenanceLocationsService
      */
     public function __construct(
         EntityManager $entityManager,
@@ -73,7 +87,8 @@ class CarsService
         DatatableServiceInterface $datatableService,
         ReservationsService $reservationsService,
         Translator $translator,
-        MaintenanceMotivationsService $maintenanceMotivationsService
+        MaintenanceMotivationsService $maintenanceMotivationsService,
+        MaintenanceLocationsService $maintenanceLocationsService
     ) {
         $this->entityManager = $entityManager;
         $this->carsRepository = $carsRepository;
@@ -84,6 +99,7 @@ class CarsService
         $this->reservationsService = $reservationsService;
         $this->translator = $translator;
         $this->maintenanceMotivationsService = $maintenanceMotivationsService;
+        $this->maintenanceLocationsService = $maintenanceLocationsService;
     }
 
     /**
@@ -253,7 +269,10 @@ class CarsService
             !is_null($location)) {
             $carsMaintenance = new CarsMaintenance();
             $carsMaintenance->setCarPlate($car);
-            $carsMaintenance->setLocation($location);
+            //$carsMaintenance->setLocation($location);
+            $location = $this->maintenanceLocationsService->getById($postData["location"])[0];
+            $carsMaintenance->setLocationId($location);
+            $carsMaintenance->setLocation($location->getlocation());
             $carsMaintenance->setNotes($postData['note']);
             $carsMaintenance->setUpdateTs(new \DateTime());
             $carsMaintenance->setWebuser($webuser);
