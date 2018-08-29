@@ -184,6 +184,7 @@ class NugoService
             $customer = $this->findCustomerByMainFields(
                 $contentArray['email'],
                 $contentArray['fiscalCode'],
+                $contentArray['mobile'],
                 $contentArray['drivingLicense']['number']);
 
             if(is_null($customer) || $this->partnersRepository->isBelongCustomerPartner($partner, $customer)) { // is a new customer or exist and belong to partner
@@ -460,8 +461,8 @@ class NugoService
             $contentArray[$key] = $value;
 
             $key = 'mobile'; //TODO: additional check
-            $value = $this->getDataFormatedLower($contentArray, $key);
-            if (strlen($value) > 0) {
+            $value = $this->getDataFormatedMobile($contentArray, $key);
+            if (strlen($value) >= 9) {
                 $contentArray[$key] = $value;
             } else {
                 $strError .= sprintf('Invalid %s ', $key);
@@ -765,28 +766,43 @@ class NugoService
         return $result;
     }
 
+    private function getDataFormatedMobile(array $contentArray, $keyValue) {
+        $result = null;
+
+        if (isset($contentArray[$keyValue])) {
+            $result = preg_replace('/[^0-9+]/', '', $contentArray[$keyValue]);
+        }
+         return $result;
+    }
+
      /**
      * Find a customer tha match email or tax code or driver license
      *
      * @param string $email
      * @param string $taxCode
+     * @param string $mobile
      * @param string $driverLicense
      * @return Customers
      */
-    public function findCustomerByMainFields($email, $taxCode, $driverLicense)
+    public function findCustomerByMainFields($email, $taxCode, $mobile, $driverLicense)
     {
 
-        $customers2 = $this->customersRepository->findByCI("taxCode", $taxCode);
-        if(!empty($customers2)){
-            return $customers2[0];
-        }
-
-        $customers3 = $this->customersRepository->findByCI("driverLicense", $driverLicense);
-        if(!empty($customers3)){
-            return $customers3[0];
-        }
-
         $customers = $this->customersRepository->findByCI("email", $email);
+        if(!empty($customers)){
+            return $customers[0];
+        }
+
+        $customers = $this->customersRepository->findByCI("taxCode", $taxCode);
+        if(!empty($customers)){
+            return $customers[0];
+        }
+
+        $customers = $this->customersRepository->findByMobileLast9Digit($mobile);
+        if(!empty($customers)){
+            return $customers[0];
+        }
+
+        $customers = $this->customersRepository->findByCI("driverLicense", $driverLicense);
         if(!empty($customers)){
             return $customers[0];
         }
@@ -801,6 +817,14 @@ class NugoService
      */
     private function isValidMd5($md5 ='') {
         return strlen($md5) == 32 && ctype_xdigit($md5);
+    }
+
+    private function isValidMobile($mobile) {
+        $result = false;
+        if($this->customersRepository->checkMobileNumberLast9Digit($mobile)==0) {
+            $result = true;
+        }
+        return $result;
     }
 
 //    /**

@@ -254,6 +254,20 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    /**
+     * Find customers that have the last 9 digits of mobile number the same of $value
+     * 
+     * @param string $value     mobile number
+     * @return Customers[]      customers list with the same mobile number
+     */
+    public function findByMobileLast9Digit($value)
+    {
+        $em = $this->getEntityManager();
+        $query = $em->createQuery("SELECT c FROM \SharengoCore\Entity\Customers c WHERE c.mobile LIKE :value");
+        $query->setParameter('value', '%'.substr($value, -9));
+        return $query->getResult();
+    }
+
  /**
      * Return the customer that promocode Member Get Member (XXXXX-XXXXX) match width part of hash code 
      * (i.e D07D4-72E62 --> select * FROM customers WHERE hash LIKE LOWER('d_0_7_D_4_7_2_F_6_2%'))
