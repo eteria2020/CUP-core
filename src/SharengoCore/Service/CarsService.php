@@ -117,6 +117,14 @@ class CarsService
     {
         return $this->fleetsRepository->findAll();
     }
+    
+    /**
+     * @return Locations[]
+     */
+    public function getLocations()
+    {
+        return $this->maintenanceLocationsService->getAllMaintenanceLocations(true);
+    }
 
     /**
      * @param integer $fleetId
