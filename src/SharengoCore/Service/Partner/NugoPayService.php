@@ -156,6 +156,20 @@ class NugoPayService {
 
             $this->httpClient->setUri($this->params['payments']['uri'] . $uriPreAuth);
             $this->httpClient->setMethod(Request::METHOD_POST);
+
+            $adapter = new \Zend\Http\Client\Adapter\Curl();
+            $this->httpClient->setAdapter($adapter);
+
+            $adapter->setOptions(array(
+                'curloptions' => array(
+                    CURLOPT_SSLVERSION => 6, //tls1.2
+                    //CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_VERBOSE => 0,
+                    CURLOPT_SSL_VERIFYHOST => 0,
+                    CURLOPT_SSL_VERIFYPEER => 0
+                )
+            ));
+
             $this->httpClient->setRawBody($json);
             $this->httpClient->setHeaders(
                 array(
@@ -231,6 +245,19 @@ class NugoPayService {
 
             $this->httpClient->setUri($this->params['payments']['uri']);
             $this->httpClient->setMethod(Request::METHOD_POST);
+            $adapter = new \Zend\Http\Client\Adapter\Curl();
+            $this->httpClient->setAdapter($adapter);
+
+            $adapter->setOptions(array(
+                'curloptions' => array(
+                    CURLOPT_SSLVERSION => 6, //tls1.2
+                    //CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_VERBOSE => 0,
+                    CURLOPT_SSL_VERIFYHOST => 0,
+                    CURLOPT_SSL_VERIFYPEER => 0
+                )
+            ));
+
             $this->httpClient->setRawBody($json);
 
             $httpResponse = $this->httpClient->send();
