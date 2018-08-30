@@ -29,18 +29,6 @@ class MaintenanceLocationsService
     /**
      * @return Array[]
      */
-    /*public function getAllMaintenanceLocations($param)
-    {
-        $maintenanceLocations = $this->maintenanceLocationsRepository->findAllActive();
-        if($param){
-            return $maintenanceLocations;
-        } else {
-            foreach ($maintenanceLocations as $maintenanceLocation){
-                $ret[$maintenanceLocation->getId()] = $maintenanceLocation->getLocation();
-            }
-            return $ret;
-        }
-    }*/
     public function getAllMaintenanceLocations()
     {
         $maintenanceLocations = $this->maintenanceLocationsRepository->findAllActive();
