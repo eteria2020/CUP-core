@@ -269,7 +269,7 @@ class CarsService
             !is_null($location)) {
             $carsMaintenance = new CarsMaintenance();
             $carsMaintenance->setCarPlate($car);
-            $location = $this->maintenanceLocationsService->getById($postData["location"])[0];
+            $location = $this->maintenanceLocationsService->getById($postData["location"])[0]; 
             $carsMaintenance->setLocationId($location);
             $carsMaintenance->setLocation($location->getlocation());
             $carsMaintenance->setNotes($postData['note']);
