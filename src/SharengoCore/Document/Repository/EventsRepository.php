@@ -16,7 +16,8 @@ class EventsRepository extends DocumentRepository
             return array();
         }
         $startTime = $events[0]->getEventTime();
-        $previousId = $events[0]->getId();
+        $previousId = array($events[0]->getId());
+
         $plate = $trip->getCar()->getPlate();
 
         while ($is_same_trip) {
@@ -25,7 +26,7 @@ class EventsRepository extends DocumentRepository
             if ($event && $event->getTrip() == '0'
             && $event->getCustomerId() == $trip->getCustomer()->getId()) {
                 array_unshift($events, $event);
-                $previousId = $event->getId();
+                array_push($previousId, $event->getId());
                 $startTime = $event->getEventTime();
             } else {
                 $is_same_trip = false;
@@ -39,7 +40,7 @@ class EventsRepository extends DocumentRepository
         $q = $this->dm->createQueryBuilder('\SharengoCore\Document\Events')
             ->field('carPlate')->equals($plate)
             ->field('eventTime')->lt($startTime)
-            ->field('id')->notEqual($previousId)
+            ->field('id')->notIn($previousId)
             ->sort('eventTime', 'desc')
             ->getQuery();
 
