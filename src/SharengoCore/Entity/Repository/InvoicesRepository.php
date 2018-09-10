@@ -2,6 +2,8 @@
 
 namespace SharengoCore\Entity\Repository;
 
+use SharengoCore\Entity\Partners;
+
 class InvoicesRepository extends \Doctrine\ORM\EntityRepository
 {
     public function getTotalInvoices()
@@ -82,23 +84,36 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
 
     /**
      * @param Fleet | null $fleet
+     * @param Partners | null $partner
      * @return Invoices[]
      */
-    public function findInvoicesByFleetJoinCustomers($fleet = null)
+    public function findInvoicesByFleetJoinCustomers($fleet = null, Partners $partner = null)
     {
         $em = $this->getEntityManager();
 
         $dql = "SELECT i, c
         FROM \SharengoCore\Entity\Invoices i
-        LEFT JOIN i.customer c";
+        LEFT JOIN i.customer c ";
+
+        if (is_null($partner)) {
+            $dql .= " WHERE i.partner IS NULL ";
+        } else {
+            $dql .= " WHERE i.partner = :partner ";
+        }
+
         if ($fleet != null) {
-            $dql .= " WHERE i.fleet = :fleet";
+            $dql .= " AND i.fleet = :fleet ";
         }
         $dql .= " ORDER BY i.id ASC";
 
         $query = $em->createQuery($dql);
+
         if ($fleet != null) {
             $query->setParameter('fleet', $fleet);
+        }
+
+        if (!is_null($partner)) {
+            $query->setParameter('partner', $partner);
         }
 
         return $query->getResult();
@@ -109,7 +124,7 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
      * @param Fleet | null $fleet
      * @return Invoices[]
      */
-    public function findInvoicesByDateAndFleetJoinCustomers(\DateTime $date, $fleet=null)
+    public function findInvoicesByDateAndFleetJoinCustomers(\DateTime $date, $fleet=null, Partners $partner)
     {
         $em = $this->getEntityManager();
 
@@ -117,15 +132,27 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
         FROM \SharengoCore\Entity\Invoices i
         LEFT JOIN i.customer c
         WHERE i.invoiceDate = :invDate";
+
+        if (is_null($partner)) {
+            $dql .= " AND i.partner IS NULL ";
+        } else {
+            $dql .= " AND i.partner = :partner ";
+        }
+
         if ($fleet != null) {
-            $dql .= " AND i.fleet = :fleet";
+            $dql .= " AND i.fleet = :fleet ";
         }
         $dql .= " ORDER BY i.id ASC";
 
         $query = $em->createQuery($dql);
         $query->setParameter('invDate', $date->format('Ymd'));
+
         if ($fleet != null) {
             $query->setParameter('fleet', $fleet);
+        }
+
+        if (!is_null($partner)) {
+            $query->setParameter('partner', $partner);
         }
 
         return $query->getResult();
