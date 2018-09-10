@@ -1,7 +1,8 @@
 <?php
 
 namespace SharengoCore\Service\Partner;
-use Zend\EventManager\EventManager;
+//use Zend\EventManager\EventManager;
+use SharengoCore\Service\SimpleLoggerService as Logger;
 
 use SharengoCore\Service\CustomersService;
 use SharengoCore\Service\CustomerDeactivationService;
@@ -9,15 +10,21 @@ use SharengoCore\Service\FleetService;
 use SharengoCore\Service\UserEventsService;
 use SharengoCore\Service\DriversLicenseValidationService;
 use SharengoCore\Service\CountriesService;
+use SharengoCore\Service\InvoicesService;
 use MvLabsDriversLicenseValidation\Service\PortaleAutomobilistaValidationService;
 
 use SharengoCore\Entity\Repository\CustomersRepository;
 use SharengoCore\Entity\Repository\PartnersRepository;
+use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Repository\ProvincesRepository;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Partners;
 use SharengoCore\Entity\PartnersCustomers;
 use SharengoCore\Entity\CustomerDeactivation;
+use SharengoCore\Entity\Invoices;
+use SharengoCore\Entity\Fleet;
+
+use SharengoCore\Entity\TripPayments;
 
 use Cartasi\Entity\Contracts;
 use Cartasi\Entity\Transactions;
@@ -31,63 +38,113 @@ class NugoService
 {
 
     const PAYMENT_LABEL = 'NUGOPAY';
+    const INVOICE_HEADER_NOTE = '<br>Documento emesso da NUGO S.p.A. a nome e per conto di %s ';
+    const TYPE_INVOICES = "Invoices";
+    const TYPE_CUSTOMERS = "Customers";
 
-    /*
+    const NOTIFY_STATUS_CONFIRMED = "CONFIRMED";
+    const NOTIFY_STATUS_CREATED = "CREATED";
+    const NOTIFY_STATUS_DELETED = "DELETED";
+    const NOTIFY_STATUS_REJECTED = "REJECTED";
+
+    /**
+     *
+     * @var Logger logger
+     */
+    private $logger;
+
+    /**
+     *
+     * @var [] $config
+     */
+    private $config;
+
+    /**
+     *
+     * @var [] exportConfig
+     */
+    private $exportConfig;
+
+    /**
+     *
      * @var string
      */
     private $partnerName = 'nugo';
 
-    /*
+    /**
+     *
      * @var EntityManager
      */
     private $entityManager;
 
-    /*
+    /**
+     *
      * @var CustomersRepository
      */
     private $customersRepository;
 
-    /*
+    /**
+     *
      * @var CustomersRepository
      */
     private $partnersRepository;
 
-    /*
+    /**
+     *
+     * @var TripsRepository
+     */
+    private $tripsRepository;
+
+    /**
+     *
      * @var CustomerService
      */
     private $customersService;
 
-    /*
+    /**
+     *
      * @var DeactivationService
      */
     private $deactivationService;
 
-    /*
+    /**
+     *
      * @var FleetService
      */
     private $fleetService;
 
-    /*
+    /**
+     *
      * @var ProvincesRepository
      */
     private $provincesRepository;
 
-    /*
+    /**
+     *
      * @var UserEventsService
      */
     private $userEventsService;
 
-    /*
+    /**
+     *
      * @var CountriesService
      */
     private $countriesService;
 
-    /*
+    /**
+     *
+     * @var InvoicesService
+     */
+    private $invoicesService;
+
+    /**
+     *
      * @var DriversLicenseValidationService
      */
     private $driversLicenseValidationService;
 
-    /*
+    /**
+     *
      * @var PortaleAutomobilistaValidationService
      */
     private $portaleAutomobilistaValidationService;
@@ -98,7 +155,8 @@ class NugoService
      */
     private $partner;
 
-    /*
+    /**
+     *
      * @var array
      */
     private $params;
@@ -109,31 +167,69 @@ class NugoService
      */
     private $httpClient;
 
+    /**
+     *
+     * @var int ivaPercentage
+     */
+    private $ivaPercentage;
+
+    /**
+     *
+     * @var int version
+     */
+    private $version;
+
+    /**
+     *
+     * @var boolean dryRun
+     */
+    private $dryRun;
+
+    /**
+     *
+     * @var boolean noFtp
+     */
+    private $noFtp;
+    /**
+     * Connection to ftp server
+     * @var resource | null
+     */
+    private $ftpConn = null;
+
     public function __construct(
         EntityManager $entityManager,
+        Logger $logger,
+        $config,
         CustomersRepository $customersRepository,
         PartnersRepository $partnersRepository,
+        TripsRepository $tripsRepository,
         CustomersService $customersService,
         CustomerDeactivationService $deactivationService,
         FleetService $fleetService,
         ProvincesRepository $provincesRepository,
         UserEventsService $userEventsService,
         CountriesService $countriesService,
+        InvoicesService $invoicesService,
         DriversLicenseValidationService $driversLicenseValidationService,
         PortaleAutomobilistaValidationService $portaleAutomobilistaValidationService
     ) {
         $this->entityManager = $entityManager;
+        $this->logger = $logger;
+        $this->config = $config;
         $this->customersRepository = $customersRepository;
         $this->partnersRepository = $partnersRepository;
+        $this->tripsRepository = $tripsRepository;
         $this->customersService = $customersService;
         $this->deactivationService = $deactivationService;
         $this->fleetService = $fleetService;
         $this->provincesRepository = $provincesRepository;
         $this->userEventsService = $userEventsService;
         $this->countriesService = $countriesService;
+        $this->invoicesService = $invoicesService;
         $this->driversLicenseValidationService = $driversLicenseValidationService;
         $this->portaleAutomobilistaValidationService = $portaleAutomobilistaValidationService;
 
+        $this->exportConfig = $config['export'];
         $this->partner = $this->partnersRepository->findOneBy(array('code' => $this->partnerName, 'enabled' => true));
         $this->params = $this->partner->getParamsDecode();
 
@@ -143,6 +239,12 @@ class NugoService
             'maxredirects' => 0,
             'timeout' => 90
         ]);
+
+        $this->logger->setOutputEnvironment(Logger::OUTPUT_ON);
+        $this->logger->setOutputType(Logger::TYPE_CONSOLE);
+
+        $this->ivaPercentage = 22;
+        $this->version = 4;
     }
 
     /**
@@ -202,6 +304,7 @@ class NugoService
                 }
 
             } else {    // customer alread exist and NOT belong to partner
+                $this->notifyCustomerStatusRequestByCustomer($customer, self::NOTIFY_STATUS_REJECTED);
                 $response = 403;
                 $partnerResponse = array(
                     "uri" => $uri,
@@ -212,6 +315,10 @@ class NugoService
             }
 
         } else {
+            if(isset($contentArray['email'])) {
+                $this->notifyCustomerStatusRequestByEmail($contentArray['email'], self::NOTIFY_STATUS_REJECTED);
+            }
+
             $response = 400;    // 400 Bad Request
         }
 
@@ -254,13 +361,16 @@ class NugoService
     public function notifyCustomerStatus(Customers $customer) {
         $result = false;
 
+        $result1 = $this->notifyCustomerStatusRequestByCustomer($customer, self::NOTIFY_STATUS_REJECTED);
+
         if($customer->enable()) {
-            $result1 = $this->notifyCustomerStatusRequest($customer, "DELETED");
-            $result2 = $this->notifyCustomerStatusRequest($customer, "CREATED");
-            $result3 = $this->notifyCustomerStatusRequest($customer, "CONFIRMED");
-            $result = $result1 && $result2 && $result3;
+            $result2 = $this->notifyCustomerStatusRequestByCustomer($customer, self::NOTIFY_STATUS_DELETED);
+            $result3 = $this->notifyCustomerStatusRequestByCustomer($customer, self::NOTIFY_STATUS_CREATED);
+            $result4 = $this->notifyCustomerStatusRequestByCustomer($customer, self::NOTIFY_STATUS_CONFIRMED);
+            $result = $result1 && $result2 && $result3 && $result4;
         } else {
-            $result = $this->notifyCustomerStatusRequest($customer, "DELETED");
+            $result2 = $this->notifyCustomerStatusRequestByCustomer($customer, self::NOTIFY_STATUS_DELETED);
+            $result = $result1 && $result2;
         }
 
         return $result;
@@ -269,16 +379,37 @@ class NugoService
     /**
      * 
      * @param Customers $customer
-     * @param type $status
+     * @param string $status
      * @return boolean
      */
-    private function notifyCustomerStatusRequest(Customers $customer, $status) {
+    private function notifyCustomerStatusRequestByCustomer(Customers $customer, $status) {
+        $result = false;
+
+        if(!is_null($customer)) {
+            $result = $this->notifyCustomerStatusRequestByEmail($customer->getEmail(), $status);
+        }
+
+        return $result;
+
+    }
+
+    /**
+     * 
+     * @param string $email
+     * @param string $status
+     * @return boolean
+     */
+    private function notifyCustomerStatusRequestByEmail($email, $status) {
         $result = false;
 
         try {
+            if(is_null($email)) {
+                return $result;
+            }
+
             $json = json_encode(
                 array(
-                    'email' => $customer->getEmail(),
+                    'email' => $email,
                     'status' => $status
                 )
             );
@@ -320,7 +451,6 @@ class NugoService
         return $result;
 
     }
-
 
     
      /**
@@ -766,6 +896,20 @@ class NugoService
         return $result;
     }
 
+        private function getDataDDMMYYYYFormatedDateTime($dateTime) {
+        $result = null;
+
+        $contentArray = explode("-", trim($dateTime));
+
+        if (count($contentArray) == 3) {
+            if (checkdate($contentArray[1], $contentArray[0], $contentArray[2])) {
+                $result = date('Y-m-d', strtotime(sprintf('%d-%d-%d', $contentArray[2], $contentArray[1], $contentArray[0])));
+            }
+        }
+
+        return $result;
+    }
+
     private function getDataFormatedMobile(array $contentArray, $keyValue) {
         $result = null;
 
@@ -1179,47 +1323,40 @@ class NugoService
         return $response;
     }
 
-    public function importInvoice($dryRun, $date, $fleetId) {
+    /**
+     * 
+     * @param type $dryRun
+     * @param \DateTime $date
+     * @param type $fleetId
+     * @return type
+     */
+    public function importInvoice($dryRun,\DateTime $date, $fleetId) {
         $response = null;
 
         try {
-            if(is_null($date)) {
-                $date = date_create('yesterday');
-            }
 
-            $this->httpClient->setUri($this->params['importInvoice']['uri']);
-            $this->httpClient->setMethod(Request::METHOD_GET);
-            $adapter = new \Zend\Http\Client\Adapter\Curl();
-            $this->httpClient->setAdapter($adapter);
+            $this->dryRun = $dryRun;
+            $this->logger->log(sprintf("%s;INF;importInvoice;date=%s;fleetId=%s\n", 
+               date_create()->format('y-m-d H:i:s'),
+               $date->format('y-m-d'),
+               $fleetId));
 
-            $adapter->setOptions(array(
-                'curloptions' => array(
-                    CURLOPT_SSLVERSION => 6, //tls1.2
-                    //CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_VERBOSE => 0,
-                    CURLOPT_SSL_VERIFYHOST => 0,
-                    CURLOPT_SSL_VERIFYPEER => 0
-                )
-            ));
-
-            $this->httpClient->setParameterGet(array('date' => $date->format('Y-m-d')));
-
-            $httpResponse = $this->httpClient->send();
-            $response = json_decode($httpResponse->getBody(), true);
-
-            if($dryRun) {
-
-            }
+            $response =$this->invoiceRequest($date);
 
             if(is_array($response)) {
                 foreach($response as $nugoInvoice) {
                     $nugoReferenceId = $nugoInvoice["referenceId"];
                     $nugoInvoiceNumber = $nugoInvoice["documentNumber"];
                     $nugoInvoiceDate = $nugoInvoice["invoiceDate"];
-
-                    var_dump($nugoReferenceId." ".$nugoInvoiceNumber." ".$nugoInvoiceDate);
+                    $nugoReferenceId ="3547213";        //TODO: only debug
+                    $this->invoceProcess($nugoReferenceId, $nugoInvoiceNumber, $nugoInvoiceDate);
+                    break;                              //TODO: only debug
+                    //var_dump($nugoReferenceId." ".$nugoInvoiceNumber." ".$nugoInvoiceDate);
                 }
             }
+
+            $this->logger->log(sprintf("%s;INF;importInvoice;end\n", 
+               date_create()->format('y-m-d H:i:s')));
 
         } catch (Exception $ex) {
             //var_dump($ex);
@@ -1227,6 +1364,331 @@ class NugoService
         }
         return $response;
     }
+
+    /**
+     * Send a request for invoices.
+     * @param \DateTime $date
+     * @return type
+     */
+    private function invoiceRequest(\DateTime $date) {
+        $result =null;
+
+        $this->httpClient->setUri($this->params['importInvoice']['uri']);
+        $this->httpClient->setMethod(Request::METHOD_GET);
+        $adapter = new \Zend\Http\Client\Adapter\Curl();
+        $this->httpClient->setAdapter($adapter);
+
+        $adapter->setOptions(array(
+            'curloptions' => array(
+                CURLOPT_SSLVERSION => 6, //tls1.2
+                //CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_VERBOSE => 0,
+                CURLOPT_SSL_VERIFYHOST => 0,
+                CURLOPT_SSL_VERIFYPEER => 0
+            )
+        ));
+
+        $this->httpClient->setParameterGet(array('date' => $date->format('Y-m-d')));
+
+        $httpResponse = $this->httpClient->send();
+        $result = json_decode($httpResponse->getBody(), true);
+
+        return $result;
+    }
+    
+    private function invoceProcess($nugoReferenceId, $nugoInvoiceNumber, $nugoInvoiceDate) {
+        $result = false;
+
+        $nugoReferenceId = intval(trim($nugoReferenceId));
+        $nugoInvoiceNumber = intval(trim($nugoInvoiceNumber));
+        $nugoInvoiceDate = trim($nugoInvoiceDate);
+
+        $invoiceDate = $this->getDataDDMMYYYYFormatedDateTime($nugoInvoiceDate);
+        if(!is_null($invoiceDate)) {
+            $trip = $this->tripsRepository->findOneById($nugoReferenceId);
+            if (!is_null($trip)) {
+                $tripPayment = $trip->getTripPayment();
+                if (!is_null($tripPayment)) {
+                    $partner = $tripPayment->getPartner();
+                    if ($partner == $this->partner) {
+                        if($tripPayment->getStatus() == TripPayments::STATUS_PAYED_CORRECTLY) {
+                            $result = $this->invoceCreateForTrip($tripPayment, $nugoInvoiceNumber, $invoiceDate);
+                        } else if ($tripPayment->getStatus() == TripPayments::STATUS_INVOICED) {
+                            $result = $this->invoceUpdateForTrip($tripPayment, $nugoInvoiceNumber, $invoiceDate);
+                        } else {
+                            $this->logger->log(sprintf("%s;ERR;invoceProcess;%s;%s;%s;wrong status\n", 
+                               date_create()->format('y-m-d H:i:s'),
+                               $nugoReferenceId,
+                               $nugoInvoiceNumber,
+                               $nugoInvoiceDate));
+                        }
+                    } else {
+                        $this->logger->log(sprintf("%s;ERR;invoceProcess;%s;%s;%s;wrong partner\n", 
+                           date_create()->format('y-m-d H:i:s'),
+                           $nugoReferenceId,
+                           $nugoInvoiceNumber,
+                           $nugoInvoiceDate));
+                    }
+                } else {
+                    $this->logger->log(sprintf("%s;ERR;invoceProcess;%s;%s;%s;no trip payment\n", 
+                       date_create()->format('y-m-d H:i:s'),
+                       $nugoReferenceId,
+                       $nugoInvoiceNumber,
+                       $nugoInvoiceDate));
+                }
+            } else {
+                $this->logger->log(sprintf("%s;ERR;invoceProcess;%s;%s;%s;no trip\n", 
+                   date_create()->format('y-m-d H:i:s'),
+                   $nugoReferenceId,
+                   $nugoInvoiceNumber,
+                   $nugoInvoiceDate));
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Insert a new invoice partner
+     * 
+     * @param TripPayments $tripPayment
+     * @param string $nugoInvoiceNumber
+     * @param string $invoiceDate
+     * @return boolean
+     */
+    private function invoceCreateForTrip(TripPayments $tripPayment, $nugoInvoiceNumber, $invoiceDate) {
+        $result = false;
+
+        if($this->dryRun) {
+            return $result;
+        }
+
+        $customer = $tripPayment->getCustomer();
+        $fleet = $tripPayment->getTrip()->getFleet();
+
+        $content = $this->getInvoiceContent($tripPayment, $nugoInvoiceNumber, $invoiceDate);
+
+        $sql = sprintf("INSERT INTO invoices (id, invoice_number, customer_id, generated_ts, content, version, type, invoice_date, amount, iva, fleet_id, partner_id) " .
+            "VALUES (nextval('invoices_id_seq'), '%s', %d, now(), '%s', %d, '%s', %d, %d, %d, %d, %d)",
+            $nugoInvoiceNumber,
+            $customer->getId(),
+            str_replace("'","''",json_encode($content)),
+            $this->version,
+            Invoices::TYPE_TRIP,
+            str_replace("-","",$invoiceDate),
+            $tripPayment->getTotalCost(),
+            $this->ivaPercentage,
+            $fleet->getId(),
+            $tripPayment->getPartner()->getId());
+
+        $this->entityManager->getConnection()->executeUpdate($sql);
+
+        $sql = sprintf("SELECT i FROM \SharengoCore\Entity\invoices i WHERE i.invoiceNumber = '%s'",
+            $nugoInvoiceNumber);
+
+        $query =$this->entityManager->createQuery($sql);
+        $invoice = $query->getOneOrNullResult();
+
+        $sql = sprintf("UPDATE trip_payments SET invoice_id = %d, status = '%s', invoiced_at = now() WHERE id = %d",
+            $invoice->getId(),
+            $tripPayment::STATUS_INVOICED,
+            $tripPayment->getId());
+
+        $this->entityManager->getConnection()->executeUpdate($sql);
+
+        $this->logger->log(sprintf("%s;INF;invoceCreateForTrip;%d;%s;%s\n", 
+           date_create()->format('y-m-d H:i:s'),
+           $tripPayment->getTripId(),
+           $nugoInvoiceNumber,
+           $invoiceDate));
+
+        $result = true;
+
+        return $result;
+    }
+
+    /**
+     * Update invoice partner
+     * 
+     * @param TripPayments $tripPayment
+     * @param string $nugoInvoiceNumber
+     * @param string $invoiceDate
+     * @return boolean
+     */
+    private function invoceUpdateForTrip(TripPayments $tripPayment, $nugoInvoiceNumber, $invoiceDate) {
+        $result = false;
+
+        if($this->dryRun) {
+            return $result;
+        }
+
+        $customer = $tripPayment->getCustomer();
+        $fleet = $tripPayment->getTrip()->getFleet();
+
+        $content = $this->getInvoiceContent($tripPayment, $nugoInvoiceNumber, $invoiceDate);
+
+        $sql = sprintf("UPDATE invoices SET invoice_number='%s', customer_id=%d, content='%s', version=%d, type='%s', invoice_date=%d, amount=%d, iva=%d, fleet_id=%d, partner_id=%d " .
+            "WHERE id = %d",
+            $nugoInvoiceNumber,
+            $customer->getId(),
+            str_replace("'","''",json_encode($content)),
+            $this->version,
+            Invoices::TYPE_TRIP,
+            str_replace("-","",$invoiceDate),
+            $tripPayment->getTotalCost(),
+            $this->ivaPercentage,
+            $fleet->getId(),
+            $tripPayment->getPartner()->getId(),
+            $tripPayment->getInvoice()->getId());
+
+        $this->entityManager->getConnection()->executeUpdate($sql);
+
+        $sql = sprintf("UPDATE trip_payments SET invoice_id = %d, status = '%s', invoiced_at = now() WHERE id = %d",
+            $tripPayment->getInvoice()->getId(),
+            $tripPayment::STATUS_INVOICED,
+            $tripPayment->getId());
+
+        $this->entityManager->getConnection()->executeUpdate($sql);
+
+        $this->logger->log(sprintf("%s;INF;invoceUpdateForTrip;%d;%s;%s\n", 
+           date_create()->format('y-m-d H:i:s'),
+           $tripPayment->getTripId(),
+           $nugoInvoiceNumber,
+           $invoiceDate));
+
+        $result = true;
+
+        return $result;
+    }
+
+    /**
+     * Format the content array
+     * 
+     * @param TripPayments $tripPayment
+     * @param string $nugoInvoiceNumber
+     * @param string $invoiceDate
+     * @return string[]
+     */
+    private function getInvoiceContent(TripPayments $tripPayment, $nugoInvoiceNumber, $invoiceDate) {
+
+        //var_dump($tripPayment->getId());
+        $trip = $tripPayment->getTrip();
+        $customer = $tripPayment->getCustomer();
+        $fleet = $tripPayment->getTrip()->getFleet();
+
+        $bodyContentBody = [];
+        array_push($bodyContentBody,
+            [
+                [$trip->getId()],
+                ["Inizio: " . $trip->getTimestampBeginning()->format("d-m-Y H:i:s"),
+                    "Fine: " . $trip->getTimestampEnd()->format("d-m-Y H:i:s")],
+                ["Da: " . $trip->getAddressBeginning(),
+                    "A: " . $trip->getAddressEnd()],
+                [$tripPayment->getTripMinutes() . ' (min)'],
+                [$trip->getCar()->getPlate()],
+                [$this->parseDecimal($tripPayment->getTotalCost()) . ' €']
+        ]);
+
+        $body = [
+            'greeting_message' => '',
+            'contents' => [
+                'header' => [
+                    'ID',
+                    'Data',
+                    'Partenza / Arrivo',
+                    'Durata',
+                    'Targa',
+                    'Totale'
+                ],
+                'body' => $bodyContentBody,
+                'body-format' => [
+                    'alignment' => [
+                        'left',
+                        'left',
+                        'left',
+                        'left',
+                        'left',
+                        'right'
+                    ]
+                ]
+            ]
+        ];
+
+        $iva = $this->ivaFromTotal($tripPayment->getTotalCost());
+        $total = $tripPayment->getTotalCost() - $iva;
+
+        $amounts = [
+            'iva' => $this->parseDecimal($iva),
+            'total' => $this->parseDecimal($total),
+            'grand_total' => $this->parseDecimal($tripPayment->getTotalCost()),
+            'grand_total_cents' => $tripPayment->getTotalCost()];
+
+        $header = $fleet->getInvoiceHeader() . $this->getInvoiceHeaderNugo($fleet);
+
+        $result = [
+            'body' => $body,
+            'invoice_date' => intval(str_replace('-','',$invoiceDate)),
+            'amounts' => $amounts,
+            'iva' => $this->ivaPercentage,
+            'customer' => [
+                'name' => $customer->getName(),
+                'surname' => $customer->getSurname(),
+                'email' => $customer->getEmail(),
+                'address' => $customer->getAddress(),
+                'town' => $customer->getTown(),
+                'province' => $customer->getProvince(),
+                'country' => $customer->getCountry(),
+                'zip_code' => $customer->getZipCode(),
+                'cf' => $customer->getTaxCode(),
+                'piva' => $customer->getVat()
+            ],
+            'type' => Invoices::TYPE_TRIP,
+            'template_version' => strval($this->version),
+            'header' => $header
+        ];
+
+        return $result;
+    }
+
+    /**
+     * Return the Nugo note in the header
+     * 
+     * @param Fleet $fleet
+     * @return string
+     */
+    private function getInvoiceHeaderNugo(Fleet $fleet) {
+        if($fleet->getCode()==="MO") {
+            $city = "C.S. Group S.p.A.";
+        } else {
+            $city = "C.S. ".$fleet->getName()." S.r.l.";
+        }
+        return sprintf($this::INVOICE_HEADER_NOTE, $city);
+    }
+
+    /**
+     * Gets the iva (cents of euro) from the total (cents of euro) 
+     *
+     * @param integer $total
+     * @return integer $iva
+     */
+    private function ivaFromTotal($total)
+    {
+        $taxRate = $this->ivaPercentage / 100;
+        $priceWithoutTax = round($total / ( 1 + $taxRate));
+        $iva = (integer) round($priceWithoutTax * $taxRate);
+
+        return $iva;
+    }
+
+    /**
+     * @param integer
+     * @return string
+     */
+    private function parseDecimal($decimal)
+    {
+        return number_format((float) $decimal / 100, 2, ',', '');
+    }
+
 
     public function tryChargeAccountTest() {
                $result = false;
@@ -1293,5 +1755,172 @@ class NugoService
         }
 
         return $result;
+    }
+
+    /**
+     * Export the invoice fron partner, create a txt file on data/export/partner/PARTNER_CODED, 
+     * then transer on FTP the file for Gamma.
+     * 
+     * If $date is null, export invoice of yesterday.
+     * If $fleetId is null, export the invoice for all fleets.
+     * 
+     * 
+     * @param bool $dryRun
+     * @param bool $noFtp
+     * @param string $date
+     * @param string $fleetId
+     * @return boolean
+     */
+    public function exportRegistries($dryRun, $noFtp, $date, $fleetId) {
+        $result = false;
+        $invoicesEntries = [];
+        $customersEntries = [];
+
+        $this->dryRun = $dryRun;
+        $this->noFtp = $noFtp;
+
+        $path = $this->params['exportRegistries']['path'];
+//        $this->logger->setOutputEnvironment(Logger::OUTPUT_ON);
+//        $this->logger->setOutputType(Logger::TYPE_CONSOLE);
+
+        if(is_null($date)) {
+            $date = date_create('yesterday');
+        } else {
+            $date = date_create($date);
+        }
+         $this->logger->log(sprintf("%s;INF;exportRegistries;date=%s;fleetId=%s\n", 
+            date_create()->format('y-m-d H:i:s'),
+            $date->format('y-m-d'),
+            $fleetId));
+
+        $this->connectToServer($this->exportConfig);
+        $invoices = $this->retriveInvoicesByDateAndFleet($date, $fleetId);
+
+         $this->logger->log(sprintf("%s;INF;exportRegistries;count=%d\n",
+            date_create()->format('y-m-d H:i:s'),
+            count($invoices)));
+
+        foreach($invoices as $invoice) {
+            $this->logger->log(sprintf("%s;INF;exportRegistries;num=%s;date=%d;fleet=%d\n",
+                date_create()->format('y-m-d H:i:s'),
+                $invoice->getInvoiceNumber(),
+                $invoice->getInvoiceDate(),
+                $invoice->getFleetId()));
+
+            $fleetName = $invoice->getFleetName();
+            if (!array_key_exists($fleetName, $invoicesEntries)) {
+                $invoicesEntries[$fleetName] = '';
+            }
+            $invoicesEntries[$fleetName] .= $this->invoicesService->getExportDataForInvoice($invoice) . "\r\n";
+
+            if (!array_key_exists($fleetName, $customersEntries)) {
+                $customersEntries[$fleetName] = '';
+            }
+            $customersEntries[$fleetName] .= $this->customersService->getExportDataForCustomer($invoice->getCustomer()) . "\r\n";
+
+            // Export invoices data
+            $this->exportData($date, $invoicesEntries, self::TYPE_INVOICES, $path);
+
+            // Export customers data
+            $this->exportData($date, $customersEntries, self::TYPE_CUSTOMERS, $path);
+        }
+
+        return $result;
+    }
+
+    private function retriveInvoicesByDateAndFleet(\DateTime $date, $fleetId) {
+        $fleet = null;
+
+        if(!is_null($fleetId)) {
+            $fleet = $this->fleetService->getFleetById($fleetId);
+        }
+
+        return $this->invoicesService->getInvoicesByDateAndFleetJoinCustomers($date, $fleet, $this->partner);
+    }
+
+    /**
+     * @param \DateTime $date
+     * @param string[] $entries
+     * @param string $type
+     * @param string $path
+     */
+    private function exportData(\DateTime $date, $entries, $type, $path)
+    {
+        if (!$this->dryRun && !empty($entries)) {
+            foreach ($entries as $fleetName => $entry) {
+                $fileName = "export" . $type . '_' . $date->format('Y-m-d') . ".txt";
+                $this->ensurePathExistsLocally($path . $fleetName);
+                $file = fopen($path . $fleetName . '/' . $fileName, 'w');
+                fwrite($file, $entry);
+                fclose($file);
+
+                $this->logger->log(sprintf("%s;INF;exportData;type=%s;fileName=%s\n", 
+                     date_create()->format('y-m-d H:i:s'),
+                     $type,
+                     $fileName));
+
+                $this->exportToFtp($path . $fleetName . '/' . $fileName, 'partner/nugo/' . $fleetName . '/' . $fileName);
+            }
+        }
+    }
+
+    /**
+     * Checks wether path exists under data/export and creates it if it doesn't
+     * @param string $path
+     */
+    private function ensurePathExistsLocally($path)
+    {
+        if (!file_exists($path)) {
+            if (mkdir($path)) {
+                $this->logger->log("Done!\n");
+            } else {
+                $this->logger->log(sprintf("%s;ERR;ensurePathExistsLocally;%s;FAIL\n", 
+                    date_create()->format('y-m-d H:i:s'),
+                    $path));
+                exit;
+            }
+        }
+    }
+
+    /**
+     * Attempts connection to ftp server
+     * @param string[] $config
+     */
+    private function connectToServer($config)
+    {
+        if (!$this->noFtp) {
+            $this->ftpConn = ftp_connect($config['server']);
+            if (!$this->ftpConn) {
+                $this->logger->log(sprintf("%s;ERR;connectToServer;%s;FAIL\n", 
+                    date_create()->format('y-m-d H:i:s'),
+                    $config['server']));
+                die;
+            }
+            $login = ftp_login($this->ftpConn, $config['name'], $config['password']);
+            ftp_pasv($this->ftpConn, true);
+
+        }
+    }
+
+    /**
+     * 
+     * @param string $from
+     * @param string $to
+     */
+    private function exportToFtp($from, $to)
+    {
+        if (!$this->noFtp) {
+            if (ftp_put($this->ftpConn, $to, $from, FTP_ASCII)) {
+                $this->logger->log(sprintf("%s;INF;exportToFtp;%s;%s\n", 
+                    date_create()->format('y-m-d H:i:s'),
+                    $from,
+                    $to));
+            } else {
+                $this->logger->log(sprintf("%s;ERR;exportToFtp;%s;%s;FAIL\n", 
+                    date_create()->format('y-m-d H:i:s'),
+                    $from,
+                    $to));
+            }
+        }
     }
 }

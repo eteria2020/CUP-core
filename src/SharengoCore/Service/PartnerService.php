@@ -174,11 +174,11 @@ class PartnerService implements ValidatorServiceInterface
      * 
      * @param boolean $dryRun Flag for debug
      * @param Partners $partner PArmten object
-     * @param Date $date Date of istance
+     * @param \DateTime $date Date of istance
      * @param int $fleetId Fleet id
      * @return type
      */
-    public function importInvoice($dryRun, Partners $partner, $date, $fleetId) {
+    public function importInvoice($dryRun, Partners $partner, \DateTime $date, $fleetId) {
         $result = null;
 
         if($partner->getCode() == $this->nugoService->getPartnerName()) {
@@ -233,5 +233,20 @@ class PartnerService implements ValidatorServiceInterface
             return false;
         }
         return true;
+    }
+
+    /**
+     * 
+     * @param boolean $dryRun
+     * @param Partners $partner
+     * @param string $date
+     * @param string $fleetId
+     */
+    public function exportRegistries($dryRun, $noFtp, Partners $partner, $date, $fleetId) {
+
+        if($partner->getCode() == $this->nugoService->getPartnerName()) {
+            $this->nugoService->exportRegistries($dryRun, $noFtp, $date, $fleetId);
+        }
+
     }
 }

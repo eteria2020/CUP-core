@@ -9,6 +9,7 @@ use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Cards;
 use SharengoCore\Entity\Fleet;
+use SharengoCore\Entity\Partners;
 use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 // Externals
@@ -101,11 +102,12 @@ class InvoicesService
 
     /**
      * @param Fleet | null $fleet
+     * @param Partners | null $partner
      * @return Invoices[]
      */
-    public function getInvoicesByFleetJoinCustomers($fleet = null)
+    public function getInvoicesByFleetJoinCustomers($fleet = null, Partners $partner = null)
     {
-        return $this->invoicesRepository->findInvoicesByFleetJoinCustomers($fleet);
+        return $this->invoicesRepository->findInvoicesByFleetJoinCustomers($fleet, $partner);
     }
 
     /**
@@ -113,9 +115,9 @@ class InvoicesService
      * @param Fleet | null $fleet
      * @return Invoices[]
      */
-    public function getInvoicesByDateAndFleetJoinCustomers(\DateTime $date, $fleet = null)
+    public function getInvoicesByDateAndFleetJoinCustomers(\DateTime $date, $fleet = null, Partners $partner = null)
     {
-        return $this->invoicesRepository->findInvoicesByDateAndFleetJoinCustomers($date, $fleet);
+        return $this->invoicesRepository->findInvoicesByDateAndFleetJoinCustomers($date, $fleet, $partner);
     }
 
     /**
