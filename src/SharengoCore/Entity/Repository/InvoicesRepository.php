@@ -124,7 +124,7 @@ class InvoicesRepository extends \Doctrine\ORM\EntityRepository
      * @param Fleet | null $fleet
      * @return Invoices[]
      */
-    public function findInvoicesByDateAndFleetJoinCustomers(\DateTime $date, $fleet=null, Partners $partner)
+    public function findInvoicesByDateAndFleetJoinCustomers(\DateTime $date, $fleet=null, Partners $partner=null)
     {
         $em = $this->getEntityManager();
 
