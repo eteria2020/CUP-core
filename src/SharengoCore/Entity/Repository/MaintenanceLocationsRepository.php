@@ -8,7 +8,7 @@ class MaintenanceLocationsRepository extends \Doctrine\ORM\EntityRepository
     {
         $em = $this->getEntityManager();
 
-        $dql = "SELECT a FROM \SharengoCore\Entity\MaintenanceLocations a WHERE a.enabled=TRUE";
+        $dql = "SELECT a FROM \SharengoCore\Entity\MaintenanceLocations a WHERE a.enabled=TRUE ORDER BY a.id ASC";
 
         $query = $em->createQuery($dql);
 
