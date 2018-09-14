@@ -1348,10 +1348,7 @@ class NugoService
                     $nugoReferenceId = $nugoInvoice["referenceId"];
                     $nugoInvoiceNumber = $nugoInvoice["documentNumber"];
                     $nugoInvoiceDate = $nugoInvoice["invoiceDate"];
-                    $nugoReferenceId ="3547213";        //TODO: only debug
                     $this->invoceProcess($nugoReferenceId, $nugoInvoiceNumber, $nugoInvoiceDate);
-                    break;                              //TODO: only debug
-                    //var_dump($nugoReferenceId." ".$nugoInvoiceNumber." ".$nugoInvoiceDate);
                 }
             }
 
@@ -1359,7 +1356,6 @@ class NugoService
                date_create()->format('y-m-d H:i:s')));
 
         } catch (Exception $ex) {
-            //var_dump($ex);
             $response= null;
         }
         return $response;
