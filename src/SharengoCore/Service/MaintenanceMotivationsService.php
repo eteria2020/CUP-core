@@ -31,7 +31,8 @@ class MaintenanceMotivationsService
      */
     public function getAllMaintenanceMotivations()
     {
-        $maintenanceMotivations = $this->maintenanceMotivationsRepository->findAllActive();
+        //$maintenanceMotivations = $this->maintenanceMotivationsRepository->findAllActive();
+        $maintenanceMotivations = $this->maintenanceMotivationsRepository->findAll();
         
         foreach ($maintenanceMotivations as $maintenanceMotivation){
             $ret[$maintenanceMotivation->getId()] = $maintenanceMotivation->getDescription();
@@ -44,5 +45,9 @@ class MaintenanceMotivationsService
     public function getById($id)
     {
         return $this->maintenanceMotivationsRepository->findById($id);
+    }
+    
+    public function findAllNotActive(){
+        return $this->maintenanceMotivationsRepository->findAllNotActive();
     }
 }
