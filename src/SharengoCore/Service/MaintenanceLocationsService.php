@@ -45,7 +45,7 @@ class MaintenanceLocationsService
         return $this->maintenanceLocationsRepository->findById($id);
     }
     
-    public function findAllNotActive(){
+    public function findAllNotActive(){ 
         return $this->maintenanceLocationsRepository->findAllNotActive();
     }
 }
