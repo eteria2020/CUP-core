@@ -47,10 +47,13 @@ class BuyCustomerBonusPackage
         Customers $customer,
         CustomersBonusPackages $package
     ) {
+        $result = false;
         $this->entityManager->beginTransaction();
 
         try {
-            if($package->getType() === "Pacchetto" && ($package->getCode()=="WOMEN" && (date_create() >= date_create('2018-03-08 06:00:00') && date_create() <= date_create('2018-03-09 04:55:00')))){
+            if($package->getType() === "Pacchetto" &&
+                    ($package->getCode()=="WOMEN" &&
+                    (date_create() >= date_create(date("Y").'-03-08 06:00:00') && date_create() <= date_create(date("Y").'-03-09 04:55:00')))){
                 $bonus = $package->generateCustomerWomenBonus($customer);
                 $this->entityManager->persist($bonus);
                 $this->entityManager->flush();
@@ -76,9 +79,14 @@ class BuyCustomerBonusPackage
                     $this->entityManager->persist($bonus);
                     $this->entityManager->persist($bonusPayment);
                     $this->entityManager->flush();
+                    $result = true;
                 } else {
-                    return false;
+                    return $result;
                 }
+            } else if($package->getType() === "Wallet"){
+
+                $result = $this->buyPackageWallet($customer, $package);
+
             } else { //$package->getType() === "PacchettoPunti"
 
                 if($this->customersPointsService->getTotalPoints($customer->getId()) >= $package->getCost()){
@@ -90,18 +98,46 @@ class BuyCustomerBonusPackage
                     $this->entityManager->persist($bonus);
                     $this->entityManager->persist($customersPoints);
                     $this->entityManager->flush();
-                    
-                }else{
-                    return false;
+                    $result = true;
+                } else{
+                    return $result;
                 }
             }
 
             $this->entityManager->commit();
         } catch (\Exception $e) {
             $this->entityManager->rollback();
-            return false;
         }
 
-        return true;
+        return $result;
+    }
+
+    /**
+     * 
+     * @param Customers $customer
+     * @param CustomersBonusPackages $package
+     * @return boolean
+     */
+    private function buyPackageWallet(Customers $customer, CustomersBonusPackages $package) {
+        $result= false;
+
+        $cartasiResponse = $this->payments->sendPaymentRequest($customer, $package->getCost());
+
+        if ($cartasiResponse->getCompletedCorrectly()) {
+
+            $bonus = $package->generateCustomerBonus($customer);
+            $bonusPayment = new BonusPackagePayment(
+                $customer,
+                $bonus,
+                $package,
+                $cartasiResponse->getTransaction()
+            );
+
+            $this->entityManager->persist($bonus);
+            $this->entityManager->persist($bonusPayment);
+            $this->entityManager->flush();
+            $result = true;
+        }
+        return $result;
     }
 }
