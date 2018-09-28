@@ -31,7 +31,8 @@ class MaintenanceLocationsService
      */
     public function getAllMaintenanceLocations()
     {
-        $maintenanceLocations = $this->maintenanceLocationsRepository->findAllActive();
+        //$maintenanceLocations = $this->maintenanceLocationsRepository->findAllActive();
+        $maintenanceLocations = $this->maintenanceLocationsRepository->findAll();
         foreach ($maintenanceLocations as $maintenanceLocation){
             $ret[$maintenanceLocation->getId()] = $maintenanceLocation->getLocation();
         }
@@ -42,5 +43,9 @@ class MaintenanceLocationsService
     public function getById($id)
     {
         return $this->maintenanceLocationsRepository->findById($id);
+    }
+    
+    public function findAllNotActive(){ 
+        return $this->maintenanceLocationsRepository->findAllNotActive();
     }
 }
