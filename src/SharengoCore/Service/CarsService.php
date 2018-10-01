@@ -462,5 +462,22 @@ class CarsService
         $date = new \DateTime("-1 hours");
         return $this->carsRepository->getPublicCarsForAddFreeX($fleet_id, $date);
     }
+    
+    public function getLastMaintenanceCar($plate){
+        return $this->carsMaintenanceRepository->findLastCarsMaintenance($plate);
+    }
+    
+    /**
+     * @param CarsMaintenance $oldMaintenance
+     * @param Webuser $webuser
+     */
+    public function closeOldMantenance(CarsMaintenance $oldMaintenance, Webuser $webuser){
+        $oldMaintenance->setEndTs(new \DateTime());
+        $oldMaintenance->setEndWebuser($webuser);
+        
+        $this->entityManager->persist($oldMaintenance);
+        $this->entityManager->flush();
+    }
+
 
 }
