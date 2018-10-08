@@ -93,7 +93,7 @@ class ProcessPaymentsService
 
         foreach ($tripPayments as $tripPayment) {
             try {
-                $this->logger->log( date_create()->format('H:i:s').";INF;processPayments;tripPayment;".$tripPayment->getId() . ";trip;".$tripPayment->getTripId().";customer;".$tripPayment->getCustomer()->getId()."\n");
+                $this->logger->log( date_create()->format('y-m-d H:i:s').";INF;processPayments;tripPayment;".$tripPayment->getId() . ";trip;".$tripPayment->getTripId().";customer;".$tripPayment->getCustomer()->getId()."\n");
                 $this->paymentsService->tryPayment(
                     $tripPayment,
                     $avoidEmails,
@@ -101,13 +101,13 @@ class ProcessPaymentsService
                     $avoidPersistance
                 );
             } catch(\Doctrine\ORM\ORMException $de){
-                $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;doctrine exception;tripPayment->getId;".$tripPayment->getId() . "\n");
+                $this->logger->log( date_create()->format('y-m-d H:i:s').";ERR;processPayments;doctrine exception;tripPayment->getId;".$tripPayment->getId() . "\n");
                 $this->logger->log($de->getMessage() . " " . $de->getFile() . " line " . $de->getLine() . "\n");
                 $this->logger->log($de->getTraceAsString(). "\n");
                 // \Doctrine\Common\Util\Debug::dump($tripPayment);
                 break;
             } catch (\Exception $e) {
-                $this->logger->log( date_create()->format('H:i:s').";ERR;processPayments;general exception;tripPayment->getId;".$tripPayment->getId() . "\n");
+                $this->logger->log( date_create()->format('y-m-d H:i:s').";ERR;processPayments;general exception;tripPayment->getId;".$tripPayment->getId() . "\n");
                 $this->logger->log($e->getMessage() . " " . $e->getFile() . " line " . $e->getLine() . "\n");
                 $this->logger->log($e->getTraceAsString(). "\n");
                 // \Doctrine\Common\Util\Debug::dump($tripPayment);

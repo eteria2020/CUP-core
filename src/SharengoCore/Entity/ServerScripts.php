@@ -55,7 +55,7 @@ class ServerScripts
     /**
      * @var string
      *
-     * @ORM\Column(name="param", type="string", nullable=true)
+     * @ORM\Column(name="param", type="json_array", nullable=true, options={"jsonb": true})
      */
     private $param;
 
@@ -80,6 +80,9 @@ class ServerScripts
      */
     private $note;
 
+    public function __construct() {
+        $this->startTs = date_create();
+    }
 
     function getId() {
         return $this->id;

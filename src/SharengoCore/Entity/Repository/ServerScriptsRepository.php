@@ -29,4 +29,79 @@ class ServerScriptsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
         
     }
+
+    /**
+     * Return true if a script width $name has a endTs NULL
+     *
+     * @param string $name
+     * @param null $fullPath
+     * @return bool
+     */
+    public function isOpen($name, $fullPath = null, $period = null) {
+        $result = false;
+
+        $em = $this->getEntityManager();
+        $dql = "SELECT count(s.id) FROM \SharengoCore\Entity\ServerScripts s "
+            . "WHERE s.endTs IS NULL AND "
+            . "s.name = :name ";
+
+        if(!is_null($fullPath)) {
+            $dql .= " AND s.fullPath = :full_path";
+        }
+
+        if(!is_null($period)) {
+            $dql .= " AND s.startTs >= :period";
+        }
+
+        $query = $em->createQuery($dql);
+
+        $query->setParameter('name', $name);
+
+        if(!is_null($fullPath)) {
+            $query->setParameter('full_path', $fullPath);
+        }
+
+        if(!is_null($period)) {
+            $query->setParameter('period', date_create($period));
+        }
+
+        if($query->getSingleScalarResult()>0) {
+            $result = true;
+        }
+
+        return $result;
+
+    }
+
+    /**
+     * @param null $name
+     * @param null $fullPath
+     * @return array
+     */
+    public function findOpen($name = null, $fullPath = null) {
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT s FROM \SharengoCore\Entity\ServerScripts s '
+            . 'WHERE s.endTs IS NULL ';
+
+        if(!is_null($name)) {
+            $dql .= " AND s.name = :name";
+        }
+
+        if(!is_null($fullPath)) {
+            $dql .= " AND s.fullPath = :full_path";
+        }
+
+        $query = $em->createQuery($dql);
+
+        if(!is_null($name)) {
+            $query->setParameter('name', $name);
+        }
+
+        if(!is_null($fullPath)) {
+            $query->setParameter('full_path', $fullPath);
+        }
+
+        return $query->getResult();
+    }
 }
