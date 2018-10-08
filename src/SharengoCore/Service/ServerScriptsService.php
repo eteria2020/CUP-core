@@ -168,10 +168,10 @@ class ServerScriptsService
         }
 
         $lockEnrity = get_class($arrayOfPayments[0]);
-        var_dump($lockEnrity);
 
         foreach ($arrayOfPayments as $payment) {
             if ($lockEnrity === "SharengoCore\Entity\TripPayments"){
+                $lockEnrity = "SharengoCore\Entity\Trips";
                 array_push($lockArray, $payment->getTrip()->getId());
             } else if ($lockEnrity === "SharengoCore\Entity\ExtraPayments" ){
                 array_push($lockArray, $payment->getId());
@@ -231,8 +231,22 @@ class ServerScriptsService
         return $serverScript;
     }
 
+    /**
+     * @param string $name
+     * @param string $fullPath
+     * @return array
+     */
     public function findOpen($name = null, $fullPath = null) {
         return $this->serverScriptsRepository->findOpen($name, $fullPath);
     }
 
+    /**
+     * Check if there is a entity (Trips o ExtraPayments) lock from ascript batch.
+     *
+     * @param $entity
+     * @return bool
+     */
+    public function isLock($entity) {
+        return $this->serverScriptsRepository->isLock($entity);
+    }
 }

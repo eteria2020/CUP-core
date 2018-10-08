@@ -76,7 +76,7 @@ class ServerScriptsRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @param null $name
      * @param null $fullPath
-     * @return array
+     * @return ServerScripts[]
      */
     public function findOpen($name = null, $fullPath = null) {
         $em = $this->getEntityManager();
@@ -103,5 +103,40 @@ class ServerScriptsRepository extends \Doctrine\ORM\EntityRepository
         }
 
         return $query->getResult();
+    }
+
+    /**
+     * Check if there is a entity (Trips o ExtraPayments) lock from ascript batch.
+     *
+     * @param $entity
+     * @return bool
+     */
+    public function isLock($entity) {
+        $result = false;
+
+        if($entity instanceof \SharengoCore\Entity\Trips) {
+            $lockEntity = "SharengoCore\Entity\Trips";
+        } else if($entity instanceof \SharengoCore\Entity\ExtraPayments) {
+            $lockEntity = "SharengoCore\Entity\ExtraPayments";
+        }
+        else {
+            return $result;
+        }
+
+        $serverScripts = $this->findOpen();
+
+        foreach($serverScripts as $serverScript) {
+            if(isset($serverScript->getParam()['lock_entity']) && isset($serverScript->getParam()['lock_id'])) {
+                if( $serverScript->getParam()['lock_entity']==$lockEntity) {
+                    if (in_array($entity->getId(), $serverScript->getParam()['lock_id'])) {
+                        $result = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $result;
+
     }
 }
