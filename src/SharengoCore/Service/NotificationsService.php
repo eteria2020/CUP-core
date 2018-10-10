@@ -126,6 +126,9 @@ class NotificationsService {
             case 0: return "---";
             case 1: return "SOS";
             case 2: return "Segnalazione danno";
+            case 3: return "Urto";
+            case 4: return "12V";
+            case 5: return "Scatola nera offline";
             default: return $intval;
         }
     }
