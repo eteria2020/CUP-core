@@ -479,5 +479,22 @@ class CarsService
         $this->entityManager->flush();
     }
 
+    
+    public function setDirtyCar(Cars $car){ 
+        $car->setIntCleanliness("dirty");
+        $car->setExtCleanliness("dirty");
+        $this->entityManager->persist($car);
+        $this->entityManager->flush();
+        return $car;
+    }
+    
+    public function setCleanCar(Cars $car){
+        $car->setIntCleanliness("clean");
+        $car->setExtCleanliness("clean");
+        $this->entityManager->persist($car);
+        $this->entityManager->flush();
+        return $car;
+    }
+    
 
 }
