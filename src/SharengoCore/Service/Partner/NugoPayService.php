@@ -104,17 +104,17 @@ class NugoPayService {
         ]);
 
         $this->partner = $this->partnersRepository->findOneBy(array('code' => $this->code, 'enabled' => true));
-        $this->params = $this->partner->getParamsDecode();
+        if($this->partner instanceof Partners) {
+            $this->params = $this->partner->getParamsDecode();
 
-        $this->httpClient->setHeaders(
-            array(
-                'Content-type' => 'application/json',
-                'charset' => 'UTF-8',
-                'Authorization' => $this->params['payments']['authorization']
-            )
-        );
-
-
+            $this->httpClient->setHeaders(
+                array(
+                    'Content-type' => 'application/json',
+                    'charset' => 'UTF-8',
+                    'Authorization' => $this->params['payments']['authorization']
+                )
+            );
+        }
     }
 
     /**
