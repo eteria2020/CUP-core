@@ -93,17 +93,17 @@ class TelepassPayService {
         ]);
 
         $this->partner = $this->partnersRepository->findOneBy(array('code' => $this->code, 'enabled' => true));
-        $this->parms = $this->partner->getParamsDecode();
+        if($this->partner instanceof Partners) {
+            $this->parms = $this->partner->getParamsDecode();
 
-        $this->httpClient->setHeaders(
-            array(
-                'Content-type' => 'application/json',
-                'charset' => 'UTF-8',
-                'Authorization' => $this->parms['payments']['authorization']
-            )
-        );
-
-
+            $this->httpClient->setHeaders(
+                array(
+                    'Content-type' => 'application/json',
+                    'charset' => 'UTF-8',
+                    'Authorization' => $this->parms['payments']['authorization']
+                )
+            );
+        }
     }
 
     /**
