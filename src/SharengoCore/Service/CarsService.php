@@ -203,11 +203,7 @@ class CarsService
 
             $clean = sprintf($this->translator->translate("Interna").': %s<br />' . $this->translator->translate("Esterna") . ': %s', $cars->getIntCleanliness(), $cars->getExtCleanliness());
 
-            $positionLink = sprintf(
-                '<a href="http://maps.google.com/?q=%s,%s" target="_blank">' . $this->translator->translate("Mappa") . '</a>',
-                $cars->getLatitude(),
-                $cars->getLongitude()
-            );
+            $positionLink = $this->positionLInk($cars);
 
             return [
                 'e' => [
@@ -494,6 +490,34 @@ class CarsService
         $this->entityManager->persist($car);
         $this->entityManager->flush();
         return $car;
+    }
+    
+    private function positionLInk(Cars $cars){
+
+        $ch = curl_init(); 
+        curl_setopt($ch, CURLOPT_URL, "https://sharengo.kubris.com/service/plateInfo/" . $cars->getPlate());
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+        $output = curl_exec($ch); 
+        $res = json_decode($output, true);
+        curl_close($ch);
+
+        $positionLinkOBC = sprintf(
+            '<a href="http://maps.google.com/?q=%s,%s" target="_blank">' . $this->translator->translate("Mappa") . '</a>',
+            $cars->getLatitude(),
+            $cars->getLongitude()
+        );
+        
+        if(!is_null($res['data'])){
+            $positionLinkBlackBox = sprintf(
+                '<br><a href="http://maps.google.com/?q=%s,%s" target="_blank">' . $this->translator->translate("(Extra)") . '</a>',
+                $res['data']['geoLatitude'],
+                $res['data']['geoLongitude']
+            );
+        }else{
+            $positionLinkBlackBox = '';
+        }
+        return $positionLinkOBC . $positionLinkBlackBox;
     }
     
 
