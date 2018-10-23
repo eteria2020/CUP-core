@@ -11,6 +11,7 @@ use SharengoCore\Entity\Queries\FindCustomerDeactivationById;
 use SharengoCore\Entity\Queries\FindActiveCustomerDeactivations;
 use SharengoCore\Entity\Queries\FindCustomerDeactivationsToUpdate;
 use SharengoCore\Entity\Queries\ShouldActivateCustomer;
+use SharengoCore\Entity\Repository\CustomerDeactivationRepository;
 use SharengoCore\Entity\SubscriptionPayment;
 use SharengoCore\Entity\TripPaymentTries;
 use SharengoCore\Entity\Webuser;
@@ -30,15 +31,22 @@ class CustomerDeactivationService
     private $customerService;
 
     /**
+     * @var CustomerDeactivationRepository
+     */
+    private $repository;
+
+    /**
      * @param EntityManager $entityManager
      * @param CustomersService $customerService
      */
     public function __construct(
         EntityManager $entityManager,
-        CustomersService $customerService
+        CustomersService $customerService,
+        CustomerDeactivationRepository $repository
     ) {
         $this->entityManager = $entityManager;
         $this->customerService = $customerService;
+        $this->repository = $repository;
     }
 
     /**
@@ -678,5 +686,13 @@ class CustomerDeactivationService
         ];
 
         $this->reactivate($customerDeactivation, $details, $endTs);
+    }
+    
+    public function findByIdOrderByInsertedTs($customer){
+        $deactivation = $this->repository->findbyIdOrderByInsertedTs($customer);
+        if(isset($deactivation[0])){
+            return $deactivation[0];
+        }
+        return null;
     }
 }
