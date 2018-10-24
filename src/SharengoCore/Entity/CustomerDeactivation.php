@@ -215,6 +215,14 @@ class CustomerDeactivation
     }
 
     /**
+     * @return \DateTime
+     */
+    public function getInsertedTs()
+    {
+        return $this->insertedTs;
+    }
+
+    /**
      * @param \DateTime|null $endTs
      * @return CustomerDeactivation
      */
