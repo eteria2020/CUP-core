@@ -510,7 +510,7 @@ class CarsService
         
         if(!is_null($res['data'])){
             $positionLinkBlackBox = sprintf(
-                '<br><a href="http://maps.google.com/?q=%s,%s" target="_blank">' . $this->translator->translate("(Extra)") . '</a>',
+                '<br><a href="http://maps.google.com/?q=%s,%s" target="_blank">' . $this->translator->translate("(Black Box)") . '</a>',
                 $res['data']['geoLatitude'],
                 $res['data']['geoLongitude']
             );
