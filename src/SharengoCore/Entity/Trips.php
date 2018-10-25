@@ -868,9 +868,11 @@ class Trips {
 
         // calculate trip duration
         $extractedTrip['duration'] = $this->getDurationMinutes();
-
+        
         // expose if trip is accountable
         $extractedTrip['isAccountable'] = $this->isAccountable();
+        
+        $extractedTrip['plate'] = (is_null($this->car)) ? '-' : $this->car->getPlate(); 
 
         return $extractedTrip;
     }
