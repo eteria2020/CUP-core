@@ -15,6 +15,7 @@ class ExtraPaymentsServiceFactory implements FactoryInterface
         $extraPaymentTriesService = $serviceLocator->get('SharengoCore\Service\ExtraPaymentTriesService');
         $customersService = $serviceLocator->get('SharengoCore\Service\CustomersService');
         $deactivationService = $serviceLocator->get('SharengoCore\Service\CustomerDeactivationService');
+        $extraPaymentRatesService = $serviceLocator->get('SharengoCore\Service\ExtraPaymentRatesService');
         
         /** @var DatatableServiceInterface **/
         $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
@@ -27,6 +28,6 @@ class ExtraPaymentsServiceFactory implements FactoryInterface
 
 
 
-        return new ExtraPaymentsService($entityManager, $invoicesService, $datatableService, $extraPaymentsRepository, $extraPaymentTriesService, $customersService, $deactivationService);
+        return new ExtraPaymentsService($entityManager, $invoicesService, $datatableService, $extraPaymentsRepository, $extraPaymentTriesService, $customersService, $deactivationService, $extraPaymentRatesService);
     }
 }
