@@ -16,6 +16,7 @@ use SharengoCore\Entity\Queries\AllExtraPaymentTypes;
 use Cartasi\Entity\Transactions;
 use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\CustomerDeactivationService;
+use SharengoCore\Service\ExtraPaymentRatesService;
 
 use Doctrine\ORM\EntityManager;
 
@@ -55,6 +56,11 @@ class ExtraPaymentsService
      * @var CustomerDeactivationService
      */
     private $deactivationService;
+    
+    /**
+     * @var ExtraPaymentRatesService
+     */
+    private $extraPaymentRatesService;
 
     /**
      * @param EntityManager $entityManager
@@ -62,6 +68,7 @@ class ExtraPaymentsService
      * @param DatatableServiceInterface $datatableService
      * @param ExtraPaymentsRepository $extraPaymentsRepository
      * @param CustomersService $customersService
+     * @param ExtraPaymentRatesService $extraPaymentRatesService
      */
     public function __construct(
         EntityManager $entityManager,
@@ -70,7 +77,8 @@ class ExtraPaymentsService
         ExtraPaymentsRepository $extraPaymentsRepository,
         ExtraPaymentTriesService $extraPaymentTriesService,
         CustomersService $customersService,
-        CustomerDeactivationService $deactivationService
+        CustomerDeactivationService $deactivationService,
+        ExtraPaymentRatesService $extraPaymentRatesService
     ) {
         $this->entityManager = $entityManager;
         $this->invoicesService = $invoicesService;
@@ -78,7 +86,8 @@ class ExtraPaymentsService
         $this->extraPaymentsRepository = $extraPaymentsRepository;
         $this->extraPaymentTriesService = $extraPaymentTriesService;
         $this->customersService = $customersService;
-        $this->deactivationService = $deactivationService;;
+        $this->deactivationService = $deactivationService;
+        $this->extraPaymentRatesService = $extraPaymentRatesService; 
     }
 
     /**
@@ -101,7 +110,8 @@ class ExtraPaymentsService
         $type,
         $penalty,
         $reasons,
-        $amounts
+        $amounts,
+        $payable
     ) {
         $reasonsAmounts = [];
         if($type === "extra"){
@@ -126,7 +136,34 @@ class ExtraPaymentsService
             $transaction,
             $amount,
             $type,
-            $reasonsAmounts
+            $reasonsAmounts,
+            $payable
+        );
+
+        $this->entityManager->persist($extraPayment);
+        $this->entityManager->flush();
+
+        return $extraPayment;
+    }
+    
+    public function registerExtraPaymentForRate(
+        Customers $customer,
+        Fleet $fleet,
+        $transaction,
+        $amount,
+        $type,
+        $reasons,
+        $payable
+    ) {
+
+        $extraPayment = new ExtraPayments(
+            $customer,
+            $fleet,
+            $transaction,
+            $amount,
+            $type,
+            $reasons,
+            $payable
         );
 
         $this->entityManager->persist($extraPayment);
@@ -208,7 +245,7 @@ class ExtraPaymentsService
                 'e' => [
                     'id' => $extra->getId(),
                     'generatedTs' => $extra->getGeneratedTs()->format('Y-m-d H:i:s'),
-                    'totalCost' =>  ($extra->getPayable()) ?  $extra->getAmount() : "FREE",
+                    'totalCost' =>  /*($extra->getPayable()) ?  $extra->getAmount() : "FREE",*/$this->typeCostExtraPayment($extra, false),
                     'reasons' => $extra->getReasons(),
                     'payed' => ($extra->getStatus() == 'payed_correctly' || $extra->getStatus() == 'invoiced') ? true : false,
                 ],
@@ -412,6 +449,14 @@ class ExtraPaymentsService
     public function checkIfEnable(ExtraPayments $extraPayment) {
         if(count($this->getExtraPaymentsWrongAndPayable($extraPayment->getCustomer())) == 0){
             $this->deactivationService->reactivateCustomerForExtraPayed($extraPayment->getCustomer());
+        }
+    }
+    
+    private function typeCostExtraPayment(ExtraPayments $extra, $param) {
+        if(count($this->extraPaymentRatesService->findByExtraPaymentFather($extra->getId(), $param)) > 0){
+            return "RATE";
+        }else{
+            return ($extra->getPayable()) ?  $extra->getAmount() : "FREE";
         }
     }
 

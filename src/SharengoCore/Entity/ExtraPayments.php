@@ -168,7 +168,8 @@ class ExtraPayments
         $transaction,
         $amount,
         $paymentType,
-        $reasons
+        $reasons,
+        $payable
     ) {
         $this->customer = $customer;
         $this->fleet = $fleet;
@@ -179,7 +180,7 @@ class ExtraPayments
         $this->invoiceAble = false;
         $this->status = self::STATUS_TO_BE_PAYED;
         $this->generatedTs = date_create();
-        $this->payable = true;
+        $this->payable = $payable;
     }
 
     /**
