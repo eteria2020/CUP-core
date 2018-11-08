@@ -46,6 +46,7 @@ class NugoService
     const NOTIFY_STATUS_CREATED = "CREATED";
     const NOTIFY_STATUS_DELETED = "DELETED";
     const NOTIFY_STATUS_REJECTED = "REJECTED";
+    const NOTIFY_STATUS_DISABLED = "DISABLED";
 
     /**
      *
@@ -361,16 +362,10 @@ class NugoService
     public function notifyCustomerStatus(Customers $customer) {
         $result = false;
 
-        $result1 = $this->notifyCustomerStatusRequestByCustomer($customer, self::NOTIFY_STATUS_REJECTED);
-
         if($customer->enable()) {
-            $result2 = $this->notifyCustomerStatusRequestByCustomer($customer, self::NOTIFY_STATUS_DELETED);
-            $result3 = $this->notifyCustomerStatusRequestByCustomer($customer, self::NOTIFY_STATUS_CREATED);
-            $result4 = $this->notifyCustomerStatusRequestByCustomer($customer, self::NOTIFY_STATUS_CONFIRMED);
-            $result = $result1 && $result2 && $result3 && $result4;
+            $result = $this->notifyCustomerStatusRequestByCustomer($customer, self::NOTIFY_STATUS_CONFIRMED);
         } else {
-            $result2 = $this->notifyCustomerStatusRequestByCustomer($customer, self::NOTIFY_STATUS_DELETED);
-            $result = $result1 && $result2;
+            $result = $this->notifyCustomerStatusRequestByCustomer($customer, self::NOTIFY_STATUS_DISABLED);
         }
 
         return $result;
