@@ -38,7 +38,7 @@ class WebusersService
 
     public function findByEmail($email) {
         $webuser = $this->webusersRepository->findByEmail($email);
-        return is_null($webuser) ? null : $webuser[0];
+        return (is_null($webuser) || !isset($webuser[0])) ? null : $webuser[0];
     }
 
 }
