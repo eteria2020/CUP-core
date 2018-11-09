@@ -362,7 +362,7 @@ class NugoService
     public function notifyCustomerStatus(Customers $customer) {
         $result = false;
 
-        if($customer->enable()) {
+        if($customer->getEnabled()) {
             $result = $this->notifyCustomerStatusRequestByCustomer($customer, self::NOTIFY_STATUS_CONFIRMED);
         } else {
             $result = $this->notifyCustomerStatusRequestByCustomer($customer, self::NOTIFY_STATUS_DISABLED);
