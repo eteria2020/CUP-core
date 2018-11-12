@@ -68,7 +68,7 @@ class ExtraPaymentRatesService
     
     public function getExtraPaymentFather($extraPaymentId) {
         $result = $this->extraPaymentRatesRepository->getExtraPaymentFather($extraPaymentId);
-        return (is_null($result) ? null : $result[0]['id']);
+        return (is_null($result) || !isset($result[0]['id'])) ? null : $result[0]['id'];
     }
 
 }
