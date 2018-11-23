@@ -159,6 +159,15 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         $query->setParameter('customer', $customer);
         return $query->getResult();
     }
+
+    public function getBonusFromACICard($card) {
+        $em = $this->getEntityManager();
+        $dql = "SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb ".
+            "WHERE cb.description LIKE :card ";
+        $query = $em->createQuery($dql);
+        $query->setParameter('card', '%'.strtoupper($card).'%');
+        return $query->getResult();
+    }
     
     public function getCustomerBonusNivea($descriptionBonusNivea) {
         $em = $this->getEntityManager();
