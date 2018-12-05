@@ -413,7 +413,8 @@ class InvoicesService
         $parsedReasons = [];
 
         foreach ($reasons as $key1 => $value1) {
-            $amount = $this->amountFromFormattedString($value1[1][0]);
+            $grossAmount = $value1[count($value1)-1][0];
+            $amount = $this->amountFromFormattedString($grossAmount);
             $amount = $this->parseDecimal($amount - $this->ivaFromTotal($amount)) . ' €';
             $parsedReasons[] = [[$value1[0][0]],[$amount]];
         }
