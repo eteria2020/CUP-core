@@ -6,6 +6,7 @@ use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripPayments;
 use SharengoCore\Entity\ExtraPayments;
+use SharengoCore\Entity\Invoices;
 
 use Doctrine\ORM\Query\ResultSetMapping;
 
@@ -247,4 +248,21 @@ class ExtraPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    /**
+     * @param Invoices $invoice
+     * @return mixed
+     */
+    public function findExtraPaymentsByInvoice(Invoices $invoice) {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT ep
+            FROM SharengoCore\Entity\ExtraPayments ep
+            WHERE ep.invoice = :invoice";
+        
+        $query = $em->createQuery($dql);
+        
+        $query->setParameter('invoice', $invoice);
+
+        return $query->getResult();
+    }
 }

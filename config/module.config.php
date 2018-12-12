@@ -273,6 +273,7 @@ return [
             'SharengoCore\Service\MaintenanceLocationsService' => 'SharengoCore\Service\MaintenanceLocationsServiceFactory',
             'SharengoCore\Service\IncidentsService' => 'SharengoCore\Service\IncidentsServiceFactory',
             'SharengoCore\Service\ExtraPaymentRatesService' => 'SharengoCore\Service\ExtraPaymentRatesServiceFactory',
+            'SharengoCore\Service\VatService' => 'SharengoCore\Service\VatServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
             'SharengoCore\Listener\DisableContractListener' => 'SharengoCore\Listener\DisableContractListenerFactory',

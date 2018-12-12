@@ -7,6 +7,7 @@ use Cartasi\Entity\Transactions;
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use SharengoCore\Exception\AlreadySetFirstExtraTryTsException;
+use SharengoCore\Entity\Vat;
 
 
 /**
@@ -151,6 +152,16 @@ class ExtraPayments
      * @ORM\Column(name="payable", type="boolean", nullable=false, options={"default" = TRUE})
      */
     private $payable;
+
+    /**
+     * @var Vat
+     *
+     * @ORM\ManyToOne(targetEntity="Vat")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="vat_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $vat;
     
     /**
      * @param Customer $customer
@@ -159,6 +170,7 @@ class ExtraPayments
      * @param integer $amount
      * @param string $paymentType
      * @param array $reasons
+     * @param Vat $vat
      * @return ExtraPayment
      */
     public function __construct(
@@ -169,7 +181,8 @@ class ExtraPayments
         $amount,
         $paymentType,
         $reasons,
-        $payable
+        $payable,
+        Vat $vat = null
     ) {
         $this->customer = $customer;
         $this->fleet = $fleet;
@@ -181,6 +194,7 @@ class ExtraPayments
         $this->status = self::STATUS_TO_BE_PAYED;
         $this->generatedTs = date_create();
         $this->payable = $payable;
+        $this->vat = $vat;
     }
 
     /**
@@ -413,5 +427,21 @@ class ExtraPayments
         $isAttempted = false;
         $isAttempted = count($extraPaymentTries = $this->getExtraPaymentTries()) != 0;
         return $isAttempted;
+    }
+
+    /**
+     * @return \SharengoCore\Entity\Vat
+     */
+    public function  getVat() {
+        return $this->vat;
+    }
+
+    /**
+     * @param \SharengoCore\Entity\Vat $vat
+     * @return $this
+     */
+    public function setVat(Vat $vat) {
+        $this->vat = $vat;
+        return $this;
     }
 }

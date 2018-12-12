@@ -6,6 +6,7 @@ use SharengoCore\Entity\Repository\ExtraPaymentsRepository;
 use SharengoCore\Entity\ExtraPayments;
 use SharengoCore\Entity\ExtraPaymentsCanceled;
 use SharengoCore\Entity\ExtraPaymentTriesCanceled;
+use SharengoCore\Entity\Vat;
 use SharengoCore\Service\ExtraPaymentTriesService;
 use SharengoCore\Service\CustomersService;
 use SharengoCore\Entity\Customers;
@@ -99,6 +100,8 @@ class ExtraPaymentsService
      * @param string[] $penalty
      * @param string[] $reasons
      * @param integer[] $amounts
+     * @param bool $payable
+     * @param Vat $vat
      * @return ExtraPayment
      */
     public function registerExtraPayment(
@@ -111,7 +114,8 @@ class ExtraPaymentsService
         $penalty,
         $reasons,
         $amounts,
-        $payable
+        $payable,
+        Vat $vat = null
     ) {
         $reasonsAmounts = [];
         if($type === "extra"){
@@ -137,7 +141,8 @@ class ExtraPaymentsService
             $amount,
             $type,
             $reasonsAmounts,
-            $payable
+            $payable,
+            $vat
         );
 
         $this->entityManager->persist($extraPayment);
@@ -184,12 +189,7 @@ class ExtraPaymentsService
 
         try {
             // create the invoice
-            $invoice = $this->invoicesService->prepareInvoiceForExtraOrPenalty(
-                $extraPayment->getCustomer(),
-                $extraPayment->getFleet(),
-                $extraPayment->getReasons(),
-                $extraPayment->GetAmount()
-            );
+            $invoice = $this->invoicesService->prepareInvoiceForExtraOrPenalty($extraPayment);
 
             $this->entityManager->persist($invoice);
 
