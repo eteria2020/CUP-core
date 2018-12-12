@@ -10,8 +10,10 @@ use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Cards;
 use SharengoCore\Entity\Fleet;
 use SharengoCore\Entity\Partners;
+use SharengoCore\Entity\ExtraPayments;
 use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Service\SimpleLoggerService as Logger;
+use SharengoCore\Entity\Repository\ExtraPaymentsRepository;
 // Externals
 use Doctrine\ORM\EntityManager;
 
@@ -53,18 +55,25 @@ class InvoicesService
     private $entityManager;
 
     /**
+     * @var ExtraPaymentsRepository
+     */
+    private $extraPaymentsRepository;
+
+    /**
      * @param InvoicesRepository $invoicesRepository
      * @param DatatableServiceInterface $datatableService,
      * @param EntityRepository $invoicesRepository
      * @param Logger $logger
      * @param mixed $invoiceConfig
+     * @param ExtraPaymentsService $extraPaymentsService
      */
     public function __construct(
         InvoicesRepository $invoicesRepository,
         DatatableServiceInterface $datatableService,
         EntityManager $entityManager,
         Logger $logger,
-        $invoiceConfig
+        $invoiceConfig,
+        ExtraPaymentsRepository $extraPaymentsRepository
     ) {
         $this->invoicesRepository = $invoicesRepository;
         $this->datatableService = $datatableService;
@@ -73,6 +82,7 @@ class InvoicesService
         $this->templateVersion = $invoiceConfig['template_version'];
         $this->subscriptionAmount = $invoiceConfig['subscription_amount'];
         $this->ivaPercentage = $invoiceConfig['iva_percentage'];
+        $this->extraPaymentsRepository = $extraPaymentsRepository;
     }
 
     /**
@@ -341,14 +351,15 @@ class InvoicesService
 
     /**
      * @param integer $amount
+     * @param integer $vatPercentage
      * @return mixed
      */
-    public function calculateAmountsWithTaxesFromTotal($amount)
+    public function calculateAmountsWithTaxesFromTotal($amount, $vatPercentage = null)
     {
         $amounts = [];
 
         // calculate amounts
-        $iva = $this->ivaFromTotal($amount);
+        $iva = $this->ivaFromTotal($amount, $vatPercentage);
         $total = $amount - $iva;
 
         // format amounts
@@ -371,28 +382,26 @@ class InvoicesService
     }
 
     /**
-     * @param Customers $customer
-     * @param Fleet $fleet
-     * @param array[] $reasons
-     * @param integer amount in eurocents
+     * @param ExtraPayments $extraPayment
      * @return Invoices
      */
-    public function prepareInvoiceForExtraOrPenalty(
-        Customers $customer,
-        Fleet $fleet,
-        $reasons,
-        $amount
-    ) {
-        $reasons = $this->parseReasons($reasons);
+    public function prepareInvoiceForExtraOrPenalty(ExtraPayments $extraPayment) {
+        if(is_null($extraPayment->getVat())) {
+            $vatPercentage = $this->ivaPercentage;
+        } else {
+            $vatPercentage = $extraPayment->getVat()->getPercentage();
+        }
 
+        $reasons = $this->parseReasons($extraPayment->getReasons(), $vatPercentage);
+        
         $amounts = [
-            'sum' => $this->calculateAmountsWithTaxesFromTotal($amount),
-            'iva' => $this->ivaPercentage
+            'sum' => $this->calculateAmountsWithTaxesFromTotal($extraPayment->getAmount(), $vatPercentage),
+            'iva' => $vatPercentage
         ];
 
         return Invoices::createInvoiceForExtraOrPenalty(
-            $customer,
-            $fleet,
+            $extraPayment->getCustomer(),
+            $extraPayment->getFleet(),
             $this->templateVersion,
             $reasons,
             $amounts
@@ -406,16 +415,17 @@ class InvoicesService
      * for because the invoices have already been generated.
      *
      * @param mixed[] $reasons
+     * @param integer $vatPercentage
      * @return mixed[]
      */
-    private function parseReasons($reasons)
+    private function parseReasons($reasons, $vatPercentage = null)
     {
         $parsedReasons = [];
 
         foreach ($reasons as $key1 => $value1) {
             $grossAmount = $value1[count($value1)-1][0];
             $amount = $this->amountFromFormattedString($grossAmount);
-            $amount = $this->parseDecimal($amount - $this->ivaFromTotal($amount)) . ' €';
+            $amount = $this->parseDecimal($amount - $this->ivaFromTotal($amount, $vatPercentage)) . ' €';
             $parsedReasons[] = [[$value1[0][0]],[$amount]];
         }
 
@@ -426,11 +436,17 @@ class InvoicesService
      * Gets the iva (cents of euro) from the total (cents of euro) 
      *
      * @param integer $total
+     * @param integer $vatPercentage
      * @return integer $iva
      */
-    private function ivaFromTotal($total)
+    private function ivaFromTotal($total, $vatPercentage = null)
     {
-        $taxRate = $this->ivaPercentage / 100;
+        if(is_null($vatPercentage)) {
+            $taxRate = $this->ivaPercentage / 100;
+        } else {
+            $taxRate = $vatPercentage / 100;
+        }
+
         $priceWithoutTax = round($total / ( 1 + $taxRate));
         $iva = (integer) round($priceWithoutTax * $taxRate);
 
@@ -479,7 +495,7 @@ class InvoicesService
         // generate the second common part between the two records
         $partionRecord2 = [
             $invoice->getAmount(), // 930
-            $invoice->getIva(), // 1001
+            $this->getVatCode($invoice), // 1001
             $period->start()->format("d/m/Y"), // 1020
             $period->end()->format("d/m/Y"), // 1030
             "FR" // 99999
@@ -505,5 +521,24 @@ class InvoicesService
 
         // return the two records combined
         return implode(";", $record1) . "\r\n" . implode(";", $record2);
+    }
+
+    /**
+     * For penaltyes we find the vat code, because the vat percentage can be different.
+     *
+     * @param Invoices $invoice
+     * @return string
+     */
+    private function getVatCode(Invoices $invoice) {
+        $result =  (string)$invoice->getIva();
+
+        if($invoice->getType()==Invoices::TYPE_PENALTY) {
+            $extraPayments = $this->extraPaymentsRepository->findExtraPaymentsByInvoice($invoice);
+            if(!is_null($extraPayments[0]->getVat())) {
+                $result = $extraPayments[0]->getVat()->getCode();
+            }
+        }
+
+        return $result;
     }
 }

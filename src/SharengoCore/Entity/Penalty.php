@@ -44,6 +44,16 @@ class Penalty
     private $type;
 
     /**
+     * @var \Vat
+     *
+     * @ORM\ManyToOne(targetEntity="Vat")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="vat_id", referencedColumnName="id", nullable=true)
+     * })
+     */
+    private $vat;
+
+    /**
      * @return string
      */
     public function getReason()
@@ -65,5 +75,13 @@ class Penalty
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * @return \Iva
+     */
+    public function getVat()
+    {
+        return $this->vat;
     }
 }

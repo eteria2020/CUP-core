@@ -21,6 +21,8 @@ class InvoicesServiceFactory implements FactoryInterface
 
         /** @var DatatableServiceInterface **/
         $datatableService = $serviceLocator->get('SharengoCore\Service\SessionDatatableService');
+        
+        $extraPaymentsRepository = $entityManager->getRepository('SharengoCore\Entity\ExtraPayments');
 
         // decorate the query builder with the needed decorators
         $datatableService->setQueryBuilder(
@@ -36,7 +38,8 @@ class InvoicesServiceFactory implements FactoryInterface
             $datatableService,
             $entityManager,
             $simpleLoggerService,
-            $invoicesConfig
+            $invoicesConfig,
+            $extraPaymentsRepository
         );
     }
 }
