@@ -541,4 +541,112 @@ class InvoicesService
 
         return $result;
     }
+
+    /**
+     * Return the array for head invoice data.
+     *
+     * @param Invoices $invoice
+     * @return array
+     */
+    private function getInvoiceHead(Invoices $invoice) {
+        $result = array();
+
+        $cardCode = $invoice->getCustomer()->getCard() instanceof Cards ?
+            $invoice->getCustomer()->getCard()->getCode() :
+            '';
+
+        $result = [
+            "TES",                                                     // 1
+            "110",                                                     // 2   11
+            $invoice->getDateTimeDate()->format("d/m/Y"),       // 3   10
+            substr($invoice->getInvoiceNumber(), 5),             // 4   20
+            "TC",                                                      // 5   30
+            $invoice->getDateTimeDate()->format("d/m/Y"),       // 6   50
+            substr($invoice->getInvoiceNumber(), 5),             // 7   61
+            $cardCode,                                                 // 8     130
+            $invoice->getCustomer()->getId(),                          // 9     78
+            "CC001",                                                   // 10    241
+            $invoice->getAmount(),                                     // 11    140
+            "",                                                        // 12
+            "",                                                        // 13
+            $invoice->getAmount(),                                     // 14    930
+            $this->getVatCode($invoice),                               // 15    1001
+            $invoice->getInterval()->start()->format("d/m/Y"),         // 16    1020
+            $invoice->getInterval()->end()->format("d/m/Y"),           // 17    1030
+            "FR"                                                       // 18    99999
+        ];
+
+        return $result;
+    }
+
+    private function getInvoiceRows(Invoices $invoice) {
+        $result = array();
+
+        if($invoice->getType()==Invoices::TYPE_TRIP) {
+            $tripPayments = $this->tripPaymentsRepository->findTripPaymentsByInvoice($invoice);
+
+            foreach ($tripPayments as $tripPayment) {
+                //Corsa: 4041230 Targa: EH24728 Inizio: 03-11-28 22:01:28 Viale Adriatico, Roma, RM Fine: 04-11-18 03:56:18 Via Nera, Roma, RM Durata: 350 min
+                $description =sprintf("Corsa: %s Targa: %s Inizio: %s %s Fine: %s %s Durata: %d min",
+                    $tripPayment->getTrip()->getId(),
+                    $tripPayment->getTrip()->getCar()->getPlate(),
+                    $tripPayment->getTrip()->getTimestampBeginning()->format("d/m/y h:m:s"),
+                    $tripPayment->getTrip()->getAddressBeginning(),
+                    $tripPayment->getTrip()->getTimestampEnd()->format("d/m/y h:m:s"),
+                    $tripPayment->getTrip()->getAddressEnd(),
+                    $tripPayment->getTrip()->getDurationMinutes()
+                    );
+                $row = $this->getInvoiceSingleRow($invoice, $tripPayment->getAmount(), $description);
+                array_push($result, $row);
+            }
+
+        } else if($invoice->getType()==Invoices::TYPE_BONUS_PACKAGE) {
+
+        } else if($invoice->getType()==Invoices::TYPE_FIRST_PAYMENT) {
+
+        } else {
+            //Invoices::PENALTY alias ExtraPayments
+            $extraPayments = $this->extraPaymentsRepository->findExtraPaymentsByInvoice($invoice);
+
+            foreach ($extraPayments as $extraPayment) {
+                $row = $this->getInvoiceSingleRow($invoice, $extraPayment->getAmount(), $extraPayment->getReasons()[0]);
+                array_push($result, $row);
+            }
+        }
+
+        return $result;
+    }
+
+    private function getInvoiceSingleRow(Invoice $invoice, $amount, $description) {
+        $result = array();
+
+        $cardCode = $invoice->getCustomer()->getCard() instanceof Cards ?
+            $invoice->getCustomer()->getCard()->getCode() :
+            '';
+
+        $result = [
+            "RIG",                                                     // 1
+            "110",                                                     // 2   11
+            $invoice->getDateTimeDate()->format("d/m/Y"),       // 3   10
+            substr($invoice->getInvoiceNumber(), 5),             // 4   20
+            "TC",                                                      // 5   30
+            $invoice->getDateTimeDate()->format("d/m/Y"),       // 6   50
+            substr($invoice->getInvoiceNumber(), 5),             // 7   61
+            $cardCode,                                                 // 8     130
+            $invoice->getCustomer()->getId(),                          // 9     78
+            "CC001",                                                   // 10    241
+            $amount,                                                   // 11    140
+            "",                                                        // 12
+            "40",                                                        // 13
+            $amount,                                                    // 14    930
+            $this->getVatCode($invoice),                               // 15    1001
+            $invoice->getInterval()->start()->format("d/m/Y"),         // 16    1020
+            $invoice->getInterval()->end()->format("d/m/Y"),           // 17    1030
+            "FR",                                                       // 18    99999
+            $desription,                                                // 19
+        ];
+
+
+        return $result;
+    }
 }
