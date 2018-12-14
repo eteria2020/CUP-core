@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * BonusPackagePayment
  *
  * @ORM\Table(name="bonus_package_payments")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="SharengoCore\Entity\Repository\BonusPackagePaymentRepository")
  */
 class BonusPackagePayment
 {

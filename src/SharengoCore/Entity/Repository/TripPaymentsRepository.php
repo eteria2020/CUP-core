@@ -3,6 +3,7 @@
 namespace SharengoCore\Entity\Repository;
 
 use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\Invoices;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\TripPayments;
 
@@ -41,6 +42,30 @@ class TripPaymentsRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    /**
+     * @param Invoices $invoice
+     * @return array
+     */
+    public function findTripPaymentsForInvoice(Invoices $invoice)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = 'SELECT tp
+            FROM SharengoCore\Entity\TripPayments tp
+            WHERE tp.invoice = :invoice';
+
+        $query = $em->createQuery($dql);
+
+        $query->setParameter('invoice', $invoice);
+
+        return $query->getResult();
+    }
+
+    /**
+     * @return mixed
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function countTotalFailedPayments()
     {
         $em = $this->getEntityManager();

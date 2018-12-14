@@ -13,6 +13,8 @@ use SharengoCore\Entity\Partners;
 use SharengoCore\Entity\ExtraPayments;
 use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Service\SimpleLoggerService as Logger;
+use SharengoCore\Entity\Repository\TripPaymentsRepository;
+use SharengoCore\Entity\Repository\BonusPackagePaymentRepository;
 use SharengoCore\Entity\Repository\ExtraPaymentsRepository;
 // Externals
 use Doctrine\ORM\EntityManager;
@@ -55,17 +57,29 @@ class InvoicesService
     private $entityManager;
 
     /**
+     * @var TripPaymentsRepository
+     */
+    private $tripPaymentsRepository;
+
+    /**
+     * @var BonusPackagePaymentRepository
+     */
+    private $bonusPackagePaymentRepository;
+
+    /**
      * @var ExtraPaymentsRepository
      */
     private $extraPaymentsRepository;
 
     /**
+     * InvoicesService constructor.
      * @param InvoicesRepository $invoicesRepository
-     * @param DatatableServiceInterface $datatableService,
-     * @param EntityRepository $invoicesRepository
-     * @param Logger $logger
-     * @param mixed $invoiceConfig
-     * @param ExtraPaymentsService $extraPaymentsService
+     * @param \SharengoCore\Service\DatatableServiceInterface $datatableService
+     * @param EntityManager $entityManager
+     * @param SimpleLoggerService $logger
+     * @param $invoiceConfig
+     * @param TripPaymentsRepository $tripPaymentsRepository
+     * @param ExtraPaymentsRepository $extraPaymentsRepository
      */
     public function __construct(
         InvoicesRepository $invoicesRepository,
@@ -73,6 +87,8 @@ class InvoicesService
         EntityManager $entityManager,
         Logger $logger,
         $invoiceConfig,
+        TripPaymentsRepository $tripPaymentsRepository,
+        BonusPackagePaymentRepository $bonusPackagePaymentRepository,
         ExtraPaymentsRepository $extraPaymentsRepository
     ) {
         $this->invoicesRepository = $invoicesRepository;
@@ -82,6 +98,8 @@ class InvoicesService
         $this->templateVersion = $invoiceConfig['template_version'];
         $this->subscriptionAmount = $invoiceConfig['subscription_amount'];
         $this->ivaPercentage = $invoiceConfig['iva_percentage'];
+        $this->tripPaymentsRepository = $tripPaymentsRepository;
+        $this->bonusPackagePaymentRepository = $bonusPackagePaymentRepository;
         $this->extraPaymentsRepository = $extraPaymentsRepository;
     }
 
@@ -583,25 +601,42 @@ class InvoicesService
         $result = array();
 
         if($invoice->getType()==Invoices::TYPE_TRIP) {
-            $tripPayments = $this->tripPaymentsRepository->findTripPaymentsByInvoice($invoice);
+            $tripPayments = $this->tripPaymentsRepository->findTripPaymentsForInvoice($invoice);
 
             foreach ($tripPayments as $tripPayment) {
-                //Corsa: 4041230 Targa: EH24728 Inizio: 03-11-28 22:01:28 Viale Adriatico, Roma, RM Fine: 04-11-18 03:56:18 Via Nera, Roma, RM Durata: 350 min
-                $description =sprintf("Corsa: %s Targa: %s Inizio: %s %s Fine: %s %s Durata: %d min",
-                    $tripPayment->getTrip()->getId(),
-                    $tripPayment->getTrip()->getCar()->getPlate(),
-                    $tripPayment->getTrip()->getTimestampBeginning()->format("d/m/y h:m:s"),
-                    $tripPayment->getTrip()->getAddressBeginning(),
-                    $tripPayment->getTrip()->getTimestampEnd()->format("d/m/y h:m:s"),
-                    $tripPayment->getTrip()->getAddressEnd(),
-                    $tripPayment->getTrip()->getDurationMinutes()
+                $trip = $tripPayment->getTrip();
+                $amount = $tripPayment->getAmount();
+
+                $description =sprintf("Corsa: %d Targa: %s  Durata: %d min Inizio: %s %s Fine: %s %s",
+                    $trip->getId(),
+                    $trip->getCar()->getPlate(),
+                    $trip->getDurationMinutes(),
+                    $this->formatDateTime($trip->getTimestampBeginning(), "d/m/y H:i:s"),
+                    $trip->getAddressBeginning(),
+                    $this->formatDateTime($trip->getTimestampEnd(), "d/m/y H:i:s"),
+                    $trip->getAddressEnd()
                     );
-                $row = $this->getInvoiceSingleRow($invoice, $tripPayment->getAmount(), $description);
+
+                $row = $this->getInvoiceSingleRow($invoice, $amount, $description);
                 array_push($result, $row);
             }
 
         } else if($invoice->getType()==Invoices::TYPE_BONUS_PACKAGE) {
+            $bonusPackagePayments = $this->bonusPackagePaymentRepository->findBonusPackagePaymentByInvoice($invoice);
 
+            foreach ($bonusPackagePayments as $bonusPackagePayment) {
+                $bonus = $bonusPackagePayment->getBonus();
+                $amount = $bonusPackagePayment->getAmount();
+
+                $description = sprintf("Pacchetto: %d Data: %s Minuti: %d Descrizione: %s ",
+                    $bonusPackagePayment->getId(),
+                    $this->formatDateTime($bonus->getInsertedTs(), "d/m/y H:i:s"),
+                    $bonus->getTotal(),
+                    $bonus->getDescription());
+
+                $row = $this->getInvoiceSingleRow($invoice, $bonusPackagePayment->getAmount(), $description);
+                array_push($result, $row);
+            }
         } else if($invoice->getType()==Invoices::TYPE_FIRST_PAYMENT) {
 
         } else {
@@ -609,7 +644,12 @@ class InvoicesService
             $extraPayments = $this->extraPaymentsRepository->findExtraPaymentsByInvoice($invoice);
 
             foreach ($extraPayments as $extraPayment) {
-                $row = $this->getInvoiceSingleRow($invoice, $extraPayment->getAmount(), $extraPayment->getReasons()[0]);
+                $amount = $extraPayment->getAmount();
+                $description = sprintf("Penale/Extra: %d Descrizione: %s",
+                    $extraPayment->getId(),
+                    $extraPayment->getReasons()[0]);
+
+                $row = $this->getInvoiceSingleRow($invoice, $amount, $description);
                 array_push($result, $row);
             }
         }
@@ -643,9 +683,26 @@ class InvoicesService
             $invoice->getInterval()->start()->format("d/m/Y"),         // 16    1020
             $invoice->getInterval()->end()->format("d/m/Y"),           // 17    1030
             "FR",                                                       // 18    99999
-            $desription,                                                // 19
+            substr($desription,0,1600),                    // 19    1600
         ];
 
+
+        return $result;
+    }
+
+    /**
+     * @param $dateTime
+     * @param $format
+     * @return string
+     */
+    private function formatDateTime($dateTime, $format) {
+        $result = "";
+
+        if($dateTime instanceof DateTime) {
+            $result = $dateTime->format($format);
+        } else if (!is_null($dateTime)) {
+            $result = $dateTime;
+        }
 
         return $result;
     }
