@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Configurations
 {
     const ALARM = 'alarm';
+    const SMS = 'sms';
 
     /**
      * @var integer
