@@ -182,6 +182,7 @@ return [
             'SharengoCore\Service\TripFaresService' => 'SharengoCore\Service\TripFaresService',
             'SharengoCore\Service\LocationService' => 'SharengoCore\Service\LocationService',
             'SharengoCore\Service\BlackHoleLogger' => 'SharengoCore\Service\BlackHoleLogger',
+            'SharengoCore\Service\CrawlerService' => 'SharengoCore\Service\CrawlerService',
         ],
         'factories' => [
             'SharengoCore\Service\ServerScriptsService' => 'SharengoCore\Service\ServerScriptsServiceFactory',
