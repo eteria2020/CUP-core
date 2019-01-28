@@ -13,9 +13,9 @@ class CountriesService
         $this->repository = $repository;
     }
 
-    public function getAllCountries()
+    public function getAllCountries($selectedCountry = null)
     {
-        $countries = $this->repository->getAllCountries();
+        $countries = $this->repository->getAllCountries($selectedCountry);
         $ret = [];
 
         foreach ($countries as $c) {

@@ -10,17 +10,21 @@ namespace SharengoCore\Entity\Repository;
  */
 class CountriesRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function getAllCountries()
+    public function getAllCountries($selectedCountry = null)
     {
+        if(is_null($selectedCountry)) {
+            $selectedCountry ='Italia';
+        }
+
         $countries = $this->createQueryBuilder('c')
             ->select('c.code, c.name')
             ->orderBy('c.name')
             ->getQuery();
 
-        // Move the element with 'c.name' = 'Italia' to the first place
+        // Move the element with 'c.name' = $selectedCountry to the first place
         $result = $countries->getResult();
         for ($i=0; $i<count($result); $i++) {
-            if ($result[$i]['name'] == 'Italia') {
+            if ($result[$i]['name'] == $selectedCountry) {
                 $return = array();
                 $return[0] = $result[$i];
                 // Add the elements before and after the $i index

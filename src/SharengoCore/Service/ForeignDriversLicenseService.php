@@ -107,10 +107,11 @@ class ForeignDriversLicenseService
 
         // we move the zip from /tmp to the right directory
         rename($tmp_file, $destination);
+        $explode_dest = explode('/', $destination);
 
         return new ForeignDriversLicenseUpload(
             $customer,
-            end(explode('/', $destination)),
+            end($explode_dest),
             'application/zip',
             $destination,
             filesize($destination)
