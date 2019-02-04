@@ -475,6 +475,20 @@ class Customers {
      */
     private $discountStatus;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="recipient_code", type="text", nullable=true)
+     */
+    private $recipientCode;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="cem", type="text", nullable=true)
+     */
+    private $cem;
+
     public function __construct() {
         $this->insertedTs = date('Y-m-d h:i:s');
         $this->foreignDriversLicenseUploads = new ArrayCollection();
@@ -1987,5 +2001,47 @@ class Customers {
 
     public function haveDiscountRate80() {
         return ($this->discountRate == 80) ? true : false;
+    }
+
+    /**
+     * Electronic invoice, return recipeint code (codice destinatario)
+     *
+     * @return string
+     */
+    public function getRecipientCode() {
+        return $this->recipientCode;
+    }
+
+    /**
+     * Electronic invoice, set recipeint code (codice destinatario)
+     *
+     * @param $recipientCode
+     * @return $this
+     */
+    public function setRecipientCode($recipientCode) {
+        $this->recipientCode = $recipientCode;
+
+        return $this;
+    }
+
+    /**
+     * Electronic invoice, return Certified EMail (Posta Elettronica Certificata PEC)
+     *
+     * @return string
+     */
+    public function getCem() {
+        return $this->cem;
+    }
+
+    /**
+     * Electronic invoice, set Certified EMail (Posta Elettronica Certificata PEC)
+     *
+     * @param $cem
+     * @return $this
+     */
+    public function setCem($cem) {
+        $this->cem = $cem;
+
+        return $this;
     }
 }
