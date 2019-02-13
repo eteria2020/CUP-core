@@ -163,8 +163,8 @@ class PartnerService implements ValidatorServiceInterface
         return $result;
     }
 
-    public function tryChargeAccountTest(){
-        $this->nugoService->tryChargeAccountTest();
+    public function tryChargeAccountTest(&$culrResponse, &$jsonResponse){
+        $this->nugoService->tryChargeAccountTest($culrResponse, $jsonResponse);
     }
 
     /**

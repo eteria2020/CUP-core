@@ -1681,9 +1681,10 @@ class NugoService
     }
 
 
-    public function tryChargeAccountTest() {
-               $result = false;
-        $response = null;
+    public function tryChargeAccountTest(&$curlResponse, &$jsonResponse) {
+        $result = false;
+        $curlResponse = null;
+        $jsonResponse = null;
 
         try {
 
@@ -1698,34 +1699,41 @@ class NugoService
                 )
             );
 
-            $this->httpClient->setUri($this->params['payments']['uri']);
-            $this->httpClient->setMethod(Request::METHOD_POST);
-            $adapter = new \Zend\Http\Client\Adapter\Curl();
-            $this->httpClient->setAdapter($adapter);
+            $curl = curl_init();
 
-            $adapter->setOptions(array(
-                'curloptions' => array(
-                    CURLOPT_SSLVERSION => 6, //tls1.2
-                    //CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_VERBOSE => 0,
-                    CURLOPT_SSL_VERIFYHOST => 0,
-                    CURLOPT_SSL_VERIFYPEER => 0
-                )
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => $this->params['payments']['uri'],
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "POST",
+                CURLOPT_POSTFIELDS => $json,
+                CURLOPT_HTTPHEADER => array(
+                    "Authorization: sharengo_test_key",
+                    "Content-Type: application/json",
+                    "charset: UTF-8"
+                ),
             ));
 
-            $this->httpClient->setRawBody($json);
+            $curlResponse = curl_exec($curl);
+            $jsonResponse = json_decode($curlResponse, true);
+            $err = curl_error($curl);
 
-            $httpResponse = $this->httpClient->send();
-            var_dump($httpResponse->getBody());
+            curl_close($curl);
 
-            //$response = json_decode($httpResponse->getBody(), true);
-
-//            if ($response['chargeSuccessful']==true) {
-//                $result = true;
-//            }
-
+            if ($err) {
+                var_dump("tryChargeAccountTest(),ERR,". $err);
+                $curlResponse = $err;
+            } else {
+                var_dump("tryChargeAccountTest(),INF,". $curlResponse);
+                $result = true;
+            }
+            
         } catch (\Exception $ex) {
-            $response = null;
+            var_dump("tryChargeAccountTest(),ERR,". $ex->getMessage());
+            $jsonResponse = null;
         }
 
         return $result;
