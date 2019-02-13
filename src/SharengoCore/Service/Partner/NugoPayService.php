@@ -22,6 +22,8 @@ use Zend\Http\Client;
 class NugoPayService {
 
     const PAYMENT_LABEL = 'NUGOPAY';
+    const PAYMENT_SUCCESSFUL = 'OK';
+    const PAYMENT_FAIL = 'KO';
 
     private $code ='nugo';
     private $currency ='EUR';
@@ -215,7 +217,7 @@ class NugoPayService {
      * @param int $fleetId Fleet index
      * @param int  $amount The amount of money (in Euro cents) to be charged on the payment gateway
      * @param string $currency The currency of the pre-authorization (ISO 4217 Currency Codes)
-     * @param array $response Response of server
+     * @param string $curlResponse Response of server
      * @return boolean
      */
     private function tryCharginAccount(
@@ -225,10 +227,10 @@ class NugoPayService {
         $fleetId,
         $amount,
         $currency,
-        &$response) {
+        &$curlResponse) {
 
         $result = false;
-        $response = null;
+        $curlResponse = null;
 
         try {
 
@@ -243,32 +245,42 @@ class NugoPayService {
                 )
             );
 
-            $this->httpClient->setUri($this->params['payments']['uri']);
-            $this->httpClient->setMethod(Request::METHOD_POST);
-            $adapter = new \Zend\Http\Client\Adapter\Curl();
-            $this->httpClient->setAdapter($adapter);
+            $curl = curl_init();
 
-            $adapter->setOptions(array(
-                'curloptions' => array(
-                    CURLOPT_SSLVERSION => 6, //tls1.2
-                    //CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_VERBOSE => 0,
-                    CURLOPT_SSL_VERIFYHOST => 0,
-                    CURLOPT_SSL_VERIFYPEER => 0
-                )
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => $this->params['payments']['uri'],
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "POST",
+                CURLOPT_POSTFIELDS => $json,
+                CURLOPT_HTTPHEADER => array(
+                    "Authorization: sharengo_test_key",
+                    "Content-Type: application/json",
+                    "charset: UTF-8"
+                ),
             ));
 
-            $this->httpClient->setRawBody($json);
+            $curlResponse = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
 
-            $httpResponse = $this->httpClient->send();
-            $response = json_decode($httpResponse->getBody(), true);
-
-            if ($response['chargeSuccessful']==true) {
-                $result = true;
+            if ($err) {
+                var_dump("tryChargeAccountTest(),ERR,". $err);
+                $curlResponse = $err;
+            } else {
+                var_dump("tryChargeAccountTest(),INF,". $curlResponse);
+                $jsonResponse = json_decode($curlResponse, true);
+                if ($jsonResponse['chargeSuccessful']===true) {
+                    $result = true;
+                }
             }
-
+            
         } catch (\Exception $ex) {
-            $response = null;
+            var_dump("tryChargeAccountTest(),ERR,". $ex->getMessage());
+            $curlResponse = $ex->getMessage();
         }
 
         return $result;
@@ -291,7 +303,7 @@ class NugoPayService {
         $response = null;
 
         if(!$avoidHittingPay) {
-            $response = new CartasiResponse(false, 'KO', null);
+            $response = new CartasiResponse(false, self::PAYMENT_FAIL, null);
 
             $responsePayment = null;
             $amount = $tripPayment->getTotalCost();
@@ -301,7 +313,7 @@ class NugoPayService {
                 $contract = $this->cartasiContractsService->getCartasiContract($customer);
 
                 $transaction->setContract($contract);
-                $response = new CartasiResponse(false, 'KO', $transaction);
+                $response = new CartasiResponse(false, self::PAYMENT_FAIL, $transaction);
 
                 if($this->tryCharginAccount(
                     $tripPayment->getTripId(),
@@ -312,7 +324,9 @@ class NugoPayService {
                     $this->currency,
                     $responsePayment)) {
 
-                    $transaction->setOutcome('OK');
+                    $transaction->setOutcome(self::PAYMENT_SUCCESSFUL);
+                } else {
+                    $transaction->setOutcome($responsePayment);
                 }
 
                 $this->eventManager->trigger('notifyPartnerCustomerStatus', $this, [
@@ -320,17 +334,11 @@ class NugoPayService {
                 ]);
             }
 
-            if(is_null($responsePayment)) {
-                $transaction->setMessage('KO - empty response');
-            } else {
-                $transaction->setMessage(substr(json_encode($responsePayment), 0, 255));
-            }
-
             $this->entityManager->merge($transaction);
             $this->entityManager->flush();
 
-            if($transaction->getOutcome()=='OK') {
-                $response = new CartasiResponse(true, 'OK', $transaction);
+            if($transaction->getOutcome()==self::PAYMENT_SUCCESSFUL) {
+                $response = new CartasiResponse(true, self::PAYMENT_SUCCESSFUL, $transaction);
             }
         }
 
