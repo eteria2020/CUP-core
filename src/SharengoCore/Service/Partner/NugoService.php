@@ -1701,6 +1701,7 @@ class NugoService
 
             $curl = curl_init();
 
+            var_dump($this->params['payments']['uri']);
             curl_setopt_array($curl, array(
                 CURLOPT_URL => $this->params['payments']['uri'],
                 CURLOPT_RETURNTRANSFER => true,
@@ -1724,15 +1725,17 @@ class NugoService
             curl_close($curl);
 
             if ($err) {
-                var_dump("tryChargeAccountTest(),ERR,". $err);
+                var_dump("tryChargeAccountTest();ERR,". $err);
                 $curlResponse = $err;
             } else {
-                var_dump("tryChargeAccountTest(),INF,". $curlResponse);
-                $result = true;
+                var_dump("tryChargeAccountTest();INF;". $curlResponse);
+                json_decode($curlResponse, true);    // only for test json format
+                var_dump("tryChargeAccountTest();INF;". json_last_error() == JSON_ERROR_NONE);
+                $result = (json_last_error() == JSON_ERROR_NONE);
             }
             
         } catch (\Exception $ex) {
-            var_dump("tryChargeAccountTest(),ERR,". $ex->getMessage());
+            var_dump("tryChargeAccountTest();ERR;EXC;". $ex->getMessage());
             $jsonResponse = null;
         }
 

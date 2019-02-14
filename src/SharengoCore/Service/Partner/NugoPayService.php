@@ -9,6 +9,7 @@ use SharengoCore\Service\TripsService;
 use SharengoCore\Service\ExtraPaymentsService;
 
 use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\Partners;
 use SharengoCore\Entity\Repository\PartnersRepository;
 use SharengoCore\Entity\TripPayments;
 
@@ -106,6 +107,7 @@ class NugoPayService {
         ]);
 
         $this->partner = $this->partnersRepository->findOneBy(array('code' => $this->code, 'enabled' => true));
+
         if($this->partner instanceof Partners) {
             $this->params = $this->partner->getParamsDecode();
 
@@ -227,10 +229,10 @@ class NugoPayService {
         $fleetId,
         $amount,
         $currency,
-        &$curlResponse) {
+        &$response) {
 
         $result = false;
-        $curlResponse = null;
+        $response = null;
 
         try {
 
@@ -245,42 +247,74 @@ class NugoPayService {
                 )
             );
 
-            $curl = curl_init();
+            $this->httpClient->setUri($this->params['payments']['uri']);
+            $this->httpClient->setMethod(Request::METHOD_POST);
+            $adapter = new \Zend\Http\Client\Adapter\Curl();
+            $this->httpClient->setAdapter($adapter);
 
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => $this->params['payments']['uri'],
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 30,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => "POST",
-                CURLOPT_POSTFIELDS => $json,
-                CURLOPT_HTTPHEADER => array(
-                    "Authorization: sharengo_test_key",
-                    "Content-Type: application/json",
-                    "charset: UTF-8"
-                ),
+            $adapter->setOptions(array(
+                'curloptions' => array(
+                    CURLOPT_SSLVERSION => 6, //tls1.2
+                    //CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_VERBOSE => 0,
+                    CURLOPT_SSL_VERIFYHOST => 0,
+                    CURLOPT_SSL_VERIFYPEER => 0
+                )
             ));
 
-            $curlResponse = curl_exec($curl);
-            $err = curl_error($curl);
-            curl_close($curl);
+            $this->httpClient->setRawBody($json);
+            $httpResponse  = $this->httpClient->send();
 
-            if ($err) {
-                var_dump("tryChargeAccountTest(),ERR,". $err);
-                $curlResponse = $err;
+            if($httpResponse->isSuccess()) {
+                $response = $httpResponse->getBody();
+                var_dump("tryCharginAccount();INF;". $response);
+                json_decode($response, true);    // check json format
+                //var_dump("tryCharginAccount();INF;". json_last_error() == JSON_ERROR_NONE);
+                $result = (json_last_error() == JSON_ERROR_NONE);
             } else {
-                var_dump("tryChargeAccountTest(),INF,". $curlResponse);
-                $jsonResponse = json_decode($curlResponse, true);
-                if ($jsonResponse['chargeSuccessful']===true) {
-                    $result = true;
-                }
+                $response = "HTTP error:".$httpResponse->getStatusCode();
+                var_dump("tryCharginAccount();ERR;".$response);
             }
+
+
+//            $curl = curl_init();
+//
+//            var_dump("tryCharginAccount();ERR;". $this->params['payments']['uri']);
+//            //var_dump("tryCharginAccount();ERR;". $this->params);
+//
+//            curl_setopt_array($curl, array(
+//                CURLOPT_URL => $this->params['payments']['uri'],
+//                CURLOPT_RETURNTRANSFER => true,
+//                CURLOPT_ENCODING => "",
+//                CURLOPT_MAXREDIRS => 10,
+//                CURLOPT_TIMEOUT => 30,
+//                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+//                CURLOPT_CUSTOMREQUEST => "POST",
+//                CURLOPT_POSTFIELDS => $json,
+//                CURLOPT_HTTPHEADER => array(
+//                    "Authorization: sharengo_test_key",
+//                    "Content-Type: application/json",
+//                    "charset: UTF-8"
+//                ),
+//            ));
+//
+//            $curlResponse = curl_exec($curl);
+//            $err = curl_error($curl);
+//            curl_close($curl);
+//
+//            if ($err) {
+//                var_dump("tryCharginAccount();ERR;". $err);
+//                $curlResponse = $err;
+//            } else {
+//                var_dump("tryCharginAccount();INF;". $curlResponse);
+//                json_decode($curlResponse, true);    // check json format
+//                var_dump("tryCharginAccount();INF;". json_last_error() == JSON_ERROR_NONE);
+//                $result = (json_last_error() == JSON_ERROR_NONE);
+//            }
             
         } catch (\Exception $ex) {
-            var_dump("tryChargeAccountTest(),ERR,". $ex->getMessage());
-            $curlResponse = $ex->getMessage();
+            var_dump("tryCharginAccount();ERR;EXC;".$ex->getLine().";".$ex->getMessage());
+            $response = $ex->getMessage();
         }
 
         return $result;
@@ -324,10 +358,13 @@ class NugoPayService {
                     $this->currency,
                     $responsePayment)) {
 
-                    $transaction->setOutcome(self::PAYMENT_SUCCESSFUL);
-                } else {
-                    $transaction->setOutcome($responsePayment);
+                    $jsonResponse = json_decode($responsePayment, true);
+                    if ($jsonResponse['chargeSuccessful']===true) {
+                        $transaction->setOutcome(self::PAYMENT_SUCCESSFUL);
+                    }
                 }
+
+                $transaction->setMessage($responsePayment);
 
                 $this->eventManager->trigger('notifyPartnerCustomerStatus', $this, [
                     'customer' => $customer
