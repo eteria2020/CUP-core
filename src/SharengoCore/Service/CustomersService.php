@@ -830,7 +830,10 @@ class CustomersService implements ValidatorServiceInterface
         $taxCode = strtoupper(trim($customer->getTaxCode()));
         $taxCode = str_replace(";", " ", $taxCode);
 
-        $recipientCode = empty($customer->getRecipientCode())? "0000000": $this->exportFormat($customer->getRecipientCode(),7);
+        $recipientCode = $this->exportFormat($customer->getRecipientCode(), 7);
+        if (empty($recipientCode)) {
+            $recipientCode = "0000000";
+        }
 
         /**
          * Every element is in a row
