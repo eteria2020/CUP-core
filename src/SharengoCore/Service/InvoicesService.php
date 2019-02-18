@@ -534,8 +534,10 @@ class InvoicesService
 
         if($invoice->getType()==Invoices::TYPE_PENALTY) {
             $extraPayments = $this->extraPaymentsRepository->findExtraPaymentsByInvoice($invoice);
-            if(!is_null($extraPayments[0]->getVat())) {
-                $result = $extraPayments[0]->getVat()->getCode();
+            if(!is_null($extraPayments[0])) {
+                if(!is_null($extraPayments[0]->getVat())) {
+                    $result = $extraPayments[0]->getVat()->getCode();
+                }
             }
         }
 

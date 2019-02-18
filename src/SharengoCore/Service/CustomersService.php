@@ -825,11 +825,12 @@ class CustomersService implements ValidatorServiceInterface
         $vat = str_replace(";", " ", $vat);
         $vat = trim(str_replace("it", "", strtolower($vat)));
 
-        $cardCode = $customer->getCard() instanceof Cards ?
-            $customer->getCard()->getCode() :
-            '';
+        $cardCode = $customer->getCard() instanceof Cards ? $customer->getCard()->getCode() : '';
 
         $taxCode = strtoupper(trim($customer->getTaxCode()));
+        $taxCode = str_replace(";", " ", $taxCode);
+
+        $recipientCode = empty($customer->getRecipientCode())? "0000000": $this->exportFormat($customer->getRecipientCode(),7);
 
         /**
          * Every element is in a row
@@ -843,7 +844,7 @@ class CustomersService implements ValidatorServiceInterface
             $vat,                                                                           // 4. 60 - max 25
             empty($vat) ? 0 : 1,                                                            // 5. 61 - max 1
             empty($vat) ? 1 : 0,                                                            // 6. 358 - max 1
-            str_replace(";", " ", $taxCode),                                                // 7. 70 - max 25
+            $taxCode,                                                // 7. 70 - max 25
             empty($vat) ? 3 : 2,                                                            // 8. 80 - max 1
             $this->exportFormat($customer->getSurname(), 30),                               // 9. 90 - max 30
             $this->exportFormat($customer->getName(), 30),                                 // 10. 95 - max 30
@@ -864,7 +865,9 @@ class CustomersService implements ValidatorServiceInterface
             $customer->getBirthCountry(),                                                   // 25. 236 - max 3
             "C01",                                                                          // 26. 240 - max 6
             "200",                                                                          // 27. 330 - max 6
-            "CC001"                                                                         // 28. 581 - max 25
+            "CC001",                                                                         // 28. 581 - max 25
+            $recipientCode,                                                                  // 29. max 7
+            $this->exportFormat($customer->getCem(), 25)                              // 30. max 25
         ];
         return implode(";", $registry);
     }
@@ -884,6 +887,8 @@ class CustomersService implements ValidatorServiceInterface
             $result = str_replace("\n", "", $result);
             $result = str_replace("\r", "", $result);
             $result = str_replace("\t", "", $result);
+            $result = iconv("UTF-8", "ISO-8859-1//TRANSLIT", $result);
+
             if($length>0) {
                 $result = substr($result, 0, $length);
             }
