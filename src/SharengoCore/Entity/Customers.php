@@ -343,8 +343,16 @@ class Customers {
     /**
      * @var boolean
      *
+     * @ORM\Column(name="silver_list", type="boolean", nullable=false)
+     */
+    private $silverList = false;
+
+    /**
+     * @var boolean
+     *
      * @ORM\Column(name="maintainer", type="boolean", nullable=false)
      */
+
     private $maintainer = false;
 
     /**
@@ -1486,6 +1494,28 @@ class Customers {
      */
     public function getGoldList() {
         return $this->goldList;
+    }
+
+    /**
+     * Set silverList
+     *
+     * @param boolean silverList
+     *
+     * @return Customers
+     */
+    public function setSilverList($silverList) {
+        $this->silverList = $silverList;
+
+        return $this;
+    }
+
+    /**
+     * Get silverList
+     *
+     * @return boolean
+     */
+    public function getSilverList() {
+        return $this->silverList;
     }
 
     /**
