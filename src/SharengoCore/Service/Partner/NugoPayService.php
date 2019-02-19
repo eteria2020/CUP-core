@@ -267,13 +267,10 @@ class NugoPayService {
 
             if($httpResponse->isSuccess()) {
                 $response = $httpResponse->getBody();
-                var_dump("tryCharginAccount();INF;". $response);
                 json_decode($response, true);    // check json format
-                //var_dump("tryCharginAccount();INF;". json_last_error() == JSON_ERROR_NONE);
                 $result = (json_last_error() == JSON_ERROR_NONE);
             } else {
                 $response = "HTTP error:".$httpResponse->getStatusCode();
-                var_dump("tryCharginAccount();ERR;".$response);
             }
 
 
