@@ -65,6 +65,13 @@ class Municipality
     private $active;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="zip_codes", type="string")
+     */
+    private $zipCodes;
+
+    /**
      * @return int
      */
     public function getId()
@@ -90,5 +97,15 @@ class Municipality
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Array of zip codes
+     *
+     * @return string
+     */
+    public function getZipCodes()
+    {
+        return $this->zipCodes;
     }
 }

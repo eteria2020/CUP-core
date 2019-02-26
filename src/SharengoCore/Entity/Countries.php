@@ -43,6 +43,12 @@ class Countries
      */
     private $cadastralCode;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="phone_code", type="string")
+     */
+    private $phoneCode;
 
     /**
      * Get code
@@ -96,5 +102,15 @@ class Countries
     public function getCadastralCode()
     {
         return $this->cadastralCode;
+    }
+
+    /**
+     * Get international phone code number
+     *
+     * @return string
+     */
+    public function getPhoneCode()
+    {
+        return $this->phoneCode;
     }
 }
