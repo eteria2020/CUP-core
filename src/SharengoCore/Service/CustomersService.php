@@ -12,6 +12,7 @@ use SharengoCore\Entity\Repository\CustomersBonusRepository;
 use SharengoCore\Entity\Repository\CustomersPointsRepository;
 use SharengoCore\Entity\Repository\CustomersRepository;
 use SharengoCore\Exception\BonusAssignmentException;
+use SharengoCore\Form\Validator\ZipCode;
 use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 use SharengoCore\Service\TripPaymentsService;
@@ -830,6 +831,12 @@ class CustomersService implements ValidatorServiceInterface
         $taxCode = strtoupper(trim($customer->getTaxCode()));
         $taxCode = str_replace(";", " ", $taxCode);
 
+        $zipCode = $customer->getZipCode();
+        $validator = new ZipCode();
+        if(!$validator->isValid($zipCode)) {
+            $zipCode = "00000";
+        }
+
         $recipientCode = $this->exportFormat($customer->getRecipientCode(), 7);
         if (empty($recipientCode)) {
             $recipientCode = "0000000";
@@ -849,21 +856,21 @@ class CustomersService implements ValidatorServiceInterface
             empty($vat) ? 1 : 0,                                                            // 6. 358 - max 1
             $taxCode,                                                // 7. 70 - max 25
             empty($vat) ? 3 : 2,                                                            // 8. 80 - max 1
-            $this->exportFormat($customer->getSurname(), 30),                               // 9. 90 - max 30
-            $this->exportFormat($customer->getName(), 30),                                 // 10. 95 - max 30
-            $this->exportFormat($customer->getAddress(), 35),                               // 11. 100 - max 35
+            $this->exportFormat($customer->getSurname(), 30),                        // 9. 90 - max 30
+            $this->exportFormat($customer->getName(), 30),                           // 10. 95 - max 30
+            $this->exportFormat($customer->getAddress(), 35),                        // 11. 100 - max 35
             "",                                                                             // 12. 105 - max 35
-            $this->exportFormat($customer->getPhone(), 20),                                 // 13. 160 - max 20
-            $this->exportFormat($customer->getMobile(), 20),                                // 14. 170 - max 20
-            $this->exportFormat($customer->getZipCode(), 10),                               // 15. 110 - max 7
-            $this->exportFormat($customer->getTown(), 25),                                  // 16. 120 - max 25
-            $customer->getBirthProvince(),                                                  // 17. 130 - max 2
-            str_replace(";", " ", $customer->getBirthCountry()),                            // 18. 140 - max 3
-            $this->exportFormat($customer->getSurname(), 25),                               // 19. 230 - max 25
-            $this->exportFormat($customer->getName(), 20),                                  // 20. 231 - max 20
-            $this->exportFormat($customer->getBirthTown(), 25),                             // 21. 232 - max 25
+            $this->exportFormat($customer->getPhone(), 20),                         // 13. 160 - max 20
+            $this->exportFormat($customer->getMobile(), 20),                        // 14. 170 - max 20
+            $this->exportFormat($zipCode, 10),                                      // 15. 110 - max 7
+            $this->exportFormat($customer->getTown(), 25),                           // 16. 120 - max 25
+            $customer->getBirthProvince(),                                                  // 17. 130 - max 2  TODO: to replace width province
+            str_replace(";", " ", $customer->getBirthCountry()),             // 18. 140 - max 3  TODO: to replace width country
+            $this->exportFormat($customer->getSurname(), 25),                       // 19. 230 - max 25
+            $this->exportFormat($customer->getName(), 20),                          // 20. 231 - max 20
+            $this->exportFormat($customer->getBirthTown(), 25),                     // 21. 232 - max 25
             $customer->getBirthProvince(),                                                  // 22. 233 - max 2
-            $customer->getBirthDate()->format("d/m/Y"),                                     // 23. 234 - max 10
+            $customer->getBirthDate()->format("d/m/Y"),                              // 23. 234 - max 10
             $customer->getGender() == 'male' ? 'M' : 'F',                                   // 24. 235 - max 1
             $customer->getBirthCountry(),                                                   // 25. 236 - max 3
             "C01",                                                                          // 26. 240 - max 6
