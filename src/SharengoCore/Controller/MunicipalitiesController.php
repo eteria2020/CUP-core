@@ -29,7 +29,8 @@ class MunicipalitiesController extends AbstractActionController
             return [
                 'id' => $municipality->getId(),
                 'name' => $municipality->getName(),
-                'province' => $municipality->getProvince()
+                'province' => $municipality->getProvince(),
+                'zip_codes' => json_decode($municipality->getZipCodes())
             ];
         }, $municipalities);
 
