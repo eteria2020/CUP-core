@@ -14,6 +14,7 @@ class Configurations
 {
     const ALARM = 'alarm';
     const SMS = 'sms';
+    const SILVER = 'psqlfunc';
 
     /**
      * @var integer

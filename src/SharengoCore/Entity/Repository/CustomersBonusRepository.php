@@ -160,6 +160,28 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
     }
 
+    public function getSilverListBonus($customer, $start = null, $end = null) {
+        $em = $this->getEntityManager();
+        $dql = "SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb ".
+            "WHERE cb.customer = :customer AND cb.description = 'Bonus Silver List' ";
+        if(!is_null($start)){
+            $dql .= "AND cb.validFrom >= :validFrom ";
+        }
+        if(!is_null($end)){
+            $dql .= "AND cb.validTo <= :validTo";
+        }
+        $query = $em->createQuery($dql);
+        $query->setParameter('customer', $customer);
+        if(!is_null($start)){
+            $query->setParameter('validFrom', $start);
+        }
+        if(!is_null($end)){
+            $query->setParameter('validTo', $end);
+        }
+
+        return $query->getResult();
+    }
+
     public function getBonusFromACICard($card) {
         $em = $this->getEntityManager();
         $dql = "SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb ".

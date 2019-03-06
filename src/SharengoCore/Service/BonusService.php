@@ -164,5 +164,14 @@ class BonusService
     {
         return $this->bonusRepository->getWelcomeBonusPackage($customer);
     }
+    /**
+     *  @param Customers $customer
+     *  @param string $start
+     *  @param string $end
+     *  @return Bonus
+     */
+    public function verifySilverList($customer, $start = null, $end = null){
+        return $this->bonusRepository->getSilverListBonus($customer, $start, $end);
+    }
     
 }
