@@ -27,6 +27,7 @@ class PaymentsServiceFactory implements FactoryInterface
         $reservationsRepository = $entityManager->getRepository('\SharengoCore\Entity\Reservations');
         $telepassPayService = $serviceLocator->get('SharengoCore\Service\Partner\TelepassPayService');
         $nugoPayService = $serviceLocator->get('SharengoCore\Service\Partner\NugoPayService');
+        $gpwebpayCustomerPayments = $serviceLocator->get('GPWebpay\Service\GPWebpayCustomerPayments');
 
         return new PaymentsService(
             $cartasiCustomerPayments,
@@ -44,7 +45,8 @@ class PaymentsServiceFactory implements FactoryInterface
             $tripsRepository,
             $reservationsRepository,
             $telepassPayService,
-            $nugoPayService
+            $nugoPayService,
+            $gpwebpayCustomerPayments
         );
     }
 }

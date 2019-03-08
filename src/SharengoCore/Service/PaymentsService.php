@@ -4,6 +4,7 @@ namespace SharengoCore\Service;
 
 use Cartasi\Service\CartasiCustomerPaymentsInterface;
 use Cartasi\Service\CartasiContractsService;
+use GPWebpay\Service\GPWebpayCustomerPayments;
 use SharengoCore\Entity\Preauthorizations;
 use SharengoCore\Entity\Repository\FreeFaresRepository;
 use SharengoCore\Entity\Reservations;
@@ -123,6 +124,11 @@ class PaymentsService
     private $nugoPayService;
 
     /**
+     * @var GPWebpayCustomerPayments
+     */
+    private $gpwebpayCustomerPayments;
+
+    /**
      * @param CartasiCustomerPaymentsInterface $cartasiCustomerPayments
      * @param CartasiContractsService $cartasiContractService
      * @param EntityManager $entityManager
@@ -157,7 +163,8 @@ class PaymentsService
         TripsRepository $tripsRepository,
         ReservationsRepository $reservationsRepository,
         TelepassPayService $telepassPayService,
-        NugoPayService $nugoPayService
+        NugoPayService $nugoPayService,
+        GPWebpayCustomerPayments $gpwebpayCustomerPayments
 
     ) {
         $this->cartasiCustomerPayments = $cartasiCustomerPayments;
@@ -176,6 +183,7 @@ class PaymentsService
         $this->reservationsRepository = $reservationsRepository;
         $this->telepassPayService = $telepassPayService;
         $this->nugoPayService = $nugoPayService;
+        $this->gpwebpayCustomerPayments = $gpwebpayCustomerPayments;
     }
 
     /**
@@ -358,7 +366,7 @@ class PaymentsService
 
         $contract = $this->cartasiContractService->getCartasiContract($customer);
 
-        if(!is_null($contract->getPartner())) { // contract width partner
+        if(!is_null($contract->getPartner())) { // contract with partner
             $response = null;
             if($contract->getPartner()->getCode()=='telepass') {
                 $response = $this->telepassPayService->sendPaymentRequest(
@@ -369,6 +377,12 @@ class PaymentsService
             } elseif ($contract->getPartner()->getCode()=='nugo') {
                 $response = $this->nugoPayService->sendTripPaymentRequest(
                     $tripPayment,
+                    $this->avoidCartasi
+                );
+            } else if ($contract->getPartner()->getCode() == "gpwebpay"){
+                $response = $this->gpwebpayCustomerPayments->sendPaymentRequest(
+                    $customer,
+                    $tripPayment->getTotalCost(),
                     $this->avoidCartasi
                 );
             }
@@ -511,12 +525,29 @@ class PaymentsService
         if (!$this->cartasiContractService->hasCartasiContract($customer)) {
             return $response;
         }
+        
+        $contract = $this->cartasiContractService->getCartasiContract($customer);
+        if(!is_null($contract->getPartner())) { // contract with partner
+            $response = null;
+            if ($contract->getPartner()->getCode() == "gpwebpay"){
+                $response = $this->gpwebpayCustomerPayments->sendPaymentRequest(
+                    $customer,
+                    $totalCost,
+                    $this->avoidCartasi
+                );
+            }
 
-        $response = $this->cartasiCustomerPayments->sendPaymentRequest(
-            $customer,
-            $totalCost,
-            $this->avoidCartasi
-        );
+            if(is_null($response)) {
+                return $response;
+            }
+        } else {
+
+            $response = $this->cartasiCustomerPayments->sendPaymentRequest(
+                $customer,
+                $totalCost,
+                $this->avoidCartasi
+            );
+        }
 
         $this->entityManager->beginTransaction();
 
