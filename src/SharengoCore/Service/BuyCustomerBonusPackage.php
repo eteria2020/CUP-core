@@ -3,11 +3,13 @@
 namespace SharengoCore\Service;
 
 use Cartasi\Service\CartasiCustomerPaymentsInterface;
+use Cartasi\Service\CartasiContractsService;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonusPackages;
 use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Entity\CustomersPoints;
 use SharengoCore\Service\CustomersPointsService;
+use GPWebpay\Service\GPWebpayCustomerPayments;
 
 use Doctrine\ORM\EntityManager;
 
@@ -28,14 +30,29 @@ class BuyCustomerBonusPackage
      */
     private $customersPointsService;
 
+    /**
+     * @var CartasiContractsService
+     */
+    private $cartasiContractService;
+
+    /**
+     * @var GPWebpayCustomerPayments
+     */
+    private $gpwebpayCustomerPayments;
+
     public function __construct(
         EntityManager $entityManager,
         CartasiCustomerPaymentsInterface $payments,
-        CustomersPointsService $customersPointsService
+        CustomersPointsService $customersPointsService,
+        CartasiContractsService $cartasiContractService,
+        $gpwebpayCustomerPayments
+
     ) {
         $this->entityManager = $entityManager;
         $this->payments = $payments;
         $this->customersPointsService = $customersPointsService;
+        $this->cartasiContractService = $cartasiContractService;
+        $this->gpwebpayCustomerPayments = $gpwebpayCustomerPayments;
     }
 
     /**
@@ -57,7 +74,15 @@ class BuyCustomerBonusPackage
             }
             else if($package->getType() === "Pacchetto"){
 
-                $cartasiResponse = $this->payments->sendPaymentRequest($customer, $package->getCost());
+                $contract = $this->cartasiContractService->getCartasiContract($customer);
+
+                if(!is_null($contract->getPartner())){
+                    if($contract->getPartner()->getCode() == "gpwebpay") {
+                        $cartasiResponse = $this->gpwebpayCustomerPayments->sendPaymentRequest($customer, $package->getCost());
+                    }
+                } else {
+                    $cartasiResponse = $this->payments->sendPaymentRequest($customer, $package->getCost());
+                }
 
                 if ($cartasiResponse->getCompletedCorrectly()) {
                     if ($package->getCode()=="WOMEN") { //check if package women

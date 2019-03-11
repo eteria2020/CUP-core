@@ -12,8 +12,16 @@ class BuyCustomerBonusPackageFactory implements FactoryInterface
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $payments = $serviceLocator->get('Cartasi\Service\CartasiCustomerPayments');
         $customersPointsService = $serviceLocator->get('SharengoCore\Service\CustomersPointsService');
+        $cartasiContractService = $serviceLocator->get('Cartasi\Service\CartasiContracts');
+        $gpwebpayCustomerPayments = $serviceLocator->get('GPWebpay\Service\GPWebpayCustomerPayments');
 
-        return new BuyCustomerBonusPackage($entityManager, $payments, $customersPointsService
+
+        return new BuyCustomerBonusPackage(
+            $entityManager,
+            $payments,
+            $customersPointsService,
+            $cartasiContractService,
+            $gpwebpayCustomerPayments
         );
     }
 }
