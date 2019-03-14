@@ -1190,6 +1190,15 @@ class Cars {
     }
 
     /**
+     * Get cars info
+     * 
+     * @return \SharengoCore\Entity\CarsInfo
+     */
+    public function getCarsInfo() {
+        return $this->carsInfo;
+    }
+    
+    /**
      * Get  gps
      *
      * @return \SharengoCore\Entity\CarsInfo gps
