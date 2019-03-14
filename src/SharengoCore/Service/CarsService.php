@@ -348,6 +348,44 @@ class CarsService
     }
 
     /**
+     * Update Car Info
+     * 
+     * @param Cars $car
+     * @param null $company
+     * @param null $number
+     * @param null $validFrom
+     * @param null $expiry
+     * @return Cars
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function updateInsurance(Cars $car, $company = null, $number = null, $validFrom = null, $expiry = null) 
+    {
+        $carInfo = $car->getCarsInfo();
+        $carInfo->setInsuranceCompany($company);
+        $carInfo->setInsuranceNumber($number);
+
+        if(!empty($validFrom)) {
+            $validFrom = date_create_from_format("d-m-Y h:i:s", $validFrom . " 00:00:00");
+        } else {
+            $validFrom = null;
+        }
+
+        if(!empty($expiry)) {
+            $expiry = date_create_from_format("d-m-Y h:i:s", $expiry . " 00:00:00");
+        } else {
+            $expiry = null;
+        }
+
+        $carInfo->setInsuranceValidFrom($validFrom);
+        $carInfo->setInsuranceExpiry($expiry);
+        
+        $this->entityManager->persist($carInfo);
+        $this->entityManager->flush();
+        
+        return $car;
+    }
+    
+    /**
      * @param Cars $car
      */
     public function deleteCar(Cars $car)

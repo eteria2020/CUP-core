@@ -183,6 +183,35 @@ class CarsInfo {
      */
     private $gps;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="insurance_company", type="text", nullable=true)
+     */
+    private $insuranceCompany;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="insurance_number", type="text", nullable=true)
+     */
+    private $insuranceNumber;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="insurance_expiry", type="datetime", nullable=true)
+     */
+    private $insuranceExpiry;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="insurance_valid_from", type="datetime", nullable=true)
+     */
+    private $isuranceValidFrom;
+
+
     public function __construct() {
 
     }
@@ -223,4 +252,83 @@ class CarsInfo {
         return $this->gps;
     }
 
+    /**
+     * Get insurance company
+     *
+     * @return string
+     */
+    public function getInsuranceCompany() {
+        return $this->insuranceCompany;
+    }
+
+    /**
+     * Set insurance company
+     * 
+     * @param $company
+     * @return string
+     */
+    public function setInsuranceCompany($company) {
+        $this->insuranceCompany = $company;
+        return $this->insuranceCompany;
+    }
+    
+    /**
+     * Get insurance number
+     *
+     * @return string
+     */
+    public function getInsuranceNumber() {
+        return $this->insuranceNumber;
+    }
+
+    /**
+     * Set insurance number
+     *
+     * @param $number
+     * @return string
+     */
+    public function setInsuranceNumber($number) {
+        $this->insuranceNumber = $number;
+        return $this->insuranceNumber;
+    }
+    
+    /**
+     * Get insurance expiry
+     *
+     * @return \DateTime
+     */
+    public function getInsuranceExpiry() {
+        return $this->insuranceExpiry;
+    }
+
+    /**
+     * Set insurance expiry
+     *
+     * @param $expiry
+     * @return \DateTime
+     */
+    public function setInsuranceExpiry($expiry) {
+        $this->insuranceExpiry = $expiry;
+        return $this->insuranceExpiry;
+    }
+    
+    /**
+    * Get insurance velid from
+    *
+    * @return \DateTime
+    */
+    public function getInsuranceValidFrom() {
+        return $this->isuranceValidFrom;
+    }
+
+    /**
+     * Set insurance expiry
+     *
+     * @param $expiry
+     * @return \DateTime
+     */
+    public function setInsuranceValidFrom($validFrom) {
+        $this->isuranceValidFrom = $validFrom;
+        return $this->isuranceValidFrom;
+    }
 }
