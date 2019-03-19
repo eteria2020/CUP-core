@@ -822,9 +822,10 @@ class CustomersService implements ValidatorServiceInterface
      */
     public function getExportDataForCustomer($customer)
     {
-        $vat = $customer->getVat();
-        $vat = str_replace(";", " ", $vat);
-        $vat = trim(str_replace("it", "", strtolower($vat)));
+//        $vat = $customer->getVat();
+//        $vat = str_replace(";", " ", $vat);
+//        $vat = trim(str_replace("it", "", strtolower($vat)));
+        $vat = "";
 
         $cardCode = $customer->getCard() instanceof Cards ? $customer->getCard()->getCode() : '';
 
