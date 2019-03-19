@@ -94,7 +94,7 @@
             <p><?= $address ?></p>
             <p><?= $zipCode . ', ' . $town ?><?php if ($province != null) echo ', ' . $province; if ($country != null) echo ', ' . $country ?></p>
             <p>CF: <?= $cf ?></p>
-            <?php if ($piva != null) echo '<p>P.IVA: ' . $piva . '</p>'?>
+            <?php if ($piva != null) echo '<p style="display: none">P.IVA: ' . $piva . '</p>'?>
             <p><?= $mail ?></p>
         </div>
         <!-- customer data -->
