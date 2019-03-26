@@ -24,4 +24,13 @@ class ProvincesService
 
         return $ret;
     }
+
+    public function getProvinceByCode($code) {
+        return $this->repository->findByCode($code);
+    }
+
+    public function getProvinceByName($name) {
+        return $this->repository->findByName($name);
+    }
+
 }

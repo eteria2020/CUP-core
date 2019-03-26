@@ -22,4 +22,22 @@ class MunicipalityRepository extends EntityRepository
 
         return $query->getResult();
     }
+
+    public function findByProvinceTown($province, $town)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT m
+        FROM \SharengoCore\Entity\Municipality m
+        WHERE 
+        m.active = true AND 
+        m.province = :province AND
+        m.name = :town";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('province', strtoupper(trim($province)));
+        $query->setParameter('town', strtoupper(trim($town)));
+
+        return $query->getResult();
+    }
 }

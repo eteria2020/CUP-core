@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Service;
 
+use SharengoCore\Entity\Countries;
 use SharengoCore\Entity\Repository\CountriesRepository;
 
 class CountriesService
@@ -47,5 +48,14 @@ class CountriesService
             return 'it'; //default value in case some cadastral codes are missing in the countries table
         }
         return $country->getCode();
+    }
+
+    /**
+     * @param string
+     * @return Countries
+     */
+    public function getCountryByName($name)
+    {
+        return $this->repository->findOneByName($name);
     }
 }

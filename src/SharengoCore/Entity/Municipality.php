@@ -108,4 +108,14 @@ class Municipality
     {
         return $this->zipCodes;
     }
+
+    /**
+     * Get cadastral code
+     *
+     * @return string
+     */
+    public function getCadastralCode()
+    {
+        return $this->cadastralCode;
+    }
 }
