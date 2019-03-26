@@ -18,4 +18,32 @@ class ProvincesRepository extends EntityRepository
 
         return $countries->getResult();
     }
+
+    public function findByCode($code)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT p
+        FROM \SharengoCore\Entity\Provinces p
+        WHERE p.code = :code";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('code', $code);
+
+        return $query->getFirstResult();
+    }
+
+    public function findByName($name)
+    {
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT p
+        FROM \SharengoCore\Entity\Provinces p
+        WHERE p.name = :name";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('name', $name);
+
+        return $query->getFirstResult();
+    }
 }

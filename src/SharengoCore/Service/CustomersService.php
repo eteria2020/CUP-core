@@ -13,10 +13,15 @@ use SharengoCore\Entity\Repository\CustomersPointsRepository;
 use SharengoCore\Entity\Repository\CustomersRepository;
 use SharengoCore\Exception\BonusAssignmentException;
 use SharengoCore\Form\Validator\ZipCode;
+use SharengoCore\Service\CountriesService;
 use SharengoCore\Service\DatatableServiceInterface;
+use SharengoCore\Service\MunicipalitiesService;
 use SharengoCore\Service\SimpleLoggerService as Logger;
 use SharengoCore\Service\TripPaymentsService;
 use SharengoCore\Service\TripService;
+
+use CodiceFiscale\Checker;
+use CodiceFiscale\Calculator;
 
 use Doctrine\ORM\EntityManager;
 use Zend\Authentication\AuthenticationService as UserService;
@@ -85,10 +90,20 @@ class CustomersService implements ValidatorServiceInterface
      */
     private $tripPaymentsService;
 
-        /**
+    /**
      * @var TripsRepository
      */
     private $tripsRepository;
+
+    /**
+     * @var MunicipalitiesService
+     */
+    private $municipalitiesService;
+
+    /**
+     * @var CountriesService
+     */
+    private $countriesService;
 
     /**
      * @var string website base url
@@ -101,15 +116,18 @@ class CustomersService implements ValidatorServiceInterface
     private $translator;
 
     /**
+     * CustomersService constructor.
      * @param EntityManager $entityManager
      * @param UserService $userService
-     * @param DatatableServiceInterface $datatableService
+     * @param \SharengoCore\Service\DatatableServiceInterface $datatableService
      * @param CardsService $cardsService
      * @param EmailService $emailService
-     * @param Logger $logger
+     * @param Translator $translator
+     * @param SimpleLoggerService $logger
      * @param CartasiContractsService $cartasiContractsService
-     * @param TripPaymentsService $tripPaymentsService
-     * @param string $url
+     * @param \SharengoCore\Service\TripPaymentsService $tripPaymentsService
+     * @param \SharengoCore\Service\MunicipalitiesService $municipalitiesService
+     * @param $url
      */
     public function __construct(
         EntityManager $entityManager,
@@ -121,6 +139,8 @@ class CustomersService implements ValidatorServiceInterface
         Logger $logger,
         CartasiContractsService $cartasiContractsService,
         TripPaymentsService $tripPaymentsService,
+        MunicipalitiesService $municipalitiesService,
+        CountriesService $countriesService,
         $url
     ) {
         $this->entityManager = $entityManager;
@@ -135,6 +155,8 @@ class CustomersService implements ValidatorServiceInterface
         $this->logger = $logger;
         $this->cartasiContractsService = $cartasiContractsService;
         $this->tripPaymentsService = $tripPaymentsService;
+        $this->municipalitiesService = $municipalitiesService;
+        $this->countriesService = $countriesService;
         $this->url = $url;
         $this->tripsRepository = $this->entityManager->getRepository('SharengoCore\Entity\Trips');
     }
@@ -1047,5 +1069,95 @@ class CustomersService implements ValidatorServiceInterface
             $this->entityManager->clear('SharengoCore\Entity\CarsInfo');
             $this->entityManager->clear('SharengoCore\Entity\CarsBonus');
         }
+    }
+
+    /**
+     * Check if tax code match the brith data.
+     * Return an array of messagges error. If it's all rigth, return an empty array.
+     *
+     * @param $taxCode
+     * @param null $gender
+     * @param null $name
+     * @param null $surname
+     * @param null $birthTown
+     * @param null $birthProvinceCode
+     * @param null $birthCountry
+     * @param null $birthDate
+     * @return string
+     */
+    public function checkCustomerTaxCode($taxCode, $gender=null, $name=null, $surname=null, $birthTown=null, $birthProvinceCode=null, $birthCountry=null, $birthDate=null) {
+        $result = array();
+
+        $checker = new Checker();
+        if ($checker->isFormallyCorrect($taxCode)) {
+
+            if(!is_null($gender)) { // check gender
+                if (strtolower(trim($gender))=='male') {
+                    $gender = Checker::CHR_MALE;
+                } else if (strtolower(trim($gender))=='female') {
+                    $gender = Checker::CHR_WOMEN;
+                } else {
+                    array_push($result, $this->translator->translate("Codice fiscale, genere ".$gender." non previsto."));
+                }
+
+                if($checker->getSex() != $gender) {
+                    array_push($result, $this->translator->translate("Codice fiscale, genere ".$gender." errato."));
+                }
+            }
+
+            if(!is_null($birthDate)) {  // check birth date
+                $birthDateFromTaxCode = $checker->getYearBirth().'-'.$checker->getMonthBirth().'-'.$checker->getDayBirth();
+                if($birthDate->format('y-m-d') != $birthDateFromTaxCode) {
+                    array_push($result, $this->translator->translate("Codice fiscale, data di nascita ".$birthDate->format('y-m-d')." errata."));
+                }
+            }
+
+            if(!is_null($birthCountry) && !is_null($birthProvinceCode) && !is_null($birthTown)) {   // check birth place
+                if($this->findCadastralCodeByCountryProviceTown($birthCountry, $birthProvinceCode, $birthTown)!=$checker->getCountryBirth()){
+                    array_push($result, $this->translator->translate("Codice fiscale, luogo di nascita incongruente."));
+                }
+            }
+
+            if(!is_null($name) && !is_null($surname) && !is_null($gender) && !is_null($surname) && !is_null($birthDate)) { // check all
+                $calc = new Calculator();
+
+                if($taxCode!=$calc->calcola($name, $surname, $gender, $birthDate, $checker->getCountryBirth())){
+                    array_push($result, $this->translator->translate("Codice fiscale, sintassi incongruente."));
+                }
+            }
+
+        } else {
+            array_push($result, $this->translator->translate("Codice fiscale, sintassi errata."));
+        }
+
+        return $result;
+
+    }
+
+    /**
+     * Return the cdastral code by country, province (for italian municipalities), town (for italian municipalities)
+     *
+     * @param $birthCountry
+     * @param $birthProvince
+     * @param $birthTown
+     * @return string|null
+     */
+    public function findCadastralCodeByCountryProviceTown($birthCountry, $birthProvince, $birthTown) {
+        $result = null;
+
+        if($birthCountry=='it') {
+            $italianMunicipalities = $this->municipalitiesService->getMunicipalityByProvinceTown($birthProvince, $birthTown);
+
+            if(count($italianMunicipalities)>0) {
+                $result = $italianMunicipalities[0]->getCadastralCode();
+            }
+        } else {
+            $country = $this->countriesService->getCountryByName($birthCountry);
+            if(!is_null($country)) {
+                $result = $country->getCadastralCode();
+            }
+        }
+
+        return $result;
     }
 }

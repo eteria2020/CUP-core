@@ -30,6 +30,8 @@ class CustomersServiceFactory implements FactoryInterface
         $logger = $serviceLocator->get('SharengoCore\Service\SimpleLoggerService');
         $cartasiContractsService = $serviceLocator->get('Cartasi\Service\CartasiContracts');
         $tripPaymentsService = $serviceLocator->get('SharengoCore\Service\TripPaymentsService');
+        $municipalitiesService = $serviceLocator->get('SharengoCore\Service\MunicipalitiesService');
+        $countriesService = $serviceLocator->get('SharengoCore\Service\CountriesService');
         $url = $serviceLocator->get('Configuration')['website']['uri'];
 
         $languageService = $serviceLocator->get('LanguageService');
@@ -45,6 +47,8 @@ class CustomersServiceFactory implements FactoryInterface
             $logger,
             $cartasiContractsService,
             $tripPaymentsService,
+            $municipalitiesService,
+            $countriesService,
             $url
         );
     }

@@ -36,8 +36,16 @@ class MunicipalitiesService
      * @param $castralCode
      * @return array
      */
-
     public function getMunicipalityByCadastralCode($castralCode){
         return $this->municipalityRepository->findByCadastralCode($castralCode);
+    }
+
+    /**
+     * @param $province
+     * @param $town
+     * @return array
+     */
+    public function getMunicipalityByProvinceTown($province, $town){
+        return $this->municipalityRepository->findByProvinceTown($province, $town);
     }
 }
