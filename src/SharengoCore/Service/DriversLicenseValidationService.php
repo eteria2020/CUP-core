@@ -114,6 +114,22 @@ class DriversLicenseValidationService
         return $validation;
     }
 
+    /**
+     * Fix the birth town for vehicle registration.
+     *
+     * @param $data
+     * @return string
+     */
+    public function changeTownForValidationDriverLicense($data)
+    {
+        $birthTown = strtoupper(trim($data['birthTown']));
+        if ($birthTown=="CASTELLAMMARE DI STABIA"){
+            $birthTown = 'CASTELLAMMARE STABIA';
+        }
+
+        return $birthTown;
+    }
+
      /**
      * This method returns a different birthPrertince,
      * so if birthProvince == 'MB' changes to 'MI'
@@ -126,7 +142,7 @@ class DriversLicenseValidationService
      */
     public function changeProvinceForValidationDriverLicense($data) {
         $birthProvince = $data['birthProvince'];
-        switch ($data['birthProvince']) {
+        switch ($birthProvince) {
             //Monza-Brinaza --> Milano
             case 'MB':
                 $birthProvince = 'MI';
@@ -134,7 +150,8 @@ class DriversLicenseValidationService
             //Lecco --> Bergamo || Como
             case 'LC':
                 $municipalities_lecco_special = array("CALOLZIOCORTE", "CARENNO", "ERVE", "MONTE MARENZO", "VERCURAGO");
-                if (in_array($data['birthTown'], $municipalities_lecco_special)){
+                $birthTown = strtoupper(trim($data['birthTown']));
+                if (in_array($birthTown, $municipalities_lecco_special)){
                     $birthProvince = 'BG';
                 }else{
                     $birthProvince = 'CO';
@@ -155,6 +172,13 @@ class DriversLicenseValidationService
             //Pesaro-Urbino --> Pesaro(old)
             case 'PU':
                 $birthProvince = 'PS';
+                break;
+            // Rimini/NOVAFELTRIA --> 'PS'
+            case 'RN':
+                $birthTown = strtoupper(trim($data['birthTown']));
+                if ($birthTown=="NOVAFELTRIA"){
+                    $birthProvince = 'PS';
+                }
                 break;
             //Vibo-Valentia --> Catanzaro
             case 'VV':
