@@ -181,9 +181,9 @@ class DriversLicenseValidationService
                 }
                 break;
             //Vibo-Valentia --> Catanzaro
-            case 'VV':
-                $birthProvince = 'CZ';
-                break;
+//            case 'VV':
+//                $birthProvince = 'CZ';
+//                break;
             //Carbonia-Iglesias --> Cagliari
             case 'CI':
                 $birthProvince = 'CA';
