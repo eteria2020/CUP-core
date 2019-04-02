@@ -9,7 +9,7 @@ use SharengoCore\Entity\Repository\FaresRepository;
 class FaresService
 {
     const MOTION_COST_PER_MINUTE = 28;
-    const PARK_COST_PER_MINUTE = 10;
+    const PARK_COST_PER_MINUTE = 28;
 
     private $entityManager;
 
@@ -48,9 +48,7 @@ class FaresService
     {
         $newFares = $fareData['fares'];
         $newCostSteps = [
-            1440 => $newFares['costStep1440'],
-            240 =>  $newFares['costStep240'],
-            60 =>   $newFares['costStep60']
+            1440 => $newFares['costStep1440']
         ];
 
         $newFare = new Fares(self::MOTION_COST_PER_MINUTE, self::PARK_COST_PER_MINUTE, json_encode($newCostSteps));
