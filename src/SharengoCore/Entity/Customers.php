@@ -884,6 +884,51 @@ class Customers {
     }
 
     /**
+     * Get street name from address without streen number
+     *
+     * @return string
+     */
+    public function getAddressName() {
+        $result = $this->address;
+
+        $addressArray = explode(" ", trim($this->address));
+        if(count($addressArray)>1) {
+            $result = "";
+            for ($i = 0; $i < count($addressArray)-1; $i++) {
+                if(strlen($addressArray[$i])>0) {
+                    $result .= $addressArray[$i]." ";
+                }
+            }
+        }
+
+        $result = trim($result);
+        $result = trim($result, ',');
+
+        return $result;
+    }
+
+    /**
+     * Get only street number from address
+     *
+     * @return string
+     */
+    public function getAddressNumber() {
+        $result = "";
+
+        $addressArray = explode(" ", trim($this->address));
+        if(count($addressArray)>1) {
+            $result = $addressArray[count($addressArray)-1];
+        }
+
+        $result = trim($result);
+        $result = trim($result, ',');
+
+        return $result;
+
+    }
+
+
+    /**
      * Set addressInfo
      *
      * @param string $addressInfo

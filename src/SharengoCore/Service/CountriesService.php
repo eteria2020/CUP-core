@@ -27,6 +27,27 @@ class CountriesService
     }
 
     /**
+     * @param null $selectedCountry
+     * @return array
+     */
+    public function getAllPhoneCodeByCountry($selectedCountry = null)
+    {
+        $countries = $this->repository->getAllPhoneCodeByCountry($selectedCountry);
+        $ret = [];
+
+        foreach ($countries as $c) {
+            if($c['code']!=='VA') { // skip "Citta del Vaticano" because has phone code 39 the same of Italy
+                $ret[$c['phoneCode']] = html_entity_decode($c['name']."(+".$c['phoneCode'].")");
+            }
+            if(count($ret)==1) {    // put in second place the string '----------' and value 'disabled'
+                $ret['disabled'] = html_entity_decode("----------");
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
      * @param string
      * @return string
      */

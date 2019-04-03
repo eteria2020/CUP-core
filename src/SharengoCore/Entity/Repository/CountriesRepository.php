@@ -36,4 +36,32 @@ class CountriesRepository extends \Doctrine\ORM\EntityRepository
 
         return $return;
     }
+
+    public function getAllPhoneCodeByCountry($selectedCountry = null)
+    {
+        if(is_null($selectedCountry)) {
+            $selectedCountry ='Italia';
+        }
+
+        $countries = $this->createQueryBuilder('c')
+            ->select('c.phoneCode, c.name, UPPER(c.code) code')
+            ->where('c.phoneCode IS NOT NULL')
+            ->orderBy('c.name')
+            ->getQuery();
+
+        // Move the element with 'c.name' = $selectedCountry to the first place
+        $result = $countries->getResult();
+        for ($i=0; $i<count($result); $i++) {
+            if ($result[$i]['name'] == $selectedCountry) {
+                $return = array();
+                $return[0] = $result[$i];
+                // Add the elements before and after the $i index
+                $return = array_merge($return, array_slice($result, 0, $i, true),
+                    array_slice($result, $i+1, count($result)-$i, true));
+                break;
+            }
+        }
+
+        return $return;
+    }
 }
