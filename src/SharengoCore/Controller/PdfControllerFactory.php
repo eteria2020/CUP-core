@@ -14,7 +14,8 @@ class PdfControllerfactory implements FactoryInterface
         $pdfService = $serviceLocator->get('mvlabssnappy.pdf.service');
         $invoiceService = $serviceLocator->get('SharengoCore\Service\Invoices');
         $authService = $serviceLocator->get('zfcuser_auth_service');
+        $config = $serviceLocator->get('Config');
 
-        return new PdfController($viewRenderer, $pdfService, $invoiceService, $authService);
+        return new PdfController($viewRenderer, $pdfService, $invoiceService, $authService, $config);
     }
 }

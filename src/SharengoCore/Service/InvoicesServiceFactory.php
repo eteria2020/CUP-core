@@ -14,6 +14,12 @@ class InvoicesServiceFactory implements FactoryInterface
         $invoicesRepository = $entityManager->getRepository('\SharengoCore\Entity\Invoices');
         $config = $serviceLocator->get('Config');
         $invoicesConfig = $config['invoice'];
+
+        $serverInstance = null;
+
+        if(isset($config['serverInstance'])) {
+            $serverInstance = $config['serverInstance'];
+        }
         // default subscription amount equals the first payment amount defined
         // for cartasi
         $invoicesConfig['subscription_amount'] = $config['cartasi']['first_payment_amount'];
@@ -39,7 +45,8 @@ class InvoicesServiceFactory implements FactoryInterface
             $entityManager,
             $simpleLoggerService,
             $invoicesConfig,
-            $extraPaymentsRepository
+            $extraPaymentsRepository,
+            $serverInstance
         );
     }
 }

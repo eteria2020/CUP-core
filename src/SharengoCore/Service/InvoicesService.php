@@ -60,6 +60,11 @@ class InvoicesService
     private $extraPaymentsRepository;
 
     /**
+     * @var $serverInstance
+     */
+    private $serverInstance;
+
+    /**
      * @param InvoicesRepository $invoicesRepository
      * @param DatatableServiceInterface $datatableService,
      * @param EntityRepository $invoicesRepository
@@ -73,7 +78,8 @@ class InvoicesService
         EntityManager $entityManager,
         Logger $logger,
         $invoiceConfig,
-        ExtraPaymentsRepository $extraPaymentsRepository
+        ExtraPaymentsRepository $extraPaymentsRepository,
+        $serverInstance
     ) {
         $this->invoicesRepository = $invoicesRepository;
         $this->datatableService = $datatableService;
@@ -83,6 +89,7 @@ class InvoicesService
         $this->subscriptionAmount = $invoiceConfig['subscription_amount'];
         $this->ivaPercentage = $invoiceConfig['iva_percentage'];
         $this->extraPaymentsRepository = $extraPaymentsRepository;
+        $this->serverInstance = $serverInstance;
     }
 
     /**
@@ -162,7 +169,9 @@ class InvoicesService
         return Invoices::createInvoiceForFirstPayment(
             $customer,
             $this->templateVersion,
-            $amounts
+            $amounts,
+            null,
+            $this->getInvoiceLang()
         );
     }
 
@@ -237,7 +246,8 @@ class InvoicesService
                 'rows' => $rowAmounts,
                 'iva' => $this->ivaPercentage
             ],
-            $monthly
+            $monthly,
+            $this->getInvoiceLang()
         );
     }
 
@@ -259,7 +269,8 @@ class InvoicesService
             $bonusPayment->getPackage(),
             $bonusPayment->getFleet(),
             $this->templateVersion,
-            $amounts
+            $amounts,
+            $this->getInvoiceLang()
         );
     }
 
@@ -404,7 +415,8 @@ class InvoicesService
             $extraPayment->getFleet(),
             $this->templateVersion,
             $reasons,
-            $amounts
+            $amounts,
+            $this->getInvoiceLang()
         );
     }
 
@@ -515,7 +527,7 @@ class InvoicesService
             ["RIG"], // 3
             $partionRecord1,
             ["40"], // 660
-            [strtoupper($invoice->getTypeItalianTranslation())], // 681
+            [strtoupper($this->getInvoiceLang() == "it" ? $invoice->getTypeItalianTranslation() : $invoice->getTypeEnglishTranslation())], // 681
             $partionRecord2
         );
 
@@ -542,5 +554,13 @@ class InvoicesService
         }
 
         return $result;
+    }
+
+    private function getInvoiceLang(){
+        $lang = "it";
+        if(!is_null($this->serverInstance) && $this->serverInstance["id"] != "it_IT"){
+            $lang = substr($this->serverInstance["id"], 0, 2)."/";
+        }
+        return $lang;
     }
 }
