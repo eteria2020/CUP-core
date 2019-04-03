@@ -1,0 +1,241 @@
+<?php
+    $invoiceContent = $this->invoiceContent;
+
+    // Customer data
+    $name = ucwords(strtolower($invoiceContent['customer']['name'] . ' ' . $invoiceContent['customer']['surname']));
+    $mail = $invoiceContent['customer']['email'];
+    $address = $invoiceContent['customer']['address'];
+    $zipCode = $invoiceContent['customer']['zip_code'];
+    $town = $invoiceContent['customer']['town'];
+    $province = $invoiceContent['customer']['province'];
+    $country = $invoiceContent['customer']['country'];
+    $cf = $invoiceContent['customer']['cf'];
+    $piva = $invoiceContent['customer']['piva'];
+
+    // Invoice data
+    $docN = $this->invoiceNumber;
+    $invoiceDate = $invoiceContent['invoice_date'];
+    $totalAmount = $invoiceContent['amounts']['grand_total'];
+    $partialAmount = $invoiceContent['amounts']['total'];
+    $iva = $invoiceContent['amounts']['iva'];
+    $ivaPercentage = $invoiceContent['iva'];
+
+    // Invoice header
+    $header = $invoiceContent['header'];
+
+    // Table formatting
+    $alignmentFormat = $invoiceContent['body']['contents']['body-format']['alignment'];
+
+    // Multipage
+    $bodyContents = $invoiceContent['body']['contents'];
+    $pagedContents = [];
+    $row = 0;
+    $page = 0;
+
+    // calculate max rows per page (depends on lines per row inserted)
+    $firstLineHeight = 26; // this is a fixed value based on the font and table
+    $additionalLineHeight = 10; // this is a fixed value based on the font
+
+    $totalLineHeight = $firstLineHeight; // assume there is atleast one row
+    $maxNumberOfRows = 0;
+    // find row with most lines
+    foreach ($bodyContents['body'][0] as $value) {
+        $numberOfRows = count($value);
+        if ($numberOfRows > $maxNumberOfRows) {
+            $maxNumberOfRows = $numberOfRows;
+        }
+    }
+    // calculate height of row with most lines
+    $totalLineHeight += ($maxNumberOfRows - 1) * $additionalLineHeight;
+    $maxRowsPerPage = (integer) floor(541 / $totalLineHeight);
+
+    // loop through rows and divide them into arrays, one for each page
+    foreach ($bodyContents['body'] as $value) {
+
+        // if new page, add array for that page
+        if ($row == 0) {
+            array_push($pagedContents, []);
+        }
+
+        // push the row into the page array
+        array_push($pagedContents[$page], $value);
+
+        $row ++;
+
+        // if the max number of rows per page is reached, reset rows and add a page
+        if ($row == $maxRowsPerPage) {
+            $row = 0;
+            $page ++;
+        }
+    }
+?>
+
+<!-- Main container -->
+<div id="container">
+
+    <?php
+        // loop through pages
+        for ($i = 0; $i <= count($pagedContents); $i++) {
+    ?>
+
+    <!-- Page container -->
+    <div class="page-container">
+
+        <!-- Logo -->
+        <img class="logo" src="<?php echo $this->serverUrl()?>/assets-modules/sharengo-core/images/sharengo_logo.jpg" alt="">
+
+        <!-- Invoice data -->
+        <div class="invoice-data data">
+            <p>Invoice N° <?= $docN ?></p>
+            <p>Invoice Date: <?= date_format(date_create($invoiceDate), 'd/m/Y') ?></p>
+        </div>
+        <!-- invoice data -->
+
+        <!-- Customer data -->
+        <div class="customer-data data">
+            <p><?= $name ?></p>
+            <p><?= $address ?></p>
+            <p><?= $zipCode . ', ' . $town ?><?php if ($province != null) echo ', ' . $province; if ($country != null) echo ', ' . $country ?></p>
+            <p>ID number: <?= $cf ?></p>
+            <?php if ($piva != null) echo '<p style="display: none">P.IVA: ' . $piva . '</p>'?>
+            <p><?= $mail ?></p>
+        </div>
+        <!-- customer data -->
+
+        <!-- Header -->
+        <div class="header font">
+            <p class="header-text">
+                <?= $header ?>
+            </p>
+        </div>
+        <!-- header -->
+
+        <!-- Content -->
+        <div id="content">
+
+        <?php
+            // if first page
+            if ($i == 0) {
+        ?>
+
+            <!-- Line -->
+            <div class="line"></div>
+
+            <!-- Message -->
+            <div class="message font">
+                <p><br>Dear <span class="name"><?= $name ?></span>,</p>
+                <p>Thanks for choosing Sharengo.</p>
+				<?= $invoiceContent['body']['greeting_message'] ?>
+            </div>
+            <!-- message -->
+
+        <?php
+            // if not first page
+            } else {
+                $tableHeight = 0;
+        ?>
+
+        <!-- Transactions table -->
+        <div>
+            <table class="table table2 font">
+
+                <tr>
+
+                    <?php
+                        // populate transactions table's header
+                        foreach ($invoiceContent['body']['contents']['header'] as $value) { ?>
+                            <th class="table2-031e"><?= $value ?></th>
+                    <?php } ?>
+
+                </tr>
+
+                <?php
+                    // generate transactions table's rows
+                    foreach ($pagedContents[$i - 1] as $row) {
+                ?>
+                    <tr>
+                    <?php
+                        $maxRowHeight = 0;
+                        foreach ($row as $key => $values) {
+                    ?>
+                        <td class="table2-031e <?= $alignmentFormat[$key] ?>">
+                            <?php
+                                $valueRow = 0;
+                                $rowHeight = 0;
+                                foreach ($values as $key => $value) {
+                                    if ($valueRow != 0) {
+                                        echo '<br><br>';
+                                        $rowHeight += 10;
+                                    } else {
+                                        $rowHeight += 26;
+                                    }
+                                    echo $value;
+                                    $valueRow++;
+                                }
+                                if ($rowHeight > $maxRowHeight) {
+                                    $maxRowHeight = $rowHeight;
+                                }
+                            ?>
+                        </td>
+                    <?php
+                        }
+                        $tableHeight += $maxRowHeight;
+                    ?>
+                    </tr>
+                <?php
+                    }
+                ?>
+
+            </table>
+        </div>
+        <!-- transactions table -->
+
+        <!-- Spacing -->
+        <div class="spacing" style="height:<?= 570 - $tableHeight; ?>px;"></div>
+        <?php if($i == count($pagedContents)){ ?>
+        <!-- Summary table -->
+        <table class="table table1 font">
+            <tr>
+                <td class="table1-031e">Total taxable amount</td>
+                <td class="table1-031e right"><?= $partialAmount ?> €</td>
+            </tr>
+            <tr>
+                <td class="table1-031e">VAT <?= $ivaPercentage ?>%</td>
+                <td class="table1-031e right"><?= $iva ?> €</td>
+            </tr>
+            <tr>
+                <td class="table1-031e">Total</td>
+                <td class="table1-031e right"><?= $totalAmount ?> €</td>
+            </tr>
+        </table>
+        <!-- summary table -->
+            <?php } ?>
+
+        <?php if (array_key_exists('bottom_note', $invoiceContent['body'])): ?>
+            <div class="bottom-note">
+                <div class="bottom-note-line"></div>
+                <p><?= $invoiceContent['body']['bottom_note'] ?></p>
+            </div>
+        <?php endif; ?>
+
+        <?php
+            // close pages if else
+            }
+        ?>
+
+        </div>
+        <!-- content -->
+
+        <!-- Page end -->
+        <div class="page-break"></div>
+
+    </div>
+    <!-- page container -->
+
+    <?php
+        // end loop through pages
+        }
+    ?>
+
+</div>
+<!-- main container -->

@@ -28,16 +28,32 @@ class PdfController extends AbstractActionController
      */
     private $authService;
 
+    /**
+     * @var array
+     */
+    private $config;
+
+    /**
+     * @var $serverInstance
+     */
+    private $serverInstance = null;
+
     public function __construct(
         $viewRenderer,
         $pdfService,
         $invoicesService,
-        AuthenticationService $authService
+        AuthenticationService $authService,
+        array $config
     ) {
         $this->viewRenderer = $viewRenderer;
         $this->pdfService = $pdfService;
         $this->invoicesService = $invoicesService;
         $this->authService = $authService;
+        $this->config = $config;
+
+        if(isset($this->config['serverInstance'])) {
+            $this->serverInstance = $this->config['serverInstance'];
+        }
     }
 
     public function indexAction()
@@ -83,8 +99,13 @@ class PdfController extends AbstractActionController
             'invoiceContent' => $invoice->getContent()
         ]);
 
+        $instanceFolder = "";
+        if(isset($this->serverInstance) && !is_null($this->serverInstance) && $this->serverInstance["id"] != "it_IT"){
+            $instanceFolder = substr($this->serverInstance["id"], 0, 2)."/";
+        }
+
         $templateVersion = $invoice->getContent()['template_version'];
-        $viewModel->setTemplate('sharengo-core/pdf/invoice-pdf-v' . $templateVersion);
+        $viewModel->setTemplate('sharengo-core/pdf/'.$instanceFolder.'invoice-pdf-v' . $templateVersion);
 
         $layoutViewModel->setVariables([
             'content' => $this->viewRenderer->render($viewModel),

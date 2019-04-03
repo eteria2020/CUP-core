@@ -277,7 +277,8 @@ class Invoices
         Customers $customer,
         $version,
         $amounts,
-        $date = null
+        $date = null,
+        $lang = "it"
     ) {
         if (is_null($date)) {
             $date = intval(date("Ymd"));
@@ -292,18 +293,22 @@ class Invoices
         );
 
         $invoice->setContentBody([
-            'greeting_message' => '<p>Nella pagina successiva è disponibile la fattura relativa all\'acquisto del tuo Pacchetto Benvenuto, ' .
-                'il cui importo è di EUR ' .
+            'greeting_message' => ($lang == "it" ? '<p>Nella pagina successiva è disponibile la fattura relativa all\'acquisto del tuo Pacchetto Benvenuto, ' .
+                'il cui importo è di EUR ' : '<p>The invoice for the purchase of your Welcome Package is available on the next page, ' .
+                'the amount is EUR ') .
                 $amounts['sum']['grand_total'] .
                 '</p>',
             'contents' => [
-                'header' => [
+                'header' => ($lang == "it" ? [
                     'Descrizione',
                     'Imponibile'
-                ],
+                ] : [
+                    'Description',
+                    'Taxable'
+                ]),
                 'body' => [
                     [
-                        ['acquisto Pacchetto Benvenuto'],
+                        $lang == "it" ? ['acquisto Pacchetto Benvenuto'] : ['purchase Welcome Package'],
                         [$amounts['sum']['total'] . ' €']
                     ]
                 ],
@@ -336,7 +341,8 @@ class Invoices
         $tripPayments,
         $version,
         $amounts,
-        $monthly = null
+        $monthly = null,
+        $lang = "it"
     ) {
         if ($monthly instanceof \DateTime) {
             $date = $monthly;
@@ -364,10 +370,10 @@ class Invoices
              */
             array_push($body, [
                 [$trip->getId()],
-                ["Inizio: " . $trip->getTimestampBeginning()->format("d-m-Y H:i:s"),
-                    "Fine: " . $trip->getTimestampEnd()->format("d-m-Y H:i:s")],
-                ["Da: " . $trip->getAddressBeginning(),
-                    "A: " . $trip->getAddressEnd()],
+                [($lang == "it" ? "Inizio: " :  "Start: "). $trip->getTimestampBeginning()->format("d-m-Y H:i:s"),
+                    ($lang == "it" ? "Fine: " : "End: ") . $trip->getTimestampEnd()->format("d-m-Y H:i:s")],
+                [($lang == "it" ? "Da: " : "From: ") . $trip->getAddressBeginning(),
+                    ($lang == "it" ? "A: " : "To: ") . $trip->getAddressEnd()],
                 [$tripPayment->getTripMinutes() . ' (min)'],
                 [$trip->getCar()->getPlate()],
                 [$amounts['rows'][$key] . ' €']
@@ -377,13 +383,20 @@ class Invoices
         $invoice->setContentBody([
             'greeting_message' => '',
             'contents' => [
-                'header' => [
+                'header' => $lang == "it" ? [
                     'ID',
                     'Data',
                     'Partenza / Arrivo',
                     'Durata',
                     'Targa',
                     'Totale'
+                ] : [
+                    'ID',
+                    'Date',
+                    'Start / End',
+                    'Duration',
+                    'Plate',
+                    'Total'
                 ],
                 'body' => $body,
                 'body-format' => [
@@ -414,7 +427,8 @@ class Invoices
         Fleet $fleet,
         $version,
         $reasons,
-        $amounts
+        $amounts,
+        $lang = "it"
     ) {
         $invoice = new Invoices(
             $customer,
@@ -426,15 +440,19 @@ class Invoices
         );
 
         $invoice->setContentBody([
-            'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento<br>' .
-                'L\'importo totale della fattura è di EUR ' .
+            'greeting_message' => ($lang == "it" ? '<p>Nella pagina successiva troverà i dettagli del pagamento<br>' .
+                'L\'importo totale della fattura è di EUR ' : '<p>On the next page you will find the payment details<br>' .
+                'The total amount of the invoice is EUR ') .
                 $amounts['sum']['grand_total'] .
                 '</p>',
             'contents' => [
-                'header' => [
+                'header' => ($lang == "it" ? [
                     'Descrizione',
                     'Imponibile'
-                ],
+                ] : [
+                    'Description',
+                    'Taxable'
+                ]),
                 'body' => $reasons,
                 'body-format' => [
                     'alignment' => [
@@ -461,7 +479,8 @@ class Invoices
         CustomersBonusPackages $package,
         Fleet $fleet,
         $version,
-        $amounts
+        $amounts,
+        $lang = "it"
     ) {
         $invoice = new Invoices(
             $customer,
@@ -473,15 +492,19 @@ class Invoices
         );
 
         $invoice->setContentBody([
-            'greeting_message' => '<p>Nella pagina successiva troverà i dettagli del pagamento per il pacchetto da lei acquistato<br>' .
-                'L\'importo totale della fattura è di EUR ' .
+            'greeting_message' => ($lang == "it" ? '<p>Nella pagina successiva troverà i dettagli del pagamento per il pacchetto da lei acquistato<br>' .
+                'L\'importo totale della fattura è di EUR ' : '<p>On the next page you will find the payment details for the package you purchased<br>' .
+                'The total amount of the invoice is EUR ') .
                 $amounts['sum']['grand_total'] .
                 '</p>',
             'contents' => [
-                'header' => [
+                'header' => ($lang == "it" ? [
                     'Descrizione',
                     'Imponibile'
-                ],
+                ] : [
+                    'Description',
+                    'Taxable'
+                ]),
                 'body' => [
                     [
                         [$package->getDescription()],
@@ -587,6 +610,21 @@ class Invoices
                 return 'Sanzione';
             case self::TYPE_BONUS_PACKAGE:
                 return 'Pacchetto bonus';
+        }
+        return '';
+    }
+
+    public function getTypeEnglishTranslation()
+    {
+        switch ($this->getType()) {
+            case self::TYPE_FIRST_PAYMENT:
+                return 'Subscription';
+            case self::TYPE_TRIP:
+                return 'Trips';
+            case self::TYPE_PENALTY:
+                return 'Penalty';
+            case self::TYPE_BONUS_PACKAGE:
+                return 'Bonus Package';
         }
         return '';
     }
