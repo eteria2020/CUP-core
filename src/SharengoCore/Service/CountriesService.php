@@ -77,6 +77,6 @@ class CountriesService
      */
     public function getCountryByName($name)
     {
-        return $this->repository->findOneByName($name);
+        return $this->repository->findOneByCode($name);
     }
 }
