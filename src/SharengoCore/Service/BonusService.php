@@ -164,6 +164,7 @@ class BonusService
     {
         return $this->bonusRepository->getWelcomeBonusPackage($customer);
     }
+
     /**
      *  @param Customers $customer
      *  @param string $start
@@ -173,5 +174,14 @@ class BonusService
     public function verifySilverList($customer, $start = null, $end = null){
         return $this->bonusRepository->getSilverListBonus($customer, $start, $end);
     }
-    
+
+    /**
+     *  @param Customers $customer
+     *  @return Bonus
+     */
+    public function verifyNotRunningBonus($customer)
+    {
+        return $this->bonusRepository->getNotRunningBonusPackage($customer);
+    }
+
 }
