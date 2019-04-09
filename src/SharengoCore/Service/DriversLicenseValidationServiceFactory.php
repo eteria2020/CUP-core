@@ -11,7 +11,8 @@ class DriversLicenseValidationServiceFactory implements FactoryInterface
     {
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $repository = $entityManager->getRepository('\SharengoCore\Entity\DriversLicenseValidation');
+        $countriesService = $serviceLocator->get('SharengoCore\Service\CountriesService');
 
-        return new DriversLicenseValidationService($entityManager, $repository);
+        return new DriversLicenseValidationService($entityManager, $repository, $countriesService);
     }
 }
