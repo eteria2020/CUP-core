@@ -211,7 +211,10 @@ class DriversLicenseValidationService
      * @return mixed
      */
     public function fixDataForValidationDriverLicense($data) {
-        // Fix country
+
+        $data['driverLicenseSurname'] = $this->normalizeString($data['driverLicenseSurname']);
+        $data['driverLicenseName'] = $this->normalizeString($data['driverLicenseName']);
+        $data['birthTown'] = $this->normalizeString($data['birthTown']);
 
         $data['driverLicenseSurname'] = $this->replaceDiacriticsChar($data['driverLicenseSurname']);
         $data['driverLicenseName'] = $this->replaceDiacriticsChar($data['driverLicenseName']);
@@ -306,6 +309,22 @@ class DriversLicenseValidationService
         }
 
         return $data;
+    }
+
+
+    /**
+     * Replace some chars (i.e. '-') width space and remove dupliceted spaces inside the tring and trim.
+     *
+     * @param $input
+     * @return string
+     */
+    private function normalizeString($input) {
+
+        $input = trim($input);
+        $input = str_replace('-',' ',$input);
+        $output = preg_replace('!\s+!', ' ', $input);
+        return $output;
+
     }
 
     /**
