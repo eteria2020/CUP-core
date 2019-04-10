@@ -236,6 +236,13 @@ class DriversLicenseValidationService
                 $data['birthProvince'] = 'VC';
                 break;
 
+            //  SAN GIOVANNI IN PERSICETO --> SAN GIOVANNI PERSICETO
+            case 'BO':
+                if ($data['birthTown']=='SAN GIOVANNI IN PERSICETO'){
+                    $data['birthTown'] = 'SAN GIOVANNI PERSICETO';
+                }
+                break;
+
             //Barletta-Andria-Trani --> Bari
             case 'BT':
                 $data['birthProvince'] = 'BA';
