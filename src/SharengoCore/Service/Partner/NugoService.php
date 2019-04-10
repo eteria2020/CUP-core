@@ -1297,8 +1297,7 @@ class NugoService
                 'birthTown' => $customer->getBirthTown()
             ];
 
-            $data['birthCountryMCTC'] = $this->countriesService->getMctcCode($data['birthCountry']);
-            $data['birthProvince'] = $this->driversLicenseValidationService->changeProvinceForValidationDriverLicense($data);
+            $data = $this->driversLicenseValidationService->fixDataForValidationDriverLicense($data);
 
             $response = $this->portaleAutomobilistaValidationService->validateDriversLicense($data);
 

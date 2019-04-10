@@ -334,7 +334,7 @@ class CustomersRepository extends \Doctrine\ORM\EntityRepository
         }
 
         if(!is_null($maxCustomers)){
-            $customersLimit = " LIMIT 10 ";
+            $customersLimit = " LIMIT ".$maxCustomers;
         }
 
         $sql = sprintf("SELECT c.id ".
