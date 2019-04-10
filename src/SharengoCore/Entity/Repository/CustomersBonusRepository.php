@@ -276,7 +276,7 @@ class CustomersBonusRepository extends \Doctrine\ORM\EntityRepository
     public function getNotRunningBonusPackage($customer) {
         $em = $this->getEntityManager();
         $dql = "SELECT cb FROM \SharengoCore\Entity\CustomersBonus cb ".
-            "WHERE cb.customer = :customer AND cb.type = 'notRunning' ";
+            "WHERE cb.customer = :customer AND cb.description LIKE '%RIPARTI%' ";
         $query = $em->createQuery($dql);
         $query->setParameter('customer', $customer);
         return $query->getResult();
