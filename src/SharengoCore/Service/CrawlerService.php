@@ -4,13 +4,13 @@ namespace SharengoCore\Service;
 
 class CrawlerService
 {
-    private function apiRequest($id)
+    private function apiRequest($id, $status)
     {
         try {
             $curl = curl_init();
 
             curl_setopt_array($curl, array(
-                CURLOPT_URL => "https://manage.sharengo.it/crawler/api.php?id=" . $id,
+                CURLOPT_URL => "https://manage.sharengo.it/crawler/api.php?id=" . $id . "&status=" .$status,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => "",
                 CURLOPT_MAXREDIRS => 10,
@@ -40,7 +40,7 @@ class CrawlerService
     }
 
     public function isValidUser($id){
-        $response = $this->apiRequest($id);
+        $response = $this->apiRequest($id, null);
 
         if (is_array($response)){
             return (isset($response["status"]) && $response["status"] == 200);
@@ -51,8 +51,18 @@ class CrawlerService
 
     public function getCustomerInformation($id){
         
-        return $this->apiRequest($id);
+        return $this->apiRequest($id, null);
 
+    }
+
+    public function setLoggerEndTs($id, $status){
+        $response = $this->apiRequest($id, $status);
+
+        if (is_array($response)){
+            return (isset($response["status"]) && $response["status"] == 200);
+        } else {
+            return false;
+        }
     }
 
 
