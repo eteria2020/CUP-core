@@ -900,7 +900,7 @@ class CustomersService implements ValidatorServiceInterface
             "200",                                                                          // 27. 330 - max 6
             "CC001",                                                                         // 28. 581 - max 25
             $recipientCode,                                                                  // 29. max 7
-            $this->exportFormat($customer->getCem(), 25)                              // 30. max 25
+            $this->exportFormat($customer->getCem(), 128)                             // 30. max 128
         ];
         return implode(";", $registry);
     }
