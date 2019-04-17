@@ -240,6 +240,8 @@ class DriversLicenseValidationService
             case 'BO':
                 if ($data['birthTown']=='SAN GIOVANNI IN PERSICETO'){
                     $data['birthTown'] = 'SAN GIOVANNI PERSICETO';
+                } elseif ($data['birthTown']=='CASTEL SAN PIETRO TERME'){
+                    $data['birthTown'] = 'CASTEL S.PIETRO TERME';
                 }
                 break;
 
