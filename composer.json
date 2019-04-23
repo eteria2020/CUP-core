@@ -8,7 +8,8 @@
         "mvlabs/mvlabs-snappy": "0.2.*",
         "h4cc/wkhtmltopdf-amd64": "0.12.0",
         "rwoverdijk/assetmanager": "1.4.*",
-        "usu/codice-fiscale": "^1.0"
+        "usu/codice-fiscale": "^1.0",
+        "mattketmo/email-checker": "^1.5"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.7",
