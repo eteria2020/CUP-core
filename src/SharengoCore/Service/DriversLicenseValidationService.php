@@ -260,6 +260,13 @@ class DriversLicenseValidationService
                 $data['birthProvince'] = 'FO';
                 break;
 
+            // Fermo
+            case 'FM':
+                if ($data['birthTown']=='MONTERUBBIANO'){
+                    $data['birthProvince'] = 'AP';
+                }
+                break;
+
             //Lecco --> Bergamo || Como
             case 'LC':
                 $municipalities_lecco_special = array("CALOLZIOCORTE", "CARENNO", "ERVE", "MONTE MARENZO", "VERCURAGO");
