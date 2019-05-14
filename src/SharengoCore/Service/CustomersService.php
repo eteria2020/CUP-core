@@ -877,7 +877,7 @@ class CustomersService implements ValidatorServiceInterface
             $vat,                                                                           // 4. 60 - max 25
             empty($vat) ? 0 : 1,                                                            // 5. 61 - max 1
             empty($vat) ? 1 : 0,                                                            // 6. 358 - max 1
-            $taxCode,                                                // 7. 70 - max 25
+            $taxCode,                                                                       // 7. 70 - max 25
             empty($vat) ? 3 : 2,                                                            // 8. 80 - max 1
             $this->exportFormat($customer->getSurname(), 30),                        // 9. 90 - max 30
             $this->exportFormat($customer->getName(), 30),                           // 10. 95 - max 30
@@ -887,15 +887,15 @@ class CustomersService implements ValidatorServiceInterface
             $this->exportFormat($customer->getMobile(), 20),                        // 14. 170 - max 20
             $this->exportFormat($zipCode, 10),                                      // 15. 110 - max 7
             $this->exportFormat($customer->getTown(), 25),                           // 16. 120 - max 25
-            $customer->getBirthProvince(),                                                  // 17. 130 - max 2  TODO: to replace width province
-            str_replace(";", " ", $customer->getBirthCountry()),             // 18. 140 - max 3  TODO: to replace width country
+            $customer->getProvince(),                                                      // 17. 130 - max 2  province
+            $this->fixCountry($customer->getCountry()),                                   // 18. 140 - max 3  country
             $this->exportFormat($customer->getSurname(), 25),                       // 19. 230 - max 25
             $this->exportFormat($customer->getName(), 20),                          // 20. 231 - max 20
             $this->exportFormat($customer->getBirthTown(), 25),                     // 21. 232 - max 25
-            $customer->getBirthProvince(),                                                  // 22. 233 - max 2
+            $customer->getBirthProvince(),                                                  // 22. 233 - max 2  birth province
             $customer->getBirthDate()->format("d/m/Y"),                              // 23. 234 - max 10
             $customer->getGender() == 'male' ? 'M' : 'F',                                   // 24. 235 - max 1
-            $customer->getBirthCountry(),                                                   // 25. 236 - max 3
+            $this->fixCountry($customer->getBirthCountry()),                                // 25. 236 - max 3  birth country
             "C01",                                                                          // 26. 240 - max 6
             "200",                                                                          // 27. 330 - max 6
             "CC001",                                                                         // 28. 581 - max 25
@@ -1156,6 +1156,22 @@ class CustomersService implements ValidatorServiceInterface
             if(!is_null($country)) {
                 $result = $country->getCadastralCode();
             }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Fix old country (i.e Montenegro, Serbia) that doesn't exist
+     *
+     * @param $country
+     * @return string
+     */
+    private function fixCountry($country) {
+
+        $result = $country;
+        if($country == 'cs' || $country == 'xs') {  // Montenego or Serbia
+            $result = 'rs';
         }
 
         return $result;
