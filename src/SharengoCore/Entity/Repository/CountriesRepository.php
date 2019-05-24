@@ -25,16 +25,16 @@ class CountriesRepository extends \Doctrine\ORM\EntityRepository
         $result = $countries->getResult();
         for ($i=0; $i<count($result); $i++) {
             if ($result[$i]['name'] == $selectedCountry) {
-                $return = array();
-                $return[0] = $result[$i];
+                $resultTmp = array();
+                $resultTmp[0] = $result[$i];
                 // Add the elements before and after the $i index
-                $return = array_merge($return, array_slice($result, 0, $i, true),
+                $result = array_merge($resultTmp, array_slice($result, 0, $i, true),
                     array_slice($result, $i+1, count($result)-$i, true));
                 break;
             }
         }
 
-        return $return;
+        return $result;
     }
 
     public function getAllPhoneCodeByCountry($selectedCountry = null)
@@ -53,15 +53,15 @@ class CountriesRepository extends \Doctrine\ORM\EntityRepository
         $result = $countries->getResult();
         for ($i=0; $i<count($result); $i++) {
             if ($result[$i]['name'] == $selectedCountry) {
-                $return = array();
-                $return[0] = $result[$i];
+                $resultTmp = array();
+                $resultTmp[0] = $result[$i];
                 // Add the elements before and after the $i index
-                $return = array_merge($return, array_slice($result, 0, $i, true),
+                $result = array_merge($resultTmp, array_slice($result, 0, $i, true),
                     array_slice($result, $i+1, count($result)-$i, true));
                 break;
             }
         }
 
-        return $return;
+        return $result;
     }
 }
