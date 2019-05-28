@@ -57,9 +57,9 @@ class FreeFaresService {
 
         if (isset($conditions['car'])) {
             $intervals = $this->filterCar($intervals, $trip, $conditions['car']);
-        } else if (isset($conditions['customer'])) {
+        } elseif (isset($conditions['customer'])) {
             $intervals = $this->filterCustomer($intervals, $trip->getCustomer(), $conditions['customer']);
-        } else if (isset($conditions['time'])) {
+        } elseif (isset($conditions['time'])) {
             $intervals = $this->filterTime($intervals, $conditions['time']);
         } else {
             $intervals = [];

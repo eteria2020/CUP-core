@@ -1422,7 +1422,7 @@ class NugoService
                     if ($partner == $this->partner) {
                         if($tripPayment->getStatus() == TripPayments::STATUS_PAYED_CORRECTLY) {
                             $result = $this->invoceCreateForTrip($tripPayment, $nugoInvoiceNumber, $invoiceDate);
-                        } else if ($tripPayment->getStatus() == TripPayments::STATUS_INVOICED) {
+                        } elseif ($tripPayment->getStatus() == TripPayments::STATUS_INVOICED) {
                             $result = $this->invoceUpdateForTrip($tripPayment, $nugoInvoiceNumber, $invoiceDate);
                         } else {
                             $this->logger->log(sprintf("%s;ERR;invoceProcess;%s;%s;%s;wrong status\n", 

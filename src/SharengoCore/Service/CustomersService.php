@@ -1094,7 +1094,7 @@ class CustomersService implements ValidatorServiceInterface
             if(!is_null($gender)) { // check gender
                 if (strtolower(trim($gender))=='male') {
                     $gender = Checker::CHR_MALE;
-                } else if (strtolower(trim($gender))=='female') {
+                } elseif (strtolower(trim($gender))=='female') {
                     $gender = Checker::CHR_WOMEN;
                 } else {
                     array_push($result, $this->translator->translate("Codice fiscale, genere ".$gender." non previsto."));

@@ -72,7 +72,7 @@ class BuyCustomerBonusPackage
                 $this->entityManager->persist($bonus);
                 $this->entityManager->flush();
             }
-            else if($package->getType() === "Pacchetto"){
+            elseif($package->getType() === "Pacchetto"){
 
                 $contract = $this->cartasiContractService->getCartasiContract($customer);
 

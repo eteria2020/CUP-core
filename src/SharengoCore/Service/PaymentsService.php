@@ -379,7 +379,7 @@ class PaymentsService
                     $tripPayment,
                     $this->avoidCartasi
                 );
-            } else if ($contract->getPartner()->getCode() == "gpwebpay"){
+            } elseif ($contract->getPartner()->getCode() == "gpwebpay"){
                 $response = $this->gpwebpayCustomerPayments->sendPaymentRequest(
                     $customer,
                     $tripPayment->getTotalCost(),

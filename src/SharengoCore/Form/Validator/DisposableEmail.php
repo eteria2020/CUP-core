@@ -24,6 +24,10 @@ class DisposableEmail extends AbstractValidator
 
     public function isValid($value) {
 
+        if(substr_compare($value, '@qq.com', -strlen('@qq.com')) === 0) {   // qq.com is an exception
+            return true;
+        }
+
         $checker = new EmailChecker();
         if(!$checker->isValid($value)) {
             $this->error(self::DISPOSABLE);

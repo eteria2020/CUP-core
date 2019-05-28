@@ -680,7 +680,7 @@ class Cars {
 
             if ($result<100) {
                 $result = $result * 100;
-            } else if ($result<1000) {
+            } elseif ($result<1000) {
                 $result = $result * 10;
             }
         } catch (Exception $ex) {
@@ -742,7 +742,7 @@ class Cars {
 
                 if($result==105 || $result==107) {
                     $result = $result * 100;
-                } else if($result>=100 && $result<10000) {
+                } elseif($result>=100 && $result<10000) {
                    $result = $result * 10;
                 }
             } else {    //ver x.yyy.z es 1.001.0 -->10010 2.004.3 --> 20043
