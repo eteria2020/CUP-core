@@ -21,7 +21,7 @@ use Zend\Http\Client;
 
 class TelepassPayService {
 
-    const PAYMENT_LABEL = 'TELEPASSPAY';
+    //const PAYMENT_LABEL = 'TELEPASSPAY';
     const PAYMENT_SUCCESSFUL = 'OK';
     const PAYMENT_FAIL = 'KO';
 
