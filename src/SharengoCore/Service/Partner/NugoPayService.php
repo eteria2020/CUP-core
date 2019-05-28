@@ -328,12 +328,12 @@ class NugoPayService {
 
 
     /**
-     * Send a payment request to Nugo in two step (pre-authorization and carging account).
-     * 
-     * @param Customers $customer
-     * @param integer $amount
-     * @param boolean $avoidHittingPay
-     * @return CartasiResponse
+     * Send a payment request to Nugo (single step, only charge account)
+     *
+     * @param TripPayments $tripPayment
+     * @param bool $avoidHittingPay
+     * @return CartasiResponse|null
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function sendTripPaymentRequest(
         TripPayments $tripPayment,

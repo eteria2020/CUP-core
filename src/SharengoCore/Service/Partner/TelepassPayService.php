@@ -373,12 +373,12 @@ class TelepassPayService {
 
 
     /**
-     * Send a payment request to Nugo in two step (pre-authorization and carging account).
+     * Send a payment request to Telepass (single step, only charge account)
      *
-     * @param Customers $customer
-     * @param integer $amount
-     * @param boolean $avoidHittingPay
-     * @return CartasiResponse
+     * @param TripPayments $tripPayment
+     * @param bool $avoidHittingPay
+     * @return CartasiResponse|null
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function sendTripPaymentRequest(
         TripPayments $tripPayment,
