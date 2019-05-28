@@ -2,6 +2,7 @@
 
 namespace SharengoCore\Service\Partner;
 
+use Zend\EventManager\EventManager;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -11,6 +12,7 @@ class TelepassPayServiceFactory implements FactoryInterface
     {
 
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
+        $eventManager = new EventManager('NugoPayService');
 
         $tripsService = $serviceLocator->get('SharengoCore\Service\TripsService');
         $extraPaymentsService = $serviceLocator->get('SharengoCore\Service\ExtraPaymentsService');
@@ -19,6 +21,7 @@ class TelepassPayServiceFactory implements FactoryInterface
 
         return new TelepassPayService(
             $entityManager,
+            $eventManager,
             $tripsService,
             $extraPaymentsService,
             $cartasiContractsService,

@@ -15,10 +15,15 @@ use Cartasi\Entity\Transactions;
 use Cartasi\Service\CartasiContractsService;
 
 
+use Zend\EventManager\EventManager;
 use Zend\Http\Request;
 use Zend\Http\Client;
 
 class TelepassPayService {
+
+    const PAYMENT_LABEL = 'TELEPASSPAY';
+    const PAYMENT_SUCCESSFUL = 'OK';
+    const PAYMENT_FAIL = 'KO';
 
     private $code ='telepass';
     private $currency ='EUR';
@@ -41,6 +46,12 @@ class TelepassPayService {
      * @var EntityManager entityManager
      */
     private $entityManager;
+
+    /**
+     *
+     * @var EventManager eventManager
+     */
+    private $eventManager;
 
     /**
      *
@@ -72,14 +83,25 @@ class TelepassPayService {
      */
     private $partnersRepository;
 
+    /**
+     * TelepassPayService constructor.
+     * @param EntityManager $entityManager
+     * @param EventManager $eventManager
+     * @param TripsService $tripsService
+     * @param ExtraPaymentsService $extraPaymentsService
+     * @param CartasiContractsService $cartasiContractsService
+     * @param PartnersRepository $partnersRepository
+     */
     public function __construct(
         EntityManager $entityManager,
+        EventManager $eventManager,
         TripsService $tripsService,
         ExtraPaymentsService $extraPaymentsService,
         CartasiContractsService $cartasiContractsService,
         PartnersRepository $partnersRepository
     ) {;
         $this->entityManager = $entityManager;
+        $this->eventManager = $eventManager;
         $this->tripsService = $tripsService;
         $this->extraPaymentsService = $extraPaymentsService;
         $this->cartasiContractsService = $cartasiContractsService;
@@ -212,20 +234,23 @@ class TelepassPayService {
      * After a ride is complete, its cost can be charged to the associated user’s account by calling the charge endpoint.
      *
      * @param string $referenceId The unique reference ID on partners' side (for Share’ngo, this should be the ID of the reservation for which a vehicle is about to be unlocked)
-     * @param string  $preAuthId The unique ID associated with the preauthorization, obtained via a /pay/preauth request
+     * @param string $email
+     * @param string $type Type of payment object (trip, subscription, package, extra)
+     * @param int $fleetId Fleet index
      * @param int  $amount The amount of money (in Euro cents) to be charged on the payment gateway
      * @param string $currency The currency of the pre-authorization (ISO 4217 Currency Codes)
-     * @param array $response Response of server
+     * @param string $curlResponse Response of server
      * @return boolean
      */
     private function tryCharginAccount(
         $referenceId,
-        $preAuthId,
+        $email,
+        $type,
+        $fleetId,
         $amount,
         $currency,
         &$response) {
 
-        $uriCharge = '/pay/charge';
         $result = false;
         $response = null;
 
@@ -233,102 +258,183 @@ class TelepassPayService {
 
             $json = json_encode(
                 array(
-                    'referenceId' => $referenceId,
-                    'preAuthId' => $preAuthId,
+                    'referenceId' => strval($referenceId),
+                    'email' => $email,
+                    'type' => strtoupper($type),
+                    'fleetId' => $fleetId,
                     'amount' => $amount,
                     'currency' => $currency
                 )
             );
 
-            $request = new Request();
-            $request->setUri($this->parms['payments']['uri'] . $uriCharge);
+            $this->httpClient->setUri($this->params['payments']['uri']);
+            $this->httpClient->setMethod(Request::METHOD_POST);
+            $adapter = new \Zend\Http\Client\Adapter\Curl();
+            $this->httpClient->setAdapter($adapter);
 
-            $this->httpClient->setUri($this->parms['payments']['uri'] . $uriCharge);
+            $adapter->setOptions(array(
+                'curloptions' => array(
+                    CURLOPT_SSLVERSION => 6, //tls1.2
+                    //CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_VERBOSE => 0,
+                    CURLOPT_SSL_VERIFYHOST => 0,
+                    CURLOPT_SSL_VERIFYPEER => 0
+                )
+            ));
+
             $this->httpClient->setRawBody($json);
+            $httpResponse  = $this->httpClient->send();
 
-            $httpResponse = $this->httpClient->send();
-            $response = json_decode($httpResponse->getBody(), true);
-
-            if ($response['chargeSuccessful']==true) {
-                $result = true;
+            if($httpResponse->isSuccess()) {
+                $response = $httpResponse->getBody();
+                json_decode($response, true);    // check json format
+                $result = (json_last_error() == JSON_ERROR_NONE);
+            } else {
+                $response = "HTTP error:".$httpResponse->getStatusCode();
             }
 
         } catch (\Exception $ex) {
-            $response = null;
+            var_dump("tryCharginAccount();ERR;EXC;".$ex->getLine().";".$ex->getMessage());
+            $response = $ex->getMessage();
         }
 
         return $result;
     }
 
 
+//    /**
+//     * Send a payment request to Telepass in two step (pre-authorization and carging account).
+//     *
+//     * @param Customers $customer
+//     * @param integer $amount
+//     * @param boolean $avoidHittingTelepassPay
+//     * @return CartasiResponse
+//     */
+//    public function sendPaymentRequest(
+//        Customers $customer,
+//        $amount,
+//        $avoidHittingTelepassPay = false
+//    ) {
+//        $response = null;
+//
+//        if(!$avoidHittingTelepassPay) {
+//            $response = new CartasiResponse(false, 'KO', null);
+//
+//            $responseTelepass = null;
+//            $transaction = $this->newTransactionCustomer($customer, $amount);
+//
+//            if($this->cartasiContractsService->hasCartasiContract($customer)) {
+//                $contract = $this->cartasiContractsService->getCartasiContract($customer);
+//
+//                $transaction->setContract($contract);
+//                $response = new CartasiResponse(false, 'KO', $transaction);
+//
+//                if($this->sendPreAthorization(
+//                    $customer->getEmail(),
+//                    $transaction->getId(),
+//                    array(
+//                        'reason'=> 'trip payment',
+//                        'transaction' => $transaction->getId()),
+//                    $amount,
+//                    $this->currency,
+//                    $responseTelepass)) {
+//
+//                    $transaction->setCodAut($responseTelepass['preAuthId']);
+//
+//                    if($this->tryCharginAccount(
+//                        $transaction->getId(),
+//                        $responseTelepass['preAuthId'],
+//                        $amount,
+//                        $this->currency,
+//                        $responseTelepass)) {
+//
+//                        $transaction->setOutcome('OK');
+//                    }
+//                }
+//            }
+//
+//            if(is_null($responseTelepass)) { // if it's happen a system error like remote server down
+//                return null;
+//            }
+//
+//            $transaction->setMessage(substr(json_encode($responseTelepass), 0, 255));
+//            $transaction->setDatetime(date_create());
+//            $this->entityManager->merge($transaction);
+//            $this->entityManager->flush();
+//
+//            if($transaction->getOutcome()=='OK') {
+//                $response = new CartasiResponse(true, 'OK', $transaction);
+//            }
+//        }
+//
+//        return $response;
+//
+//    }
+
+
     /**
-     * Send a payment request to Telepass in two step (pre-authorization and carging account).
-     * 
+     * Send a payment request to Nugo in two step (pre-authorization and carging account).
+     *
      * @param Customers $customer
      * @param integer $amount
-     * @param boolean $avoidHittingTelepassPay
+     * @param boolean $avoidHittingPay
      * @return CartasiResponse
      */
-    public function sendPaymentRequest(
-        Customers $customer,
-        $amount,
-        $avoidHittingTelepassPay = false
+    public function sendTripPaymentRequest(
+        TripPayments $tripPayment,
+        $avoidHittingPay = false
     ) {
+        $customer = $tripPayment->getCustomer();
         $response = null;
 
-        if(!$avoidHittingTelepassPay) {
-            $response = new CartasiResponse(false, 'KO', null);
+        if(!$avoidHittingPay) {
+            $response = new CartasiResponse(false, self::PAYMENT_FAIL, null);
 
-            $responseTelepass = null;
+            $responsePayment = null;
+            $amount = $tripPayment->getTotalCost();
             $transaction = $this->newTransactionCustomer($customer, $amount);
 
             if($this->cartasiContractsService->hasCartasiContract($customer)) {
                 $contract = $this->cartasiContractsService->getCartasiContract($customer);
 
                 $transaction->setContract($contract);
-                $response = new CartasiResponse(false, 'KO', $transaction);
+                $response = new CartasiResponse(false, self::PAYMENT_FAIL, $transaction);
 
-                if($this->sendPreAthorization(
+                if($this->tryCharginAccount(
+                    $tripPayment->getTripId(),
                     $customer->getEmail(),
-                    $transaction->getId(),
-                    array(
-                        'reason'=> 'trip payment',
-                        'transaction' => $transaction->getId()),
+                    'TRIP',
+                    $tripPayment->getTrip()->getFleet()->getId(),
                     $amount,
                     $this->currency,
-                    $responseTelepass)) {
+                    $responsePayment)) {
 
-                    $transaction->setCodAut($responseTelepass['preAuthId']);
-
-                    if($this->tryCharginAccount(
-                        $transaction->getId(),
-                        $responseTelepass['preAuthId'],
-                        $amount,
-                        $this->currency,
-                        $responseTelepass)) {
-
-                        $transaction->setOutcome('OK');
+                    $jsonResponse = json_decode($responsePayment, true);
+                    if ($jsonResponse['chargeSuccessful']===true) {
+                        $transaction->setOutcome(self::PAYMENT_SUCCESSFUL);
                     }
                 }
+
+                $transaction->setMessage($responsePayment);
+
+//                $this->eventManager->trigger('notifyPartnerCustomerStatus', $this, [
+//                    'customer' => $customer
+//                ]);
             }
 
-            if(is_null($responseTelepass)) { // if it's happen a system error like remote server down
-                return null;
-            }
-
-            $transaction->setMessage(substr(json_encode($responseTelepass), 0, 255));
-            $transaction->setDatetime(date_create());
             $this->entityManager->merge($transaction);
             $this->entityManager->flush();
 
-            if($transaction->getOutcome()=='OK') {
-                $response = new CartasiResponse(true, 'OK', $transaction);
+            if($transaction->getOutcome()==self::PAYMENT_SUCCESSFUL) {
+                $response = new CartasiResponse(true, self::PAYMENT_SUCCESSFUL, $transaction);
             }
         }
 
         return $response;
 
     }
+
+
 
     /**
      * Create a new Tpay transaction from customers and amount

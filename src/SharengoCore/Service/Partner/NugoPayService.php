@@ -84,6 +84,15 @@ class NugoPayService {
      */
     private $partnersRepository;
 
+    /**
+     * NugoPayService constructor.
+     * @param EntityManager $entityManager
+     * @param EventManager $eventManager
+     * @param TripsService $tripsService
+     * @param ExtraPaymentsService $extraPaymentsService
+     * @param CartasiContractsService $cartasiContractsService
+     * @param PartnersRepository $partnersRepository
+     */
     public function __construct(
         EntityManager $entityManager,
         EventManager $eventManager,

@@ -1,9 +1,10 @@
 <?php
 
 namespace SharengoCore\Service\Partner;
-//use Zend\EventManager\EventManager;
-use SharengoCore\Service\SimpleLoggerService as Logger;
 
+use MvLabsDriversLicenseValidation\Service\PortaleAutomobilistaValidationService;
+
+use SharengoCore\Service\SimpleLoggerService as Logger;
 use SharengoCore\Service\CustomersService;
 use SharengoCore\Service\CustomerDeactivationService;
 use SharengoCore\Service\FleetService;
@@ -11,7 +12,6 @@ use SharengoCore\Service\UserEventsService;
 use SharengoCore\Service\DriversLicenseValidationService;
 use SharengoCore\Service\CountriesService;
 use SharengoCore\Service\InvoicesService;
-use MvLabsDriversLicenseValidation\Service\PortaleAutomobilistaValidationService;
 
 use SharengoCore\Entity\Repository\CustomersRepository;
 use SharengoCore\Entity\Repository\PartnersRepository;
@@ -86,7 +86,7 @@ class NugoService
 
     /**
      *
-     * @var CustomersRepository
+     * @var PartnersRepository
      */
     private $partnersRepository;
 
@@ -197,6 +197,24 @@ class NugoService
      */
     private $ftpConn = null;
 
+    /**
+     * NugoService constructor.
+     * @param EntityManager $entityManager
+     * @param Logger $logger
+     * @param $config
+     * @param CustomersRepository $customersRepository
+     * @param PartnersRepository $partnersRepository
+     * @param TripsRepository $tripsRepository
+     * @param CustomersService $customersService
+     * @param CustomerDeactivationService $deactivationService
+     * @param FleetService $fleetService
+     * @param ProvincesRepository $provincesRepository
+     * @param UserEventsService $userEventsService
+     * @param CountriesService $countriesService
+     * @param InvoicesService $invoicesService
+     * @param DriversLicenseValidationService $driversLicenseValidationService
+     * @param PortaleAutomobilistaValidationService $portaleAutomobilistaValidationService
+     */
     public function __construct(
         EntityManager $entityManager,
         Logger $logger,
@@ -1267,6 +1285,7 @@ class NugoService
 
 
     /**
+     * Create a new Driver License Validation
      *
      * @param Customers $customer
      * @param string $drivingLicense
@@ -1679,7 +1698,12 @@ class NugoService
         return number_format((float) $decimal / 100, 2, ',', '');
     }
 
-
+    /**
+     * Test curl request to perform a charge account
+     * @param $curlResponse
+     * @param $jsonResponse
+     * @return bool
+     */
     public function tryChargeAccountTest(&$curlResponse, &$jsonResponse) {
         $result = false;
         $curlResponse = null;
