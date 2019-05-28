@@ -71,11 +71,11 @@ class PreauthorizationsService
 
                 $this->setPreautDone($preauthorizations);
 
-            } else if ($tripPayment->getTotalCost() > $preauthorizations->getTransaction()->getAmount()) {
+            } elseif ($tripPayment->getTotalCost() > $preauthorizations->getTransaction()->getAmount()) {
 
                 $this->toBePayed($tripPayment, $preauthorizations);
 
-            } else if ($tripPayment->getTotalCost() < $preauthorizations->getTransaction()->getAmount()) {
+            } elseif ($tripPayment->getTotalCost() < $preauthorizations->getTransaction()->getAmount()) {
                 //if the trip has a lower cost than the preauthorized
 
                 $this->toBeRefund($tripPayment);
