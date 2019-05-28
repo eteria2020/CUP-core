@@ -287,7 +287,7 @@ class CarsService
                             $maintenanceReservation->setActive(false);
                             $maintenanceReservation->setTosend(true);
                         }
-                    } else if ($car->getStatus() == CarStatus::MAINTENANCE) {
+                    } elseif ($car->getStatus() == CarStatus::MAINTENANCE) {
                         if (null != $maintenanceReservation) {
                             $maintenanceReservation->setActive(true);
                             $maintenanceReservation->setTosend(true);

@@ -353,7 +353,7 @@ class AccountTripsService
 
                 return [$newTrip];
             }
-        } else if ($tripInterval->strictlyContains($interval->end())) {
+        } elseif ($tripInterval->strictlyContains($interval->end())) {
             // the bonus starts before the trip and ends during the trip
             $newTrip = clone $trip;
 
@@ -361,7 +361,7 @@ class AccountTripsService
             $newTrip->setTimestampBeginning($interval->end()->add(new \DateInterval('PT1S')));
 
             return [$newTrip];
-        } else if ($interval->contains($tripInterval->start()) && $interval->contains($tripInterval->end())) {
+        } elseif ($interval->contains($tripInterval->start()) && $interval->contains($tripInterval->end())) {
             // the bonus starts before the trip and ends later
             return [];
         }
