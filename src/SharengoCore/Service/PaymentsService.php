@@ -369,10 +369,12 @@ class PaymentsService
         if(!is_null($contract->getPartner())) { // contract with partner
             $response = null;
             if($contract->getPartner()->getCode()=='telepass') {
-                $response = $this->telepassPayService->sendTripPaymentRequest(
-                    $tripPayment,
-                    $this->avoidCartasi
-                );
+                $response = $this->telepassPayService->sendPaymentRequest(
+                    $tripPayment->getCustomer(),
+                    $tripPayment->getTotalCost(),
+                    $avoidHittingPay,
+                    'TRIP',
+                    $tripPayment->getTrip()->getFleet()->getId());
             } elseif ($contract->getPartner()->getCode()=='nugo') {
                 $response = $this->nugoPayService->sendTripPaymentRequest(
                     $tripPayment,
