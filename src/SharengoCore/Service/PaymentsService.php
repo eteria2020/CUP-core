@@ -454,12 +454,42 @@ class PaymentsService
         Webuser $webuser = null,
         $avoidDisableUser = false
     ) {
-        $response = $this->cartasiCustomerPayments->sendPaymentRequest(
-            $customer,
-            $extraPayment->getAmount(),
-            $this->avoidCartasi
-        );
 
+        $contract = $this->cartasiContractService->getCartasiContract($customer);
+
+        if(!is_null($contract->getPartner())) { // contract with partner
+            $response = null;
+            if($contract->getPartner()->getCode()=='telepass') {
+//                $response = $this->telepassPayService->sendPaymentRequest(
+//                    $customer,
+//                    $tripPayment->getTotalCost(),
+//                    $this->avoidCartasi
+//                );
+            } elseif ($contract->getPartner()->getCode()=='nugo') {
+//                $response = $this->nugoPayService->sendTripPaymentRequest(
+//                    $tripPayment,
+//                    $this->avoidCartasi
+//                );
+            } elseif ($contract->getPartner()->getCode() == "gpwebpay"){
+                $response = $this->gpwebpayCustomerPayments->sendPaymentRequest(
+                    $customer,
+                    $extraPayment->getAmount(),
+                    $this->avoidCartasi
+                );
+            }
+
+            if(is_null($response)) {
+                return $response;
+            }
+            
+        } else {
+            $response = $this->cartasiCustomerPayments->sendPaymentRequest(
+                $customer,
+                $extraPayment->getAmount(),
+                $this->avoidCartasi
+            );
+        }
+        
         $this->entityManager->beginTransaction();
 
         try {
