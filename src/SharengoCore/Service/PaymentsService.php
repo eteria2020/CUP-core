@@ -2,17 +2,17 @@
 
 namespace SharengoCore\Service;
 
+use Doctrine\ORM\EntityManager;
+use Zend\EventManager\EventManager;
+
 use Cartasi\Service\CartasiCustomerPaymentsInterface;
 use Cartasi\Service\CartasiContractsService;
+
 use GPWebpay\Service\GPWebpayCustomerPayments;
+
 use SharengoCore\Entity\Preauthorizations;
 use SharengoCore\Entity\Repository\FreeFaresRepository;
 use SharengoCore\Entity\Reservations;
-use SharengoCore\Service\TripPaymentTriesService;
-use SharengoCore\Service\CustomerDeactivationService;
-use SharengoCore\Service\FreeFaresService as FreeFares;
-use SharengoCore\Service\Partner\TelepassPayService;
-use SharengoCore\Service\Partner\NugoPayService;
 use SharengoCore\Entity\Repository\TripsRepository;
 use SharengoCore\Entity\Repository\ReservationsRepository;
 use SharengoCore\Entity\Customers;
@@ -23,8 +23,11 @@ use SharengoCore\Entity\TripPaymentTries;
 use SharengoCore\Entity\ExtraPayments;
 use SharengoCore\Entity\ExtraPaymentTries;
 
-use Doctrine\ORM\EntityManager;
-use Zend\EventManager\EventManager;
+use SharengoCore\Service\TripPaymentTriesService;
+use SharengoCore\Service\CustomerDeactivationService;
+use SharengoCore\Service\FreeFaresService as FreeFares;
+use SharengoCore\Service\Partner\TelepassPayService;
+use SharengoCore\Service\Partner\NugoPayService;
 
 class PaymentsService
 {
@@ -129,23 +132,24 @@ class PaymentsService
     private $gpwebpayCustomerPayments;
 
     /**
+     * PaymentsService constructor.
      * @param CartasiCustomerPaymentsInterface $cartasiCustomerPayments
      * @param CartasiContractsService $cartasiContractService
      * @param EntityManager $entityManager
      * @param EmailService $emailService
      * @param EventManager $eventManager
-     * @param TripPaymentTriesService $tripPaymentTriesService
+     * @param \SharengoCore\Service\TripPaymentTriesService $tripPaymentTriesService
      * @param ExtraPaymentTriesService $extraPaymentTriesService
-     * @param string $url
-     * @param CustomerDeactivationService $deactivationService
+     * @param $url
+     * @param \SharengoCore\Service\CustomerDeactivationService $deactivationService
      * @param PreauthorizationsService $preauthorizationsService
-     * @param int $preauthorizationsAmount
+     * @param $preauthorizationsAmount
      * @param FreeFaresRepository $freeFaresRepository
      * @param TripsRepository $tripsRepository
      * @param ReservationsRepository $reservationsRepository
      * @param TelepassPayService $telepassPayService
      * @param NugoPayService $nugoPayService
-     *
+     * @param GPWebpayCustomerPayments $gpwebpayCustomerPayments
      */
     public function __construct(
         CartasiCustomerPaymentsInterface $cartasiCustomerPayments,
@@ -630,6 +634,16 @@ class PaymentsService
         return $response;
     }
 
+    /**
+     * Try multi extra payments in time
+     * 
+     * @param Customers $customer
+     * @param array $extraPayments
+     * @param Webuser|null $webuser
+     * @param bool $avoidDisableUser
+     * @return \Cartasi\Entity\CartasiResponse|\Cartasi\Service\CartasiResponse|null
+     * @throws \Exception
+     */
     public function tryCustomerExtraPaymentMulti(
         Customers $customer,
         array $extraPayments,
@@ -648,12 +662,24 @@ class PaymentsService
             return $response;
         }
 
-        $response = $this->cartasiCustomerPayments->sendPaymentRequest(
-            $customer,
-            $totalCost,
-            false
-        );
-
+        $contract = $this->cartasiContractService->getCartasiContract($customer);
+        if(!is_null($contract->getPartner())) { // contract with partner
+            $response = null;
+            if ($contract->getPartner()->getCode() == "gpwebpay"){
+                $response = $this->gpwebpayCustomerPayments->sendPaymentRequest(
+                    $customer,
+                    $totalCost,
+                    false
+                );
+            }
+        } else {
+            $response = $this->cartasiCustomerPayments->sendPaymentRequest(
+                $customer,
+                $totalCost,
+                false
+            );            
+        }
+        
         $this->entityManager->beginTransaction();
 
         try {
@@ -800,7 +826,16 @@ class PaymentsService
         ]);
         
     }
-    
+
+    /**
+     * @param Customers $customer
+     * @param Trips $trip
+     * @param bool $avoidEmails
+     * @param bool $avoidCartasi
+     * @param bool $avoidPersistance
+     * @return int
+     * @throws \Exception
+     */
     public function tryPreAuthorization(Customers $customer, Trips $trip, $avoidEmails = false, $avoidCartasi = false, $avoidPersistance = false){
 
         $message = 22; //default ok
@@ -883,6 +918,12 @@ class PaymentsService
         }
     }
 
+    /**
+     * @param $transaction
+     * @param $customer
+     * @param $amount
+     * @return mixed
+     */
     public function refund($transaction, $customer, $amount) {
         return $this->cartasiCustomerPayments->sendRefundRequest($transaction, $customer, $amount);
     }
