@@ -12,7 +12,8 @@ class CountriesServiceFactory implements FactoryInterface
         // Dependencies are fetched from Service Manager
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
         $repository = $entityManager->getRepository('\SharengoCore\Entity\Countries');
+        $translator = $serviceLocator->get('LanguageService')->getTranslator();
 
-        return new CountriesService($repository);
+        return new CountriesService($repository, $translator);
     }
 }
