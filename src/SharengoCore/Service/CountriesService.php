@@ -4,14 +4,17 @@ namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Countries;
 use SharengoCore\Entity\Repository\CountriesRepository;
+use Zend\Mvc\I18n\Translator;
 
 class CountriesService
 {
     private $repository;
+    private $translator;
 
-    public function __construct(CountriesRepository $repository)
+    public function __construct(CountriesRepository $repository, Translator $translator)
     {
         $this->repository = $repository;
+        $this->translator = $translator;
     }
 
     public function getAllCountries($selectedCountry = null)
@@ -37,7 +40,7 @@ class CountriesService
 
         foreach ($countries as $c) {
             if($c['code']!=='VA') { // skip "Citta del Vaticano" because has phone code 39 the same of Italy
-                $ret[$c['phoneCode']] = html_entity_decode($c['name']."(+".$c['phoneCode'].")");
+                $ret[$c['phoneCode']] = html_entity_decode($this->translator->translate($c['name'])."(+".$c['phoneCode'].")");
             }
             if(count($ret)==1) {    // put in second place the string '----------' and value 'disabled'
                 $ret['disabled'] = html_entity_decode("----------");

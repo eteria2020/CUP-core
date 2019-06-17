@@ -2,19 +2,21 @@
 
 namespace SharengoCore\Service;
 
+use Cartasi\Entity\Transactions;
+
 use SharengoCore\Entity\Repository\ExtraPaymentsRepository;
 use SharengoCore\Entity\ExtraPayments;
 use SharengoCore\Entity\ExtraPaymentsCanceled;
 use SharengoCore\Entity\ExtraPaymentTriesCanceled;
 use SharengoCore\Entity\Vat;
-use SharengoCore\Service\ExtraPaymentTriesService;
-use SharengoCore\Service\CustomersService;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\Webuser;
-use SharengoCore\Service\InvoicesService;
 use SharengoCore\Entity\Fleet;
 use SharengoCore\Entity\Queries\AllExtraPaymentTypes;
-use Cartasi\Entity\Transactions;
+
+use SharengoCore\Service\InvoicesService;
+use SharengoCore\Service\ExtraPaymentTriesService;
+use SharengoCore\Service\CustomersService;
 use SharengoCore\Service\DatatableServiceInterface;
 use SharengoCore\Service\CustomerDeactivationService;
 use SharengoCore\Service\ExtraPaymentRatesService;
@@ -150,7 +152,18 @@ class ExtraPaymentsService
 
         return $extraPayment;
     }
-    
+
+    /**
+     * @param Customers $customer
+     * @param Fleet $fleet
+     * @param $transaction
+     * @param $amount
+     * @param $type
+     * @param $reasons
+     * @param $payable
+     * @return ExtraPayments
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function registerExtraPaymentForRate(
         Customers $customer,
         Fleet $fleet,
@@ -230,7 +243,12 @@ class ExtraPaymentsService
     {
         return sprintf('%.2f €', intval($amount) / 100);
     }
-    
+
+    /**
+     * @param array $filters
+     * @param bool $count
+     * @return array|int|mixed[]
+     */
     public function getFailedExtraData(array $filters = [], $count = false) {
         $extra = $this->datatableService->getData('ExtraPayments', $filters, $count);
 
@@ -258,7 +276,12 @@ class ExtraPaymentsService
             ];
         }, $extra);
     }
-    
+
+    /**
+     * Return all extra payments
+     *
+     * @return mixed
+     */
     public function getTotalExtra()
     {
         return $this->extraPaymentsRepository->countTotalExtra();
@@ -271,7 +294,12 @@ class ExtraPaymentsService
     public function getExtraPaymentById($extraPaymentId){
         return $this->extraPaymentsRepository->findOneById($extraPaymentId);
     }
-    
+
+    /**
+     * @param ExtraPayments $extraPayment
+     * @return ExtraPayments
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function setPayedCorrectly(ExtraPayments $extraPayment) {
         $extraPayment->setPayedCorrectly();
         $extraPayment->setInvoiceAble(true);
@@ -280,17 +308,29 @@ class ExtraPaymentsService
 
         return $extraPayment;
     }
-    
+
+    /**
+     * @param ExtraPayments $extraPayment
+     * @return ExtraPayments
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \SharengoCore\Exception\AlreadySetFirstExtraTryTsException
+     */
     public function setPayedCorrectlyFirstTime(ExtraPayments $extraPayment) {
         $extraPayment->setPayedCorrectly();
         $extraPayment->setInvoiceAble(true);
         $extraPayment->setFirstExtraTryTs(new \DateTime());
+
         $this->entityManager->persist($extraPayment);
         $this->entityManager->flush();
 
         return $extraPayment;
     }
-    
+
+    /**
+     * @param ExtraPayments $extraPayment
+     * @return ExtraPayments
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function setStatusWrongPayment(ExtraPayments $extraPayment) {
         $extraPayment->setWrongExtra();
         $this->entityManager->persist($extraPayment);
@@ -298,7 +338,13 @@ class ExtraPaymentsService
 
         return $extraPayment;
     }
-    
+
+    /**
+     * @param ExtraPayments $extraPayment
+     * @param $transaction
+     * @return ExtraPayments
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function setTrasaction(ExtraPayments $extraPayment, $transaction) {
         error_log($transaction->getId());
         $extraPayment->setTransaction($transaction);
@@ -307,12 +353,21 @@ class ExtraPaymentsService
 
         return $extraPayment;
     }
-    
+
+    /**
+     * @param Customers|null $customer
+     * @param null $timestampEndParam
+     * @return array
+     */
     public function getExtraPaymentsWrong(Customers $customer = null, $timestampEndParam = null) 
     {
         return $this->extraPaymentsRepository->findExtraPaymentsWrong($customer, $timestampEndParam);
     }
-    
+
+    /**
+     * @param Customers $customer
+     * @return array
+     */
     public function getExtraPaymentsWrongAndPayable(Customers $customer) {
         return $this->extraPaymentsRepository->getExtraPaymentsWrongAndPayable($customer);
     }
@@ -364,13 +419,24 @@ class ExtraPaymentsService
     {
         return $this->extraPaymentsRepository->findFailedByCustomer($customer);
     }
-    
+
+    /**
+     * @param ExtraPayments $extraPayment
+     * @param $payable
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function setPayable(ExtraPayments $extraPayment, $payable) {
         $extraPayment->setPayable($payable);
         $this->entityManager->persist($extraPayment);
         $this->entityManager->flush();
     }
-    
+
+    /**
+     * @param ExtraPayments $extraPayment
+     * @param $payable
+     * @param Webuser|null $webuser
+     * @throws \Exception
+     */
     public function setExtraFree(ExtraPayments $extraPayment, $payable, Webuser $webuser = null) {
         try {
             if ($extraPayment->isPaymentTried()) {
@@ -417,7 +483,14 @@ class ExtraPaymentsService
         $this->customersService->enableCustomerPayment($extraPayment->getCustomer());
         $this->entityManager->flush();
     }
-    
+
+    /**
+     * @param ExtraPayments $extraPayment
+     * @param $response
+     * @param null $webuser
+     * @return \SharengoCore\Entity\ExtraPaymentTries
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function processWrongPayment(ExtraPayments $extraPayment, $response, $webuser = null) {
         //set status worn_payment in extra_paymnets
         $extraPayment = $this->setStatusWrongPayment($extraPayment);
@@ -432,11 +505,18 @@ class ExtraPaymentsService
         
         return $extraPaymentTry;
     }
-    
-    
+
+    /**
+     * @param ExtraPayments $extraPayment
+     * @param $response
+     * @param null $webuser
+     * @return \SharengoCore\Entity\ExtraPaymentTries
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \SharengoCore\Exception\AlreadySetFirstExtraTryTsException
+     */
     public function processPayedCorrectly(ExtraPayments $extraPayment, $response, $webuser = null) {
         //set status payed in extra_payment
-        $extraPayment = $this->setPayedCorrectlyFirstTime($extraPayment);
+        $extraPayment = $this->setPayedCorrectly($extraPayment);
 
         $this->checkIfEnable($extraPayment);
 
@@ -445,13 +525,21 @@ class ExtraPaymentsService
         
         return $extraPaymentTry;
     }
-    
+
+    /**
+     * @param ExtraPayments $extraPayment
+     */
     public function checkIfEnable(ExtraPayments $extraPayment) {
         if(count($this->getExtraPaymentsWrongAndPayable($extraPayment->getCustomer())) == 0){
             $this->deactivationService->reactivateCustomerForExtraPayed($extraPayment->getCustomer());
         }
     }
-    
+
+    /**
+     * @param ExtraPayments $extra
+     * @param $param
+     * @return int|string
+     */
     private function typeCostExtraPayment(ExtraPayments $extra, $param) {
         if(count($this->extraPaymentRatesService->findByExtraPaymentFather($extra->getId(), $param)) > 0){
             return "RATE";

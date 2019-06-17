@@ -129,6 +129,7 @@ class NotificationsService {
             case 3: return "Urto";
             case 4: return "12V";
             case 5: return "Scatola nera offline";
+            case 6: return "Viaggio Lungo 3h";
             default: return $intval;
         }
     }
