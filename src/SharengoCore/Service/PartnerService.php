@@ -199,7 +199,47 @@ class PartnerService implements ValidatorServiceInterface
             $this->partnersRepository->deactivatePartnerCustomer($partner, $customer);
         }
     }
-    
+
+
+    /**
+     * Check if the reamo address of request is includene inside the list of $listOfValidIp
+     * 
+     * If $listOfValidIp is null or emptry return true.
+     * 
+     * @param $listOfValidIp
+     * @return bool
+     */
+    public static function isRemoteAddressValid($listOfValidIp) {
+        $result = true;
+
+        try {
+            if(is_null($listOfValidIp)) {
+                return $result;
+            }
+            
+            $listOfValidIp = trim($listOfValidIp);
+            
+            if($listOfValidIp=='') {
+                return $result;
+            }
+            
+            $remoteAddress = self::getRemoteAddress();
+            
+            if(strpos($listOfValidIp, $remoteAddress) !== false){
+                $result = true;
+            } else {
+                $result = false;
+            }
+        } catch (Exception $ex) {
+            
+        }
+        
+        return $result;
+    }
+
+
+
+
         /**
      * Return the id from remote address of request or an empty string.
      * From https://gist.github.com/cballou/2201933
@@ -221,6 +261,21 @@ class PartnerService implements ValidatorServiceInterface
             }
         }
         return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : false;
+    }
+
+    /**
+     * Remove the BOM (Byte Order Mark) char from the $text
+     *
+     * https://it.wikipedia.org/wiki/Byte_Order_Mark
+     * 
+     * @param $text
+     * @return string|string[]|null
+     */
+    public static function removeUtf8Bom($text)
+    {
+        $bom = pack('H*','EFBBBF');
+        $text = preg_replace("/^$bom/", '', $text);
+        return $text;
     }
 
     /**

@@ -281,6 +281,7 @@ return [
             'SharengoCore\Listener\UploadedDriversLicenseMailSender' => 'SharengoCore\Listener\UploadedDriversLicenseMailSenderFactory',
             'SharengoCore\Listener\ForeignDriverLicenseValidListener' => 'SharengoCore\Listener\ForeignDriverLicenseValidListenerFactory',
             'SharengoCore\Listener\NotifyPartnerCustomerStatusListener' => 'SharengoCore\Listener\NotifyPartnerCustomerStatusListenerFactory',
+            'SharengoCore\Service\SmsService' => 'SharengoCore\Service\SmsServiceFactory',
         ],
         'shared' => [
             'SharengoCore\Service\TripCostComputerService' => false,
