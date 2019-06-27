@@ -270,7 +270,7 @@ class NugoService
         $response = 200;
         $uri = "partner/signup";
         $statusFromProvider = false;
-
+        
         if(!$this->isRemoteAddressValid()) {
             $response = 403;
             $partnerResponse = array(
@@ -329,6 +329,7 @@ class NugoService
     /**
      * Check if remote address is a valid ip.
      * 
+     * TODO: replace with \SharengoCore\Service\PartnerService::isRemoteAddressValid(...)
      * @return boolean Return true if ip is valid
      */
     private function isRemoteAddressValid() {

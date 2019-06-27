@@ -16,6 +16,7 @@ class Configurations
     const SMS = 'sms';
     const SILVER = 'psqlfunc';
     const CAR = 'car';
+    const SOS = 'sos';
 
     /**
      * @var integer
