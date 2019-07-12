@@ -23,6 +23,9 @@
     // Invoice header
     $header = $invoiceContent['header'];
 
+    // Body header fror SK
+    $invoiceContent['body']['contents']['header'] = ['Popis','Cena bez DPH'];
+
     // Table formatting
     $alignmentFormat = $invoiceContent['body']['contents']['body-format']['alignment'];
 
@@ -86,8 +89,8 @@
 
         <!-- Invoice data -->
         <div class="invoice-data data">
-            <p>Invoice N° <?= $docN ?></p>
-            <p>Invoice Date: <?= date_format(date_create($invoiceDate), 'd/m/Y') ?></p>
+            <p>Faktúra číslo: <?= $docN ?></p>
+            <p>Dátum vystavenia faktúry: <?= date_format(date_create($invoiceDate), 'd/m/Y') ?></p>
         </div>
         <!-- invoice data -->
 
@@ -96,7 +99,7 @@
             <p><?= $name ?></p>
             <p><?= $address ?></p>
             <p><?= $zipCode . ', ' . $town ?><?php if ($province != null) echo ', ' . $province; if ($country != null) echo ', ' . $country ?></p>
-            <p>ID number: <?= $cf ?></p>
+            <p>Rodné číslo: <?= $cf ?></p>
             <?php if ($piva != null) echo '<p style="display: none">P.IVA: ' . $piva . '</p>'?>
             <p><?= $mail ?></p>
         </div>
@@ -196,15 +199,15 @@
         <!-- Summary table -->
         <table class="table table1 font">
             <tr>
-                <td class="table1-031e">Total taxable amount</td>
+                <td class="table1-031e">Cena bez DPH</td>
                 <td class="table1-031e right"><?= $partialAmount ?> €</td>
             </tr>
             <tr>
-                <td class="table1-031e">VAT <?= $ivaPercentage ?>%</td>
+                <td class="table1-031e">DPH <?= $ivaPercentage ?>%</td>
                 <td class="table1-031e right"><?= $iva ?> €</td>
             </tr>
             <tr>
-                <td class="table1-031e">Total</td>
+                <td class="table1-031e">Cena spolu</td>
                 <td class="table1-031e right"><?= $totalAmount ?> €</td>
             </tr>
         </table>
