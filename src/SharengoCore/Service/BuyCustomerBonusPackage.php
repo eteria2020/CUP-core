@@ -4,12 +4,17 @@ namespace SharengoCore\Service;
 
 use Cartasi\Service\CartasiCustomerPaymentsInterface;
 use Cartasi\Service\CartasiContractsService;
+
+use GPWebpay\Service\GPWebpayCustomerPayments;
+
+use Mollie\Service\MollieCustomerPayments;
+
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonusPackages;
-use SharengoCore\Entity\BonusPackagePayment;
 use SharengoCore\Entity\CustomersPoints;
+use SharengoCore\Entity\BonusPackagePayment;
+
 use SharengoCore\Service\CustomersPointsService;
-use GPWebpay\Service\GPWebpayCustomerPayments;
 
 use Doctrine\ORM\EntityManager;
 
@@ -40,19 +45,25 @@ class BuyCustomerBonusPackage
      */
     private $gpwebpayCustomerPayments;
 
+    /**
+     * @var MollieCustomerPayments
+     */
+    private $mollieCustomerPayments;
+
     public function __construct(
         EntityManager $entityManager,
         CartasiCustomerPaymentsInterface $payments,
         CustomersPointsService $customersPointsService,
         CartasiContractsService $cartasiContractService,
-        $gpwebpayCustomerPayments
-
+        $gpwebpayCustomerPayments,
+        $mollieCustomerPayments
     ) {
         $this->entityManager = $entityManager;
         $this->payments = $payments;
         $this->customersPointsService = $customersPointsService;
         $this->cartasiContractService = $cartasiContractService;
         $this->gpwebpayCustomerPayments = $gpwebpayCustomerPayments;
+        $this->mollieCustomerPayments = $mollieCustomerPayments;
     }
 
     /**
@@ -79,6 +90,8 @@ class BuyCustomerBonusPackage
                 if(!is_null($contract->getPartner())){
                     if($contract->getPartner()->getCode() == "gpwebpay") {
                         $cartasiResponse = $this->gpwebpayCustomerPayments->sendPaymentRequest($customer, $package->getCost());
+                    } elseif ($contract->getPartner()->getCode() == "mollie") {
+                        $cartasiResponse = $this->mollieCustomerPayments->sendPaymentRequest($customer, $package->getCost());
                     }
                 } else {
                     $cartasiResponse = $this->payments->sendPaymentRequest($customer, $package->getCost());
