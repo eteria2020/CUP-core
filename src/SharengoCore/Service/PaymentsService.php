@@ -10,6 +10,8 @@ use Cartasi\Service\CartasiContractsService;
 
 use GPWebpay\Service\GPWebpayCustomerPayments;
 
+use Mollie\Service\MollieCustomerPayments;
+
 use SharengoCore\Entity\Preauthorizations;
 use SharengoCore\Entity\Repository\FreeFaresRepository;
 use SharengoCore\Entity\Reservations;
@@ -132,6 +134,11 @@ class PaymentsService
     private $gpwebpayCustomerPayments;
 
     /**
+     * @var MollieCustomerPayments
+     */
+    private $mollieCustomerPayments;
+
+    /**
      * PaymentsService constructor.
      * @param CartasiCustomerPaymentsInterface $cartasiCustomerPayments
      * @param CartasiContractsService $cartasiContractService
@@ -150,6 +157,7 @@ class PaymentsService
      * @param TelepassPayService $telepassPayService
      * @param NugoPayService $nugoPayService
      * @param GPWebpayCustomerPayments $gpwebpayCustomerPayments
+     * @param MollieCustomerPayments $mollieCustomerPayments
      */
     public function __construct(
         CartasiCustomerPaymentsInterface $cartasiCustomerPayments,
@@ -168,7 +176,8 @@ class PaymentsService
         ReservationsRepository $reservationsRepository,
         TelepassPayService $telepassPayService,
         NugoPayService $nugoPayService,
-        GPWebpayCustomerPayments $gpwebpayCustomerPayments
+        GPWebpayCustomerPayments $gpwebpayCustomerPayments,
+        MollieCustomerPayments $mollieCustomerPayments
 
     ) {
         $this->cartasiCustomerPayments = $cartasiCustomerPayments;
@@ -188,6 +197,7 @@ class PaymentsService
         $this->telepassPayService = $telepassPayService;
         $this->nugoPayService = $nugoPayService;
         $this->gpwebpayCustomerPayments = $gpwebpayCustomerPayments;
+        $this->mollieCustomerPayments = $mollieCustomerPayments;
     }
 
     /**
@@ -389,6 +399,11 @@ class PaymentsService
                     $tripPayment->getTotalCost(),
                     $this->avoidCartasi
                 );
+            } elseif ($contract->getPartner()->getCode()=='mollie') {
+                $response = $this->mollieCustomerPayments->sendTripPaymentRequest(
+                    $tripPayment,
+                    $this->avoidCartasi
+                );
             }
 
             if(is_null($response)) {
@@ -481,6 +496,12 @@ class PaymentsService
                     $extraPayment->getAmount(),
                     $this->avoidCartasi
                 );
+            } elseif ($contract->getPartner()->getCode() == "mollie"){
+                $response = $this->mollieCustomerPayments->sendPaymentRequest(
+                    $customer,
+                    $extraPayment->getAmount(),
+                    $this->avoidCartasi
+                );
             }
 
             if(is_null($response)) {
@@ -565,6 +586,12 @@ class PaymentsService
             $response = null;
             if ($contract->getPartner()->getCode() == "gpwebpay"){
                 $response = $this->gpwebpayCustomerPayments->sendPaymentRequest(
+                    $customer,
+                    $totalCost,
+                    $this->avoidCartasi
+                );
+            } elseif ($contract->getPartner()->getCode() == "mollie") {
+                $response = $this->mollieCustomerPayments->sendPaymentRequest(
                     $customer,
                     $totalCost,
                     $this->avoidCartasi
@@ -667,6 +694,12 @@ class PaymentsService
             $response = null;
             if ($contract->getPartner()->getCode() == "gpwebpay"){
                 $response = $this->gpwebpayCustomerPayments->sendPaymentRequest(
+                    $customer,
+                    $totalCost,
+                    false
+                );
+            } elseif ($contract->getPartner()->getCode() == "mollie") {
+                $response = $this->mollieCustomerPayments->sendPaymentRequest(
                     $customer,
                     $totalCost,
                     false

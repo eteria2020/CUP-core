@@ -14,14 +14,15 @@ class BuyCustomerBonusPackageFactory implements FactoryInterface
         $customersPointsService = $serviceLocator->get('SharengoCore\Service\CustomersPointsService');
         $cartasiContractService = $serviceLocator->get('Cartasi\Service\CartasiContracts');
         $gpwebpayCustomerPayments = $serviceLocator->get('GPWebpay\Service\GPWebpayCustomerPayments');
-
+        $mollieCustomerPayments = $serviceLocator->get('Mollie\Service\MollieCustomerPayments');
 
         return new BuyCustomerBonusPackage(
             $entityManager,
             $payments,
             $customersPointsService,
             $cartasiContractService,
-            $gpwebpayCustomerPayments
+            $gpwebpayCustomerPayments,
+            $mollieCustomerPayments
         );
     }
 }
