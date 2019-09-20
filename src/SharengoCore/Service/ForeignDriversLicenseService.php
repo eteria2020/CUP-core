@@ -173,7 +173,8 @@ class ForeignDriversLicenseService
                     'driversLicenseCategories' => $driversLicense->driversLicenseCategories(),
                     'driversLicenseExpire' => $driversLicenseExpire,
                     'valid' => $driversLicense->valid(),
-                    'first_time' => $driversLicense->isFirstTime()
+                    'first_time' => $driversLicense->isFirstTime(),
+                    'fleetName' => $driversLicense->customer()->getFleet()->getName()
                 ],
                 'cu' => [
                     'id' => $driversLicense->customerId(),

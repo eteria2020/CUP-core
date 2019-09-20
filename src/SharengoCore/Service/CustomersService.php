@@ -340,6 +340,7 @@ class CustomersService implements ValidatorServiceInterface
                     'id'                  => $customer->getId(),
                     'name'                => $customer->getName(),
                     'surname'             => $customer->getSurname(),
+                    'fleetName'          => $customer->getFleet()->getName(),
                     'mobile'              => $customer->getMobile(),
                     'driverLicense'       => $customer->getDriverLicense(),
                     'driverLicenseExpire' => is_object($customer->getDriverLicenseExpire()) ? $customer->getDriverLicenseExpire()->format('d-m-Y') : '',
