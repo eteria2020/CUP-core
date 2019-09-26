@@ -347,6 +347,9 @@ class CustomersService implements ValidatorServiceInterface
                     'email'               => $customer->getEmail(),
                     'taxCode'             => $customer->getTaxCode(),
                     'registration'        => $customer->getRegistrationCompleted() ? $this->translator->translate('Completata') : $this->translator->translate('Non Completata'),
+                ],                
+                'f'     => [
+                    'name' => $customer->getFleet()->getName(),
                 ],
                 'cc'     => [
                     'code' => is_object($customer->getCard()) ? $customer->getCard()->getCode() : '',
