@@ -20,9 +20,11 @@ class CustomersServiceFactory implements FactoryInterface
         $cardsService = $serviceLocator->get('SharengoCore\Service\CardsService');
 
         $datatableService->setQueryBuilder(
-            new DatatableQueryBuilders\Cards(
-                new DatatableQueryBuilders\Basic(),
-                'e'
+            new DatatableQueryBuilders\Fleets(
+                new DatatableQueryBuilders\Cards(
+                    new DatatableQueryBuilders\Basic(),
+                    'e'
+                )
             )
         );
 
