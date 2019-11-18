@@ -127,9 +127,9 @@ class ReservationsService
                     'customerId' => null != $reservation->getCustomer() ? $reservation->getCustomer()->getId() : '',
                     'cards'    => ($reservation->getLength() != self::SYS_RESERVATION_LENGTH) ? $reservation->getCards() : $this->translator->translate('PRENOTAZIONE DI SISTEMA'),
                     'active'   => $reservation->getActive() ? $this->translator->translate('Si') : $this->translator->translate('No'),
-                    'send'     => is_object($reservation->getSentTs()) ? $reservation->getSentTs()->format('d-m-Y H:i:s') : '',
-                    'consumed' => is_object($reservation->getConsumedTs()) ? $reservation->getConsumedTs()->format('d-m-Y H:i:s') : '',
-                    'deleted'  => is_object($reservation->getDeletedTs()) ? $reservation->getDeletedTs()->format('d-m-Y H:i:s') : '',
+                    'sentTs'     => is_object($reservation->getSentTs()) ? $reservation->getSentTs()->format('d-m-Y H:i:s') : '',
+                    'consumedTs' => is_object($reservation->getConsumedTs()) ? $reservation->getConsumedTs()->format('d-m-Y H:i:s') : '',
+                    'deletedTs'  => is_object($reservation->getDeletedTs()) ? $reservation->getDeletedTs()->format('d-m-Y H:i:s') : '',
                 ]
             ];
         }, $reservations);
