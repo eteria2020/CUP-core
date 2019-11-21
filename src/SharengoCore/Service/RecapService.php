@@ -30,6 +30,7 @@ class RecapService
     {
         $query = new RecapAvailableMonths($this->em);
         
+        
         if ($isArray) {
             $res = array();
             foreach ($query() as $q) {
@@ -123,7 +124,7 @@ class RecapService
     public function getMonthlyIncome()
     {
         // Create an interval to represent a month
-        $interval = new \DateInterval('P12M');
+        $interval = new \DateInterval('P4M');
         $end = date_create('first day of next month midnight');
         $start = clone($end);
         $start->sub($interval);
@@ -141,7 +142,7 @@ class RecapService
     public function getMonthlyIncomeFleet($id_fleet)
     {
         // Create an interval to represent a month
-        $interval = new \DateInterval('P12M');
+        $interval = new \DateInterval('P4M');
         $end = date_create('first day of next month midnight');
         $start = clone($end);
         $start->sub($interval);
