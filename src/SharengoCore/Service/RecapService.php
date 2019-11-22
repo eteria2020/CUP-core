@@ -7,6 +7,9 @@ use SharengoCore\Entity\Queries\RecapAvailableYears;
 use SharengoCore\Entity\Queries\PayedBetween;
 use SharengoCore\Entity\Queries\PayedFleetBetween;
 use SharengoCore\Entity\Queries\PayedFleetYearBetween;
+use SharengoCore\Entity\Queries\RecapAvailableMonthsYear;
+use SharengoCore\Entity\Queries\PayedFleetYearMonthBetween;
+use SharengoCore\Entity\Queries\RecapAvailableDaysMonthYear;
 use Doctrine\ORM\EntityManager;
 
 class RecapService
@@ -26,10 +29,33 @@ class RecapService
     /**
      * @return string[]
      */
-    public function getAvailableMonths($isArray = false)
+    public function getAvailableDays($isArray = false, $year, $month)
     {
-        $query = new RecapAvailableMonths($this->em);
         
+        $query = new RecapAvailableDaysMonthYear($this->em, $year, $month);
+        
+        if ($isArray) {
+            $res = array();
+            foreach ($query() as $q) {
+                $res[] = $q['date'];
+            }
+            return $res;
+        }
+        
+        return $query();
+    }
+    
+    /**
+     * @return string[]
+     */
+    public function getAvailableMonths($isArray = false, $year = '0')
+    {
+        
+        if ($year == '0') {
+            $query = new RecapAvailableMonths($this->em);
+        } else {
+            $query = new RecapAvailableMonthsYear($this->em, $year);
+        }
         
         if ($isArray) {
             $res = array();
@@ -88,11 +114,41 @@ class RecapService
     public function getDailyIncomeForMonthFleet($dateString, $id_fleet)
     {
         // Create an interval to represent a month
-        $interval = new \DateInterval('P1M');
+        $interval = new \DateInterval('P3D');
         $start = date_create_from_format('m-Y-d H:i:s', $dateString . '-01 00:00:00');
         $end = clone($start);
         $end->add($interval);
 
+        $query = new PayedFleetBetween($this->em, $start, $end, $id_fleet, 'DD-MM-YYYY');
+        $incomes = $query();
+
+        return $this->groupIncomesByDate($incomes);
+    }
+    
+    public function getDailyIncomeForYearMonthFleet($dateString, $year, $id_fleet)
+    {
+        // Create an interval to represent a month
+        $interval = new \DateInterval('P3D');
+        $start = date_create_from_format('m-Y-d H:i:s', $dateString . '-' . $year . '-01 00:00:00');
+                
+        $end = clone($start);
+        $end->add($interval);
+
+        $query = new PayedFleetBetween($this->em, $start, $end, $id_fleet, 'DD-MM-YYYY');
+        $incomes = $query();
+
+        return $this->groupIncomesByDate($incomes);
+    }
+    
+    public function getDailyIncomeForYearMonthDayFleet($day, $month, $year, $id_fleet)
+    {
+        // Create an interval to represent a month
+        $interval = new \DateInterval('P2D');
+        $start = date_create_from_format('m-Y-d H:i:s', $month . '-' . $year . '-' . $day . ' 00:00:00');
+                
+        $end = clone($start);
+        $end->add($interval);
+        $start->sub(new \DateInterval('P1D'));
         $query = new PayedFleetBetween($this->em, $start, $end, $id_fleet, 'DD-MM-YYYY');
         $incomes = $query();
 
@@ -164,6 +220,14 @@ class RecapService
         }
 
         $query = new PayedFleetYearBetween($this->em, $year, $id_fleet, 'YYYY-MM');
+        $incomes = $query();
+
+        return $this->groupIncomesByDate($incomes);
+    }
+    
+    public function getMonthlyIncomeFleetYearMonth($id_fleet, $year, $month)
+    {
+        $query = new PayedFleetYearMonthBetween($this->em, $year, $month, $id_fleet, 'YYYY-MM');
         $incomes = $query();
 
         return $this->groupIncomesByDate($incomes);
