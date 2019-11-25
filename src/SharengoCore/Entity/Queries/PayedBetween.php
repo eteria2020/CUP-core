@@ -66,36 +66,33 @@ class PayedBetween extends NativeQuery
                 GROUP BY date, fleet
                 ORDER BY date, fleet ASC
             ), sp AS (
-                SELECT to_char(t.datetime, :format) AS date,
+                SELECT to_char(sp.insert_ts, :format) AS date,
                     f.name AS fleet,
                     sum(sp.amount) AS amount
                 FROM subscription_payments sp
-                LEFT JOIN transactions t ON t.id = sp.transaction_id
                 LEFT JOIN fleets f ON f.id = sp.fleet_id
-                WHERE t.datetime >= :start
-                AND t.datetime < :end
+                WHERE sp.insert_ts >= :start
+                AND sp.insert_ts < :end
                 GROUP BY date, fleet
                 ORDER BY date, fleet ASC
             ), ep AS (
-                SELECT to_char(t.datetime, :format) AS date,
+                SELECT to_char(ep.generated_ts, :format) AS date,
                     f.name AS fleet,
                     sum(ep.amount) AS amount
                 FROM extra_payments ep
-                LEFT JOIN transactions t ON t.id = ep.transaction_id
                 LEFT JOIN fleets f ON f.id = ep.fleet_id
-                WHERE t.datetime >= :start
-                AND t.datetime < :end
+                WHERE ep.generated_ts >= :start
+                AND ep.generated_ts < :end
                 GROUP BY date, fleet
                 ORDER BY date, fleet ASC
             ), bpp AS (
-                SELECT to_char(t.datetime, :format) AS date,
+                SELECT to_char(bpp.inserted_ts, :format) AS date,
                     f.name AS fleet,
                     sum(bpp.amount) AS amount
                 FROM bonus_package_payments bpp
-                LEFT JOIN transactions t ON t.id = bpp.transaction_id
                 LEFT JOIN fleets f ON f.id = bpp.fleet_id
-                WHERE t.datetime >= :start
-                AND t.datetime < :end
+                WHERE bpp.inserted_ts >= :start
+                AND bpp.inserted_ts < :end
                 GROUP BY date, fleet
                 ORDER BY date, fleet ASC
             )
