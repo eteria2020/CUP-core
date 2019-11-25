@@ -17,13 +17,13 @@ class PayedFleetYearMonthBetween extends NativeQuery
      * @param \DateTime $end
      * @param string $format
      */
-    public function __construct(EntityManagerInterface $em, $year, $month, $id_fleet, $format)
+    public function __construct(EntityManagerInterface $em, $year_month, $id_fleet, $format)
     {
         parent::__construct($em);
+                
         $this->params = [
             'format' => $format,
-            'start' => "$year-$month-01 00:00:00",
-            'end' => "$year-$month-31 23:59:59",
+            'start' => "$year_month",
             'id_fleet' => $id_fleet
         ];
     }
@@ -59,40 +59,31 @@ class PayedFleetYearMonthBetween extends NativeQuery
                     sum(tp.total_cost) AS amount
                 FROM trip_payments tp
                 LEFT JOIN trips t ON t.id = tp.trip_id
-                WHERE tp.payed_successfully_at >= :start
-                AND tp.payed_successfully_at < :end
+                WHERE to_char(tp.payed_successfully_at, 'YYYY-MM') = :start
                 AND t.fleet_id = :id_fleet
                 GROUP BY date
                 ORDER BY date ASC
             ), sp AS (
-                SELECT to_char(t.datetime, :format) AS date,
+                SELECT to_char(sp.insert_ts, :format) AS date,
                     sum(sp.amount) AS amount
                 FROM subscription_payments sp
-                LEFT JOIN transactions t ON t.id = sp.transaction_id
-                WHERE t.datetime >= :start
-                AND t.datetime < :end
+                WHERE to_char(sp.insert_ts, 'YYYY-MM') = :start
                 AND sp.fleet_id = :id_fleet
                 GROUP BY date
                 ORDER BY date ASC
             ), ep AS (
-                SELECT to_char(t.datetime, :format) AS date,
+                SELECT to_char(ep.generated_ts, :format) AS date,
                     sum(ep.amount) AS amount
                 FROM extra_payments ep
-                LEFT JOIN transactions t ON t.id = ep.transaction_id
-                LEFT JOIN fleets f ON f.id = ep.fleet_id
-                WHERE t.datetime >= :start
-                AND t.datetime < :end
+                WHERE to_char(ep.generated_ts, 'YYYY-MM') = :start
                 AND ep.fleet_id = :id_fleet
                 GROUP BY date
                 ORDER BY date ASC
             ), bpp AS (
-                SELECT to_char(t.datetime, :format) AS date,
+                SELECT to_char(bpp.inserted_ts, :format) AS date,
                     sum(bpp.amount) AS amount
                 FROM bonus_package_payments bpp
-                LEFT JOIN transactions t ON t.id = bpp.transaction_id
-                LEFT JOIN fleets f ON f.id = bpp.fleet_id
-                WHERE t.datetime >= :start
-                AND t.datetime < :end
+                WHERE to_char(bpp.inserted_ts, 'YYYY-MM') = :start
                 AND bpp.fleet_id = :id_fleet
                 GROUP BY date
                 ORDER BY date ASC

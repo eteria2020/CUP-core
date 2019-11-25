@@ -140,18 +140,19 @@ class RecapService
         return $this->groupIncomesByDate($incomes);
     }
     
-    public function getDailyIncomeForYearMonthDayFleet($day, $month, $year, $id_fleet)
+    public function getDailyIncomeForYearMonthDayFleet($day, $id_fleet)
     {
         // Create an interval to represent a month
         $interval = new \DateInterval('P2D');
-        $start = date_create_from_format('m-Y-d H:i:s', $month . '-' . $year . '-' . $day . ' 00:00:00');
+        $start = date_create_from_format('Y-m-d H:i:s', $day . ' 00:00:00');
                 
         $end = clone($start);
         $end->add($interval);
         $start->sub(new \DateInterval('P1D'));
+                
         $query = new PayedFleetBetween($this->em, $start, $end, $id_fleet, 'DD-MM-YYYY');
         $incomes = $query();
-
+        
         return $this->groupIncomesByDate($incomes);
     }
     
@@ -225,9 +226,9 @@ class RecapService
         return $this->groupIncomesByDate($incomes);
     }
     
-    public function getMonthlyIncomeFleetYearMonth($id_fleet, $year, $month)
+    public function getMonthlyIncomeFleetYearMonth($id_fleet, $year_month)
     {
-        $query = new PayedFleetYearMonthBetween($this->em, $year, $month, $id_fleet, 'YYYY-MM');
+        $query = new PayedFleetYearMonthBetween($this->em, $year_month, $id_fleet, 'YYYY-MM');
         $incomes = $query();
 
         return $this->groupIncomesByDate($incomes);
