@@ -53,6 +53,11 @@ class TaxCodeSi extends AbstractValidator
         }
 
         $checkSum = 11 - ($sum % 11);
+
+        if($checkSum>9) {
+            $checkSum = 0;
+        }
+
         if($checkSum==$value[12]) {
             $result = true;
         }
