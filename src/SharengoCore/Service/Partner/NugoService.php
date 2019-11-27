@@ -232,7 +232,10 @@ class NugoService
 
         $this->exportConfig = $config['export'];
         $this->partner = $this->partnersRepository->findOneBy(array('code' => $this->partnerName, 'enabled' => true));
-        $this->params = $this->partner->getParamsDecode();
+        
+        if(!is_null($this->partner)) {
+            $this->params = $this->partner->getParamsDecode();    
+        }
 
         $this->httpClient = new Client();
         $this->httpClient->setMethod(Request::METHOD_GET);
