@@ -8,13 +8,7 @@ use Doctrine\ORM\EntityManager;
 use SharengoCore\Entity\Cars;
 use SharengoCore\Entity\Trips;
 use SharengoCore\Entity\Configurations;
-
 use SharengoCore\Service\TripsService;
-
-use SMSGatewayMe\Client\ApiClient;
-use SMSGatewayMe\Client\Api\MessageApi;
-use SMSGatewayMe\Client\Configuration;
-use SMSGatewayMe\Client\Model\SendMessageRequest;
 
 
 class SmsService
@@ -51,10 +45,6 @@ class SmsService
      */
     private $smsConfig;
 
-    /**
-     * @var
-     */
-    private $smsGatewayMe;
 
     /**
      * @var TripsService
@@ -84,14 +74,11 @@ class SmsService
 
         $this->smsDbConfigurations = $configurationsService->getConfigurationsKeyValueBySlug(Configurations::SMS);
         $this->smsConfig = $this->config['sms'];
-        $this->smsGatewayMe = $this->config['smsGatewayMe'];
     }
 
 
     /**
      * Send a SMS to $phoneNumber and message $message.
-     * First, we try with API of SmsGatewayMe (sms via tablet), if it isn't selected or fail, we try Api SmsHosying.
-     * It' possible to force a sms gateway specifing $forceGateway
      *
      * @param $phoneNumber
      * @param $message
@@ -105,83 +92,13 @@ class SmsService
         $response = array();
 
         if(is_null($forceGateway)) {
-            if($this->smsDbConfigurations["smsgatewayme"]=="true") {
-                $result = $this->sendSmsByGatewayMe($phoneNumber, $message, $response);
-                if(!$result) {
-                    $result = $this->sendSmsBySmsHosting($phoneNumber, $message, $response);
-                }
-            } else {
-                $result = $this->sendSmsBySmsHosting($phoneNumber, $message, $response);
-            }
+            $result = $this->sendSmsBySmsHosting($phoneNumber, $message, $response);
         } else {
-            if($forceGateway=="smsgatewayme") {
-                $result = $this->sendSmsByGatewayMe($phoneNumber, $message, $response);
-            } elseif ($forceGateway=="smshosting") {
-                $result = $this->sendSmsBySmsHosting($phoneNumber, $message, $response);
-            }
+            $result = $this->sendSmsBySmsHosting($phoneNumber, $message, $response);
         }
 
         return $result;
 
-    }
-
-
-
-
-    /**
-     * Send sms via GatewayMe API
-     *
-     * https://github.com/smsgatewayme/client-php
-     *
-     * @param $phoneNumber
-     * @param $message
-     * @param $response
-     * @return bool
-     */
-    private function sendSmsByGatewayMe($phoneNumber, $message, &$response) {
-        $result = false;
-        $response = array();
-        $response['gateway'] = 'SMSGatewayMe';
-        $response['phoneNumber'] = $phoneNumber;
-        $response['message'] = $message;
-        $response['ts_insert'] = date_create()->format('y-m-d H:i:s');
-
-        try {
-            $config = Configuration::getDefaultConfiguration();
-            $config->setApiKey('Authorization', $this->smsGatewayMe["token"]);
-            $apiClient = new ApiClient($config);
-            $messageClient = new MessageApi($apiClient);
-
-            // Sending a SMS Message
-            $sendMessageRequest = new SendMessageRequest([
-                'phoneNumber' => $phoneNumber,
-                'message' => $message,
-                'deviceId' => $this->smsGatewayMe["deviceId"]
-            ]);
-
-            $sendMessages = $messageClient->sendMessages([
-                $sendMessageRequest,
-            ]);
-
-            $response['ts_send'] = date_create()->format('y-m-d H:i:s');
-
-            if(isset($sendMessages[0])){
-                if($sendMessages[0] instanceof \SMSGatewayMe\Client\Model\Message){
-                    $response['response']=$sendMessages[0]->getId();
-                    $result = true;
-                } else {
-                    $response['error'] = 'not instanceof';
-                }
-            } else {
-                $response['error'] = 'not isset';
-            }
-
-        } catch (\Exception $e){
-            $response['error'] = $e->getMessage();
-        }
-
-        $response['result'] = $result;
-        return $result;
     }
 
     /**
