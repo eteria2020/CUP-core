@@ -29,6 +29,7 @@ class PaymentsServiceFactory implements FactoryInterface
         $nugoPayService = $serviceLocator->get('SharengoCore\Service\Partner\NugoPayService');
         $gpwebpayCustomerPayments = $serviceLocator->get('GPWebpay\Service\GPWebpayCustomerPayments');
         $mollieCustomerPayments = $serviceLocator->get('Mollie\Service\MollieCustomerPayments');
+        $bankartCustomerPayments = $serviceLocator->get('Bankart\Service\BankartCustomerPayments');
 
         return new PaymentsService(
             $cartasiCustomerPayments,
@@ -48,7 +49,8 @@ class PaymentsServiceFactory implements FactoryInterface
             $telepassPayService,
             $nugoPayService,
             $gpwebpayCustomerPayments,
-            $mollieCustomerPayments
+            $mollieCustomerPayments,
+            $bankartCustomerPayments
         );
     }
 }
