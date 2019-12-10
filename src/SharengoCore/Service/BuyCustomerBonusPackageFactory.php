@@ -15,6 +15,7 @@ class BuyCustomerBonusPackageFactory implements FactoryInterface
         $cartasiContractService = $serviceLocator->get('Cartasi\Service\CartasiContracts');
         $gpwebpayCustomerPayments = $serviceLocator->get('GPWebpay\Service\GPWebpayCustomerPayments');
         $mollieCustomerPayments = $serviceLocator->get('Mollie\Service\MollieCustomerPayments');
+        $bankartCustomerPayments = $serviceLocator->get('Bankart\Service\BankartCustomerPayments');
 
         return new BuyCustomerBonusPackage(
             $entityManager,
@@ -22,7 +23,8 @@ class BuyCustomerBonusPackageFactory implements FactoryInterface
             $customersPointsService,
             $cartasiContractService,
             $gpwebpayCustomerPayments,
-            $mollieCustomerPayments
+            $mollieCustomerPayments,
+            $bankartCustomerPayments
         );
     }
 }

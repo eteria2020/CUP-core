@@ -9,6 +9,8 @@ use GPWebpay\Service\GPWebpayCustomerPayments;
 
 use Mollie\Service\MollieCustomerPayments;
 
+use Bankart\Service\BankartCustomerPayments;
+
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\CustomersBonusPackages;
 use SharengoCore\Entity\CustomersPoints;
@@ -50,13 +52,19 @@ class BuyCustomerBonusPackage
      */
     private $mollieCustomerPayments;
 
+    /**
+     * @var BankartCustomerPayments
+     */
+    private $bankartCustomerPayments;
+
     public function __construct(
         EntityManager $entityManager,
         CartasiCustomerPaymentsInterface $payments,
         CustomersPointsService $customersPointsService,
         CartasiContractsService $cartasiContractService,
         $gpwebpayCustomerPayments,
-        $mollieCustomerPayments
+        $mollieCustomerPayments,
+        $bankartCustomerPayments
     ) {
         $this->entityManager = $entityManager;
         $this->payments = $payments;
@@ -64,6 +72,7 @@ class BuyCustomerBonusPackage
         $this->cartasiContractService = $cartasiContractService;
         $this->gpwebpayCustomerPayments = $gpwebpayCustomerPayments;
         $this->mollieCustomerPayments = $mollieCustomerPayments;
+        $this->bankartCustomerPayments = $bankartCustomerPayments;
     }
 
     /**
@@ -92,6 +101,8 @@ class BuyCustomerBonusPackage
                         $cartasiResponse = $this->gpwebpayCustomerPayments->sendPaymentRequest($customer, $package->getCost());
                     } elseif ($contract->getPartner()->getCode() == "mollie") {
                         $cartasiResponse = $this->mollieCustomerPayments->sendPaymentRequest($customer, $package->getCost());
+                    } elseif ($contract->getPartner()->getCode() == "bankart") {
+                        $cartasiResponse = $this->bankartCustomerPayments->sendPaymentRequest($customer, $package->getCost());
                     }
                 } else {
                     $cartasiResponse = $this->payments->sendPaymentRequest($customer, $package->getCost());

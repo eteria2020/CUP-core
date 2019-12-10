@@ -12,6 +12,8 @@ use GPWebpay\Service\GPWebpayCustomerPayments;
 
 use Mollie\Service\MollieCustomerPayments;
 
+use Bankart\Service\BankartCustomerPayments;
+
 use SharengoCore\Entity\Preauthorizations;
 use SharengoCore\Entity\Repository\FreeFaresRepository;
 use SharengoCore\Entity\Reservations;
@@ -139,7 +141,13 @@ class PaymentsService
     private $mollieCustomerPayments;
 
     /**
+     * @var BankartCustomerPayments
+     */
+    private $bankartCustomerPayments;
+
+    /**
      * PaymentsService constructor.
+     *
      * @param CartasiCustomerPaymentsInterface $cartasiCustomerPayments
      * @param CartasiContractsService $cartasiContractService
      * @param EntityManager $entityManager
@@ -158,6 +166,7 @@ class PaymentsService
      * @param NugoPayService $nugoPayService
      * @param GPWebpayCustomerPayments $gpwebpayCustomerPayments
      * @param MollieCustomerPayments $mollieCustomerPayments
+     * @param BankartCustomerPayments $bankartCustomerPayments
      */
     public function __construct(
         CartasiCustomerPaymentsInterface $cartasiCustomerPayments,
@@ -177,7 +186,8 @@ class PaymentsService
         TelepassPayService $telepassPayService,
         NugoPayService $nugoPayService,
         GPWebpayCustomerPayments $gpwebpayCustomerPayments,
-        MollieCustomerPayments $mollieCustomerPayments
+        MollieCustomerPayments $mollieCustomerPayments,
+        BankartCustomerPayments $bankartCustomerPayments
 
     ) {
         $this->cartasiCustomerPayments = $cartasiCustomerPayments;
@@ -198,6 +208,7 @@ class PaymentsService
         $this->nugoPayService = $nugoPayService;
         $this->gpwebpayCustomerPayments = $gpwebpayCustomerPayments;
         $this->mollieCustomerPayments = $mollieCustomerPayments;
+        $this->bankartCustomerPayments = $bankartCustomerPayments;
     }
 
     /**
@@ -404,6 +415,11 @@ class PaymentsService
                     $tripPayment,
                     $this->avoidCartasi
                 );
+            } elseif ($contract->getPartner()->getCode()=='bankart') {
+                $response = $this->bankartCustomerPayments->sendTripPaymentRequest(
+                    $tripPayment,
+                    $this->avoidCartasi
+                );
             }
 
             if(is_null($response)) {
@@ -502,6 +518,12 @@ class PaymentsService
                     $extraPayment->getAmount(),
                     $this->avoidCartasi
                 );
+            } elseif ($contract->getPartner()->getCode() == "bankart"){
+                $response = $this->bankartCustomerPayments->sendPaymentRequest(
+                    $customer,
+                    $extraPayment->getAmount(),
+                    $this->avoidCartasi
+                );
             }
 
             if(is_null($response)) {
@@ -592,6 +614,12 @@ class PaymentsService
                 );
             } elseif ($contract->getPartner()->getCode() == "mollie") {
                 $response = $this->mollieCustomerPayments->sendPaymentRequest(
+                    $customer,
+                    $totalCost,
+                    $this->avoidCartasi
+                );
+            } elseif ($contract->getPartner()->getCode() == "bankart") {
+                $response = $this->bankartCustomerPayments->sendPaymentRequest(
                     $customer,
                     $totalCost,
                     $this->avoidCartasi
@@ -700,6 +728,12 @@ class PaymentsService
                 );
             } elseif ($contract->getPartner()->getCode() == "mollie") {
                 $response = $this->mollieCustomerPayments->sendPaymentRequest(
+                    $customer,
+                    $totalCost,
+                    false
+                );
+            } elseif ($contract->getPartner()->getCode() == "bankart") {
+                $response = $this->bankartCustomerPayments->sendPaymentRequest(
                     $customer,
                     $totalCost,
                     false
