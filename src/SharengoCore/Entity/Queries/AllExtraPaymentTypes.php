@@ -3,7 +3,6 @@
 namespace SharengoCore\Entity\Queries;
 
 use Doctrine\ORM\EntityManagerInterface;
-use SharengoCore\Entity\Invoices;
 
 class AllExtraPaymentTypes extends NativeQuery
 {

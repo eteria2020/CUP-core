@@ -3,7 +3,6 @@
 namespace SharengoCore\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use SharengoCore\Entity\Invoices;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use SharengoCore\Entity\Customers;
 use SharengoCore\Entity\TripPayments;
