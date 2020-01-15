@@ -3,6 +3,7 @@
 namespace SharengoCore\Service;
 
 use SharengoCore\Entity\Customers;
+use SharengoCore\Entity\Fleet;
 use SharengoCore\Entity\Repository\CustomersRepository;
 use SharengoCore\Entity\Repository\PartnersRepository;
 use SharengoCore\Entity\Partners;
@@ -94,9 +95,45 @@ class PartnerService implements ValidatorServiceInterface
         return $this->customersRepository->findByCI('email', $email);
     }
 
+    /**
+     * Find a partners enabled by Code
+     *
+     * @param $code
+     * @return mixed
+     */
     public function findEnabledByCode($code)
     {
         return $this->partnersRepository->findOneBy(array('code' => $code, 'enabled' => true));
+    }
+
+    /**
+     * Find a partners enabled by Code, and params contain a Json "paymets/fleet_id" match the id's $fleet.
+     * Otherway return null.
+     *
+     * Used in GpWebPay Module for select the correct partner.
+     *
+     * @param $code
+     * @param Fleet $fleet
+     * @return |null
+     */
+    public function findEnabledByCodeByFleet($code, Fleet $fleet)
+    {
+        $result = null;
+        $partners = $this->partnersRepository->findBy(array('code' => $code, 'enabled' => true));
+
+        foreach($partners as $partner) {
+            $params = json_decode( $partner->getParams(), true);
+            if(isset($params['payments'])) {
+                if(isset($params['payments']['fleet_id'])) {
+                    if(intval($params['payments']['fleet_id']) == $fleet->getId()) {
+                        $result = $partner;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $result;
     }
 
     public function partnerData($param){

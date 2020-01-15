@@ -153,7 +153,7 @@ class CarsController extends AbstractRestfulController
      * @param  mixed[]
      * @return mixed[]
      */
-    private function buildReturnData($status, $reason, $data = [])
+    private function    buildReturnData($status, $reason, $data = [])
     {
         $returnData = [];
         $returnData['status'] = $status;
