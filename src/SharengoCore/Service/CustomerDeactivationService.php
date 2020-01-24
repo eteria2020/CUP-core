@@ -163,6 +163,33 @@ class CustomerDeactivationService
     }
 
     /**
+     * Deactivate customer because the valid bonuses are under threshold
+     *
+     * @param Customers $customer
+     * @param $trip
+     * @param \DateTime|null $startTs
+     */
+    public function deactivateForCustomerBonusThreshold(
+        Customers $customer,
+        $trip,
+        \DateTime $startTs = null
+    ) {
+
+        $details = ['total_customer_bonus' => $customer->getTotalBonuses()];
+
+        if(!is_null($trip)){
+            $details = ['trip_id' => $trip->getId()];
+        }
+
+        $this->deactivate(
+            $customer,
+            CustomerDeactivation::CUSTOMER_BONUS_THRESHOLD,
+            $details,
+            $startTs
+        );
+    }
+
+    /**
      * Deactivate Customer that has an invalid driver's license
      *
      * @param Customers $customer
@@ -464,6 +491,36 @@ class CustomerDeactivationService
     }
 
     /**
+     * Close the CustomerDeactivation for customer bonus under threshold
+     *
+     * @param Customers $customer
+     * @param \DateTime|null $endTs
+     * @param Webuser|null $webuser
+     * @param bool $sendEmail
+     */
+    public function reactivateForCustomerBonusThreshold(
+        Customers $customer,
+        \DateTime $endTs = null,
+        Webuser $webuser = null,
+        $sendEmail = true
+    ) {
+        $customerDeactivations = $this->getAllActive($customer, CustomerDeactivation::CUSTOMER_BONUS_THRESHOLD);
+        $details = [
+            'note' => 'Customer bonus total ' . $customer->getTotalBonuses()
+        ];
+
+        if (is_array($customerDeactivations)) {
+            foreach($customerDeactivations as $deactivation) {
+                $this->reactivate($deactivation, $details, $endTs, $webuser, $sendEmail);
+            }
+        } else {
+            if(!empty($customerDeactivations)){
+                $this->reactivate($customerDeactivations, $details, $endTs, $webuser, $sendEmail);
+            }
+        }
+    }
+
+    /**
      * Reactivates all CustomerDeactivations with reason INVALID_DRIVERS_LICENSE
      * for a specific Customer
      *
@@ -475,7 +532,6 @@ class CustomerDeactivationService
         Customers $customer,
         \DateTime $endTs = null,
         Webuser $webuser = null
-
     ) {
         $query = new FindActiveCustomerDeactivations(
             $this->entityManager,
@@ -523,11 +579,12 @@ class CustomerDeactivationService
             }
         }
     }
-    
+
     /**
      * Reactivates Customer with only FAILED_EXTRA_PAYMENT from admin after passed payed extra
      *
      * @param Customers $customer
+     * @throws \Exception
      */
     public function reactivateCustomerForExtraPayed(Customers $customer) {
         $c_d = $this->getAllActive($customer);
@@ -599,7 +656,7 @@ class CustomerDeactivationService
         $this->entityManager->persist($customerDeactivation);
 
         // If it was the last active CustomerDeactivation for the Customer
-        // and this one is deactivated immediatly, enable Customer
+        // and this one is deactivated immediately, enable Customer
         $customer = $customerDeactivation->getCustomer();
         if ($this->shouldActivateCustomer($customer, $customerDeactivation)) {
             $this->customerService->enableCustomer($customer, $sendEmail);

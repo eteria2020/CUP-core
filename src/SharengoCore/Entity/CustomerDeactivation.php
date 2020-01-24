@@ -55,6 +55,11 @@ class CustomerDeactivation
     const REGISTRATION_NOT_COMPLETED = 'REGISTRATION_NOT_COMPLETED';
 
     /**
+     * @var string
+     */
+    const CUSTOMER_BONUS_THRESHOLD = 'CUSTOMER_BONUS_THRESHOLD';
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
@@ -203,6 +208,11 @@ class CustomerDeactivation
             case self::REGISTRATION_NOT_COMPLETED:
                 return 'Registrazione non completata';
                 break;
+            case self::CUSTOMER_BONUS_THRESHOLD:
+                return 'Numero crediti sotto soglia';
+                break;
+            default:
+                return $this->getReason();
         }
     }
 
