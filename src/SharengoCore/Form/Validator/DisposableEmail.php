@@ -24,16 +24,19 @@ class DisposableEmail extends AbstractValidator
 
     public function isValid($value) {
 
-        if(substr_compare($value, '@qq.com', -strlen('@qq.com')) === 0) {   // qq.com is an exception
+        if(substr_compare($value, '@qq.com', -strlen('@qq.com')) === 0) {               // qq.com is an exception (always true)
             return true;
-        }
-
-        $checker = new EmailChecker();
-        if(!$checker->isValid($value)) {
+        } elseif(substr_compare($value, '@bcaoo.com', -strlen('@bcaoo.com')) === 0) {   // bcaoo.com is an exception (always false)
             $this->error(self::DISPOSABLE);
             return false;
         } else {
-            return true;
+            $checker = new EmailChecker();
+            if(!$checker->isValid($value)) {
+                $this->error(self::DISPOSABLE);
+                return false;
+            } else {
+                return true;
+            }
         }
     }
 }
