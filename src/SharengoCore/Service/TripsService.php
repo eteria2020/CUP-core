@@ -432,6 +432,15 @@ class TripsService {
     }
 
     /**
+     * @param $latitude
+     * @param $longitude
+     * @return mixed|null
+     */
+    public function findAddressByLatitudeLongitude($latitude, $longitude) {
+        return $this->tripRepository->findAddressByLatitudeLongitude($latitude, $longitude);
+    }
+    
+    /**
      * Close the trip $closeTrip whith $webUser
      *
      * @param CloseTripData $closeTrip
@@ -477,37 +486,61 @@ class TripsService {
         return $this->tripRepository->findTripsNotPayedData();
     }
 
+    /**
+     * Set the fields beginning address and end address, by reverse geocoding via Nominatim (Open Street Map).
+     * Before to call Nominatim, check on the database if exist an address with the same coordinates.
+     *
+     * @param Trips $trip
+     * @param bool $dryRun
+     * @param string $addressBeginningPostfix
+     * @param string $addressEndPostfix
+     * @return mixed|null
+     */
     public function setAddressByGeocode(Trips $trip, $dryRun = false, $addressBeginningPostfix = "", $addressEndPostfix = "") {
         $result = null;
 
         if (isset($trip)) {
-            $delay = 100000; // half second in microseconds
 
-            $addressBeginning = $this->locationService->getAddressFromCoordinates(
-                    $trip->getLatitudeBeginning(), $trip->getLongitudeBeginning()
-            );
+            $addressBeginning = $this->tripRepository->findAddressByLatitudeLongitude(
+                $trip->getLatitudeBeginning(),
+                $trip->getLongitudeBeginning());
 
-            if (is_null($addressBeginning)) {
-                $addressBeginning = "";
+            if(is_null($addressBeginning)) {
+                $addressBeginning = $this->locationService->getAddressFromCoordinates(
+                    $trip->getLatitudeBeginning(),
+                    $trip->getLongitudeBeginning()
+                );
+
+                if (is_null($addressBeginning)) {
+                    $addressBeginning = "";
+                }
             }
 
             $trip->setAddressBeginning($addressBeginning);
 
-            $addressEnd = $this->locationService->getAddressFromCoordinates(
-                    $trip->getLatitudeEnd(), $trip->getLongitudeEnd()
-            );
+            $addressEnd = $this->tripRepository->findAddressByLatitudeLongitude(
+                $trip->getLatitudeEnd(),
+                $trip->getLongitudeEnd());
 
-            if (is_null($addressEnd)) {
-                $addressEnd = "";
+            if(is_null($addressEnd)) {
+                $addressEnd = $this->locationService->getAddressFromCoordinates(
+                    $trip->getLatitudeEnd(),
+                    $trip->getLongitudeEnd()
+                );
+
+                if (is_null($addressEnd)) {
+                    $addressEnd = "";
+                }
             }
 
             $trip->setAddressEnd($addressEnd);
 
             if (!$dryRun) {
-                $result = $this->tripRepository->updateTripsAdrress($trip, $addressBeginning . $addressBeginningPostfix, $addressEnd . $addressEndPostfix);
+                $result = $this->tripRepository->updateTripsAdrress(
+                    $trip,
+                    $addressBeginning . $addressBeginningPostfix,
+                    $addressEnd . $addressEndPostfix);
             }
-
-            usleep($delay);
         }
 
         return $result;

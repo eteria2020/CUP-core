@@ -479,6 +479,58 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
     }
 
     /**
+     * Find an address inside the fields addressBeginning or addressEnd of trips table
+     *
+     * @param $latitude
+     * @param $longitude
+     * @return string|null
+     */
+    public function findAddressByLatitudeLongitude($latitude, $longitude) {
+        $result = null;
+        
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT DISTINCT t.addressBeginning
+        FROM \SharengoCore\Entity\Trips t
+        WHERE 
+        t.addressBeginning IS NOT NULL AND
+        t.addressBeginning != '' AND   
+        t.latitudeBeginning = :latitude AND  
+        t.longitudeBeginning = :longitude";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter('latitude', $latitude);
+        $query->setParameter('longitude', $longitude);
+        $query->setMaxResults(1);
+        $queryResult = $query->getOneOrNullResult();
+
+        if(!is_null($queryResult)) {
+            $result = $queryResult['addressBeginning'];
+        } else {
+            $dql = "SELECT DISTINCT t.addressEnd
+                    FROM \SharengoCore\Entity\Trips t
+                    WHERE 
+                    t.addressEnd IS NOT NULL AND
+                    t.addressEnd != '' AND   
+                    t.addressEnd = :latitude AND  
+                    t.addressEnd = :longitude";
+
+            $query = $em->createQuery($dql);
+            $query->setParameter('latitude', $latitude);
+            $query->setParameter('longitude', $longitude);
+            $query->setMaxResults(1);
+            $queryResult = $query->getOneOrNullResult();
+
+            if(!is_null($queryResult)) {
+                $result = $queryResult['addressEnd'];
+            }
+        }
+
+        return $result;
+    }
+
+
+    /**
      * @param integer $limit
      * @return Trips[]
      */

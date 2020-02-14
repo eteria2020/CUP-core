@@ -180,7 +180,6 @@ return [
         'invokables' => [
             'SharengoCore\Service\DatatableQueryBuilder' => 'SharengoCore\Service\DatatableQueryBuilders\Basic',
             'SharengoCore\Service\TripFaresService' => 'SharengoCore\Service\TripFaresService',
-            'SharengoCore\Service\LocationService' => 'SharengoCore\Service\LocationService',
             'SharengoCore\Service\BlackHoleLogger' => 'SharengoCore\Service\BlackHoleLogger',
             'SharengoCore\Service\CrawlerService' => 'SharengoCore\Service\CrawlerService',
         ],
@@ -274,6 +273,7 @@ return [
             'SharengoCore\Service\MaintenanceLocationsService' => 'SharengoCore\Service\MaintenanceLocationsServiceFactory',
             'SharengoCore\Service\IncidentsService' => 'SharengoCore\Service\IncidentsServiceFactory',
             'SharengoCore\Service\ExtraPaymentRatesService' => 'SharengoCore\Service\ExtraPaymentRatesServiceFactory',
+            'SharengoCore\Service\LocationService' => 'SharengoCore\Service\LocationServiceFactory',
             'SharengoCore\Service\VatService' => 'SharengoCore\Service\VatServiceFactory',
             'SharengoCore\Listener\PaymentEmailListener' => 'SharengoCore\Listener\PaymentEmailListenerFactory',
             'SharengoCore\Listener\NotifyCustomerPayListener' => 'SharengoCore\Listener\NotifyCustomerPayListenerFactory',
