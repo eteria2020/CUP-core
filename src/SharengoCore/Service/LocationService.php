@@ -24,12 +24,20 @@ class LocationService
      * @param long $longitude
      * @return string Address corresponding to given lat and lng
      */
-    public function getAddressFromCoordinates($latitude, $longitude)
+    public function getAddressFromCoordinates($latitude = 0, $longitude = 0)
     {
-        $result= null;
-        $zoom=18;
+        $result = null;
+        $zoom = 18;
 
         try {
+            if(is_null($latitude) || is_null($longitude)){
+                return $result;
+            }
+
+            if($latitude == 0 && $longitude == 0) {
+                return $result;
+            }
+
             $language = 'it';
             if($this->serverInstance['id']!="") {
                 $language = substr($this->serverInstance['id'], 0, 2);

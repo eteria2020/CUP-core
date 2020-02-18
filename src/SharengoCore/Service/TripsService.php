@@ -501,39 +501,45 @@ class TripsService {
 
         if (isset($trip)) {
 
-            $addressBeginning = $this->tripRepository->findAddressByLatitudeLongitude(
-                $trip->getLatitudeBeginning(),
-                $trip->getLongitudeBeginning());
-
+            // Beginning address
+            $addressBeginning = $trip->getAddressBeginning();
             if(is_null($addressBeginning)) {
-                $addressBeginning = $this->locationService->getAddressFromCoordinates(
+                $addressBeginning = $this->tripRepository->findAddressByLatitudeLongitude(
                     $trip->getLatitudeBeginning(),
-                    $trip->getLongitudeBeginning()
-                );
+                    $trip->getLongitudeBeginning());
 
-                if (is_null($addressBeginning)) {
-                    $addressBeginning = "";
+                if(is_null($addressBeginning)) {
+                    $addressBeginning = $this->locationService->getAddressFromCoordinates(
+                        $trip->getLatitudeBeginning(),
+                        $trip->getLongitudeBeginning()
+                    );
+
+                    if (is_null($addressBeginning)) {
+                        $addressBeginning = "";
+                    }
                 }
+                $trip->setAddressBeginning($addressBeginning);
             }
 
-            $trip->setAddressBeginning($addressBeginning);
-
-            $addressEnd = $this->tripRepository->findAddressByLatitudeLongitude(
-                $trip->getLatitudeEnd(),
-                $trip->getLongitudeEnd());
-
+            // End address
+            $addressEnd = $trip->getAddressEnd();
             if(is_null($addressEnd)) {
-                $addressEnd = $this->locationService->getAddressFromCoordinates(
+                $addressEnd = $this->tripRepository->findAddressByLatitudeLongitude(
                     $trip->getLatitudeEnd(),
-                    $trip->getLongitudeEnd()
-                );
+                    $trip->getLongitudeEnd());
 
-                if (is_null($addressEnd)) {
-                    $addressEnd = "";
+                if(is_null($addressEnd)) {
+                    $addressEnd = $this->locationService->getAddressFromCoordinates(
+                        $trip->getLatitudeEnd(),
+                        $trip->getLongitudeEnd()
+                    );
+
+                    if (is_null($addressEnd)) {
+                        $addressEnd = "";
+                    }
                 }
+                $trip->setAddressEnd($addressEnd);
             }
-
-            $trip->setAddressEnd($addressEnd);
 
             if (!$dryRun) {
                 $result = $this->tripRepository->updateTripsAdrress(
