@@ -487,13 +487,22 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
      */
     public function findAddressByLatitudeLongitude($latitude, $longitude) {
         $result = null;
-        
+
+        if(is_null($latitude) || is_null($longitude)){
+            return $result;
+        }
+
+        if($latitude == 0 && $longitude == 0) {
+            return $result;
+        }
+
         $em = $this->getEntityManager();
 
         $dql = "SELECT DISTINCT t.addressBeginning
         FROM \SharengoCore\Entity\Trips t
         WHERE 
         t.addressBeginning IS NOT NULL AND
+        LOWER(t.addressBeginning) NOT LIKE '%supplemento%' AND
         t.addressBeginning != '' AND   
         t.latitudeBeginning = :latitude AND  
         t.longitudeBeginning = :longitude";
@@ -511,6 +520,7 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
                     FROM \SharengoCore\Entity\Trips t
                     WHERE 
                     t.addressEnd IS NOT NULL AND
+                    LOWER(t.addressEnd) NOT LIKE '%supplemento%' AND
                     t.addressEnd != '' AND   
                     t.addressEnd = :latitude AND  
                     t.addressEnd = :longitude";
@@ -531,24 +541,53 @@ class TripsRepository extends \Doctrine\ORM\EntityRepository {
 
 
     /**
+     * Return the trip's address non resolved (until 1 year).
+     *
      * @param integer $limit
      * @return Trips[]
      */
-    public function findTripsNoAddress($limit) {
+    public function findTripsNoAddress($limit = 0) {
         $em = $this->getEntityManager();
 
         $dql = "SELECT DISTINCT t
         FROM \SharengoCore\Entity\Trips t
-        WHERE t.timestampEnd IS NOT NULL
-        AND (t.addressBeginning IS NULL OR t.addressEnd IS NULL)
-        AND t.longitudeEnd IS NOT NULL
-        AND t.latitudeEnd IS NOT NULL
-        AND t.longitudeBeginning != 0
-        AND t.latitudeBeginning != 0
-        AND t.payable = true
-        ORDER BY t.timestampBeginning ASC";
+        WHERE t.timestampEnd IS NOT NULL AND
+        t.timestampEnd > :last_time AND
+        (
+            (
+                t.addressBeginning IS NULL AND
+                t.latitudeBeginning IS NOT NULL AND
+                t.longitudeBeginning IS NOT NULL AND
+                t.latitudeBeginning != 0 AND
+                t.longitudeBeginning != 0
+            ) OR
+            (
+                t.addressEnd IS NULL AND
+                t.latitudeEnd IS NOT NULL AND
+                t.longitudeEnd IS NOT NULL AND
+                t.latitudeEnd != 0 AND
+                t.longitudeEnd != 0 
+            ) 
+        )  
+        ORDER BY t.timestampEnd DESC";
+
+//        $dql = "SELECT DISTINCT t
+//        FROM \SharengoCore\Entity\Trips t
+//        WHERE t.timestampEnd IS NOT NULL
+//        AND (t.addressBeginning IS NULL OR t.addressEnd IS NULL)
+//        AND t.longitudeEnd IS NOT NULL
+//        AND t.latitudeEnd IS NOT NULL
+//        AND t.longitudeBeginning != 0
+//        AND t.latitudeBeginning != 0
+//        AND t.payable = true
+//        ORDER BY t.timestampBeginning ASC";
 
         $query = $em->createQuery($dql);
+
+        $lastTime = new \DateTime();
+        $lastTime->modify('-6 months');
+        $query->setParameter('last_time', $lastTime);
+
         if ($limit != 0) {
             $query->setMaxResults($limit);
         }
