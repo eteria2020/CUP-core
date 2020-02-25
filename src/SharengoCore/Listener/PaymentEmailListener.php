@@ -14,6 +14,11 @@ final class PaymentEmailListener implements SharedListenerAggregateInterface
     /**
      * @var array
      */
+    private $listeners = [];
+
+    /**
+     * @var array
+     */
     private $tripPaymentsByCustomer = [];
 
     /**
@@ -21,38 +26,49 @@ final class PaymentEmailListener implements SharedListenerAggregateInterface
      */
     private $emailService;
 
-    /**
-     * @var string
-     */
-    private $url;
 
-    public function __construct($emailService, $url)
+    /**
+     * PaymentEmailListener constructor.
+     * @param EmailService $emailService
+     */
+    public function __construct(EmailService $emailService)
     {
         $this->emailService = $emailService;
-        $this->url = $url;
     }
 
+    /**
+     * @param SharedEventManagerInterface $events
+     */
     public function attachShared(SharedEventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(
+        array_push(
+        $this->listeners,
+            $events->attach(
             'PaymentsService',
             'wrongTripPayment',
             [$this, 'registerWrongTripPaymentForCustomer']
-        );
-        
-        $this->listeners[] = $events->attach(
+        ));
+
+        array_push(
+        $this->listeners,
+            $events->attach(
             'PaymentsService',
             'wrongExtraPayment',
             [$this, 'registerWrongExtraPaymentForCustomer']
-        );
+        ));
 
-        $this->listeners[] = $events->attach(
+        array_push(
+            $this->listeners,
+            $events->attach(
             'ProcessPaymentsService',
             'processPaymentsCompleted',
             [$this, 'sendEmailToCustomers']
-        );
+        ));
     }
 
+    /**
+     * @param SharedEventManagerInterface $events
+     */
     public function detachShared(SharedEventManagerInterface $events)
     {
         foreach ($this->listeners as $index => $callback) {
@@ -62,6 +78,9 @@ final class PaymentEmailListener implements SharedListenerAggregateInterface
         }
     }
 
+    /**
+     * @param EventInterface $e
+     */
     public function registerWrongTripPaymentForCustomer(EventInterface $e)
     {
         $params = $e->getParams();
@@ -75,14 +94,17 @@ final class PaymentEmailListener implements SharedListenerAggregateInterface
             ];
         }
 
-        $tripPaymentsByCustomer[$customer->getId()]['tripPayments'][] = $tripPayment;
+        $this->tripPaymentsByCustomer[$customer->getId()]['tripPayments'][] = $tripPayment;
     }
 
+    /**
+     * @param EventInterface $e
+     */
     public function registerWrongExtraPaymentForCustomer(EventInterface $e)
     {
         $params = $e->getParams();
         $customer = $params['customer'];
-        $extraPayment = $params['extraPayment'];
+//        $extraPayment = $params['extraPayment'];
 
         if (!isset($this->tripPaymentsByCustomer[$customer->getId()])) {
             $this->tripPaymentsByCustomer[$customer->getId()] = [
@@ -91,9 +113,12 @@ final class PaymentEmailListener implements SharedListenerAggregateInterface
             ];
         }
 
-        $extraPaymentsByCustomer[$customer->getId()]['extraPayments'][] = $extraPayment;
+//        $extraPaymentsByCustomer[$customer->getId()]['extraPayments'][] = $extraPayment;
     }
-    
+
+    /**
+     * @param EventInterface $e
+     */
     public function sendEmailToCustomers(EventInterface $e)
     {
         $avoidEmails = $e->getParams()['avoidEmails'];
@@ -115,14 +140,8 @@ final class PaymentEmailListener implements SharedListenerAggregateInterface
             $mail->getContent(),
             $customer->getName()
         );
-        
-        //$customer->getSurname()
-        //file_get_contents(__DIR__.'/../../../view/emails/wrong-payment-it_IT.html'),
-        
-        $attachments = [
-            //'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
-            //'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
-        ];
+
+        $attachments = [];
 
         $this->emailService->sendEmail(
             $customer->getEmail(),

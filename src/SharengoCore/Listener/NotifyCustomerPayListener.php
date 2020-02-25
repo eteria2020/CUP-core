@@ -14,6 +14,11 @@ final class NotifyCustomerPayListener implements SharedListenerAggregateInterfac
     /**
      * @var array
      */
+    private $listeners = [];
+
+    /**
+     * @var array
+     */
     private $tripPaymentsByCustomer = [];
     
     /**
@@ -27,37 +32,45 @@ final class NotifyCustomerPayListener implements SharedListenerAggregateInterfac
     private $emailService;
 
     /**
-     * @var string
+     * NotifyCustomerPayListener constructor.
+     * @param $emailService
      */
-    private $url;
-
-    public function __construct($emailService, $url)
+    public function __construct($emailService)
     {
         $this->emailService = $emailService;
-        $this->url = $url;
     }
 
+    /**
+     * @param SharedEventManagerInterface $events
+     */
     public function attachShared(SharedEventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(
-            'PaymentsService',
-            'notifyCustomerPay',
-            [$this, 'notifyCustomerPay']
-        );
+        array_push(
+            $this->listeners,
+            $events->attach(
+                'PaymentsService',
+                'notifyCustomerPay',
+                [$this, 'notifyCustomerPay']
+        ));
 
-        $this->listeners[] = $events->attach(
+        array_push($this->listeners,
+            $events->attach(
             'PaymentsService',
             'notifyCustomerPayExtra',
             [$this, 'notifyCustomerPayExtra']
-        );
-        
-        $this->listeners[] = $events->attach(
+        ));
+
+        array_push($this->listeners,
+            $events->attach(
             'ProcessPaymentsService',
             'processPaymentsCompleted',
             [$this, 'sendEmailToCustomers']
-        );
+        ));
     }
 
+    /**
+     * @param SharedEventManagerInterface $events
+     */
     public function detachShared(SharedEventManagerInterface $events)
     {
         foreach ($this->listeners as $index => $callback) {
@@ -67,6 +80,9 @@ final class NotifyCustomerPayListener implements SharedListenerAggregateInterfac
         }
     }
 
+    /**
+     * @param EventInterface $e
+     */
     public function notifyCustomerPay(EventInterface $e)
     {
         $params = $e->getParams();
@@ -82,32 +98,38 @@ final class NotifyCustomerPayListener implements SharedListenerAggregateInterfac
 
         $tripPaymentsByCustomer[$customer->getId()]['tripPayments'][] = $tripPayment;
     }
-    
+
+    /**
+     * @param EventInterface $e
+     */
     public function notifyCustomerPayExtra(EventInterface $e)
     {
         $params = $e->getParams();
         $customer = $params['customer'];
         $extraPayment = $params['extraPayment'];
 
-        if (!isset($this->$extraPaymentsByCustomer[$customer->getId()])) {
-            $this->$extraPaymentsByCustomer[$customer->getId()] = [
+        if (!isset($this->extraPaymentsByCustomer[$customer->getId()])) {
+            $this->extraPaymentsByCustomer[$customer->getId()] = [
                 'customer' => $customer,
                 'extraPayment' => []
             ];
         }
 
-        $extraPaymentsByCustomer[$customer->getId()]['extrasPayment'][] = $extraPayment;
+        $this->extraPaymentsByCustomer[$customer->getId()]['extrasPayment'][] = $extraPayment;
     }
 
+    /**
+     * @param EventInterface $e
+     */
     public function sendEmailToCustomers(EventInterface $e)
     {
-        /*$avoidEmails = $e->getParams()['avoidEmails'];
+        $avoidEmails = $e->getParams()['avoidEmails'];
 
         if (!$avoidEmails) {
             foreach ($this->tripPaymentsByCustomer as $customerTrips) {
                 $this->notifyCustomerHeHasToPay($customerTrips['customer']);
             }
-        }*/
+        }
     }
 
     /**
@@ -115,22 +137,17 @@ final class NotifyCustomerPayListener implements SharedListenerAggregateInterfac
      */
     private function notifyCustomerHeHasToPay(Customers $customer)
     {
-        $date = date_create('midnight +7 days');
+        $mail = $this->emailService->getMail(5, $customer->getLanguage());
         $content = sprintf(
-            file_get_contents(__DIR__.'/../../../view/emails/first-payment-request-it_IT.html'),
-            $customer->getName(),
-            $customer->getSurname(),
-            $date->format('d/m/Y')
+            $mail->getContent(),
+            $customer->getName()
         );
 
-        $attachments = [
-            'bannerphono.jpg' => $this->url . '/assets-modules/sharengo-core/images/bannerphono.jpg',
-            'barbarabacci.jpg' => $this->url . '/assets-modules/sharengo-core/images/barbarabacci.jpg'
-        ];
+        $attachments = [];
 
         $this->emailService->sendEmail(
             $customer->getEmail(),
-            'SHARENGO - Pagamento delle tue corse a debito',
+            $mail->getSubject(), //'SHARENGO - ERRORE NEL PAGAMENTO',
             $content,
             $attachments
         );

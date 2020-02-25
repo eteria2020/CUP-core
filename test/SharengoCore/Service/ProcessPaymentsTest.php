@@ -21,7 +21,7 @@ class ProcessPaymentsTest extends \PHPUnit_Framework_TestCase
             new EventManager('ProcessPaymentsService'),
             new BlackHoleLogger(),
             new PaymentEmailListener('', ''),
-            new NotifyCustomerPayListener('', ''),
+            new NotifyCustomerPayListener(''),
             $this->paymentsService
         );
     }

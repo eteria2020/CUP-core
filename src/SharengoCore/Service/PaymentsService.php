@@ -844,7 +844,7 @@ class PaymentsService
         $this->entityManager->persist($tripPayment);
         $this->entityManager->flush();
 
-        // other unpayable consequences not mentionable here for respect of the childrens
+        // other not payable consequences not mentionable here for respect of the children
         $this->eventManager->trigger('wrongTripPayment', $this, [
             'customer' => $customer,
             'tripPayment' => $tripPayment
