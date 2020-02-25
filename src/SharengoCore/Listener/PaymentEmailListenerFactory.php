@@ -10,8 +10,7 @@ class PaymentEmailListenerFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $emailService = $serviceLocator->get('SharengoCore\Service\EmailService');
-        $url = $serviceLocator->get('Configuration')['website']['uri'];
 
-        return new PaymentEmailListener($emailService, $url);
+        return new PaymentEmailListener($emailService);
     }
 }

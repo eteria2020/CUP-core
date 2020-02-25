@@ -16,8 +16,12 @@ class PaymentsServiceFactory implements FactoryInterface
         $emailService = $serviceLocator->get('SharengoCore\Service\EmailService');
         $tripPaymentTriesService = $serviceLocator->get('SharengoCore\Service\TripPaymentTriesService');
         $extraPaymentTriesService = $serviceLocator->get('SharengoCore\Service\ExtraPaymentTriesService');
-        $eventManager = new EventManager();
-        $eventManager->setIdentifiers(['PaymentsService']);
+
+        $eventManager = new EventManager('PaymentsService');
+        $paymentEmailListener = $serviceLocator->get('SharengoCore\Listener\PaymentEmailListener');
+        $eventManager->getSharedManager()->attachAggregate($paymentEmailListener);
+//        $eventManager->setIdentifiers(['PaymentsService']);
+
         $url = $serviceLocator->get('Configuration')['website']['uri'];
         $preauthorizationsAmount = $serviceLocator->get('Configuration')['cartasi']['preauthorization_amount'];
         $deactivationService = $serviceLocator->get('SharengoCore\Service\CustomerDeactivationService');
