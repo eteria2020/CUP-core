@@ -171,6 +171,23 @@ class DatatableService implements DatatableServiceInterface
             $as_parameters['to'] = $options['to'] . ' 23:59:00';
         }
 
+        if (!empty($options['columnWhere']) && !empty($options['columnWhereValue'])) {
+            $columnWhere = explode(",", $options['columnWhere']);
+            $i = 0;
+            foreach ($columnWhere as $column) {
+                $withAndWhere = $where ? 'AND ' : 'WHERE ';
+                $dql .= $withAndWhere . $column . ' = :where_'.$i . ' ';
+                $where = true;
+                $i++;
+            }
+            $columnWhereValue = explode(",", $options['columnWhereValue']);
+            $i = 0;
+            foreach ($columnWhereValue as $value) {
+                $as_parameters['where_'.$i] = $value;
+                $i++;
+            }
+        }
+        
         if (count($as_parameters) > 0) {
             $query->setParameters($as_parameters);
         }
@@ -188,14 +205,23 @@ class DatatableService implements DatatableServiceInterface
         if ($options['withLimit']) {
             $query->setMaxResults($options['iDisplayLength']);
             $query->setFirstResult($options['iDisplayStart']);
-        }
-
+        }        
+        
         $query->setDql($dql);
 
         if ($count) {
             return $query->getSingleScalarResult();
         }
-        return $query->getResult();
+        
+        $result = array();
+        try {
+            $result = $query->getResult();
+        
+        } catch (QueryException $ex) {
+            error_log(print_r($ex, true));
+        }
+        
+        return $result;
     }
 
     /**
