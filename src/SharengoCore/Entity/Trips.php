@@ -1067,6 +1067,67 @@ class Trips {
     }
 
     /**
+     * Throws exception if:
+     * - $startDate or $endDate are not null and not of type \DateTime
+     * - $startDate is posterior to $endDate
+     * - $trip is not ended or payment has already been tried
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @throws EditTripNotDateTimeException
+     * @throws EditTripWrongDateException
+     * @throws EditTripDeniedException
+     */
+    public function checkIfEditableDates($startDate, $endDate) {
+        if (!$this->isEnded()) {
+            throw new EditTripDeniedException();
+        }
+        
+        if ($startDate !== null && $endDate !== null) {
+            if ($startDate instanceof \DateTime && $endDate instanceof \DateTime) {
+                $difference = $endDate->getTimestamp() - $startDate->getTimestamp();
+
+                if ($difference < 0) {
+                    throw new EditTripWrongDateException();
+                }
+
+                if(($difference/3600)>=24) {
+                    throw new EditTripExceed24HoursException();
+                }
+            } else {
+                throw new EditTripNotDateTimeException();
+            }
+        } else if ($endDate !== null) {
+            if ($endDate instanceof \DateTime) {
+                $difference = $endDate->getTimestamp() - $this->getTimestampBeginning()->getTimestamp();
+
+                if ($difference < 0) {
+                    throw new EditTripWrongDateException();
+                }
+
+                if(($difference/3600)>=24) {
+                    throw new EditTripExceed24HoursException();
+                }
+            } else {
+                throw new EditTripNotDateTimeException();
+            }
+        } else if ($startDate !== null) {
+            if ($startDate instanceof \DateTime) {
+                $difference = $this->getTimestampEnd()->getTimestamp() - $startDate->getTimestamp();
+
+                if ($difference < 0) {
+                    throw new EditTripWrongDateException();
+                }
+
+                if(($difference/3600)>=24) {
+                    throw new EditTripExceed24HoursException();
+                }
+            } else {
+                throw new EditTripNotDateTimeException();
+            }
+        }
+    }
+    
+    /**
      * @return string
      */
     public function getPinType() {
