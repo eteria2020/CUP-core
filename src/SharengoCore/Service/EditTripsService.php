@@ -133,10 +133,11 @@ class EditTripsService
     public function editTrip(
         Trips $trip,
         $notPayable,
+        $startDate = null,
         $endDate = null,
         Webuser $webuser = null
     ) {
-        $this->checkIfEditable($trip, $endDate);
+        $this->checkIfEditable($trip, $startDate, $endDate);
 
         $this->entityManager->beginTransaction();
 
@@ -151,7 +152,7 @@ class EditTripsService
             }
 
             // edit trip fields
-            $this->doEditTrip($trip, $notPayable, $endDate);
+            $this->doEditTrip($trip, $notPayable, $startDate, $endDate);
 
             // delete records linked to the trip
             $this->deleteTripBills($trip);
@@ -174,7 +175,7 @@ class EditTripsService
         }
     }
 
-    private function checkIfEditable(Trips $trip, $endDate)
+    private function checkIfEditable(Trips $trip, $startDate, $endDate)
     {
         if ($this->paymentScriptRunsService->isScriptRunning() && $trip->getTripPayment() !== null) {
             throw new EditTripDeniedForScriptException();
@@ -184,7 +185,7 @@ class EditTripsService
             throw new EditTripDeniedForB2BException();
         }
 
-        $trip->checkIfEditable($endDate);
+        $trip->checkIfEditableDates($startDate, $endDate);
     }
 
     /**
@@ -225,13 +226,17 @@ class EditTripsService
      * @param boolean $notPayable
      * @param DateTime|null $endDate
      */
-    private function doEditTrip(Trips $trip, $notPayable, $endDate)
+    private function doEditTrip(Trips $trip, $notPayable, $startDate, $endDate)
     {
         if ($notPayable) {
             $trip->setPayable(false);
             if($trip->getPreauthorization() instanceof Preauthorizations){
                 $this->preauthorizationsService->refundNotPayableTrip($trip);
             }
+        }
+        
+        if ($startDate instanceof \DateTime) {
+            $trip->setTimestampBeginning($startDate);
         }
 
         if ($endDate instanceof \DateTime) {
