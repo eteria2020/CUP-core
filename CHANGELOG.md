@@ -5,26 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-# [1.0.11] - 2020-02-28
+## [1.0.12] - 2020-03-02
+
+### Add
+
+- New documentation management through views and pages are stored on database (this for FAQ, legal notes, etc.) (see [ticket 650](https://sharengo.freshdesk.com/a/tickets/650))
+- New entities and repositories for Documents and Languages
+
+## [1.0.11] - 2020-02-28
 
 ### Changed
 
 - added to model Trip the possibility to modify the start date 
 
-# [1.0.10] - 2020-02-28
+## [1.0.10] - 2020-02-28
 
 ### Changed
 
 - added to class DatatableService the possibility to make filters on multiple columns 
 
-# [1.0.9] - 2020-02-25
+## [1.0.9] - 2020-02-25
 
 ### Changed
 
 - fix the trigger on wong payments during the pay invoice action
 - update the NotifyCustomerPay
 
-# [1.0.8] - 2020-02-17
+## [1.0.8] - 2020-02-17
 
 ### Changed
 

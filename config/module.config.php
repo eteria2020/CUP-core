@@ -282,6 +282,7 @@ return [
             'SharengoCore\Listener\ForeignDriverLicenseValidListener' => 'SharengoCore\Listener\ForeignDriverLicenseValidListenerFactory',
             'SharengoCore\Listener\NotifyPartnerCustomerStatusListener' => 'SharengoCore\Listener\NotifyPartnerCustomerStatusListenerFactory',
             'SharengoCore\Service\SmsService' => 'SharengoCore\Service\SmsServiceFactory',
+            'SharengoCore\Service\DocumentsService' => 'SharengoCore\Service\DocumentsServiceFactory',
         ],
         'shared' => [
             'SharengoCore\Service\TripCostComputerService' => false,

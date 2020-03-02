@@ -6,18 +6,18 @@ use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\EventManager\EventManager;
 
-class WebusersServiceFactory implements FactoryInterface
+class DocumentsServiceFactory implements FactoryInterface
 {
 
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
 
         $entityManager = $serviceLocator->get('doctrine.entitymanager.orm_default');
-        $webusersRepository = $entityManager->getRepository('\SharengoCore\Entity\Webuser');
+        $documentsRepository = $entityManager->getRepository('\SharengoCore\Entity\Documents');
 
-        return new WebusersService(
+        return new DocumentsService(
             $entityManager,
-            $webusersRepository
+            $documentsRepository
         );
     }
 
