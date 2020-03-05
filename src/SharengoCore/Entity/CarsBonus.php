@@ -35,7 +35,7 @@ class CarsBonus
      * @ORM\Column(name="unplug_enable", type="boolean", nullable=false)
      */
     private $unplugEnable = false;
-    
+
     /**
      * @var integer
      *
@@ -44,19 +44,27 @@ class CarsBonus
     private $freeX;
 
     /**
-     * 
+     *
      * @return datetime
      */
-    public function getNouse() {
+    public function getNouse()
+    {
         return $this->nouse;
     }
 
     /**
-     * 
+     *
      * @return boolean
      */
-    public function getUnplugEnable() {
-        return $this->unplugEnable;
+    public function getUnplugEnable()
+    {
+        $result = false;
+
+        if (!is_null($this->unplugEnable)) {
+            $result = $this->unplugEnable;
+        }
+
+        return $result;
     }
 
     /**
@@ -64,10 +72,11 @@ class CarsBonus
      *
      * @return integer
      */
-    public function getFreeX() {
+    public function getFreeX()
+    {
         return $this->freeX;
     }
-    
+
     /**
      * Set freeX
      *
