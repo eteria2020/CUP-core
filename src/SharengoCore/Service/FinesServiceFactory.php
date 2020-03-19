@@ -23,7 +23,9 @@ class FinesServiceFactory implements FactoryInterface
                     new DatatableQueryBuilders\Fleets(
                         new DatatableQueryBuilders\Cards(
                             new DatatableQueryBuilders\Customers(
-                                new DatatableQueryBuilders\Basic()
+                                new DatatableQueryBuilders\ExtraPayments(
+                                    new DatatableQueryBuilders\Basic()
+                                )
                             ),
                             'cu'
                         )
