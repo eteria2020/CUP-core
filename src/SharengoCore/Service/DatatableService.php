@@ -51,8 +51,8 @@ class DatatableService implements DatatableServiceInterface
             $where = false;
         }
 
-        $as_parameters = [];
-
+        $as_parameters = [];        
+        
         $dql = 'SELECT ' . ($count ? 'COUNT(e)' : ('e' . $select)) . ' FROM \SharengoCore\Entity\\' . $entity . ' e '
             . $join . $whereData;
 
@@ -172,14 +172,20 @@ class DatatableService implements DatatableServiceInterface
         }
 
         if (!empty($options['columnWhere']) && !empty($options['columnWhereValue'])) {
-            $columnWhere = explode(",", $options['columnWhere']);
-            $i = 0;
-            foreach ($columnWhere as $column) {
-                $withAndWhere = $where ? 'AND ' : 'WHERE ';
-                $dql .= $withAndWhere . $column . ' = :where_'.$i . ' ';
-                $where = true;
-                $i++;
-            }
+            
+            $withAndWhere = $where ? 'AND ' : 'WHERE ';
+            $dql .= $withAndWhere . $options['columnWhere'] . ' ';
+            $where = true;
+            
+            
+//            $columnWhere = explode(",", $options['columnWhere']);
+//            $i = 0;
+//            foreach ($columnWhere as $column) {
+//                $withAndWhere = $where ? 'AND ' : 'WHERE ';
+//                $dql .= $withAndWhere . $column . ' = :where_'.$i . ' ';
+//                $where = true;
+//                $i++;
+//            }
             $columnWhereValue = explode(",", $options['columnWhereValue']);
             $i = 0;
             foreach ($columnWhereValue as $value) {
@@ -187,6 +193,12 @@ class DatatableService implements DatatableServiceInterface
                 $i++;
             }
         }
+        
+//        if (!empty($options['columnWhere'])) {
+//            $withAndWhere = $where ? 'AND ' : 'WHERE ';
+//            $dql .= $withAndWhere . $options['columnWhere'] . ' ';
+//            $where = true;
+//        }
         
         if (count($as_parameters) > 0) {
             $query->setParameters($as_parameters);
