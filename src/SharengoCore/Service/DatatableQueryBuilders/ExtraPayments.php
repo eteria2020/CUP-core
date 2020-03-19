@@ -26,7 +26,7 @@ class ExtraPayments implements DatatableQueryBuilderInterface
 
     public function join()
     {
-        return $this->queryBuilder->join() . $this->joinType . ' JOIN e.extraPayment ep ';
+        return $this->queryBuilder->join() . $this->joinType . ' JOIN e.extrapayment ep ';
     }
 
     public function where()
